@@ -19,7 +19,16 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a02a121d-6b77-4616-8a85-79ca904fad8c" name="Default Changelist" comment="" />
+    <list default="true" id="a02a121d-6b77-4616-8a85-79ca904fad8c" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Fenix/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Fenix/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DotNetty.Transport.Libuv/EventLoop.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DotNetty.Transport.Libuv/EventLoop.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Fenix.Runtime/Fenix.Container/Container.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Fenix.Runtime/Fenix.Container/Container.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Fenix.Runtime/Fenix.Container/KcpContainerClient.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Fenix.Runtime/Fenix.Container/KcpContainerClient.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Fenix.Runtime/Fenix.Container/KcpContainerServer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Fenix.Runtime/Fenix.Container/KcpContainerServer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Fenix.Runtime/Fenix.Container/NetManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Fenix.Runtime/Fenix.Container/NetManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Fenix.Runtime/Fenix.Container/NetPeer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Fenix.Runtime/Fenix.Container/NetPeer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Server.App/bin/start_redis.sh" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server.App/bin/start_redis.sh" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -30,7 +39,12 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/799289DB-E1EE-4D79-85F3-7098D9FA6D57/5/CollectionExtensions.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/DotNetty.Transport.Libuv/NativeChannel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/DotNetty.Transport.Libuv/EventLoop.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/3E3766E1-F81B-4E4F-B421-ED8F3D7A911E/8/ConcurrentDictionary.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/DotNetty.Transport.Libuv/EventLoopGroup.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/DotNetty.Transport.Libuv/LoopExecutor.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/Server.App/src/Bootstrap.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/DotNetty.KCP/ServerEndPointChannelManager.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/DotNetty.KCP/ConvChannelManager.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/DotNetty.KCP/queue/MpscArrayQueue.cs" root0="FORCE_HIGHLIGHTING" />
@@ -46,16 +60,28 @@
     <setting file="file://$PROJECT_DIR$/src/DotNetty.KCP/kcp/Kcp.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/Fenix.Runtime/Fenix.Container/KcpContainerClient.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/DotNetty.TCP/ITcpClientListener.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/DotNetty.Transport.Libuv/Native/WindowsApi.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/DotNetty.KCP/ReadTask.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/Fenix.Runtime/Fenix.Container/KcpContainerServer.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/DotNetty.Transport.Libuv/Native/Timer.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/Fenix.Runtime/Fenix.Container/NetManager.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/Fenix.Runtime/Fenix.Container/Container.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/DotNetty.Transport.Libuv/Native/Tcp.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/Fenix.Runtime/Fenix.Container/TcpContainerClient.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/DotNetty.Transport.Libuv/Native/NativeMethods.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/DotNetty.KCP/ChannelConfig.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/DotNetty.KCP/Ukcp.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/DotNetty.Transport.Libuv/Native/PlatformApi.Extensions.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/Fenix.Runtime/Fenix.Container/ContainerHelper.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/Fenix.Runtime/Fenix.Container/TcpContainerServer.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/Fenix.Runtime/Fenix.Container/NetPeer.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/DotNetty.Codecs.Http/WebSockets/Utf8Validator.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/DotNetty.Transport.Libuv/Native/TcpConnect.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/DotNetty.Transport.Libuv/Native/NativeHandle.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/DotNetty.Transport.Libuv/Native/PlatformApi.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/DotNetty.Transport.Libuv/Native/TcpListener.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/DotNetty.Common/Internal/AppendableCharSequence.NetStandard.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/DotNetty.Transport.Libuv/Native/UnixApi.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -66,13 +92,16 @@
         <option value="$PROJECT_DIR$/src/DotNetty.KCP/kcp/DelayPacket.cs" />
         <option value="$PROJECT_DIR$/src/DotNetty.KCP/Ukcp.cs" />
         <option value="$PROJECT_DIR$/src/Fenix.Runtime/Fenix.Container/TcpContainerClient.cs" />
-        <option value="$PROJECT_DIR$/src/Fenix.Runtime/Fenix.Container/KcpContainerServer.cs" />
-        <option value="$PROJECT_DIR$/src/Fenix.Runtime/Fenix.Container/KcpContainerClient.cs" />
-        <option value="$PROJECT_DIR$/src/Fenix.Runtime/Fenix.Container/Container.cs" />
         <option value="$PROJECT_DIR$/src/Fenix.Gate/Program.cs" />
         <option value="$PROJECT_DIR$/src/DotNetty.KCP/ClientEndPointChannelManager.cs" />
         <option value="$PROJECT_DIR$/src/DotNetty.KCP/ServerEndPointChannelManager.cs" />
         <option value="$PROJECT_DIR$/src/DotNetty.KCP/ConvChannelManager.cs" />
+        <option value="$PROJECT_DIR$/src/Fenix.Runtime/Fenix.Container/KcpContainerClient.cs" />
+        <option value="$PROJECT_DIR$/src/Fenix.Runtime/Fenix.Container/KcpContainerServer.cs" />
+        <option value="$PROJECT_DIR$/src/Fenix.Runtime/Fenix.Container/Container.cs" />
+        <option value="$PROJECT_DIR$/src/DotNetty.Transport.Libuv/EventLoop.cs" />
+        <option value="$PROJECT_DIR$/src/Fenix.Runtime/Fenix.Container/NetPeer.cs" />
+        <option value="$PROJECT_DIR$/src/Fenix.Runtime/Fenix.Container/NetManager.cs" />
       </list>
     </option>
   </component>
@@ -85,7 +114,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="settings.editor.selected.configurable" value="application.passwordSafe" />
+    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
   <component name="RunManager" selected=".NET Project.src\Server.App">
     <configuration name="Fenix.Gate" type="DotNetProject" factoryName=".NET Project">
@@ -142,7 +171,12 @@
       <updated>1593784092670</updated>
       <workItem from="1593784098089" duration="578000" />
       <workItem from="1593784705487" duration="1308000" />
-      <workItem from="1593786039966" duration="1100000" />
+      <workItem from="1593786039966" duration="1801000" />
+      <workItem from="1593788473704" duration="1354000" />
+      <workItem from="1593790943055" duration="96000" />
+      <workItem from="1593791054289" duration="81000" />
+      <workItem from="1593791158243" duration="1140000" />
+      <workItem from="1593796712058" duration="3149000" />
     </task>
     <servers />
   </component>
@@ -167,14 +201,38 @@
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
   </component>
   <component name="WindowStateProjectService">
+    <state x="310" y="413" key="#HTTP_Proxy" timestamp="1593790893828">
+      <screen x="0" y="25" width="2560" height="1345" />
+    </state>
+    <state x="310" y="413" key="#HTTP_Proxy/0.25.2560.1345@0.25.2560.1345" timestamp="1593790893828" />
+    <state width="966" height="382" key="GridCell.Tab.0.bottom" timestamp="1593799869830">
+      <screen x="0" y="25" width="2560" height="1345" />
+    </state>
+    <state width="966" height="382" key="GridCell.Tab.0.bottom/0.25.2560.1345@0.25.2560.1345" timestamp="1593799869830" />
+    <state width="966" height="382" key="GridCell.Tab.0.center" timestamp="1593799869830">
+      <screen x="0" y="25" width="2560" height="1345" />
+    </state>
+    <state width="966" height="382" key="GridCell.Tab.0.center/0.25.2560.1345@0.25.2560.1345" timestamp="1593799869830" />
+    <state width="966" height="382" key="GridCell.Tab.0.left" timestamp="1593799869830">
+      <screen x="0" y="25" width="2560" height="1345" />
+    </state>
+    <state width="966" height="382" key="GridCell.Tab.0.left/0.25.2560.1345@0.25.2560.1345" timestamp="1593799869830" />
+    <state width="966" height="382" key="GridCell.Tab.0.right" timestamp="1593799869830">
+      <screen x="0" y="25" width="2560" height="1345" />
+    </state>
+    <state width="966" height="382" key="GridCell.Tab.0.right/0.25.2560.1345@0.25.2560.1345" timestamp="1593799869830" />
     <state x="1096" y="413" key="RiderGenerateDialog" timestamp="1593786284381">
       <screen x="0" y="25" width="2560" height="1345" />
     </state>
     <state x="1096" y="413" key="RiderGenerateDialog/0.25.2560.1345@0.25.2560.1345" timestamp="1593786284381" />
-    <state x="914" y="370" key="SettingsEditor" timestamp="1593784727425">
+    <state x="528" y="240" key="SettingsEditor" timestamp="1593796749479">
       <screen x="0" y="25" width="2560" height="1345" />
     </state>
-    <state x="914" y="370" key="SettingsEditor/0.25.2560.1345@0.25.2560.1345" timestamp="1593784727425" />
+    <state x="528" y="240" key="SettingsEditor/0.25.2560.1345@0.25.2560.1345" timestamp="1593796749479" />
+    <state x="100" y="125" width="1755" height="1145" key="VCS.FileHistoryDialog" timestamp="1593799869864">
+      <screen x="0" y="25" width="2560" height="1345" />
+    </state>
+    <state x="100" y="125" width="1755" height="1145" key="VCS.FileHistoryDialog/0.25.2560.1345@0.25.2560.1345" timestamp="1593799869864" />
     <state x="818" y="286" width="734" height="822" key="find.popup" timestamp="1593785915501">
       <screen x="0" y="25" width="2560" height="1345" />
     </state>

@@ -1,0 +1,288 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DotNetty.Transport.Libuv</name>
+    </assembly>
+    <members>
+        <member name="T:DotNetty.Transport.Libuv.Internal.Strings">
+            <summary>
+              一个强类型的资源类，用于查找本地化的字符串等。
+            </summary>
+        </member>
+        <member name="P:DotNetty.Transport.Libuv.Internal.Strings.ResourceManager">
+            <summary>
+              返回此类使用的缓存的 ResourceManager 实例。
+            </summary>
+        </member>
+        <member name="P:DotNetty.Transport.Libuv.Internal.Strings.Culture">
+            <summary>
+              使用此强类型资源类，为所有资源查找
+              重写当前线程的 CurrentUICulture 属性。
+            </summary>
+        </member>
+        <member name="T:DotNetty.Transport.Libuv.ExceptionArgument">
+            <summary>The convention for this enum is using the argument name as the enum name</summary>
+        </member>
+        <member name="T:DotNetty.Transport.Libuv.ExceptionResource">
+            <summary>The convention for this enum is using the resource name as the enum name</summary>
+        </member>
+        <member name="M:DotNetty.Transport.Libuv.LoopExecutor.Initialize">
+            <summary>
+            Called before run the loop in the loop thread.
+            </summary>
+        </member>
+        <member name="M:DotNetty.Transport.Libuv.LoopExecutor.Release">
+            <summary>
+            Called before stop the loop in the loop thread.
+            </summary>
+        </member>
+        <member name="T:DotNetty.Transport.Libuv.Native.ErrorCode">
+            <summary>Reference: http://docs.libuv.org/en/v1.x/errors.html</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.E2BIG">
+            <summary>UV_E2BIG: argument list too long</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EACCES">
+            <summary>UV_EACCES: permission denied</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EADDRINUSE">
+            <summary>UV_EADDRINUSE: address already in use</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EADDRNOTAVAIL">
+            <summary>UV_EADDRNOTAVAIL: address not available</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EAFNOSUPPORT">
+            <summary>UV_EAFNOSUPPORT: address family not supported</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EAGAIN">
+            <summary>UV_EAGAIN: resource temporarily unavailable</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EAI_ADDRFAMILY">
+            <summary>UV_EAI_ADDRFAMILY: address family not supported</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EAI_AGAIN">
+            <summary>UV_EAI_AGAIN: temporary failure</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EAI_BADFLAGS">
+            <summary>UV_EAI_BADFLAGS: bad ai_flags value</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EAI_BADHINTS">
+            <summary>UV_EAI_BADHINTS: invalid value for hints</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EAI_CANCELED">
+            <summary>UV_EAI_CANCELED: request canceled</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EAI_FAIL">
+            <summary>UV_EAI_FAIL: permanent failure</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EAI_FAMILY">
+            <summary>UV_EAI_FAMILY: ai_family not supported</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EAI_MEMORY">
+            <summary>UV_EAI_MEMORY: out of memory</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EAI_NODATA">
+            <summary>UV_EAI_NODATA: no address</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EAI_NONAME">
+            <summary>UV_EAI_NONAME: unknown node or service</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EAI_OVERFLOW">
+            <summary>UV_EAI_OVERFLOW: argument buffer overflow</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EAI_PROTOCOL">
+            <summary>UV_EAI_PROTOCOL: resolved protocol is unknown</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EAI_SERVICE">
+            <summary>UV_EAI_SERVICE: service not available for socket type</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EAI_SOCKTYPE">
+            <summary>UV_EAI_SOCKTYPE: socket type not supported</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EALREADY">
+            <summary>UV_EALREADY: connection already in progress</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EBADF">
+            <summary>UV_EBADF: bad file descriptor</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EBUSY">
+            <summary>UV_EBUSY: resource busy or locked</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.ECANCELED">
+            <summary>UV_ECANCELED: operation canceled</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.ECHARSET">
+            <summary>UV_ECHARSET: invalid Unicode character</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.ECONNABORTED">
+            <summary>UV_ECONNABORTED: software caused connection abort</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.ECONNREFUSED">
+            <summary>UV_ECONNREFUSED: connection refused</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.ECONNRESET">
+            <summary>UV_ECONNRESET: connection reset by peer</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EDESTADDRREQ">
+            <summary>UV_EDESTADDRREQ: destination address required</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EEXIST">
+            <summary>UV_EEXIST: file already exists</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EFAULT">
+            <summary>UV_EFAULT: bad address in system call argument</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EFBIG">
+            <summary>UV_EFBIG: file too large</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EHOSTUNREACH">
+            <summary>UV_EHOSTUNREACH: host is unreachable</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EINTR">
+            <summary>UV_EINTR: interrupted system call</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EINVAL">
+            <summary>UV_EINVAL: invalid argument</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EIO">
+            <summary>UV_EIO: i/o error</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EISCONN">
+            <summary>UV_EISCONN: socket is already connected</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EISDIR">
+            <summary>UV_EISDIR: illegal operation on a directory</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.ELOOP">
+            <summary>UV_ELOOP: too many symbolic links encountered</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EMFILE">
+            <summary>UV_EMFILE: too many open files</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EMSGSIZE">
+            <summary>UV_EMSGSIZE: message too long</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.ENAMETOOLONG">
+            <summary>UV_ENAMETOOLONG: name too long</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.ENETDOWN">
+            <summary>UV_ENETDOWN: network is down</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.ENETUNREACH">
+            <summary>UV_ENETUNREACH: network is unreachable</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.ENFILE">
+            <summary>UV_ENFILE: file table overflow</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.ENOBUFS">
+            <summary>UV_ENOBUFS: no buffer space available</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.ENODEV">
+            <summary>UV_ENODEV: no such device</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.ENOENT">
+            <summary>UV_ENOENT: no such file or directory</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.ENOMEM">
+            <summary>UV_ENOMEM: not enough memory</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.ENONET">
+            <summary>UV_ENONET: machine is not on the network</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.ENOPROTOOPT">
+            <summary>UV_ENOPROTOOPT: protocol not available</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.ENOSPC">
+            <summary>UV_ENOSPC: no space left on device</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.ENOSYS">
+            <summary>UV_ENOSYS: function not implemented</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.ENOTCONN">
+            <summary>UV_ENOTCONN: socket is not connected</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.ENOTDIR">
+            <summary>UV_ENOTDIR: not a directory</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.ENOTEMPTY">
+            <summary>UV_ENOTEMPTY: directory not empty</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.ENOTSOCK">
+            <summary>UV_ENOTSOCK: socket operation on non-socket</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.ENOTSUP">
+            <summary>UV_ENOTSUP: operation not supported on socket</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EPERM">
+            <summary>UV_EPERM: operation not permitted</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EPIPE">
+            <summary>UV_EPIPE: broken pipe</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EPROTO">
+            <summary>UV_EPROTO: protocol error</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EPROTONOSUPPORT">
+            <summary>UV_EPROTONOSUPPORT: protocol not supported</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EPROTOTYPE">
+            <summary>UV_EPROTOTYPE: protocol wrong type for socket</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.ERANGE">
+            <summary>UV_ERANGE: result too large</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EROFS">
+            <summary>UV_EROFS: read-only file system</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.ESHUTDOWN">
+            <summary>UV_ESHUTDOWN: cannot send after transport endpoint shutdown</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.ESPIPE">
+            <summary>UV_ESPIPE: invalid seek</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.ESRCH">
+            <summary>UV_ESRCH: no such process</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.ETIMEDOUT">
+            <summary>UV_ETIMEDOUT: connection timed out</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.ETXTBSY">
+            <summary>UV_ETXTBSY: text file is busy</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EXDEV">
+            <summary>UV_EXDEV: cross-device link not permitted</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.UNKNOWN">
+            <summary>UV_UNKNOWN: unknown error</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EOF">
+            <summary>UV_EOF: end of file</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.ENXIO">
+            <summary>UV_ENXIO: no such device or address</summary>
+        </member>
+        <member name="F:DotNetty.Transport.Libuv.Native.ErrorCode.EMLINK">
+            <summary>UV_EMLINK: too many links</summary>
+        </member>
+        <member name="T:DotNetty.Transport.Libuv.Native.sockaddr">
+            <summary>
+            https://github.com/aspnet/KestrelHttpServer/blob/master/src/Kestrel.Transport.Libuv/Internal/Networking/SockAddr.cs
+            </summary>
+        </member>
+        <member name="T:DotNetty.Transport.Libuv.Native.Pipe">
+            <summary>
+            IPC pipe for recieving handles from different libuv loops
+            </summary>
+        </member>
+        <member name="T:DotNetty.Transport.Libuv.Native.PipeListener">
+            <summary>
+            IPC pipe server to hand out handles to different libuv loops.
+            </summary>
+        </member>
+        <member name="P:DotNetty.Transport.Libuv.WorkerEventLoop.ConnectTask">
+            <summary>
+            Awaitable for connecting to the dispatcher pipe.
+            </summary>
+        </member>
+    </members>
+</doc>

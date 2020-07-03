@@ -21,6 +21,6 @@ namespace DotNetty.Transport.Libuv
 
         public new IEventLoopGroup Parent => (IEventLoopGroup)base.Parent;
 
-        public new IEnumerable<IEventLoop> Items => new[] { this };
+        public new IEnumerable<IEventLoop> Items => new [] { this };
     }
 }

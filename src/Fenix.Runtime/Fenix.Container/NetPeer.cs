@@ -10,24 +10,24 @@ namespace Fenix
 {
     public class NetPeer
     { 
-        public uint ActorId { get; set; }
+        public uint ConnId { get; set; }
 
         protected Ukcp kcpChannel { get; set; }
 
         protected IChannel tcpChannel { get; set; }
 
-        public static NetPeer Create(uint actorId, Ukcp kcpCh)
+        public static NetPeer Create(uint connId, Ukcp kcpCh)
         {
             var obj = new NetPeer();
-            obj.ActorId = actorId;
+            obj.ConnId = connId;
             obj.kcpChannel = kcpCh;
             return obj;
         }
 
-        public static NetPeer Create(uint actorId, IChannel tcpCh)
+        public static NetPeer Create(uint connId, IChannel tcpCh)
         {
             var obj = new NetPeer();
-            obj.ActorId = actorId;
+            obj.ConnId = connId;
             obj.tcpChannel = tcpCh;
             return obj;
         }
@@ -40,7 +40,7 @@ namespace Fenix
 
         public async Task SendAsync(byte[] bytes)
         {
-            await Task.Run(()=> {
+            await Task.Run(() => {
                 this.Send(bytes);
             });
         }

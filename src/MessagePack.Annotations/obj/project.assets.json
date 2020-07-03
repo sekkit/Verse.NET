@@ -1,0 +1,66 @@
+{
+  "version": 3,
+  "targets": {
+    ".NETStandard,Version=v2.1": {}
+  },
+  "libraries": {},
+  "projectFileDependencyGroups": {
+    ".NETStandard,Version=v2.1": []
+  },
+  "packageFolders": {
+    "/Users/sekkit/.nuget/packages/": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "/Users/sekkit/code/Fenix/src/MessagePack.Annotations/MessagePack.Annotations.csproj",
+      "projectName": "MessagePack.Annotations",
+      "projectPath": "/Users/sekkit/code/Fenix/src/MessagePack.Annotations/MessagePack.Annotations.csproj",
+      "packagesPath": "/Users/sekkit/.nuget/packages/",
+      "outputPath": "/Users/sekkit/code/Fenix/src/MessagePack.Annotations/obj/",
+      "projectStyle": "PackageReference",
+      "crossTargeting": true,
+      "configFilePaths": [
+        "/Users/sekkit/code/Fenix/NuGet.Config",
+        "/Users/sekkit/.nuget/NuGet/NuGet.Config"
+      ],
+      "originalTargetFrameworks": [
+        "netstandard2.1"
+      ],
+      "sources": {
+        "https://nuget.cdn.azure.cn/v3/index.json": {},
+        "https://www.myget.org/F/cuteant/api/v3/index.json": {}
+      },
+      "frameworks": {
+        "netstandard2.1": {
+          "projectReferences": {}
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      }
+    },
+    "frameworks": {
+      "netstandard2.1": {
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "NETStandard.Library": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}

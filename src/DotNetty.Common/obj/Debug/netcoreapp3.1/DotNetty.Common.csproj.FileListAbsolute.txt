@@ -1,0 +1,15 @@
+/Users/sekkit/code/Fenix/src/DotNetty.Common/bin/Debug/netcoreapp3.1/DotNetty.Common.dll.config
+/Users/sekkit/code/Fenix/src/DotNetty.Common/bin/Debug/netcoreapp3.1/DotNetty.Common.deps.json
+/Users/sekkit/code/Fenix/src/DotNetty.Common/bin/Debug/netcoreapp3.1/DotNetty.Common.dll
+/Users/sekkit/code/Fenix/src/DotNetty.Common/bin/Debug/netcoreapp3.1/DotNetty.Common.pdb
+/Users/sekkit/code/Fenix/src/DotNetty.Common/bin/Debug/netcoreapp3.1/DotNetty.Common.xml
+/Users/sekkit/code/Fenix/src/DotNetty.Common/obj/Debug/netcoreapp3.1/DotNetty.Common.csprojAssemblyReference.cache
+/Users/sekkit/code/Fenix/src/DotNetty.Common/obj/Debug/netcoreapp3.1/DotNetty.Common.dll.config
+/Users/sekkit/code/Fenix/src/DotNetty.Common/obj/Debug/netcoreapp3.1/DotNetty.Common.Internal.Strings.resources
+/Users/sekkit/code/Fenix/src/DotNetty.Common/obj/Debug/netcoreapp3.1/DotNetty.Common.csproj.GenerateResource.cache
+/Users/sekkit/code/Fenix/src/DotNetty.Common/obj/Debug/netcoreapp3.1/DotNetty.Common.AssemblyInfoInputs.cache
+/Users/sekkit/code/Fenix/src/DotNetty.Common/obj/Debug/netcoreapp3.1/DotNetty.Common.AssemblyInfo.cs
+/Users/sekkit/code/Fenix/src/DotNetty.Common/obj/Debug/netcoreapp3.1/DotNetty.Common.csproj.CoreCompileInputs.cache
+/Users/sekkit/code/Fenix/src/DotNetty.Common/obj/Debug/netcoreapp3.1/DotNetty.Common.dll
+/Users/sekkit/code/Fenix/src/DotNetty.Common/obj/Debug/netcoreapp3.1/DotNetty.Common.xml
+/Users/sekkit/code/Fenix/src/DotNetty.Common/obj/Debug/netcoreapp3.1/DotNetty.Common.pdb

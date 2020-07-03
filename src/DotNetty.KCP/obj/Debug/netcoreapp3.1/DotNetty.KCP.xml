@@ -1,0 +1,843 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DotNetty.KCP</name>
+    </assembly>
+    <members>
+        <member name="F:DotNetty.KCP.ChannelConfig.useConvChannel">
+            使用conv确定一个channel 还是使用 socketAddress确定一个channel*
+        </member>
+        <member name="F:DotNetty.KCP.ChannelConfig.reserved">
+            预留长度*
+        </member>
+        <member name="F:DotNetty.KCP.ChannelConfig.kcpTag">
+            在协议的第一字节标记为kcp对象 用于与非可靠udp整合*
+        </member>
+        <member name="T:DotNetty.KCP.ConvChannelManager">
+            根据conv确定一个session
+        </member>
+        <member name="T:DotNetty.KCP.Crc32">
+            <summary>
+            Computes a CRC32 checksum.
+            </summary>
+            <remarks>Based on <see cref="!:http://sanity-free.org/12/crc32_implementation_in_csharp.html"/></remarks>
+        </member>
+        <member name="M:DotNetty.KCP.Crc32.ComputeChecksum(System.SByte[])">
+            <summary>
+            Compute the checksum of a binary buffer.
+            </summary>
+            <param name="bytes">Buffer to calculate</param>
+            <returns></returns>
+        </member>
+        <member name="M:DotNetty.KCP.Crc32.ComputeChecksum(DotNetty.Buffers.IByteBuffer,System.Int32,System.Int32)">
+            <summary>
+            Compute the checksum of a binary buffer.
+            </summary>
+            <param name="bytes">Buffer to calculate</param>
+            <returns></returns>
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.IKCP_RTO_NDL">
+            no delay min rto
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.IKCP_RTO_MIN">
+            normal min rto
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.IKCP_CMD_PUSH">
+            cmd: push data
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.IKCP_CMD_ACK">
+            cmd: ack
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.IKCP_CMD_WASK">
+            cmd: window probe (ask)
+            询问对方当前剩余窗口大小 请求
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.IKCP_CMD_WINS">
+            cmd: window size (tell)
+            返回本地当前剩余窗口大小
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.IKCP_ASK_SEND">
+            need to send IKCP_CMD_WASK
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.IKCP_ASK_TELL">
+            need to send IKCP_CMD_WINS
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.IKCP_PROBE_INIT">
+            7 secs to probe window size
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.IKCP_PROBE_LIMIT">
+            up to 120 secs to probe window
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.conv">
+            会话id*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.mtu">
+            最大传输单元*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.mss">
+            最大分节大小  mtu减去头等部分*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.state">
+            状态*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.sndUna">
+            已发送但未确认*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.sndNxt">
+            下次发送下标*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.rcvNxt">
+            下次接收下标*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.tsLastack">
+            上次ack时间*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.ssthresh">
+            慢启动门限*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.rxRttval">
+            RTT(Round Trip Time)*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.rxSrtt">
+            SRTT平滑RTT
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.rxRto">
+            RTO重传超时
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.rxMinrto">
+            MinRTO最小重传超时
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.sndWnd">
+            发送窗口*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.rcvWnd">
+            接收窗口*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.rmtWnd">
+            当前对端可接收窗口*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.cwnd">
+            拥塞控制窗口*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.probe">
+            探测标志位*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.interval">
+            间隔*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.tsFlush">
+            发送*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.nodelay">
+            是否无延迟 0不启用；1启用*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.updated">
+            状态是否已更新*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.tsProbe">
+            探测时间*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.probeWait">
+            探测等待*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.deadLink">
+            死连接 重传达到该值时认为连接是断开的*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.incr">
+            拥塞控制增量*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.ackNoDelay">
+            收到包立即回ack*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.sndQueue">
+            待发送窗口窗口*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.rcvQueue">
+            收到后有序的队列*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.sndBuf">
+            发送后待确认的队列*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.rcvBuf">
+            收到的消息 无序的*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.fastresend">
+            是否快速重传 默认0关闭，可以设置2（2次ACK跨越将会直接重传）*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.nocwnd">
+            是否关闭拥塞控制窗口*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.stream">
+            是否流传输*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.reserved">
+            头部预留长度  为fec checksum准备*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Kcp.ackMask">
+            ack二进制标识*
+        </member>
+        <member name="M:DotNetty.KCP.Base.Kcp.recv(System.Collections.Generic.List{DotNetty.Buffers.IByteBuffer})">
+            1，判断是否有完整的包，如果有就抛给下一层
+            2，整理消息接收队列，判断下一个包是否已经收到 收到放入rcvQueue
+            3，判断接收窗口剩余是否改变，如果改变记录需要通知
+            @param bufList
+            @return
+        </member>
+        <member name="M:DotNetty.KCP.Base.Kcp.peekSize">
+            check the size of next message in the recv queue
+            检查接收队列里面是否有完整的一个包，如果有返回该包的字节长度
+            @return -1 没有完整包， >0 一个完整包所含字节
+        </member>
+        <member name="M:DotNetty.KCP.Base.Kcp.canRecv">
+            判断一条消息是否完整收全了
+            @return
+        </member>
+        <member name="M:DotNetty.KCP.Base.Kcp.updateAck(System.Int32)">
+            update ack.
+            parse ack根据RTT计算SRTT和RTO即重传超时
+            @param rtt
+        </member>
+        <member name="M:DotNetty.KCP.Base.Kcp.flush(System.Boolean,System.Int64)">
+            ikcp_flush
+        </member>
+        <member name="M:DotNetty.KCP.Base.Kcp.update(System.Int64)">
+             update getState (call it repeatedly, every 10ms-100ms), or you can ask
+             ikcp_check when to call it again (without ikcp_input/_send calling).
+             'current' - current timestamp in millisec.
+            
+             @param current
+        </member>
+        <member name="M:DotNetty.KCP.Base.Kcp.check(System.Int64)">
+             Determine when should you invoke ikcp_update:
+             returns when you should invoke ikcp_update in millisec, if there
+             is no ikcp_input/_send calling. you can call ikcp_update in that
+             time, instead of call update repeatly.
+             Important to reduce unnacessary ikcp_update invoking. use it to
+             schedule ikcp_update (eg. implementing an epoll-like mechanism,
+             or optimize ikcp_update when handling massive kcp connections)
+            
+             @param current
+             @return
+        </member>
+        <member name="F:DotNetty.KCP.Base.KcpUntils.HashedWheelTimer">
+            时间轮机制  测试2万定时任务10秒执行一次  耗费单核 70%*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Segment.cmd">
+            会话id*
+            命令*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Segment.frg">
+            message中的segment分片ID（在message中的索引，由大到小，0表示最后一个分片）*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Segment.wnd">
+            剩余接收窗口大小(接收窗口大小-接收队列大小)*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Segment.ts">
+            message发送时刻的时间戳*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Segment.sn">
+            message分片segment的序号*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Segment.una">
+            待接收消息序号(接收滑动窗口左端)*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Segment.resendts">
+            下次超时重传的时间戳*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Segment.rto">
+            该分片的超时重传等待时间*
+        </member>
+        <member name="F:DotNetty.KCP.Base.Segment.fastack">
+            收到ack时计算的该分片被跳过的累计次数，即该分片后的包都被对方收到了，达到一定次数，重传当前分片*
+        </member>
+        <member name="M:DotNetty.KCP.Base.ConcurrentCircularArrayQueue`1.CalcElementOffset(System.Int64)">
+            <summary>
+            Calculates an element offset based on a given array index.
+            </summary>
+            <param name="index">The desirable element index.</param>
+            <returns>The offset in bytes within the array for a given index.</returns>
+        </member>
+        <member name="M:DotNetty.KCP.Base.ConcurrentCircularArrayQueue`1.SpElement(System.Int64,`0)">
+            <summary>
+            A plain store (no ordering/fences) of an element to a given offset.
+            </summary>
+            <param name="offset">Computed via <see cref="M:DotNetty.KCP.Base.ConcurrentCircularArrayQueue`1.CalcElementOffset(System.Int64)"/>.</param>
+            <param name="e">A kitty.</param>
+        </member>
+        <member name="M:DotNetty.KCP.Base.ConcurrentCircularArrayQueue`1.SoElement(System.Int64,`0)">
+            <summary>
+            An ordered store(store + StoreStore barrier) of an element to a given offset.
+            </summary>
+            <param name="offset">Computed via <see cref="M:DotNetty.KCP.Base.ConcurrentCircularArrayQueue`1.CalcElementOffset(System.Int64)"/>.</param>
+            <param name="e">An orderly kitty.</param>
+        </member>
+        <member name="M:DotNetty.KCP.Base.ConcurrentCircularArrayQueue`1.LpElement(System.Int64)">
+            <summary>
+            A plain load (no ordering/fences) of an element from a given offset.
+            </summary>
+            <param name="offset">Computed via <see cref="M:DotNetty.KCP.Base.ConcurrentCircularArrayQueue`1.CalcElementOffset(System.Int64)"/>.</param>
+            <returns>The element at the offset.</returns>
+        </member>
+        <member name="M:DotNetty.KCP.Base.ConcurrentCircularArrayQueue`1.LvElement(System.Int64)">
+            <summary>
+            A volatile load (load + LoadLoad barrier) of an element from a given offset.
+            </summary>
+            <param name="offset">Computed via <see cref="M:DotNetty.KCP.Base.ConcurrentCircularArrayQueue`1.CalcElementOffset(System.Int64)"/>.</param>
+            <returns>The element at the offset.</returns>
+        </member>
+        <member name="M:DotNetty.KCP.Base.MpscArrayQueue`1.TryEnqueue(`0)">
+            <summary>
+            Lock free Enqueue operation, using a single compare-and-swap. As the class name suggests, access is
+            permitted to many threads concurrently.
+            </summary>
+            <param name="e">The item to enqueue.</param>
+            <returns><c>true</c> if the item was added successfully, otherwise <c>false</c>.</returns>
+            <seealso cref="M:DotNetty.Common.Internal.IQueue`1.TryEnqueue(`0)"/>
+        </member>
+        <member name="M:DotNetty.KCP.Base.MpscArrayQueue`1.WeakEnqueue(`0)">
+            <summary>
+            A wait-free alternative to <see cref="M:DotNetty.KCP.Base.MpscArrayQueue`1.TryEnqueue(`0)"/>, which fails on compare-and-swap failure.
+            </summary>
+            <param name="e">The item to enqueue.</param>
+            <returns><c>1</c> if next element cannot be filled, <c>-1</c> if CAS failed, and <c>0</c> if successful.</returns>
+        </member>
+        <member name="M:DotNetty.KCP.Base.MpscArrayQueue`1.TryDequeue(`0@)">
+            <summary>
+            Lock free poll using ordered loads/stores. As class name suggests, access is limited to a single thread.
+            </summary>
+            <param name="item">The dequeued item.</param>
+            <returns><c>true</c> if an item was retrieved, otherwise <c>false</c>.</returns>
+            <seealso cref="M:DotNetty.Common.Internal.IQueue`1.TryDequeue(`0@)"/>
+        </member>
+        <member name="M:DotNetty.KCP.Base.MpscArrayQueue`1.TryPeek(`0@)">
+            <summary>
+            Lock free peek using ordered loads. As class name suggests access is limited to a single thread.
+            </summary>
+            <param name="item">The peeked item.</param>
+            <returns><c>true</c> if an item was retrieved, otherwise <c>false</c>.</returns>
+            <seealso cref="M:DotNetty.Common.Internal.IQueue`1.TryPeek(`0@)"/>
+        </member>
+        <member name="P:DotNetty.KCP.Base.MpscArrayQueue`1.Count">
+            <summary>
+            Returns the number of items in this <see cref="T:DotNetty.KCP.Base.MpscArrayQueue`1"/>.
+            </summary>
+        </member>
+        <member name="M:DotNetty.KCP.Base.RefArrayAccessUtil.SpElement``1(``0[],System.Int64,``0)">
+            <summary>
+            A plain store (no ordering/fences) of an element to a given offset.
+            </summary>
+            <typeparam name="T">The element type.</typeparam>
+            <param name="buffer">The source buffer.</param>
+            <param name="offset">Computed via <see cref="M:DotNetty.KCP.Base.ConcurrentCircularArrayQueue`1.CalcElementOffset(System.Int64)"/></param>
+            <param name="e">An orderly kitty.</param>
+        </member>
+        <member name="M:DotNetty.KCP.Base.RefArrayAccessUtil.SoElement``1(``0[],System.Int64,``0)">
+            <summary>
+            An ordered store(store + StoreStore barrier) of an element to a given offset.
+            </summary>
+            <typeparam name="T">The element type.</typeparam>
+            <param name="buffer">The source buffer.</param>
+            <param name="offset">Computed via <see cref="M:DotNetty.KCP.Base.ConcurrentCircularArrayQueue`1.CalcElementOffset(System.Int64)"/></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:DotNetty.KCP.Base.RefArrayAccessUtil.LpElement``1(``0[],System.Int64)">
+            <summary>
+            A plain load (no ordering/fences) of an element from a given offset.
+            </summary>
+            <typeparam name="T">The element type.</typeparam>
+            <param name="buffer">The source buffer.</param>
+            <param name="offset">Computed via <see cref="M:DotNetty.KCP.Base.ConcurrentCircularArrayQueue`1.CalcElementOffset(System.Int64)"/></param>
+            <returns>The element at the given <paramref name="offset"/> in the given <paramref name="buffer"/>.</returns>
+        </member>
+        <member name="M:DotNetty.KCP.Base.RefArrayAccessUtil.LvElement``1(``0[],System.Int64)">
+            <summary>
+            A volatile load (load + LoadLoad barrier) of an element from a given offset.
+            </summary>
+            <typeparam name="T">The element type.</typeparam>
+            <param name="buffer">The source buffer.</param>
+            <param name="offset">Computed via <see cref="M:DotNetty.KCP.Base.ConcurrentCircularArrayQueue`1.CalcElementOffset(System.Int64)"/></param>
+            <returns>The element at the given <paramref name="offset"/> in the given <paramref name="buffer"/>.</returns>
+        </member>
+        <member name="M:DotNetty.KCP.Base.RefArrayAccessUtil.CalcElementOffset(System.Int64,System.Int64)">
+            <summary>
+            Gets the offset in bytes within the array for a given index.
+            </summary>
+            <param name="index">The desired element index.</param>
+            <param name="mask">Mask for the index.</param>
+            <returns>The offset (in bytes) within the array for a given index.</returns>
+        </member>
+        <member name="T:DotNetty.KCP.KcpClient">
+            kcp客户端
+            客户端使用方式:
+            1,与服务器tcp通讯得到conv
+            2,kcp通过conv标识与服务器通讯
+            3,客户端发现网络断开重连之后必须通过kcp发送一个心跳包出去 用于服务器确定客户端的出口地址
+            4,客户端需要最少每60秒发送一个心跳数据包服务端收到后回复客户端用于 路由表记录映射信息
+             TODO 需要测试一下移动环境ip切换了  是否需要重新绑定本地ip  朋友说是不用的  还是需要测一下
+        </member>
+        <member name="M:DotNetty.KCP.KcpClient.connect(System.Net.EndPoint,System.Net.EndPoint,DotNetty.KCP.ChannelConfig,DotNetty.KCP.KcpListener)">
+            连接一个服务器
+        </member>
+        <member name="M:DotNetty.KCP.KcpClient.connect(System.Net.EndPoint,DotNetty.KCP.ChannelConfig,DotNetty.KCP.KcpListener)">
+            连接一个服务器
+        </member>
+        <member name="M:DotNetty.KCP.KcpListener.handleReceive(DotNetty.Buffers.IByteBuffer,DotNetty.KCP.Ukcp)">
+             kcp message
+            
+             @param byteBuf the data
+             @param ukcp
+        </member>
+        <member name="M:DotNetty.KCP.KcpListener.handleException(System.Exception,DotNetty.KCP.Ukcp)">
+            
+             kcp异常，之后此kcp就会被关闭
+            
+             @param ex 异常
+             @param ukcp 发生异常的kcp，null表示非kcp错误
+        </member>
+        <member name="M:DotNetty.KCP.KcpListener.handleClose(DotNetty.KCP.Ukcp)">
+             关闭
+            
+             @param ukcp
+        </member>
+        <member name="M:DotNetty.KCP.KcpServer.stop">
+            同步关闭服务器
+        </member>
+        <member name="M:DotNetty.KCP.thread.AbstratcMessageExecutor.start">
+            启动消息处理器
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:DotNetty.KCP.thread.AtomicBoolean.#ctor(System.Boolean)" -->
+        <member name="M:DotNetty.KCP.thread.AtomicBoolean.Get">
+            <summary>
+            This method returns the current value.
+            </summary>
+            <returns>
+            The <c>bool</c> value to be accessed atomically.
+            </returns>
+        </member>
+        <member name="M:DotNetty.KCP.thread.AtomicBoolean.Set(System.Boolean)">
+            <summary>
+            This method sets the current value atomically.
+            </summary>
+            <param name="value">
+            The new value to set.
+            </param>
+        </member>
+        <member name="M:DotNetty.KCP.thread.AtomicBoolean.GetAndSet(System.Boolean)">
+            <summary>
+            This method atomically sets the value and returns the original value.
+            </summary>
+            <param name="value">
+            The new value.
+            </param>
+            <returns>
+            The value before setting to the new value.
+            </returns>
+        </member>
+        <member name="M:DotNetty.KCP.thread.AtomicBoolean.CompareAndSet(System.Boolean,System.Boolean)">
+            <summary>
+            Atomically sets the value to the given updated value if the current value <c>==</c> the expected value.
+            </summary>
+            <param name="expected">
+            The value to compare against.
+            </param>
+            <param name="result">
+            The value to set if the value is equal to the <c>expected</c> value.
+            </param>
+            <returns>
+            <c>true</c> if the comparison and set was successful. A <c>false</c> indicates the comparison failed.
+            </returns>
+        </member>
+        <member name="M:DotNetty.KCP.thread.AtomicBoolean.op_Implicit(DotNetty.KCP.thread.AtomicBoolean)~System.Boolean">
+            <summary>
+            This operator allows an implicit cast from <c>AtomicBoolean</c> to <c>int</c>.
+            </summary>
+        </member>
+        <member name="T:DotNetty.KCP.thread.DistuptorMessageExecutor">
+            
+             单生产者单消费者  500W tps
+            
+        </member>
+        <member name="M:DotNetty.KCP.thread.IMessageExecutor.start">
+            启动消息处理器
+        </member>
+        <member name="M:DotNetty.KCP.thread.IMessageExecutor.stop(System.Boolean)">
+            停止消息处理器
+            shutdownRightNow false该方法会堵塞当前队列全部执行完再关闭
+        </member>
+        <member name="M:DotNetty.KCP.thread.IMessageExecutor.isFull">
+            判断队列是否已经达到上限了
+            @return
+        </member>
+        <member name="M:DotNetty.KCP.thread.IMessageExecutor.execute(DotNetty.KCP.thread.ITask)">
+             执行任务
+             注意: 如果线程等于当前线程 则直接执行  如果非当前线程放进队列
+            
+             @param iTask
+        </member>
+        <member name="M:DotNetty.KCP.thread.RingBuffer`1.#ctor(System.Int32)">
+            <summary>
+            Creates a new RingBuffer with the given capacity
+            </summary>
+            <param name="capacity">The capacity of the buffer</param>
+            <remarks>Only a single thread may attempt to consume at any one time</remarks>
+        </member>
+        <member name="P:DotNetty.KCP.thread.RingBuffer`1.Capacity">
+            <summary>
+            The maximum number of items that can be stored
+            </summary>
+        </member>
+        <member name="M:DotNetty.KCP.thread.RingBuffer`1.Dequeue">
+            <summary>
+            Removes an item from the buffer.
+            </summary>
+            <returns>The next available item</returns>
+        </member>
+        <member name="M:DotNetty.KCP.thread.RingBuffer`1.TryDequeue(`0@)">
+            <summary>
+            Attempts to remove an items from the queue
+            </summary>
+            <param name="obj">the items</param>
+            <returns>True if successful</returns>
+        </member>
+        <member name="M:DotNetty.KCP.thread.RingBuffer`1.Enqueue(`0)">
+            <summary>
+            Add an item to the buffer
+            </summary>
+            <param name="item"></param>
+        </member>
+        <member name="M:DotNetty.KCP.thread.RingBuffer`1.tryEnqueue(`0)">
+            <summary>
+            Add an item to the buffer
+            </summary>
+            <param name="item"></param>
+        </member>
+        <member name="P:DotNetty.KCP.thread.RingBuffer`1.Count">
+            <summary>
+            The number of items in the buffer
+            </summary>
+            <remarks>for indicative purposes only, may contain stale data</remarks>
+        </member>
+        <member name="M:DotNetty.KCP.thread.Volatile.PaddedLong.#ctor(System.Int64)">
+            <summary>
+            Create a new <see cref="T:DotNetty.KCP.thread.Volatile.PaddedLong"/> with the given initial value.
+            </summary>
+            <param name="value">Initial value</param>
+        </member>
+        <member name="M:DotNetty.KCP.thread.Volatile.PaddedLong.ReadUnfenced">
+            <summary>
+            Read the value without applying any fence
+            </summary>
+            <returns>The current value</returns>
+        </member>
+        <member name="M:DotNetty.KCP.thread.Volatile.PaddedLong.ReadAcquireFence">
+            <summary>
+            Read the value applying acquire fence semantic
+            </summary>
+            <returns>The current value</returns>
+        </member>
+        <member name="M:DotNetty.KCP.thread.Volatile.PaddedLong.ReadFullFence">
+            <summary>
+            Read the value applying full fence semantic
+            </summary>
+            <returns>The current value</returns>
+        </member>
+        <member name="M:DotNetty.KCP.thread.Volatile.PaddedLong.ReadCompilerOnlyFence">
+            <summary>
+            Read the value applying a compiler only fence, no CPU fence is applied
+            </summary>
+            <returns>The current value</returns>
+        </member>
+        <member name="M:DotNetty.KCP.thread.Volatile.PaddedLong.WriteReleaseFence(System.Int64)">
+            <summary>
+            Write the value applying release fence semantic
+            </summary>
+            <param name="newValue">The new value</param>
+        </member>
+        <member name="M:DotNetty.KCP.thread.Volatile.PaddedLong.WriteFullFence(System.Int64)">
+            <summary>
+            Write the value applying full fence semantic
+            </summary>
+            <param name="newValue">The new value</param>
+        </member>
+        <member name="M:DotNetty.KCP.thread.Volatile.PaddedLong.WriteCompilerOnlyFence(System.Int64)">
+            <summary>
+            Write the value applying a compiler fence only, no CPU fence is applied
+            </summary>
+            <param name="newValue">The new value</param>
+        </member>
+        <member name="M:DotNetty.KCP.thread.Volatile.PaddedLong.WriteUnfenced(System.Int64)">
+            <summary>
+            Write without applying any fence
+            </summary>
+            <param name="newValue">The new value</param>
+        </member>
+        <member name="M:DotNetty.KCP.thread.Volatile.PaddedLong.AtomicCompareExchange(System.Int64,System.Int64)">
+            <summary>
+            Atomically set the value to the given updated value if the current value equals the comparand
+            </summary>
+            <param name="newValue">The new value</param>
+            <param name="comparand">The comparand (expected value)</param>
+            <returns></returns>
+        </member>
+        <member name="M:DotNetty.KCP.thread.Volatile.PaddedLong.AtomicExchange(System.Int64)">
+            <summary>
+            Atomically set the value to the given updated value
+            </summary>
+            <param name="newValue">The new value</param>
+            <returns>The original value</returns>
+        </member>
+        <member name="M:DotNetty.KCP.thread.Volatile.PaddedLong.AtomicAddAndGet(System.Int64)">
+            <summary>
+            Atomically add the given value to the current value and return the sum
+            </summary>
+            <param name="delta">The value to be added</param>
+            <returns>The sum of the current value and the given value</returns>
+        </member>
+        <member name="M:DotNetty.KCP.thread.Volatile.PaddedLong.AtomicIncrementAndGet">
+            <summary>
+            Atomically increment the current value and return the new value
+            </summary>
+            <returns>The incremented value.</returns>
+        </member>
+        <member name="M:DotNetty.KCP.thread.Volatile.PaddedLong.AtomicDecrementAndGet">
+            <summary>
+            Atomically increment the current value and return the new value
+            </summary>
+            <returns>The decremented value.</returns>
+        </member>
+        <member name="M:DotNetty.KCP.thread.Volatile.PaddedLong.ToString">
+            <summary>
+            Returns the string representation of the current value.
+            </summary>
+            <returns>the string representation of the current value.</returns>
+        </member>
+        <member name="T:DotNetty.KCP.thread.ThreadMessageExecutor">
+            多生产者单消费者  560万  tps
+        </member>
+        <member name="M:DotNetty.KCP.thread.ThreadMessageExecutor.start">
+            启动消息处理器
+        </member>
+        <member name="M:DotNetty.KCP.thread.ThreadMessageExecutor.isFull">
+            判断队列是否已经达到上限了
+            @return
+        </member>
+        <member name="P:DotNetty.KCP.Ukcp.LastRecieveTime">
+             上次收到完整消息包时间
+             用于心跳检测
+            
+        </member>
+        <member name="M:DotNetty.KCP.Ukcp.#ctor(DotNetty.KCP.Base.KcpOutput,DotNetty.KCP.KcpListener,DotNetty.KCP.thread.IMessageExecutor,fec.ReedSolomon,DotNetty.KCP.ChannelConfig)">
+             Creates a new instance.
+            
+             @param output output for kcp
+        </member>
+        <member name="M:DotNetty.KCP.Ukcp.receive(System.Collections.Generic.List{DotNetty.Buffers.IByteBuffer})">
+             Receives ByteBufs.
+            
+             @param bufList received IByteBuffer will be add to the list
+        </member>
+        <member name="M:DotNetty.KCP.Ukcp.send(DotNetty.Buffers.IByteBuffer)">
+             Sends a IByteBuffer.
+            
+             @param buf
+             @throws IOException
+        </member>
+        <member name="M:DotNetty.KCP.Ukcp.peekSize">
+             The size of the first msg of the kcp.
+            
+             @return The size of the first msg of the kcp, or -1 if none of msg
+        </member>
+        <member name="M:DotNetty.KCP.Ukcp.canRecv">
+             Returns {@code true} if there are bytes can be received.
+            
+             @return
+        </member>
+        <member name="M:DotNetty.KCP.Ukcp.canSend(System.Boolean)">
+             Returns {@code true} if the kcp can send more bytes.
+            
+             @param curCanSend last state of canSend
+             @return {@code true} if the kcp can send more bytes
+        </member>
+        <member name="M:DotNetty.KCP.Ukcp.update(System.Int64)">
+             Udpates the kcp.
+            
+             @param current current time in milliseconds
+             @return the next time to update
+        </member>
+        <member name="M:DotNetty.KCP.Ukcp.check(System.Int64)">
+             Determines when should you invoke udpate.
+            
+             @param current current time in milliseconds
+             @return
+             @see Kcp#check(long)
+        </member>
+        <member name="M:DotNetty.KCP.Ukcp.checkFlush">
+             Returns {@code true} if the kcp need to flush.
+            
+             @return {@code true} if the kcp need to flush
+        </member>
+        <member name="M:DotNetty.KCP.Ukcp.nodelay(System.Boolean,System.Int32,System.Int32,System.Boolean)">
+             Sets params of nodelay.
+            
+             @param nodelay  {@code true} if nodelay mode is enabled
+             @param interval protocol internal work interval, in milliseconds
+             @param resend   fast retransmission mode, 0 represents off by default, 2 can be set (2 ACK spans will result
+                             in direct retransmission)
+             @param nc       {@code true} if turn off flow control
+        </member>
+        <member name="M:DotNetty.KCP.Ukcp.getConv">
+             Returns conv of kcp.
+            
+             @return conv of kcp
+        </member>
+        <member name="M:DotNetty.KCP.Ukcp.setConv(System.Int32)">
+             Set the conv of kcp.
+            
+             @param conv the conv of kcp
+        </member>
+        <member name="M:DotNetty.KCP.Ukcp.isNodelay">
+             Returns {@code true} if and only if nodelay is enabled.
+            
+             @return {@code true} if and only if nodelay is enabled
+        </member>
+        <member name="M:DotNetty.KCP.Ukcp.setNodelay(System.Boolean)">
+             Sets whether enable nodelay.
+            
+             @param nodelay {@code true} if enable nodelay
+             @return this object
+        </member>
+        <member name="M:DotNetty.KCP.Ukcp.getInterval">
+             Returns update interval.
+            
+             @return update interval
+        </member>
+        <member name="M:DotNetty.KCP.Ukcp.setInterval(System.Int32)">
+             Sets update interval
+            
+             @param interval update interval
+             @return this object
+        </member>
+        <member name="M:DotNetty.KCP.Ukcp.getFastResend">
+             Returns the fastresend of kcp.
+            
+             @return the fastresend of kcp
+        </member>
+        <member name="M:DotNetty.KCP.Ukcp.setFastResend(System.Int32)">
+             Sets the fastresend of kcp.
+            
+             @param fastResend
+             @return this object
+        </member>
+        <member name="M:DotNetty.KCP.Ukcp.setByteBufAllocator(DotNetty.Buffers.IByteBufferAllocator)">
+             Sets the {@link ByteBufAllocator} which is used for the kcp to allocate buffers.
+            
+             @param allocator the allocator is used for the kcp to allocate buffers
+             @return this object
+        </member>
+        <member name="M:DotNetty.KCP.Ukcp.writeMessage(DotNetty.Buffers.IByteBuffer)">
+            主动发消息使用
+            线程安全的
+            @param IByteBuffer 发送后需要手动释放
+            @return
+        </member>
+        <member name="M:DotNetty.KCP.Ukcp.notifyCloseEvent">
+            主动关闭连接调用
+        </member>
+        <member name="M:fec.ByteBufCodingLoop.codeSomeShards(System.Byte[][],DotNetty.Buffers.IByteBuffer[],System.Int32,DotNetty.Buffers.IByteBuffer[],System.Int32,System.Int32,System.Int32)">
+             Multiplies a subset of rows from a coding matrix by a full set of
+             input shards to produce some output shards.
+            
+             @param matrixRows The rows from the matrix to use.
+             @param inputs An array of byte arrays, each of which is one input shard.
+                           The inputs array may have extra buffers after the ones
+                           that are used.  They will be ignored.  The number of
+                           inputs used is determined by the length of the
+                           each matrix row.
+             @param inputCount The number of input byte arrays.
+             @param outputs Byte arrays where the computed shards are stored.  The
+                            outputs array may also have extra, unused, elements
+                            at the end.  The number of outputs computed, and the
+                            number of matrix rows used, is determined by
+                            outputCount.
+             @param outputCount The number of outputs to compute.
+             @param offset The index in the inputs and output of the first byte
+                           to process.
+             @param byteCount The number of bytes to process.
+        </member>
+        <member name="M:fec.ByteBufCodingLoop.checkSomeShards(System.Byte[][],DotNetty.Buffers.IByteBuffer[],System.Int32,System.Byte[][],System.Int32,System.Int32,System.Int32,System.Byte[])">
+             Multiplies a subset of rows from a coding matrix by a full set of
+             input shards to produce some output shards, and checks that the
+             the data is those shards matches what's expected.
+            
+             @param matrixRows The rows from the matrix to use.
+             @param inputs An array of byte arrays, each of which is one input shard.
+                           The inputs array may have extra buffers after the ones
+                           that are used.  They will be ignored.  The number of
+                           inputs used is determined by the length of the
+                           each matrix row.
+             @param inputCount THe number of input byte arrays.
+             @param toCheck Byte arrays where the computed shards are stored.  The
+                            outputs array may also have extra, unused, elements
+                            at the end.  The number of outputs computed, and the
+                            number of matrix rows used, is determined by
+                            outputCount.
+             @param checkCount The number of outputs to compute.
+             @param offset The index in the inputs and output of the first byte
+                           to process.
+             @param byteCount The number of bytes to process.
+             @param tempBuffer A place to store temporary results.  May be null.
+        </member>
+        <member name="F:fec.fec.FecDecode.shardSize">
+            dataShards+parityShards *
+        </member>
+        <member name="F:fec.fec.FecDecode.flagCache">
+            标记是否已经缓存了*
+        </member>
+        <member name="M:fec.fec.FecDecode.freeRange(System.Int32,System.Int32,System.Collections.Generic.List{fec.fec.FecPacket})">
+             1，回收first后n个bytebuf
+             2，将q的first到first+n之间的数据移除掉
+             3，将尾部的n个数据的data清空
+             4，返回开头到尾部n个数组的对象
+            
+             @param first
+             @param n
+             @param q
+        </member>
+        <member name="F:fec.fec.FecEncode.dataShards">
+            消息包长度*
+        </member>
+        <member name="F:fec.fec.FecEncode.parityShards">
+            冗余包长度*
+        </member>
+        <member name="F:fec.fec.FecEncode.shardSize">
+            dataShards+parityShards *
+        </member>
+        <member name="M:fec.fec.FecEncode.encode(DotNetty.Buffers.IByteBuffer)">
+            
+              使用方法:
+              1，入bytebuf后 把bytebuf发送出去,并释放bytebuf
+              2，判断返回值是否为null，如果不为null发送出去并释放它
+            
+              headerOffset +6字节fectHead +  2字节bodylenth(lenth-headerOffset-6)
+            
+             1,对数据写入头标记为数据类型  markData
+             2,写入消息长度
+             3,获得缓存数据中最大长度，其他的缓存进行扩容到同样长度
+             4,去掉头长度，进行fec编码
+             5,对冗余字节数组进行标记为fec  makefec
+             6,返回完整长度
+            
+              注意: 传入的bytebuf如果需要释放在传入后手动释放。
+              返回的bytebuf 也需要自己释放
+             @param byteBuf
+             @return
+        </member>
+        <member name="M:fec.FecExpansion.checkBuffersAndSizes(fec.ReedSolomon,DotNetty.Buffers.IByteBuffer[],System.Int32,System.Int32)">
+            Checks the consistency of arguments passed to public methods.
+        </member>
+        <member name="F:fec.LatencySimulator.lostrate">
+             丢包率
+            
+        </member>
+    </members>
+</doc>

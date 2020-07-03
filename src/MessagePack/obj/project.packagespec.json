@@ -1,0 +1,83 @@
+﻿{
+  "version": "1.0.0",
+  "restore": {
+    "projectUniqueName": "/Users/sekkit/code/Fenix/src/MessagePack/MessagePack.csproj",
+    "projectName": "MessagePack",
+    "projectPath": "/Users/sekkit/code/Fenix/src/MessagePack/MessagePack.csproj",
+    "outputPath": "/Users/sekkit/code/Fenix/src/MessagePack/obj/",
+    "projectStyle": "PackageReference",
+    "crossTargeting": true,
+    "originalTargetFrameworks": [
+      "netstandard2.1"
+    ],
+    "sources": {
+      "https://nuget.cdn.azure.cn/v3/index.json": {},
+      "https://www.myget.org/F/cuteant/api/v3/index.json": {}
+    },
+    "frameworks": {
+      "netstandard2.1": {
+        "projectReferences": {
+          "/Users/sekkit/code/Fenix/src/MessagePack.Annotations/MessagePack.Annotations.csproj": {
+            "projectPath": "/Users/sekkit/code/Fenix/src/MessagePack.Annotations/MessagePack.Annotations.csproj"
+          }
+        }
+      }
+    },
+    "warningProperties": {
+      "warnAsError": [
+        "NU1605"
+      ]
+    }
+  },
+  "frameworks": {
+    "netstandard2.1": {
+      "dependencies": {
+        "Microsoft.Bcl.AsyncInterfaces": {
+          "target": "Package",
+          "version": "[1.0.0, )"
+        },
+        "Roslyn.Diagnostics.Analyzers": {
+          "suppressParent": "All",
+          "target": "Package",
+          "version": "[2.9.7, )"
+        },
+        "System.Memory": {
+          "target": "Package",
+          "version": "[4.5.3, )"
+        },
+        "System.Reflection.Emit": {
+          "target": "Package",
+          "version": "[4.6.0, )"
+        },
+        "System.Reflection.Emit.Lightweight": {
+          "target": "Package",
+          "version": "[4.6.0, )"
+        },
+        "System.Runtime.CompilerServices.Unsafe": {
+          "target": "Package",
+          "version": "[4.5.2, )"
+        },
+        "System.Threading.Tasks.Extensions": {
+          "target": "Package",
+          "version": "[4.5.3, )"
+        }
+      },
+      "imports": [
+        "net461",
+        "net462",
+        "net47",
+        "net471",
+        "net472",
+        "net48"
+      ],
+      "assetTargetFallback": true,
+      "warn": true,
+      "frameworkReferences": {
+        "NETStandard.Library": {
+          "privateAssets": "all"
+        }
+      },
+      "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+    }
+  }
+}

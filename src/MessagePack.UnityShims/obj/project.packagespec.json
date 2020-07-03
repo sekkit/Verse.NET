@@ -1,0 +1,52 @@
+﻿{
+  "version": "1.0.0",
+  "restore": {
+    "projectUniqueName": "/Users/sekkit/code/Fenix/src/MessagePack.UnityShims/MessagePack.UnityShims.csproj",
+    "projectName": "MessagePack.UnityShims",
+    "projectPath": "/Users/sekkit/code/Fenix/src/MessagePack.UnityShims/MessagePack.UnityShims.csproj",
+    "outputPath": "/Users/sekkit/code/Fenix/src/MessagePack.UnityShims/obj/",
+    "projectStyle": "PackageReference",
+    "crossTargeting": true,
+    "originalTargetFrameworks": [
+      "netstandard2.1"
+    ],
+    "sources": {
+      "https://nuget.cdn.azure.cn/v3/index.json": {},
+      "https://www.myget.org/F/cuteant/api/v3/index.json": {}
+    },
+    "frameworks": {
+      "netstandard2.1": {
+        "projectReferences": {
+          "/Users/sekkit/code/Fenix/src/MessagePack/MessagePack.csproj": {
+            "projectPath": "/Users/sekkit/code/Fenix/src/MessagePack/MessagePack.csproj"
+          }
+        }
+      }
+    },
+    "warningProperties": {
+      "warnAsError": [
+        "NU1605"
+      ]
+    }
+  },
+  "frameworks": {
+    "netstandard2.1": {
+      "imports": [
+        "net461",
+        "net462",
+        "net47",
+        "net471",
+        "net472",
+        "net48"
+      ],
+      "assetTargetFallback": true,
+      "warn": true,
+      "frameworkReferences": {
+        "NETStandard.Library": {
+          "privateAssets": "all"
+        }
+      },
+      "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+    }
+  }
+}

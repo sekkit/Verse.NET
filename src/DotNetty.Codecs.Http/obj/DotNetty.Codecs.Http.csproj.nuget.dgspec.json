@@ -1,0 +1,839 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/sekkit/code/Fenix/src/DotNetty.Codecs.Http/DotNetty.Codecs.Http.csproj": {}
+  },
+  "projects": {
+    "/Users/sekkit/code/Fenix/src/DotNetty.Buffers/DotNetty.Buffers.csproj": {
+      "version": "0.7.0-beta",
+      "restore": {
+        "projectUniqueName": "/Users/sekkit/code/Fenix/src/DotNetty.Buffers/DotNetty.Buffers.csproj",
+        "projectName": "SpanNetty.Buffers",
+        "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Buffers/DotNetty.Buffers.csproj",
+        "packagesPath": "/Users/sekkit/.nuget/packages/",
+        "outputPath": "/Users/sekkit/code/Fenix/src/DotNetty.Buffers/obj/",
+        "projectStyle": "PackageReference",
+        "crossTargeting": true,
+        "configFilePaths": [
+          "/Users/sekkit/code/Fenix/NuGet.Config",
+          "/Users/sekkit/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.1",
+          "netstandard2.0",
+          "netstandard2.1"
+        ],
+        "sources": {
+          "https://nuget.cdn.azure.cn/v3/index.json": {},
+          "https://www.myget.org/F/cuteant/api/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.1": {
+            "projectReferences": {
+              "/Users/sekkit/code/Fenix/src/DotNetty.Common/DotNetty.Common.csproj": {
+                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Common/DotNetty.Common.csproj"
+              }
+            }
+          },
+          "netstandard2.0": {
+            "projectReferences": {
+              "/Users/sekkit/code/Fenix/src/DotNetty.Common/DotNetty.Common.csproj": {
+                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Common/DotNetty.Common.csproj"
+              }
+            }
+          },
+          "netstandard2.1": {
+            "projectReferences": {
+              "/Users/sekkit/code/Fenix/src/DotNetty.Common/DotNetty.Common.csproj": {
+                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Common/DotNetty.Common.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+        },
+        "netstandard2.0": {
+          "dependencies": {
+            "NETStandard.Library": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.3, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+        },
+        "netstandard2.1": {
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "NETStandard.Library": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/sekkit/code/Fenix/src/DotNetty.Codecs.Http/DotNetty.Codecs.Http.csproj": {
+      "version": "0.7.0-beta",
+      "restore": {
+        "projectUniqueName": "/Users/sekkit/code/Fenix/src/DotNetty.Codecs.Http/DotNetty.Codecs.Http.csproj",
+        "projectName": "SpanNetty.Codecs.Http",
+        "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Codecs.Http/DotNetty.Codecs.Http.csproj",
+        "packagesPath": "/Users/sekkit/.nuget/packages/",
+        "outputPath": "/Users/sekkit/code/Fenix/src/DotNetty.Codecs.Http/obj/",
+        "projectStyle": "PackageReference",
+        "crossTargeting": true,
+        "configFilePaths": [
+          "/Users/sekkit/code/Fenix/NuGet.Config",
+          "/Users/sekkit/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.1",
+          "netstandard2.0",
+          "netstandard2.1"
+        ],
+        "sources": {
+          "https://nuget.cdn.azure.cn/v3/index.json": {},
+          "https://www.myget.org/F/cuteant/api/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.1": {
+            "projectReferences": {
+              "/Users/sekkit/code/Fenix/src/DotNetty.Handlers/DotNetty.Handlers.csproj": {
+                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Handlers/DotNetty.Handlers.csproj"
+              }
+            }
+          },
+          "netstandard2.0": {
+            "projectReferences": {
+              "/Users/sekkit/code/Fenix/src/DotNetty.Handlers/DotNetty.Handlers.csproj": {
+                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Handlers/DotNetty.Handlers.csproj"
+              }
+            }
+          },
+          "netstandard2.1": {
+            "projectReferences": {
+              "/Users/sekkit/code/Fenix/src/DotNetty.Handlers/DotNetty.Handlers.csproj": {
+                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Handlers/DotNetty.Handlers.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+        },
+        "netstandard2.0": {
+          "dependencies": {
+            "NETStandard.Library": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.3, )",
+              "autoReferenced": true
+            },
+            "System.Text.Encodings.Web": {
+              "target": "Package",
+              "version": "[4.6.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+        },
+        "netstandard2.1": {
+          "dependencies": {
+            "System.Text.Encodings.Web": {
+              "target": "Package",
+              "version": "[4.7.1, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "NETStandard.Library": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/sekkit/code/Fenix/src/DotNetty.Codecs/DotNetty.Codecs.csproj": {
+      "version": "0.7.0-beta",
+      "restore": {
+        "projectUniqueName": "/Users/sekkit/code/Fenix/src/DotNetty.Codecs/DotNetty.Codecs.csproj",
+        "projectName": "SpanNetty.Codecs",
+        "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Codecs/DotNetty.Codecs.csproj",
+        "packagesPath": "/Users/sekkit/.nuget/packages/",
+        "outputPath": "/Users/sekkit/code/Fenix/src/DotNetty.Codecs/obj/",
+        "projectStyle": "PackageReference",
+        "crossTargeting": true,
+        "configFilePaths": [
+          "/Users/sekkit/code/Fenix/NuGet.Config",
+          "/Users/sekkit/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netstandard2.0",
+          "netstandard2.1"
+        ],
+        "sources": {
+          "https://nuget.cdn.azure.cn/v3/index.json": {},
+          "https://www.myget.org/F/cuteant/api/v3/index.json": {}
+        },
+        "frameworks": {
+          "netstandard2.0": {
+            "projectReferences": {
+              "/Users/sekkit/code/Fenix/src/DotNetty.Transport/DotNetty.Transport.csproj": {
+                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Transport/DotNetty.Transport.csproj"
+              }
+            }
+          },
+          "netstandard2.1": {
+            "projectReferences": {
+              "/Users/sekkit/code/Fenix/src/DotNetty.Transport/DotNetty.Transport.csproj": {
+                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Transport/DotNetty.Transport.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netstandard2.0": {
+          "dependencies": {
+            "NETStandard.Library": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.3, )",
+              "autoReferenced": true
+            },
+            "System.Collections.Immutable": {
+              "target": "Package",
+              "version": "[1.5.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+        },
+        "netstandard2.1": {
+          "dependencies": {
+            "System.Collections.Immutable": {
+              "target": "Package",
+              "version": "[1.7.1, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "NETStandard.Library": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/sekkit/code/Fenix/src/DotNetty.Common/DotNetty.Common.csproj": {
+      "version": "0.7.0-beta",
+      "restore": {
+        "projectUniqueName": "/Users/sekkit/code/Fenix/src/DotNetty.Common/DotNetty.Common.csproj",
+        "projectName": "SpanNetty.Common",
+        "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Common/DotNetty.Common.csproj",
+        "packagesPath": "/Users/sekkit/.nuget/packages/",
+        "outputPath": "/Users/sekkit/code/Fenix/src/DotNetty.Common/obj/",
+        "projectStyle": "PackageReference",
+        "crossTargeting": true,
+        "configFilePaths": [
+          "/Users/sekkit/code/Fenix/NuGet.Config",
+          "/Users/sekkit/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.1",
+          "netstandard2.0",
+          "netstandard2.1"
+        ],
+        "sources": {
+          "https://nuget.cdn.azure.cn/v3/index.json": {},
+          "https://www.myget.org/F/cuteant/api/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.1": {
+            "projectReferences": {}
+          },
+          "netstandard2.0": {
+            "projectReferences": {}
+          },
+          "netstandard2.1": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "dependencies": {
+            "Microsoft.Extensions.Logging": {
+              "target": "Package",
+              "version": "[3.1.5, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+        },
+        "netstandard2.0": {
+          "dependencies": {
+            "Microsoft.Extensions.Logging": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
+            "NETStandard.Library": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.3, )",
+              "autoReferenced": true
+            },
+            "System.Buffers": {
+              "target": "Package",
+              "version": "[4.5.0, )"
+            },
+            "System.Memory": {
+              "target": "Package",
+              "version": "[4.5.3, )"
+            },
+            "System.Numerics.Vectors": {
+              "target": "Package",
+              "version": "[4.5.0, )"
+            },
+            "System.Runtime.CompilerServices.Unsafe": {
+              "target": "Package",
+              "version": "[4.5.2, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+        },
+        "netstandard2.1": {
+          "dependencies": {
+            "Microsoft.Extensions.Logging": {
+              "target": "Package",
+              "version": "[3.1.5, )"
+            },
+            "System.Runtime.CompilerServices.Unsafe": {
+              "target": "Package",
+              "version": "[4.7.1, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "NETStandard.Library": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/sekkit/code/Fenix/src/DotNetty.Handlers/DotNetty.Handlers.csproj": {
+      "version": "0.7.0-beta",
+      "restore": {
+        "projectUniqueName": "/Users/sekkit/code/Fenix/src/DotNetty.Handlers/DotNetty.Handlers.csproj",
+        "projectName": "SpanNetty.Handlers",
+        "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Handlers/DotNetty.Handlers.csproj",
+        "packagesPath": "/Users/sekkit/.nuget/packages/",
+        "outputPath": "/Users/sekkit/code/Fenix/src/DotNetty.Handlers/obj/",
+        "projectStyle": "PackageReference",
+        "crossTargeting": true,
+        "configFilePaths": [
+          "/Users/sekkit/code/Fenix/NuGet.Config",
+          "/Users/sekkit/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.1",
+          "netstandard2.0",
+          "netstandard2.1"
+        ],
+        "sources": {
+          "https://nuget.cdn.azure.cn/v3/index.json": {},
+          "https://www.myget.org/F/cuteant/api/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.1": {
+            "projectReferences": {
+              "/Users/sekkit/code/Fenix/src/DotNetty.Codecs/DotNetty.Codecs.csproj": {
+                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Codecs/DotNetty.Codecs.csproj"
+              },
+              "/Users/sekkit/code/Fenix/src/DotNetty.Transport.Libuv/DotNetty.Transport.Libuv.csproj": {
+                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Transport.Libuv/DotNetty.Transport.Libuv.csproj"
+              }
+            }
+          },
+          "netstandard2.0": {
+            "projectReferences": {
+              "/Users/sekkit/code/Fenix/src/DotNetty.Codecs/DotNetty.Codecs.csproj": {
+                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Codecs/DotNetty.Codecs.csproj"
+              },
+              "/Users/sekkit/code/Fenix/src/DotNetty.Transport.Libuv/DotNetty.Transport.Libuv.csproj": {
+                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Transport.Libuv/DotNetty.Transport.Libuv.csproj"
+              }
+            }
+          },
+          "netstandard2.1": {
+            "projectReferences": {
+              "/Users/sekkit/code/Fenix/src/DotNetty.Codecs/DotNetty.Codecs.csproj": {
+                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Codecs/DotNetty.Codecs.csproj"
+              },
+              "/Users/sekkit/code/Fenix/src/DotNetty.Transport.Libuv/DotNetty.Transport.Libuv.csproj": {
+                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Transport.Libuv/DotNetty.Transport.Libuv.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+        },
+        "netstandard2.0": {
+          "dependencies": {
+            "NETStandard.Library": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.3, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+        },
+        "netstandard2.1": {
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "NETStandard.Library": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/sekkit/code/Fenix/src/DotNetty.Transport.Libuv/DotNetty.Transport.Libuv.csproj": {
+      "version": "0.7.0-beta",
+      "restore": {
+        "projectUniqueName": "/Users/sekkit/code/Fenix/src/DotNetty.Transport.Libuv/DotNetty.Transport.Libuv.csproj",
+        "projectName": "SpanNetty.Transport.Libuv",
+        "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Transport.Libuv/DotNetty.Transport.Libuv.csproj",
+        "packagesPath": "/Users/sekkit/.nuget/packages/",
+        "outputPath": "/Users/sekkit/code/Fenix/src/DotNetty.Transport.Libuv/obj/",
+        "projectStyle": "PackageReference",
+        "crossTargeting": true,
+        "configFilePaths": [
+          "/Users/sekkit/code/Fenix/NuGet.Config",
+          "/Users/sekkit/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.1",
+          "netstandard2.0",
+          "netstandard2.1"
+        ],
+        "sources": {
+          "https://nuget.cdn.azure.cn/v3/index.json": {},
+          "https://www.myget.org/F/cuteant/api/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.1": {
+            "projectReferences": {
+              "/Users/sekkit/code/Fenix/src/DotNetty.Transport/DotNetty.Transport.csproj": {
+                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Transport/DotNetty.Transport.csproj"
+              }
+            }
+          },
+          "netstandard2.0": {
+            "projectReferences": {
+              "/Users/sekkit/code/Fenix/src/DotNetty.Transport/DotNetty.Transport.csproj": {
+                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Transport/DotNetty.Transport.csproj"
+              }
+            }
+          },
+          "netstandard2.1": {
+            "projectReferences": {
+              "/Users/sekkit/code/Fenix/src/DotNetty.Transport/DotNetty.Transport.csproj": {
+                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Transport/DotNetty.Transport.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "dependencies": {
+            "Libuv": {
+              "target": "Package",
+              "version": "[1.10.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+        },
+        "netstandard2.0": {
+          "dependencies": {
+            "Libuv": {
+              "target": "Package",
+              "version": "[1.10.0, )"
+            },
+            "NETStandard.Library": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.3, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+        },
+        "netstandard2.1": {
+          "dependencies": {
+            "Libuv": {
+              "target": "Package",
+              "version": "[1.10.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "NETStandard.Library": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/sekkit/code/Fenix/src/DotNetty.Transport/DotNetty.Transport.csproj": {
+      "version": "0.7.0-beta",
+      "restore": {
+        "projectUniqueName": "/Users/sekkit/code/Fenix/src/DotNetty.Transport/DotNetty.Transport.csproj",
+        "projectName": "SpanNetty.Transport",
+        "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Transport/DotNetty.Transport.csproj",
+        "packagesPath": "/Users/sekkit/.nuget/packages/",
+        "outputPath": "/Users/sekkit/code/Fenix/src/DotNetty.Transport/obj/",
+        "projectStyle": "PackageReference",
+        "crossTargeting": true,
+        "configFilePaths": [
+          "/Users/sekkit/code/Fenix/NuGet.Config",
+          "/Users/sekkit/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.1",
+          "netstandard2.0",
+          "netstandard2.1"
+        ],
+        "sources": {
+          "https://nuget.cdn.azure.cn/v3/index.json": {},
+          "https://www.myget.org/F/cuteant/api/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.1": {
+            "projectReferences": {
+              "/Users/sekkit/code/Fenix/src/DotNetty.Buffers/DotNetty.Buffers.csproj": {
+                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Buffers/DotNetty.Buffers.csproj"
+              }
+            }
+          },
+          "netstandard2.0": {
+            "projectReferences": {
+              "/Users/sekkit/code/Fenix/src/DotNetty.Buffers/DotNetty.Buffers.csproj": {
+                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Buffers/DotNetty.Buffers.csproj"
+              }
+            }
+          },
+          "netstandard2.1": {
+            "projectReferences": {
+              "/Users/sekkit/code/Fenix/src/DotNetty.Buffers/DotNetty.Buffers.csproj": {
+                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Buffers/DotNetty.Buffers.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+        },
+        "netstandard2.0": {
+          "dependencies": {
+            "NETStandard.Library": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.3, )",
+              "autoReferenced": true
+            },
+            "System.Threading.Tasks.Extensions": {
+              "target": "Package",
+              "version": "[4.5.3, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+        },
+        "netstandard2.1": {
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "NETStandard.Library": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

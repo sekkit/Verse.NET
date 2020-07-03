@@ -24,6 +24,8 @@ namespace Fenix
 
         protected int port { get; set; }
 
+        private ulong count = 0;
+
         protected TcpContainerServer tcpServer = new TcpContainerServer();
 
         protected TcpContainerClient tcpClient = new TcpContainerClient();
@@ -65,6 +67,7 @@ namespace Fenix
             kcpClient.OnReceive += KcpClient_OnReceive;
             kcpClient.OnClose += KcpClient_OnClose;
             kcpClient.OnException += KcpClient_OnException;
+            kcpClient.Send(Encoding.UTF8.GetBytes("1254124124"));
         }
 
         private void KcpServer_OnReceive(byte[] bytes, Ukcp ukcp)
@@ -82,9 +85,11 @@ namespace Fenix
             buffer.GetBytes(0, bytes);*/
             string data = StringUtil.ToHexString(bytes);
             //string data2 = buffer.GetString(0, buffer.ReadableBytes, Encoding.UTF8);
-            //Console.WriteLine("FROM_CLIENT:" + data + " => " + data2);
+            count++;
+            Console.WriteLine("FROM_CLIENT:" + data + " => " + count.ToString());
             // kcpServer.Send(buffer);  
             ukcp.writeMessage(Unpooled.WrappedBuffer(bytes));
+            
             //ukcp.writeKcpMessage(buffer);
         } 
         private void KcpServer_OnException(Exception arg1, Ukcp arg2)

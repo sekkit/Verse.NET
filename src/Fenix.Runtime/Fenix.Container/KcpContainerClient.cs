@@ -11,8 +11,7 @@ using System.Text;
 using System.Threading;
 
 namespace Fenix
-{ 
-
+{
     public class KcpContainerClient : KcpListener
     {
         public event Action<byte[], Ukcp> OnReceive;
@@ -31,7 +30,7 @@ namespace Fenix
 
             ChannelConfig channelConfig = new ChannelConfig();
             channelConfig.KcpTag = false;
-            channelConfig.Crc32Check = false;
+            channelConfig.Crc32Check = true;
             channelConfig.initNodelay(true, 40, 2, true);
             channelConfig.Sndwnd = 512;
             channelConfig.Rcvwnd = 512;
