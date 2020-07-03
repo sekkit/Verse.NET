@@ -1,0 +1,18 @@
+<Project>
+  <PropertyGroup>
+    <!--
+	<RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">$(MicrosoftNETCoreApp20PackageVersion)</RuntimeFrameworkVersion>
+    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">$(MicrosoftNETCoreApp21PackageVersion)</RuntimeFrameworkVersion>
+    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.2' ">$(MicrosoftNETCoreApp22PackageVersion)</RuntimeFrameworkVersion>
+	-->
+  </PropertyGroup>
+
+  <!-- Set InformationVersion here, since $(Version) is already set at this point. -->
+  <PropertyGroup>
+    <InformationalVersion>$(Version). Commit Hash: $(GitHeadSha)</InformationalVersion>
+  </PropertyGroup>
+
+  <Target Name="VSTestIfTestProject">
+    <CallTarget Targets="VSTest" Condition="'$(IsTestProject)' == 'true'" />
+  </Target>
+</Project>

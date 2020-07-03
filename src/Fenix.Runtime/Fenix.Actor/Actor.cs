@@ -1,0 +1,33 @@
+﻿using System;
+
+namespace Fenix
+{
+    public class Actor
+    {
+        public uint InstanceId { get; set; }
+
+        public uint ContainerId { get; set; }
+
+        protected ActorLogic Logic { get; set; }
+
+        protected Actor()
+        {
+            
+        }
+
+        ~Actor()
+        {
+
+        }
+
+        public static Actor Create(ActorLogic logic)
+        {
+            return new Actor();
+        }
+
+        public static Actor Create<T>() where T: ActorLogic, new()
+        {
+            return Actor.Create(new T());
+        }
+    }
+}

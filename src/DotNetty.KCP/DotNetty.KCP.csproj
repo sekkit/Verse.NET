@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <RootNamespace>DotNetty.KCP</RootNamespace>
+        <Nullable>disable</Nullable>
+        <LangVersion>default</LangVersion>
+        <TargetFrameworks>netstandard2.0;netstandard2.1;netcoreapp3.1</TargetFrameworks>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\DotNetty.Buffers\DotNetty.Buffers.csproj" />
+      <ProjectReference Include="..\DotNetty.Codecs.Http2\DotNetty.Codecs.Http2.csproj" />
+      <ProjectReference Include="..\DotNetty.Codecs.Http\DotNetty.Codecs.Http.csproj" />
+      <ProjectReference Include="..\DotNetty.Codecs.Mqtt\DotNetty.Codecs.Mqtt.csproj" />
+      <ProjectReference Include="..\DotNetty.Codecs.Redis\DotNetty.Codecs.Redis.csproj" />
+      <ProjectReference Include="..\DotNetty.Codecs\DotNetty.Codecs.csproj" />
+      <ProjectReference Include="..\DotNetty.Common\DotNetty.Common.csproj" />
+      <ProjectReference Include="..\DotNetty.Handlers\DotNetty.Handlers.csproj" />
+      <ProjectReference Include="..\DotNetty.Transport.Libuv\DotNetty.Transport.Libuv.csproj" />
+      <ProjectReference Include="..\DotNetty.Transport\DotNetty.Transport.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="reedsolomon_csharp">
+        <HintPath>kcp\fec\reedsolomon_csharp.dll</HintPath>
+      </Reference>
+    </ItemGroup>  
+
+</Project>

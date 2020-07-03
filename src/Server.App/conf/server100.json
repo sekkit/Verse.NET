@@ -1,0 +1,29 @@
+{
+    "id": "100",
+    "name": "",
+    "ip": "182.254.179.250",
+    "debug": false,
+    "enable_auto_update": false,
+    "reload_excluded": [".CONF"],
+    "baseapp_num": 5,
+    "reconnect_timeout": 60,
+    "max_pkg_size": 5048576,
+    "client_pkg_size": 1400,
+    "use_rpc_pool": false,
+    "match_max_player_num": 8,
+    "udp_min_port": 30990,
+    "udp_max_port": 30999,
+    "game_timeout": 1800,
+    "mysql_host": "127.0.0.1",
+    "mysql_port": 3306,
+    "mysql_user": "anchang",
+    "mysql_pwd": "ParametrixAnchang",
+    "internal_itf": "eth0",  
+    "external_itf": "192.168.1.9",  
+    "external_addr": "182.254.179.250",
+    "baseapp_cid_start": 6129652375332859700,
+    "baseapp_gus_start": 100,
+    "gate_urls": [
+        {"name": "GATE0", "ip": "0.0.0.0", "external_ip": "182.254.179.250", "hostname": "ac-gate-dev0.parametrix.cn", "port": 3333}
+    ]
+}
