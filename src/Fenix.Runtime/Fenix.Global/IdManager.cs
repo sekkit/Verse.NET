@@ -15,6 +15,8 @@ namespace Fenix.Global
         protected ConcurrentDictionary<uint, string> ContainerAddrMap = new ConcurrentDictionary<uint, string>();
 
         protected ConcurrentDictionary<uint, uint> ActorContainerMap = new ConcurrentDictionary<uint, uint>();
+        
+        protected ConcurrentDictionary<string, ulong> ChannelToActor
 
         protected IdManager()
         {

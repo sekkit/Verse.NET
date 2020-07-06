@@ -65,10 +65,12 @@ namespace DotNetty.KCP
                     return;
                 }
 
+                long startTicks = DateTime.Now.Ticks;
                 long now = kcp.currentMs();
                 long next = kcp.flush(now);
-                //System.out.println(next);
-                //System.out.println("耗时"+(System.currentTimeMillis()-now));
+                //Console.WriteLine(next);
+                long currentTicks = DateTime.Now.Ticks; 
+                //Console.WriteLine("耗时"+(currentTicks - startTicks) / TimeSpan.TicksPerMillisecond);
                 kcp.setTsUpdate(now + next);
             }
             catch (Exception e)

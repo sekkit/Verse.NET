@@ -1,8 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "uzlgcLnYHRka0yi2ILBco9hSCFRdZtE7w1a6i5aqDqzhA3MeqO62cJg0uuzcNTiDw/SkYQE2L5eP5WxaCGGa3Q==",
+  "dgSpecHash": "3REA8kBd9BjmkWoOIEExSQMfBgSvbeXrkruNQM/FGvX++CFI13KAy1AfV3EYJphClmMqs9AXwEtfqWnyGSBLQQ==",
   "success": true,
   "projectFilePath": "/Users/sekkit/code/Fenix/src/MessagePack.Annotations/MessagePack.Annotations.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "/Users/sekkit/.nuget/packages/microsoft.netcore.platforms/1.1.0/microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "/Users/sekkit/.nuget/packages/netstandard.library/2.0.3/netstandard.library.2.0.3.nupkg.sha512"
+  ],
   "logs": []
 }

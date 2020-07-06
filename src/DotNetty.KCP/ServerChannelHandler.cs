@@ -34,6 +34,7 @@ namespace DotNetty.KCP
 
         public override void ChannelRead(IChannelHandlerContext context, object message)
         {
+            long last_ts = DateTime.Now.Ticks;
             var msg = (DatagramPacket) message;
             var channel = context.Channel;
             var ukcp = _channelManager.get(msg);
@@ -45,6 +46,7 @@ namespace DotNetty.KCP
                 //每次收到消息重绑定地址
                 user.RemoteAddress = msg.Sender;
                 ukcp.read(content);
+                //Console.WriteLine(string.Format("(LAGS1){0}", (DateTime.Now.Ticks - last_ts)/10000.0));
                 return;
             }
 
@@ -64,8 +66,11 @@ namespace DotNetty.KCP
             _channelManager.New(msg.Sender,ukcp,msg);
             ukcp.read(content);
 
-            var scheduleTask = new ScheduleTask(_channelManager,ukcp);
+            var scheduleTask = new ScheduleTask(_channelManager, ukcp);
+            //Console.WriteLine(ukcp.getInterval());
             KcpUntils.scheduleHashedWheel(scheduleTask, TimeSpan.FromMilliseconds(ukcp.getInterval()));
+            
+            Console.WriteLine(string.Format("(LAGS2){0}", (DateTime.Now.Ticks-last_ts)/10000.0));
         }
 
 

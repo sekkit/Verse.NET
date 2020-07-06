@@ -8,6 +8,7 @@
     "projectStyle": "PackageReference",
     "crossTargeting": true,
     "originalTargetFrameworks": [
+      "netstandard2.0",
       "netstandard2.1"
     ],
     "sources": {
@@ -15,6 +16,9 @@
       "https://www.myget.org/F/cuteant/api/v3/index.json": {}
     },
     "frameworks": {
+      "netstandard2.0": {
+        "projectReferences": {}
+      },
       "netstandard2.1": {
         "projectReferences": {}
       }
@@ -26,6 +30,27 @@
     }
   },
   "frameworks": {
+    "netstandard2.0": {
+      "dependencies": {
+        "NETStandard.Library": {
+          "suppressParent": "All",
+          "target": "Package",
+          "version": "[2.0.3, )",
+          "autoReferenced": true
+        }
+      },
+      "imports": [
+        "net461",
+        "net462",
+        "net47",
+        "net471",
+        "net472",
+        "net48"
+      ],
+      "assetTargetFallback": true,
+      "warn": true,
+      "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+    },
     "netstandard2.1": {
       "imports": [
         "net461",

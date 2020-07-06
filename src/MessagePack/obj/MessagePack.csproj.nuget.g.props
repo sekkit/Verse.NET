@@ -12,11 +12,21 @@
   <PropertyGroup>
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
   </PropertyGroup>
+  <ImportGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' AND '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Import Project="$(NuGetPackageRoot)microsoft.codeanalysis.publicapianalyzers/2.9.7/build/Microsoft.CodeAnalysis.PublicApiAnalyzers.props" Condition="Exists('$(NuGetPackageRoot)microsoft.codeanalysis.publicapianalyzers/2.9.7/build/Microsoft.CodeAnalysis.PublicApiAnalyzers.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.codeanalysis.bannedapianalyzers/2.9.7/build/Microsoft.CodeAnalysis.BannedApiAnalyzers.props" Condition="Exists('$(NuGetPackageRoot)microsoft.codeanalysis.bannedapianalyzers/2.9.7/build/Microsoft.CodeAnalysis.BannedApiAnalyzers.props')" />
+    <Import Project="$(NuGetPackageRoot)roslyn.diagnostics.analyzers/2.9.7/build/Roslyn.Diagnostics.Analyzers.props" Condition="Exists('$(NuGetPackageRoot)roslyn.diagnostics.analyzers/2.9.7/build/Roslyn.Diagnostics.Analyzers.props')" />
+  </ImportGroup>
   <ImportGroup Condition=" '$(TargetFramework)' == 'netstandard2.1' AND '$(ExcludeRestorePackageImports)' != 'true' ">
     <Import Project="$(NuGetPackageRoot)microsoft.codeanalysis.publicapianalyzers/2.9.7/build/Microsoft.CodeAnalysis.PublicApiAnalyzers.props" Condition="Exists('$(NuGetPackageRoot)microsoft.codeanalysis.publicapianalyzers/2.9.7/build/Microsoft.CodeAnalysis.PublicApiAnalyzers.props')" />
     <Import Project="$(NuGetPackageRoot)microsoft.codeanalysis.bannedapianalyzers/2.9.7/build/Microsoft.CodeAnalysis.BannedApiAnalyzers.props" Condition="Exists('$(NuGetPackageRoot)microsoft.codeanalysis.bannedapianalyzers/2.9.7/build/Microsoft.CodeAnalysis.BannedApiAnalyzers.props')" />
     <Import Project="$(NuGetPackageRoot)roslyn.diagnostics.analyzers/2.9.7/build/Roslyn.Diagnostics.Analyzers.props" Condition="Exists('$(NuGetPackageRoot)roslyn.diagnostics.analyzers/2.9.7/build/Roslyn.Diagnostics.Analyzers.props')" />
   </ImportGroup>
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' AND '$(ExcludeRestorePackageImports)' != 'true' ">
+    <PkgMicrosoft_CodeAnalysis_PublicApiAnalyzers Condition=" '$(PkgMicrosoft_CodeAnalysis_PublicApiAnalyzers)' == '' ">/Users/sekkit/.nuget/packages/microsoft.codeanalysis.publicapianalyzers/2.9.7</PkgMicrosoft_CodeAnalysis_PublicApiAnalyzers>
+    <PkgMicrosoft_CodeAnalysis_BannedApiAnalyzers Condition=" '$(PkgMicrosoft_CodeAnalysis_BannedApiAnalyzers)' == '' ">/Users/sekkit/.nuget/packages/microsoft.codeanalysis.bannedapianalyzers/2.9.7</PkgMicrosoft_CodeAnalysis_BannedApiAnalyzers>
+    <PkgRoslyn_Diagnostics_Analyzers Condition=" '$(PkgRoslyn_Diagnostics_Analyzers)' == '' ">/Users/sekkit/.nuget/packages/roslyn.diagnostics.analyzers/2.9.7</PkgRoslyn_Diagnostics_Analyzers>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.1' AND '$(ExcludeRestorePackageImports)' != 'true' ">
     <PkgMicrosoft_CodeAnalysis_PublicApiAnalyzers Condition=" '$(PkgMicrosoft_CodeAnalysis_PublicApiAnalyzers)' == '' ">/Users/sekkit/.nuget/packages/microsoft.codeanalysis.publicapianalyzers/2.9.7</PkgMicrosoft_CodeAnalysis_PublicApiAnalyzers>
     <PkgMicrosoft_CodeAnalysis_BannedApiAnalyzers Condition=" '$(PkgMicrosoft_CodeAnalysis_BannedApiAnalyzers)' == '' ">/Users/sekkit/.nuget/packages/microsoft.codeanalysis.bannedapianalyzers/2.9.7</PkgMicrosoft_CodeAnalysis_BannedApiAnalyzers>

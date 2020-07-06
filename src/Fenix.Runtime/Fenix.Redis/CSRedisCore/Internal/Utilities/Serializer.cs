@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.Serialization;
+using CSRedis.Internal.ObjectPool;
 
 namespace CSRedis.Internal.Utilities
 {
@@ -100,7 +101,7 @@ namespace CSRedis.Internal.Utilities
             var tc_t = typeof(TypeConverter);
             var tc = Expression.Variable(tc_t, "tc");
             var tc_mi_can_convert_from = tc_t.GetMethod("CanConvertFrom", new[] { typeof(Type) });
-            var tc_mi_convert_from = tc_t.GetMethod("ConvertFrom", new[] { typeof(Object) });
+            var tc_mi_convert_from = tc_t.GetMethod("ConvertFrom", new[] { typeof(Object<>) });
 
             var td_t = typeof(TypeDescriptor);
             var td_mi_get_converter = td_t.GetMethod("GetConverter", new[] { typeof(Type) });

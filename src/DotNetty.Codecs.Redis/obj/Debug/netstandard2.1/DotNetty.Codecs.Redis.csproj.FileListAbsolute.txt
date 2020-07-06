@@ -29,3 +29,4 @@
 /Users/sekkit/code/Fenix/src/DotNetty.Codecs.Redis/obj/Debug/netstandard2.1/DotNetty.Codecs.Redis.dll
 /Users/sekkit/code/Fenix/src/DotNetty.Codecs.Redis/obj/Debug/netstandard2.1/DotNetty.Codecs.Redis.xml
 /Users/sekkit/code/Fenix/src/DotNetty.Codecs.Redis/obj/Debug/netstandard2.1/DotNetty.Codecs.Redis.pdb
+/Users/sekkit/code/Fenix/src/DotNetty.Codecs.Redis/obj/Debug/netstandard2.1/DotNetty.Codecs.Redis.csprojAssemblyReference.cache

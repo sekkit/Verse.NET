@@ -20,7 +20,8 @@ namespace Fenix
 
         public event Action<Ukcp> OnClose;
 
-        protected KcpServer server;
+        protected KcpServer server; 
+        
 
         public static KcpContainerServer Create(string ip, int port)
         {
@@ -29,7 +30,7 @@ namespace Fenix
             ChannelConfig channelConfig = new ChannelConfig();
             channelConfig.KcpTag = false;
             channelConfig.Crc32Check = true;
-            channelConfig.initNodelay(true, 40, 2, true);
+            channelConfig.initNodelay(true, 0, 2, true);
             channelConfig.Sndwnd = 512;
             channelConfig.Rcvwnd = 512;
             channelConfig.Mtu = 512; 
@@ -39,7 +40,7 @@ namespace Fenix
             channelConfig.TimeoutMillis = 10000;
             //channelConfig.Conv = 55;
             ////AutoSetConv = true;
-            channelConfig.UseConvChannel = true; 
+            channelConfig.UseConvChannel = false; 
             listener.server = new KcpServer();
             listener.server.init(Environment.ProcessorCount, listener, channelConfig, port);
             
@@ -51,6 +52,7 @@ namespace Fenix
             //OneThreadSynchronizationContext.Instance.Post((obj) =>
             //{ 
             //    OnReceive?.Invoke(byteBuf, ukcp, protocolType);
+            
             OnReceive?.Invoke(byteBuf.ToArray(), ukcp);
             //}, null);
 

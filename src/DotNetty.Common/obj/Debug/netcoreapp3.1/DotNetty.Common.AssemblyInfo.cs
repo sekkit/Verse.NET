@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyDescriptionAttribute("DotNetty common routines：the complete port of the DotNetty.Common assembly to sup" +
     "port .NET 4.5.1 and newer.")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("0.7.0.6600")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.7.0-beta. Commit Hash: 246c425a4925393234670da15f30ae1a5b4cf083")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.7.0-beta. Commit Hash: e3ad133336773bc1a6b67805f6309685acb8e2c7")]
 [assembly: System.Reflection.AssemblyProductAttribute("SpanNetty")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DotNetty.Common")]
 [assembly: System.Reflection.AssemblyVersionAttribute("0.7.0.0")]

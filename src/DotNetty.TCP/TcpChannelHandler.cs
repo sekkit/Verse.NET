@@ -10,9 +10,9 @@ namespace DotNetty.TCP
 
     public class TcpChannelHandler : ChannelHandlerAdapter
     {
-        protected ITcpServerListener listener;
+        protected ITcpListener listener;
 
-        public TcpChannelHandler(ITcpServerListener _listener)
+        public TcpChannelHandler(ITcpListener _listener)
         {
             this.listener = _listener;
         }
@@ -39,8 +39,9 @@ namespace DotNetty.TCP
             //    Console.WriteLine("Received from client: " + buffer.ToString(Encoding.UTF8));
             //}
             //context.WriteAsync(message);
-
+            //long last_ts = DateTime.Now.Ticks;
             this.listener?.OnReceive(context.Channel, message as IByteBuffer);
+            //Console.WriteLine("LAG3:"+(DateTime.Now.Ticks-last_ts)/10000.0);
         }
 
         public override void ChannelReadComplete(IChannelHandlerContext context)

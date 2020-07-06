@@ -19,7 +19,7 @@ namespace DotNetty.TCP
 
         IChannel boundChannel;
 
-        public async Task Start(TcpChannelConfig channelConfig, ITcpServerListener listener)
+        public async Task Start(TcpChannelConfig channelConfig, ITcpListener listener)
         {
             if (channelConfig.UseLibuv)
             {

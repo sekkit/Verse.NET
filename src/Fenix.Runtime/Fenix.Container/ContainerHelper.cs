@@ -18,7 +18,7 @@ namespace Fenix
                 {
                     try
                     {
-                        Thread.Sleep(1);
+                        Thread.Sleep(0);
                         OneThreadSynchronizationContext.Instance.Update();
                         container.Update();
                     }

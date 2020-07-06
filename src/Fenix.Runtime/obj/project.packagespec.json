@@ -6,7 +6,9 @@
     "projectPath": "/Users/sekkit/code/Fenix/src/Fenix.Runtime/Fenix.Runtime.csproj",
     "outputPath": "/Users/sekkit/code/Fenix/src/Fenix.Runtime/obj/",
     "projectStyle": "PackageReference",
+    "crossTargeting": true,
     "originalTargetFrameworks": [
+      "netstandard2.0",
       "netstandard2.1"
     ],
     "sources": {
@@ -14,6 +16,43 @@
       "https://www.myget.org/F/cuteant/api/v3/index.json": {}
     },
     "frameworks": {
+      "netstandard2.0": {
+        "projectReferences": {
+          "/Users/sekkit/code/Fenix/src/DotNetty.Buffers/DotNetty.Buffers.csproj": {
+            "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Buffers/DotNetty.Buffers.csproj"
+          },
+          "/Users/sekkit/code/Fenix/src/DotNetty.Codecs/DotNetty.Codecs.csproj": {
+            "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Codecs/DotNetty.Codecs.csproj"
+          },
+          "/Users/sekkit/code/Fenix/src/DotNetty.Common/DotNetty.Common.csproj": {
+            "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Common/DotNetty.Common.csproj"
+          },
+          "/Users/sekkit/code/Fenix/src/DotNetty.Handlers/DotNetty.Handlers.csproj": {
+            "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Handlers/DotNetty.Handlers.csproj"
+          },
+          "/Users/sekkit/code/Fenix/src/DotNetty.KCP/DotNetty.KCP.csproj": {
+            "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.KCP/DotNetty.KCP.csproj"
+          },
+          "/Users/sekkit/code/Fenix/src/DotNetty.TCP/DotNetty.TCP.csproj": {
+            "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.TCP/DotNetty.TCP.csproj"
+          },
+          "/Users/sekkit/code/Fenix/src/DotNetty.Transport.Libuv/DotNetty.Transport.Libuv.csproj": {
+            "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Transport.Libuv/DotNetty.Transport.Libuv.csproj"
+          },
+          "/Users/sekkit/code/Fenix/src/DotNetty.Transport/DotNetty.Transport.csproj": {
+            "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Transport/DotNetty.Transport.csproj"
+          },
+          "/Users/sekkit/code/Fenix/src/MessagePack.Annotations/MessagePack.Annotations.csproj": {
+            "projectPath": "/Users/sekkit/code/Fenix/src/MessagePack.Annotations/MessagePack.Annotations.csproj"
+          },
+          "/Users/sekkit/code/Fenix/src/MessagePack.UnityShims/MessagePack.UnityShims.csproj": {
+            "projectPath": "/Users/sekkit/code/Fenix/src/MessagePack.UnityShims/MessagePack.UnityShims.csproj"
+          },
+          "/Users/sekkit/code/Fenix/src/MessagePack/MessagePack.csproj": {
+            "projectPath": "/Users/sekkit/code/Fenix/src/MessagePack/MessagePack.csproj"
+          }
+        }
+      },
       "netstandard2.1": {
         "projectReferences": {
           "/Users/sekkit/code/Fenix/src/DotNetty.Buffers/DotNetty.Buffers.csproj": {
@@ -59,6 +98,47 @@
     }
   },
   "frameworks": {
+    "netstandard2.0": {
+      "dependencies": {
+        "Microsoft.Extensions.Caching.Abstractions": {
+          "target": "Package",
+          "version": "[3.1.5, )"
+        },
+        "NETStandard.Library": {
+          "suppressParent": "All",
+          "target": "Package",
+          "version": "[2.0.3, )",
+          "autoReferenced": true
+        },
+        "Newtonsoft.Json": {
+          "target": "Package",
+          "version": "[12.0.3, )"
+        },
+        "Serilog": {
+          "target": "Package",
+          "version": "[2.9.0, )"
+        },
+        "Serilog.Sinks.Console": {
+          "target": "Package",
+          "version": "[3.1.1, )"
+        },
+        "Serilog.Sinks.File": {
+          "target": "Package",
+          "version": "[4.1.0, )"
+        }
+      },
+      "imports": [
+        "net461",
+        "net462",
+        "net47",
+        "net471",
+        "net472",
+        "net48"
+      ],
+      "assetTargetFallback": true,
+      "warn": true,
+      "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+    },
     "netstandard2.1": {
       "dependencies": {
         "Microsoft.Extensions.Caching.Abstractions": {

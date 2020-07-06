@@ -6,7 +6,7 @@ using System.Text;
 
 namespace DotNetty.TCP
 {
-    public interface ITcpServerListener
+    public interface ITcpListener
     {
         void OnConnect(IChannel channel);
 

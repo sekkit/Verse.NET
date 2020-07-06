@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
+using CSRedis.Internal.Commands;
 
 namespace CSRedis
 {
@@ -151,6 +152,7 @@ namespace CSRedis
                         break;
                     case "System.Single":
                         if (Single.TryParse(valueStr, out var trysg)) obj = trysg;
+                        //if (RedisTuple.Generic<,>.Single.TryParse(valueStr, out var trysg)) obj = trysg;
                         break;
                     case "System.Int32":
                         if (Int32.TryParse(valueStr, out var tryint32)) obj = tryint32;

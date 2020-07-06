@@ -1,0 +1,935 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DotNetty.Handlers</name>
+    </assembly>
+    <members>
+        <member name="P:DotNetty.Handlers.ServerChannelRebindHandler.IsSharable">
+            <inheritdoc />
+        </member>
+        <member name="T:DotNetty.Handlers.Flow.FlowControlHandler">
+             The {@link FlowControlHandler} ensures that only one message per {@code read()} is sent downstream.
+            
+             Classes such as {@link ByteToMessageDecoder} or {@link MessageToByteEncoder} are free to emit as
+             many events as they like for any given input. A channel's auto reading configuration doesn't usually
+             apply in these scenarios. This is causing problems in downstream {@link ChannelHandler}s that would
+             like to hold subsequent events while they're processing one event. It's a common problem with the
+             {@code HttpObjectDecoder} that will very often fire an {@code HttpRequest} that is immediately followed
+             by a {@code LastHttpContent} event.
+            
+             <pre>{@code
+             ChannelPipeline pipeline = ...;
+            
+             pipeline.addLast(new HttpServerCodec());
+             pipeline.addLast(new FlowControlHandler());
+            
+             pipeline.addLast(new MyExampleHandler());
+            
+             class MyExampleHandler extends ChannelInboundHandlerAdapter {
+               @Override
+               public void channelRead(IChannelHandlerContext ctx, Object msg) {
+                 if (msg instanceof HttpRequest) {
+                   ctx.channel().config().setAutoRead(false);
+            
+                   // The FlowControlHandler will hold any subsequent events that
+                   // were emitted by HttpObjectDecoder until auto reading is turned
+                   // back on or Channel#read() is being called.
+                 }
+               }
+             }
+             }</pre>
+            
+             @see ChannelConfig#setAutoRead(bool)
+        </member>
+        <member name="P:DotNetty.Handlers.Flow.FlowControlHandler.IsQueueEmpty">
+            Determine if the underlying {@link Queue} is empty. This method exists for
+            testing, debugging and inspection purposes and it is not Thread safe!
+        </member>
+        <member name="M:DotNetty.Handlers.Flow.FlowControlHandler.Destroy">
+            Releases all messages and destroys the {@link Queue}.
+        </member>
+        <member name="M:DotNetty.Handlers.Flow.FlowControlHandler.Dequeue(DotNetty.Transport.Channels.IChannelHandlerContext,System.Int32)">
+             Dequeues one or many (or none) messages depending on the channel's auto
+             reading state and returns the number of messages that were consumed from
+             the internal queue.
+            
+             The {@code minConsume} argument is used to force {@code dequeue()} into
+             consuming that number of messages regardless of the channel's auto
+             reading configuration.
+            
+             @see #read(ChannelHandlerContext)
+             @see #channelRead(ChannelHandlerContext, Object)
+        </member>
+        <member name="T:DotNetty.Handlers.Internal.Strings">
+            <summary>
+              一个强类型的资源类，用于查找本地化的字符串等。
+            </summary>
+        </member>
+        <member name="P:DotNetty.Handlers.Internal.Strings.ResourceManager">
+            <summary>
+              返回此类使用的缓存的 ResourceManager 实例。
+            </summary>
+        </member>
+        <member name="P:DotNetty.Handlers.Internal.Strings.Culture">
+            <summary>
+              使用此强类型资源类，为所有资源查找
+              重写当前线程的 CurrentUICulture 属性。
+            </summary>
+        </member>
+        <member name="T:DotNetty.Handlers.ExceptionArgument">
+            <summary>The convention for this enum is using the argument name as the enum name</summary>
+        </member>
+        <member name="T:DotNetty.Handlers.ExceptionResource">
+            <summary>The convention for this enum is using the resource name as the enum name</summary>
+        </member>
+        <member name="T:DotNetty.Handlers.IPFilter.AbstractRemoteAddressFilter`1">
+            <summary>
+            This class provides the functionality to either accept or reject new <see cref="T:DotNetty.Transport.Channels.IChannel"/>s
+            based on their IP address.
+            You should inherit from this class if you would like to implement your own IP-based filter. Basically you have to
+            implement <see cref="M:DotNetty.Handlers.IPFilter.AbstractRemoteAddressFilter`1.Accept(DotNetty.Transport.Channels.IChannelHandlerContext,`0)"/> to decided whether you want to accept or reject
+            a connection from the remote address.
+            Furthermore overriding <see cref="M:DotNetty.Handlers.IPFilter.AbstractRemoteAddressFilter`1.ChannelRejected(DotNetty.Transport.Channels.IChannelHandlerContext,`0)"/> gives you the
+            flexibility to respond to rejected (denied) connections. If you do not want to send a response, just have it return
+            null. Take a look at <see cref="T:DotNetty.Handlers.IPFilter.RuleBasedIPFilter"/> for details.
+            </summary>
+        </member>
+        <member name="M:DotNetty.Handlers.IPFilter.AbstractRemoteAddressFilter`1.Accept(DotNetty.Transport.Channels.IChannelHandlerContext,`0)">
+            <summary>
+            This method is called immediately after a <see cref="T:DotNetty.Transport.Channels.IChannel"/> gets registered.
+            </summary>
+            <returns>Return true if connections from this IP address and port should be accepted. False otherwise.</returns>
+        </member>
+        <member name="M:DotNetty.Handlers.IPFilter.AbstractRemoteAddressFilter`1.ChannelAccepted(DotNetty.Transport.Channels.IChannelHandlerContext,`0)">
+            <summary>
+            This method is called if <paramref name="remoteAddress"/> gets accepted by
+            <see cref="M:DotNetty.Handlers.IPFilter.AbstractRemoteAddressFilter`1.Accept(DotNetty.Transport.Channels.IChannelHandlerContext,`0)"/>.  You should override it if you would like to handle
+            (e.g. respond to) accepted addresses.
+            </summary>
+        </member>
+        <member name="M:DotNetty.Handlers.IPFilter.AbstractRemoteAddressFilter`1.ChannelRejected(DotNetty.Transport.Channels.IChannelHandlerContext,`0)">
+            <summary>
+            This method is called if <paramref name="remoteAddress"/> gets rejected by
+            <see cref="M:DotNetty.Handlers.IPFilter.AbstractRemoteAddressFilter`1.Accept(DotNetty.Transport.Channels.IChannelHandlerContext,`0)"/>.  You should override it if you would like to handle
+            (e.g. respond to) rejected addresses.
+            <returns>
+            A <see cref="T:System.Threading.Tasks.Task"/> if you perform I/O operations, so that
+            the <see cref="T:DotNetty.Transport.Channels.IChannel"/> can be closed once it completes. Null otherwise.
+            </returns>
+            </summary>
+        </member>
+        <member name="T:DotNetty.Handlers.IPFilter.IIPFilterRule">
+            <summary>
+            Implement this interface to create new rules.
+            </summary>
+        </member>
+        <member name="M:DotNetty.Handlers.IPFilter.IIPFilterRule.Matches(System.Net.IPEndPoint)">
+            <summary>
+             This method should return true if remoteAddress is valid according to your criteria. False otherwise.
+            </summary>
+        </member>
+        <member name="P:DotNetty.Handlers.IPFilter.IIPFilterRule.RuleType">
+            <summary>
+            This method should return <see cref="F:DotNetty.Handlers.IPFilter.IPFilterRuleType.Accept"/> if all
+            <see cref="M:DotNetty.Handlers.IPFilter.IIPFilterRule.Matches(System.Net.IPEndPoint)"/> for which <see cref="M:DotNetty.Handlers.IPFilter.IIPFilterRule.Matches(System.Net.IPEndPoint)"/>
+            returns true should the accepted. If you want to exclude all of those IP addresses then
+            <see cref="F:DotNetty.Handlers.IPFilter.IPFilterRuleType.Reject"/> should be returned.
+            </summary>
+        </member>
+        <member name="T:DotNetty.Handlers.IPFilter.IPFilterRuleType">
+            <summary>
+            Used in <see cref="T:DotNetty.Handlers.IPFilter.IIPFilterRule"/> to decide if a matching IP Address should be allowed or denied to connect.
+            </summary>
+        </member>
+        <member name="T:DotNetty.Handlers.IPFilter.IPSubnetFilterRule">
+            <summary>
+            Use this class to create rules for <see cref="T:DotNetty.Handlers.IPFilter.RuleBasedIPFilter"/> that group IP addresses into subnets.
+            Supports both, IPv4 and IPv6.
+            </summary>
+        </member>
+        <member name="T:DotNetty.Handlers.IPFilter.RuleBasedIPFilter">
+             <summary>
+             This class allows one to filter new <see cref="T:DotNetty.Transport.Channels.IChannel"/>s based on the
+             <see cref="T:DotNetty.Handlers.IPFilter.IIPFilterRule"/>s passed to its constructor. If no rules are provided, all connections
+             will be accepted.
+            
+             If you would like to explicitly take action on rejected <see cref="T:DotNetty.Transport.Channels.IChannel"/>s, you should override
+             <see cref="M:DotNetty.Handlers.IPFilter.AbstractRemoteAddressFilter`1.ChannelRejected(DotNetty.Transport.Channels.IChannelHandlerContext,`0)"/>.
+             </summary>
+        </member>
+        <member name="T:DotNetty.Handlers.IPFilter.UniqueIPFilter">
+            <summary>
+            This class allows one to ensure that at all times for every IP address there is at most one
+            <see cref="T:DotNetty.Transport.Channels.IChannel"/>  connected to the server.
+            </summary>
+        </member>
+        <member name="T:DotNetty.Handlers.Logging.ByteBufferFormat">
+            <summary>
+            Used to control the format and verbosity of logging for <see cref="T:DotNetty.Buffers.IByteBuffer"/>s and <see cref="T:DotNetty.Buffers.IByteBufferHolder"/>s.
+            </summary>
+        </member>
+        <member name="F:DotNetty.Handlers.Logging.ByteBufferFormat.Simple">
+            <summary>
+            <see cref="T:DotNetty.Buffers.IByteBuffer"/>s will be logged in a simple format, with no hex dump included.
+            </summary>
+        </member>
+        <member name="F:DotNetty.Handlers.Logging.ByteBufferFormat.HexDump">
+            <summary>
+            <see cref="T:DotNetty.Buffers.IByteBuffer"/>s will be logged using <see cref="M:DotNetty.Buffers.ByteBufferUtil.AppendPrettyHexDump(System.Text.StringBuilder,DotNetty.Buffers.IByteBuffer)"/>.
+            </summary>
+        </member>
+        <member name="T:DotNetty.Handlers.Logging.LoggingHandler">
+            <summary>
+                A <see cref="T:DotNetty.Transport.Channels.IChannelHandler" /> that logs all events using a logging framework.
+                By default, all events are logged at <tt>DEBUG</tt> level.
+            </summary>
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.LoggingHandler.#ctor">
+            <summary>
+                Creates a new instance whose logger name is the fully qualified class
+                name of the instance with hex dump enabled.
+            </summary>
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.LoggingHandler.#ctor(DotNetty.Handlers.Logging.LogLevel)">
+            <summary>
+                Creates a new instance whose logger name is the fully qualified class
+                name of the instance
+            </summary>
+            <param name="level">the log level</param>
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.LoggingHandler.#ctor(DotNetty.Handlers.Logging.LogLevel,DotNetty.Handlers.Logging.ByteBufferFormat)">
+            <summary>
+                Creates a new instance whose logger name is the fully qualified class
+                name of the instance
+            </summary>
+            <param name="level">the log level</param>
+            <param name="bufferFormat">the ByteBuf format</param>
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.LoggingHandler.#ctor(System.Type)">
+            <summary>
+                Creates a new instance with the specified logger name and with hex dump
+                enabled
+            </summary>
+            <param name="type">the class type to generate the logger for</param>
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.LoggingHandler.#ctor(System.Type,DotNetty.Handlers.Logging.LogLevel)">
+            <summary>
+                Creates a new instance with the specified logger name.
+            </summary>
+            <param name="type">the class type to generate the logger for</param>
+            <param name="level">the log level</param>
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.LoggingHandler.#ctor(System.Type,DotNetty.Handlers.Logging.LogLevel,DotNetty.Handlers.Logging.ByteBufferFormat)">
+            <summary>
+                Creates a new instance with the specified logger name.
+            </summary>
+            <param name="type">the class type to generate the logger for</param>
+            <param name="level">the log level</param>
+            <param name="bufferFormat">the ByteBuf format</param>
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.LoggingHandler.#ctor(System.String)">
+            <summary>
+                Creates a new instance with the specified logger name using the default log level.
+            </summary>
+            <param name="name">the name of the class to use for the logger</param>
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.LoggingHandler.#ctor(System.String,DotNetty.Handlers.Logging.LogLevel)">
+            <summary>
+                Creates a new instance with the specified logger name.
+            </summary>
+            <param name="name">the name of the class to use for the logger</param>
+            <param name="level">the log level</param>
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.LoggingHandler.#ctor(System.String,DotNetty.Handlers.Logging.LogLevel,DotNetty.Handlers.Logging.ByteBufferFormat)">
+            <summary>
+                Creates a new instance with the specified logger name.
+            </summary>
+            <param name="name">the name of the class to use for the logger</param>
+            <param name="level">the log level</param>
+            <param name="bufferFormat">the ByteBuf format</param>
+        </member>
+        <member name="P:DotNetty.Handlers.Logging.LoggingHandler.Level">
+            <summary>
+                Returns the <see cref="T:DotNetty.Handlers.Logging.LogLevel" /> that this handler uses to log
+            </summary>
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.LoggingHandler.Format(DotNetty.Transport.Channels.IChannelHandlerContext,System.String)">
+            <summary>
+                Formats an event and returns the formatted message
+            </summary>
+            <param name="ctx"></param>
+            <param name="eventName">the name of the event</param>
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.LoggingHandler.Format(DotNetty.Transport.Channels.IChannelHandlerContext,System.String,System.Object)">
+            <summary>
+                Formats an event and returns the formatted message.
+            </summary>
+            <param name="ctx"></param>
+            <param name="eventName">the name of the event</param>
+            <param name="arg">the argument of the event</param>
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.LoggingHandler.Format(DotNetty.Transport.Channels.IChannelHandlerContext,System.String,System.Object,System.Object)">
+            <summary>
+                Formats an event and returns the formatted message.  This method is currently only used for formatting
+                <see cref="M:DotNetty.Transport.Channels.IChannelHandler.ConnectAsync(DotNetty.Transport.Channels.IChannelHandlerContext,System.Net.EndPoint,System.Net.EndPoint)" />
+            </summary>
+            <param name="ctx"></param>
+            <param name="eventName">the name of the event</param>
+            <param name="firstArg">the first argument of the event</param>
+            <param name="secondArg">the second argument of the event</param>
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.LoggingHandler.FormatByteBuffer(DotNetty.Transport.Channels.IChannelHandlerContext,System.String,DotNetty.Buffers.IByteBuffer)">
+            <summary>
+                Generates the default log message of the specified event whose argument is a  <see cref="T:DotNetty.Buffers.IByteBuffer" />.
+            </summary>
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.LoggingHandler.FormatByteBufferHolder(DotNetty.Transport.Channels.IChannelHandlerContext,System.String,DotNetty.Buffers.IByteBufferHolder)">
+            <summary>
+                Generates the default log message of the specified event whose argument is a <see cref="T:DotNetty.Buffers.IByteBufferHolder" />.
+            </summary>
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.LoggingHandler.FormatSimple(DotNetty.Transport.Channels.IChannelHandlerContext,System.String,System.Object)">
+            <summary>
+                Generates the default log message of the specified event whose argument is an arbitrary object.
+            </summary>
+        </member>
+        <member name="T:DotNetty.Handlers.Logging.MsLoggingHandler">
+            <summary>A <see cref="T:DotNetty.Transport.Channels.IChannelHandler" /> that logs all events using a logging framework.
+            By default, all events are logged at <tt>DEBUG</tt> level.</summary>
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.MsLoggingHandler.#ctor">
+            <summary>Creates a new instance whose logger name is the fully qualified class
+            name of the instance with hex dump enabled.</summary>
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.MsLoggingHandler.#ctor(System.Type)">
+            <summary>Creates a new instance with the specified logger name.</summary>
+            <param name="type">the class type to generate the logger for</param>
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.MsLoggingHandler.#ctor(System.String)">
+            <summary>Creates a new instance with the specified logger name using the default log level.</summary>
+            <param name="name">the name of the class to use for the logger</param>
+        </member>
+        <member name="P:DotNetty.Handlers.Logging.MsLoggingHandler.IsSharable">
+            <inheritdoc />
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.MsLoggingHandler.ChannelRegistered(DotNetty.Transport.Channels.IChannelHandlerContext)">
+            <inheritdoc />
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.MsLoggingHandler.ChannelUnregistered(DotNetty.Transport.Channels.IChannelHandlerContext)">
+            <inheritdoc />
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.MsLoggingHandler.ChannelActive(DotNetty.Transport.Channels.IChannelHandlerContext)">
+            <inheritdoc />
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.MsLoggingHandler.ChannelInactive(DotNetty.Transport.Channels.IChannelHandlerContext)">
+            <inheritdoc />
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.MsLoggingHandler.ExceptionCaught(DotNetty.Transport.Channels.IChannelHandlerContext,System.Exception)">
+            <inheritdoc />
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.MsLoggingHandler.UserEventTriggered(DotNetty.Transport.Channels.IChannelHandlerContext,System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.MsLoggingHandler.BindAsync(DotNetty.Transport.Channels.IChannelHandlerContext,System.Net.EndPoint)">
+            <inheritdoc />
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.MsLoggingHandler.ConnectAsync(DotNetty.Transport.Channels.IChannelHandlerContext,System.Net.EndPoint,System.Net.EndPoint)">
+            <inheritdoc />
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.MsLoggingHandler.Disconnect(DotNetty.Transport.Channels.IChannelHandlerContext,DotNetty.Common.Concurrency.IPromise)">
+            <inheritdoc />
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.MsLoggingHandler.Close(DotNetty.Transport.Channels.IChannelHandlerContext,DotNetty.Common.Concurrency.IPromise)">
+            <inheritdoc />
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.MsLoggingHandler.Deregister(DotNetty.Transport.Channels.IChannelHandlerContext,DotNetty.Common.Concurrency.IPromise)">
+            <inheritdoc />
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.MsLoggingHandler.ChannelRead(DotNetty.Transport.Channels.IChannelHandlerContext,System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.MsLoggingHandler.ChannelReadComplete(DotNetty.Transport.Channels.IChannelHandlerContext)">
+            <inheritdoc />
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.MsLoggingHandler.ChannelWritabilityChanged(DotNetty.Transport.Channels.IChannelHandlerContext)">
+            <inheritdoc />
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.MsLoggingHandler.HandlerAdded(DotNetty.Transport.Channels.IChannelHandlerContext)">
+            <inheritdoc />
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.MsLoggingHandler.HandlerRemoved(DotNetty.Transport.Channels.IChannelHandlerContext)">
+            <inheritdoc />
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.MsLoggingHandler.Read(DotNetty.Transport.Channels.IChannelHandlerContext)">
+            <inheritdoc />
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.MsLoggingHandler.Write(DotNetty.Transport.Channels.IChannelHandlerContext,System.Object,DotNetty.Common.Concurrency.IPromise)">
+            <inheritdoc />
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.MsLoggingHandler.Flush(DotNetty.Transport.Channels.IChannelHandlerContext)">
+            <inheritdoc />
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.MsLoggingHandler.FormatMessage(System.Object)">
+            <summary>Formats an event and returns the formatted message.</summary>
+            <param name="arg">the argument of the event</param>
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.MsLoggingHandler.FormatByteBuffer(DotNetty.Buffers.IByteBuffer)">
+            <summary>Generates the default log message of the specified event whose argument is a  <see cref="T:DotNetty.Buffers.IByteBuffer" />.</summary>
+        </member>
+        <member name="M:DotNetty.Handlers.Logging.MsLoggingHandler.FormatByteBufferHolder(DotNetty.Buffers.IByteBufferHolder)">
+            <summary>Generates the default log message of the specified event whose argument is a <see cref="T:DotNetty.Buffers.IByteBufferHolder" />.</summary>
+        </member>
+        <member name="T:DotNetty.Handlers.Timeout.IdleState">
+            <summary>
+            An <see cref="T:System.Enum"/> that represents the idle state of a <see cref="T:DotNetty.Transport.Channels.IChannel"/>.
+            </summary>
+        </member>
+        <member name="F:DotNetty.Handlers.Timeout.IdleState.ReaderIdle">
+            <summary>
+            No data was received for a while.
+            </summary>
+        </member>
+        <member name="F:DotNetty.Handlers.Timeout.IdleState.WriterIdle">
+            <summary>
+            No data was sent for a while.
+            </summary>
+        </member>
+        <member name="F:DotNetty.Handlers.Timeout.IdleState.AllIdle">
+            <summary>
+            No data was either received or sent for a while.
+            </summary>
+        </member>
+        <member name="T:DotNetty.Handlers.Timeout.IdleStateEvent">
+            <summary>
+            A user event triggered by <see cref="T:DotNetty.Handlers.Timeout.IdleStateHandler"/> when a <see cref="T:DotNetty.Transport.Channels.IChannel"/> is idle.
+            </summary>
+        </member>
+        <member name="M:DotNetty.Handlers.Timeout.IdleStateEvent.#ctor(DotNetty.Handlers.Timeout.IdleState,System.Boolean)">
+            <summary>
+            Constructor for sub-classes.
+            </summary>
+            <param name="state">the <see cref="T:DotNetty.Handlers.Timeout.IdleStateEvent"/> which triggered the event.</param>
+            <param name="first"><c>true</c> if its the first idle event for the <see cref="T:DotNetty.Handlers.Timeout.IdleStateEvent"/>.</param>
+        </member>
+        <member name="P:DotNetty.Handlers.Timeout.IdleStateEvent.State">
+            <summary>
+            Returns the idle state.
+            </summary>
+            <value>The state.</value>
+        </member>
+        <member name="P:DotNetty.Handlers.Timeout.IdleStateEvent.First">
+            <summary>
+            Returns <c>true</c> if this was the first event for the <see cref="T:DotNetty.Handlers.Timeout.IdleState"/>
+            </summary>
+            <returns><c>true</c> if first; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="T:DotNetty.Handlers.Timeout.IdleStateHandler">
+             <summary>
+             Triggers an <see cref="T:DotNetty.Handlers.Timeout.IdleStateEvent"/> when a <see cref="T:DotNetty.Transport.Channels.IChannel"/> has not performed
+             read, write, or both operation for a while.
+             
+             <para>
+             
+             <h3>Supported idle states</h3>
+             <table border="1">
+                 <tr>
+                     <th>Property</th><th>Meaning</th>
+                 </tr>
+                 <tr>
+                     <td><code>readerIdleTime</code></td>
+                     <td>an <see cref="T:DotNetty.Handlers.Timeout.IdleStateEvent"/> whose state is <see cref="F:DotNetty.Handlers.Timeout.IdleState.ReaderIdle"/>
+                         will be triggered when no read was performed for the specified period of
+                         time.  Specify <code>0</code> to disable.
+                     </td>
+                 </tr>
+                 <tr>
+                     <td><code>writerIdleTime</code></td>
+                     <td>an <see cref="T:DotNetty.Handlers.Timeout.IdleStateEvent"/> whose state is <see cref="F:DotNetty.Handlers.Timeout.IdleState.WriterIdle"/>
+                         will be triggered when no write was performed for the specified period of
+                         time.  Specify <code>0</code> to disable.</td>
+                 </tr>
+                 <tr>
+                     <td><code>allIdleTime</code></td>
+                     <td>an <see cref="T:DotNetty.Handlers.Timeout.IdleStateEvent"/> whose state is <see cref="F:DotNetty.Handlers.Timeout.IdleState.AllIdle"/>
+                         will be triggered when neither read nor write was performed for the
+                         specified period of time.  Specify <code>0</code> to disable.</td>
+                 </tr>
+             </table>
+             </para>
+             
+             <para>
+             
+             <example>
+            
+             An example that sends a ping message when there is no outbound traffic
+             for 30 seconds.  The connection is closed when there is no inbound traffic
+             for 60 seconds.
+            
+             <c>
+             var bootstrap = new <see cref="T:DotNetty.Transport.Bootstrapping.ServerBootstrap"/>();
+            
+             bootstrap.ChildHandler(new ActionChannelInitializer&lt;ISocketChannel&gt;(channel =>
+             {
+                 IChannelPipeline pipeline = channel.Pipeline;
+                 
+                 pipeline.AddLast("idleStateHandler", new <see cref="T:DotNetty.Handlers.Timeout.IdleStateHandler"/>(60, 30, 0);
+                 pipeline.AddLast("myHandler", new MyHandler());
+             }    
+             </c>
+             
+             Handler should handle the <see cref="T:DotNetty.Handlers.Timeout.IdleStateEvent"/>  triggered by <see cref="T:DotNetty.Handlers.Timeout.IdleStateHandler"/>.
+             
+             <c>
+             public class MyHandler : ChannelDuplexHandler 
+             {
+                 public override void UserEventTriggered(<see cref="T:DotNetty.Transport.Channels.IChannelHandlerContext"/> context, <see cref="T:System.Object"/> evt)
+                 {
+                     if(evt is <see cref="T:DotNetty.Handlers.Timeout.IdleStateEvent"/>) 
+                     {
+                         <see cref="T:DotNetty.Handlers.Timeout.IdleStateEvent"/> e = (<see cref="T:DotNetty.Handlers.Timeout.IdleStateEvent"/>) evt;
+                         if (e.State == <see cref="T:DotNetty.Handlers.Timeout.IdleState"/>.ReaderIdle) 
+                         {
+                             ctx.close();
+                         } 
+                         else if(e.State == <see cref="T:DotNetty.Handlers.Timeout.IdleState"/>.WriterIdle) 
+                         {
+                             ctx.writeAndFlush(new PingMessage());
+                         }
+                      }
+                  }
+             }
+             </c>
+             </example>
+             </para>
+             
+             <seealso cref="T:DotNetty.Handlers.Timeout.ReadTimeoutHandler"/>
+             <seealso cref="T:DotNetty.Handlers.Timeout.WriteTimeoutHandler"/>
+             </summary>
+        </member>
+        <member name="M:DotNetty.Handlers.Timeout.IdleStateHandler.#ctor(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance firing <see cref="T:DotNetty.Handlers.Timeout.IdleStateEvent"/>s.
+            </summary>
+            <param name="readerIdleTimeSeconds">
+                an <see cref="T:DotNetty.Handlers.Timeout.IdleStateEvent"/> whose state is <see cref="F:DotNetty.Handlers.Timeout.IdleState.ReaderIdle"/>
+                will be triggered when no read was performed for the specified
+                period of time.  Specify <code>0</code> to disable.
+            </param>
+            <param name="writerIdleTimeSeconds">
+                an <see cref="T:DotNetty.Handlers.Timeout.IdleStateEvent"/> whose state is <see cref="F:DotNetty.Handlers.Timeout.IdleState.WriterIdle"/>
+                will be triggered when no write was performed for the specified
+                period of time.  Specify <code>0</code> to disable.
+            </param>
+            <param name="allIdleTimeSeconds">
+                an <see cref="T:DotNetty.Handlers.Timeout.IdleStateEvent"/> whose state is <see cref="F:DotNetty.Handlers.Timeout.IdleState.AllIdle"/>
+                will be triggered when neither read nor write was performed for
+                the specified period of time.  Specify <code>0</code> to disable.
+            </param>
+        </member>
+        <member name="M:DotNetty.Handlers.Timeout.IdleStateHandler.#ctor(System.TimeSpan,System.TimeSpan,System.TimeSpan)">
+            <summary>
+            <see cref="M:DotNetty.Handlers.Timeout.IdleStateHandler.#ctor(System.Boolean,System.TimeSpan,System.TimeSpan,System.TimeSpan)"/>
+            </summary>
+        </member>
+        <member name="M:DotNetty.Handlers.Timeout.IdleStateHandler.#ctor(System.Boolean,System.TimeSpan,System.TimeSpan,System.TimeSpan)">
+            <summary>
+            Initializes a new instance firing <see cref="T:DotNetty.Handlers.Timeout.IdleStateEvent"/>s.
+            </summary>
+            <param name="observeOutput">
+                whether or not the consumption of <code>bytes</code> should be taken into
+                consideration when assessing write idleness. The default is <c>false</c>.
+            </param>
+            <param name="readerIdleTime">
+                an <see cref="T:DotNetty.Handlers.Timeout.IdleStateEvent"/> whose state is <see cref="F:DotNetty.Handlers.Timeout.IdleState.ReaderIdle"/>
+                will be triggered when no read was performed for the specified
+                period of time.  Specify <see cref="F:System.TimeSpan.Zero"/> to disable.
+            </param>
+            <param name="writerIdleTime">
+                an <see cref="T:DotNetty.Handlers.Timeout.IdleStateEvent"/> whose state is <see cref="F:DotNetty.Handlers.Timeout.IdleState.WriterIdle"/>
+                will be triggered when no write was performed for the specified
+                period of time.  Specify <see cref="F:System.TimeSpan.Zero"/> to disable.
+            </param>
+            <param name="allIdleTime">
+                an <see cref="T:DotNetty.Handlers.Timeout.IdleStateEvent"/> whose state is <see cref="F:DotNetty.Handlers.Timeout.IdleState.AllIdle"/>
+                will be triggered when neither read nor write was performed for
+                the specified period of time.  Specify <see cref="F:System.TimeSpan.Zero"/> to disable.
+            </param>
+        </member>
+        <member name="P:DotNetty.Handlers.Timeout.IdleStateHandler.ReaderIdleTime">
+            <summary>
+            Return the readerIdleTime that was given when instance this class in milliseconds.
+            </summary>
+            <returns>The reader idle time in millis.</returns>
+        </member>
+        <member name="P:DotNetty.Handlers.Timeout.IdleStateHandler.WriterIdleTime">
+            <summary>
+            Return the writerIdleTime that was given when instance this class in milliseconds.
+            </summary>
+            <returns>The writer idle time in millis.</returns>
+        </member>
+        <member name="P:DotNetty.Handlers.Timeout.IdleStateHandler.AllIdleTime">
+            <summary>
+            Return the allIdleTime that was given when instance this class in milliseconds.
+            </summary>
+            <returns>The all idle time in millis.</returns>
+        </member>
+        <member name="M:DotNetty.Handlers.Timeout.IdleStateHandler.Ticks">
+            <summary>
+            This method is visible for testing!
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:DotNetty.Handlers.Timeout.IdleStateHandler.Schedule(DotNetty.Transport.Channels.IChannelHandlerContext,System.Action{System.Object,System.Object},System.Object,System.Object,System.TimeSpan)">
+            <summary>
+            This method is visible for testing!
+            </summary>
+            <param name="ctx"></param>
+            <param name="task"></param>
+            <param name="context"></param>
+            <param name="state"></param>
+            <param name="delay"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DotNetty.Handlers.Timeout.IdleStateHandler.ChannelIdle(DotNetty.Transport.Channels.IChannelHandlerContext,DotNetty.Handlers.Timeout.IdleStateEvent)">
+            <summary>
+            Is called when an <see cref="T:DotNetty.Handlers.Timeout.IdleStateEvent"/> should be fired. This implementation calls
+            <see cref="M:DotNetty.Transport.Channels.IChannelHandlerContext.FireUserEventTriggered(System.Object)"/>.
+            </summary>
+            <param name="context">Context.</param>
+            <param name="stateEvent">Evt.</param>
+        </member>
+        <member name="M:DotNetty.Handlers.Timeout.IdleStateHandler.NewIdleStateEvent(DotNetty.Handlers.Timeout.IdleState,System.Boolean)">
+            <summary>
+            Returns a <see cref="T:DotNetty.Handlers.Timeout.IdleStateEvent"/>.
+            </summary>
+            <param name="state"></param>
+            <param name="first"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DotNetty.Handlers.Timeout.IdleStateHandler.InitOutputChanged(DotNetty.Transport.Channels.IChannelHandlerContext)">
+            <summary>
+            <see cref="M:DotNetty.Handlers.Timeout.IdleStateHandler.HasOutputChanged(DotNetty.Transport.Channels.IChannelHandlerContext,System.Boolean)"/>
+            </summary>
+            <param name="ctx"></param>
+        </member>
+        <member name="M:DotNetty.Handlers.Timeout.IdleStateHandler.HasOutputChanged(DotNetty.Transport.Channels.IChannelHandlerContext,System.Boolean)">
+            <summary>
+            Returns <c>true</c> if and only if the <see cref="M:DotNetty.Handlers.Timeout.IdleStateHandler.#ctor(System.Boolean,System.TimeSpan,System.TimeSpan,System.TimeSpan)"/>
+            was constructed
+            with <code>observeOutput</code> enabled and there has been an observed change in the
+            <see cref="T:DotNetty.Transport.Channels.ChannelOutboundBuffer"/> between two consecutive calls of this method.
+            https://github.com/netty/netty/issues/6150
+            </summary>
+            <param name="ctx"></param>
+            <param name="first"></param>
+            <returns></returns>
+        </member>
+        <member name="T:DotNetty.Handlers.Timeout.ReadTimeoutHandler">
+             <summary>
+             Raises a <see cref="T:DotNetty.Handlers.Timeout.ReadTimeoutException"/> when no data was read within a certain
+             period of time.
+            
+             <pre>
+             The connection is closed when there is no inbound traffic
+             for 30 seconds.
+            
+             <example>
+             <c>
+             var bootstrap = new <see cref="T:DotNetty.Transport.Bootstrapping.ServerBootstrap"/>();
+            
+             bootstrap.ChildHandler(new ActionChannelInitializer&lt;ISocketChannel&gt;(channel =>
+             {
+                 IChannelPipeline pipeline = channel.Pipeline;
+                 
+                 pipeline.AddLast("readTimeoutHandler", new <see cref="T:DotNetty.Handlers.Timeout.ReadTimeoutHandler"/>(30));
+                 pipeline.AddLast("myHandler", new MyHandler());
+             } 
+             </c>
+                        
+             <c>
+             public class MyHandler : ChannelDuplexHandler 
+             {
+                 public override void ExceptionCaught(<see cref="T:DotNetty.Transport.Channels.IChannelHandlerContext"/> context, <see cref="T:System.Exception"/> exception)
+                 {
+                     if(exception is <see cref="T:DotNetty.Handlers.Timeout.ReadTimeoutException"/>) 
+                     {
+                         // do somethind
+                     }
+                     else
+                     {
+                         base.ExceptionCaught(context, cause);
+                     }
+                  }
+             }
+             </c>
+             </example>
+             </pre>
+             
+             <seealso cref="T:DotNetty.Handlers.Timeout.WriteTimeoutHandler"/>
+             <seealso cref="T:DotNetty.Handlers.Timeout.IdleStateHandler"/>
+             </summary>
+        </member>
+        <member name="M:DotNetty.Handlers.Timeout.ReadTimeoutHandler.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:DotNetty.Handlers.Timeout.ReadTimeoutHandler"/> class.
+            </summary>
+            <param name="timeoutSeconds">Timeout in seconds.</param>
+        </member>
+        <member name="M:DotNetty.Handlers.Timeout.ReadTimeoutHandler.#ctor(System.TimeSpan)">
+            <summary>
+            Initializes a new instance of the <see cref="T:DotNetty.Handlers.Timeout.ReadTimeoutHandler"/> class.
+            </summary>
+            <param name="timeout">Timeout.</param>
+        </member>
+        <member name="M:DotNetty.Handlers.Timeout.ReadTimeoutHandler.ReadTimedOut(DotNetty.Transport.Channels.IChannelHandlerContext)">
+            <summary>
+            Is called when a read timeout was detected.
+            </summary>
+            <param name="context">Context.</param>
+        </member>
+        <member name="T:DotNetty.Handlers.Timeout.WriteTimeoutException">
+            <summary>
+            A <see cref="T:DotNetty.Handlers.TimeoutException"/> raised by <see cref="T:DotNetty.Handlers.Timeout.WriteTimeoutHandler"/> when a write operation
+            cannot finish in a certain period of time.
+            </summary>
+        </member>
+        <member name="T:DotNetty.Handlers.Timeout.WriteTimeoutHandler">
+             <summary>
+             Raises a <see cref="T:DotNetty.Handlers.Timeout.WriteTimeoutException"/> when a write operation cannot finish in a certain period of time.
+             
+             <para>
+             <example>
+             
+             The connection is closed when a write operation cannot finish in 30 seconds.
+            
+             <c>
+             var bootstrap = new <see cref="T:DotNetty.Transport.Bootstrapping.ServerBootstrap"/>();
+            
+             bootstrap.ChildHandler(new ActionChannelInitializer&lt;ISocketChannel&gt;(channel =>
+             {
+                 IChannelPipeline pipeline = channel.Pipeline;
+                 
+                 pipeline.AddLast("writeTimeoutHandler", new <see cref="T:DotNetty.Handlers.Timeout.WriteTimeoutHandler"/>(30);
+                 pipeline.AddLast("myHandler", new MyHandler());
+             }    
+             </c>
+             
+             <c>
+             public class MyHandler : ChannelDuplexHandler 
+             {
+                 public override void ExceptionCaught(<see cref="T:DotNetty.Transport.Channels.IChannelHandlerContext"/> context, <see cref="T:System.Exception"/> exception)
+                 {
+                     if(exception is <see cref="T:DotNetty.Handlers.Timeout.WriteTimeoutException"/>) 
+                     {
+                         // do somethind
+                     }
+                     else
+                     {
+                         base.ExceptionCaught(context, cause);
+                     }
+                  }
+             }
+             </c>
+             
+             </example>
+             </para>
+             <see cref="T:DotNetty.Handlers.Timeout.ReadTimeoutHandler"/>
+             <see cref="T:DotNetty.Handlers.Timeout.IdleStateHandler"/>
+             </summary>
+        </member>
+        <member name="F:DotNetty.Handlers.Timeout.WriteTimeoutHandler.tasks">
+            <summary>
+            A doubly-linked list to track all WriteTimeoutTasks.
+            </summary>
+        </member>
+        <member name="M:DotNetty.Handlers.Timeout.WriteTimeoutHandler.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:DotNetty.Handlers.Timeout.ReadTimeoutHandler"/> class.
+            </summary>
+            <param name="timeoutSeconds">Timeout in seconds.</param>
+        </member>
+        <member name="M:DotNetty.Handlers.Timeout.WriteTimeoutHandler.#ctor(System.TimeSpan)">
+            <summary>
+            Initializes a new instance of the <see cref="T:DotNetty.Handlers.Timeout.ReadTimeoutHandler"/> class.
+            </summary>
+            <param name="timeout">Timeout.</param>
+        </member>
+        <member name="M:DotNetty.Handlers.Timeout.WriteTimeoutHandler.WriteTimedOut(DotNetty.Transport.Channels.IChannelHandlerContext)">
+            <summary>
+            Is called when a write timeout was detected
+            </summary>
+            <param name="context">Context.</param>
+        </member>
+        <member name="T:DotNetty.Handlers.Tls.ApplicationProtocolNames">
+            <summary>
+            Provides a set of protocol names used in ALPN and NPN.
+            @see <a href="https://tools.ietf.org/html/rfc7540#section-11.1">RFC7540 (HTTP/2)</a>
+            @see <a href="https://tools.ietf.org/html/rfc7301#section-6">RFC7301 (TLS ALPN Extension)</a>
+            @see <a href="https://tools.ietf.org/html/draft-agl-tls-nextprotoneg-04#section-7">TLS NPN Extension Draft</a>
+            </summary>
+        </member>
+        <member name="F:DotNetty.Handlers.Tls.ApplicationProtocolNames.Http2">
+            <summary>
+            <c>h2</c>: HTTP version 2
+            </summary>
+        </member>
+        <member name="F:DotNetty.Handlers.Tls.ApplicationProtocolNames.Http11">
+            <summary>
+            <c>http/1.1</c>: HTTP version 1.1
+            </summary>
+        </member>
+        <member name="F:DotNetty.Handlers.Tls.ApplicationProtocolNames.Spdy31">
+            <summary>
+            <c>spdy/3.1</c>: SPDY version 3.1
+            </summary>
+        </member>
+        <member name="F:DotNetty.Handlers.Tls.ApplicationProtocolNames.Spdy3">
+            <summary>
+            <c>spdy/3</c>: SPDY version 3
+            </summary>
+        </member>
+        <member name="F:DotNetty.Handlers.Tls.ApplicationProtocolNames.Spdy2">
+            <summary>
+            <c>spdy/2</c>: SPDY version 2
+            </summary>
+        </member>
+        <member name="F:DotNetty.Handlers.Tls.ApplicationProtocolNames.Spdy1">
+            <summary>
+            <c>spdy/1</c>: SPDY version 1
+            </summary>
+        </member>
+        <member name="T:DotNetty.Handlers.Tls.ClientCertificateMode">
+            <summary>Describes the client certificate requirements for a HTTPS connection.</summary>
+        </member>
+        <member name="F:DotNetty.Handlers.Tls.ClientCertificateMode.NoCertificate">
+            <summary>A client certificate is not required and will not be requested from clients.</summary>
+        </member>
+        <member name="F:DotNetty.Handlers.Tls.ClientCertificateMode.AllowCertificate">
+            <summary>A client certificate will be requested; however,
+            authentication will not fail if a certificate is not provided by the client.</summary>
+        </member>
+        <member name="F:DotNetty.Handlers.Tls.ClientCertificateMode.RequireCertificate">
+            <summary>A client certificate will be requested, and the client must provide a valid certificate for authentication to succeed.</summary>
+        </member>
+        <member name="P:DotNetty.Handlers.Tls.ClientTlsSettings.AllowUnstrustedCertificate">
+            <summary>Whether allow untrusted certificate</summary>
+        </member>
+        <member name="P:DotNetty.Handlers.Tls.ClientTlsSettings.AllowNameMismatchCertificate">
+            <summary>Whether allow the certificate whose name doesn't match current remote endpoint's host name</summary>
+        </member>
+        <member name="P:DotNetty.Handlers.Tls.ClientTlsSettings.AllowCertificateChainErrors">
+            <summary>Whether allow the certificate chain errors</summary>
+        </member>
+        <member name="T:DotNetty.Handlers.Tls.NotSslRecordException">
+            <summary>
+                Special exception which will get thrown if a packet is
+                received that not looks like a TLS/SSL record. A user can check for
+                this <see cref="T:DotNetty.Handlers.Tls.NotSslRecordException" /> and so detect if one peer tries to
+                use secure and the other plain connection.
+            </summary>
+        </member>
+        <member name="P:DotNetty.Handlers.Tls.ServerTlsSettings.Certificate">
+            <summary>
+            <para>
+            Specifies the server certificate used to authenticate Tls/Ssl connections. This is ignored if ServerCertificateSelector is set.
+            </para>
+            <para>
+            If the server certificate has an Extended Key Usage extension, the usages must include Server Authentication (OID 1.3.6.1.5.5.7.3.1).
+            </para>
+            </summary>
+        </member>
+        <member name="P:DotNetty.Handlers.Tls.ServerTlsSettings.ClientCertificateMode">
+            <summary>
+            Specifies the client certificate requirements for a HTTPS connection. Defaults to <see cref="F:DotNetty.Handlers.Tls.ClientCertificateMode.NoCertificate"/>.
+            </summary>
+        </member>
+        <member name="P:DotNetty.Handlers.Tls.ServerTlsSettings.ClientCertificateValidation">
+            <summary>
+            Specifies a callback for additional client certificate validation that will be invoked during authentication.
+            </summary>
+        </member>
+        <member name="P:DotNetty.Handlers.Tls.ServerTlsSettings.ServerCertificateSelector">
+            <summary>
+            <para>
+            A callback that will be invoked to dynamically select a server certificate. This is higher priority than ServerCertificate.
+            If SNI is not avialable then the name parameter will be null.
+            </para>
+            <para>
+            If the server certificate has an Extended Key Usage extension, the usages must include Server Authentication (OID 1.3.6.1.5.5.7.3.1).
+            </para>
+            </summary>
+        </member>
+        <member name="P:DotNetty.Handlers.Tls.SniCompletionEvent.HostName">
+            <summary>
+            Returns the SNI hostname send by the client if we were able to parse it, <code>null</code> otherwise.
+            </summary>
+        </member>
+        <member name="T:DotNetty.Handlers.Tls.TlsCloseCompletionEvent">
+            <summary>
+            Event that is fired once the close_notify was received or if an failure happens before it was received.
+            </summary>
+        </member>
+        <member name="M:DotNetty.Handlers.Tls.TlsCloseCompletionEvent.#ctor">
+            <summary>
+            Creates a new event that indicates a successful receiving of close_notify.
+            </summary>
+        </member>
+        <member name="M:DotNetty.Handlers.Tls.TlsCloseCompletionEvent.#ctor(System.Exception)">
+            <summary>
+            Creates a new event that indicates an close_notify was not received because of an previous error.
+            Use <see cref="F:DotNetty.Handlers.Tls.TlsCloseCompletionEvent.Success"/> to indicate a success.
+            </summary>
+            <param name="cause"></param>
+        </member>
+        <member name="M:DotNetty.Handlers.Tls.TlsHandler.Unwrap(DotNetty.Transport.Channels.IChannelHandlerContext,DotNetty.Buffers.IByteBuffer,System.Int32,System.Int32,System.Collections.Generic.List{System.Int32},System.Collections.Generic.List{System.Object})">
+            <summary>Unwraps inbound SSL records.</summary>
+        </member>
+        <member name="M:DotNetty.Handlers.Tls.TlsHandshakeCompletionEvent.#ctor">
+            <summary>
+                Creates a new event that indicates a successful handshake.
+            </summary>
+        </member>
+        <member name="M:DotNetty.Handlers.Tls.TlsHandshakeCompletionEvent.#ctor(System.Exception)">
+            <summary>
+                Creates a new event that indicates an unsuccessful handshake.
+                Use {@link #SUCCESS} to indicate a successful handshake.
+            </summary>
+        </member>
+        <member name="P:DotNetty.Handlers.Tls.TlsHandshakeCompletionEvent.IsSuccessful">
+            <summary>
+                Return <c>true</c> if the handshake was successful
+            </summary>
+        </member>
+        <member name="P:DotNetty.Handlers.Tls.TlsHandshakeCompletionEvent.Exception">
+            <summary>
+                Return the {@link Throwable} if {@link #isSuccess()} returns <c>false</c>
+                and so the handshake failed.
+            </summary>
+        </member>
+        <member name="P:DotNetty.Handlers.Tls.TlsSettings.EnabledProtocols">
+            <summary>Specifies allowable SSL protocols.</summary>
+        </member>
+        <member name="P:DotNetty.Handlers.Tls.TlsSettings.CheckCertificateRevocation">
+            <summary>Specifies whether the certificate revocation list is checked during authentication.</summary>
+        </member>
+        <member name="T:DotNetty.Handlers.Tls.TlsUtils">
+            Utilities for TLS packets.
+        </member>
+        <member name="M:DotNetty.Handlers.Tls.TlsUtils.GetEncryptedPacketLength(DotNetty.Buffers.IByteBuffer,System.Int32)">
+            <summary>
+                Return how much bytes can be read out of the encrypted data. Be aware that this method will not increase
+                the readerIndex of the given <see cref="T:DotNetty.Buffers.IByteBuffer"/>.
+            </summary>
+            <param name="buffer">
+                The <see cref="T:DotNetty.Buffers.IByteBuffer"/> to read from. Be aware that it must have at least
+                <see cref="F:DotNetty.Handlers.Tls.TlsUtils.SSL_RECORD_HEADER_LENGTH"/> bytes to read,
+                otherwise it will throw an <see cref="T:System.ArgumentException"/>.
+            </param>
+            <param name="offset">Offset to record start.</param>
+            <returns>
+                The length of the encrypted packet that is included in the buffer. This will
+                return <c>-1</c> if the given <see cref="T:DotNetty.Buffers.IByteBuffer"/> is not encrypted at all.
+            </returns>
+        </member>
+    </members>
+</doc>

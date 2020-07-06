@@ -1,9 +1,7 @@
-﻿using DotNetty.Buffers;
+﻿
+using DotNetty.Buffers;
 using DotNetty.KCP;
-using DotNetty.Transport.Channels;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using DotNetty.Transport.Channels; 
 using System.Threading.Tasks;
 
 namespace Fenix
@@ -11,11 +9,19 @@ namespace Fenix
     public class NetPeer
     { 
         public uint ConnId { get; set; }
-
+        
         protected Ukcp kcpChannel { get; set; }
-
+        
         protected IChannel tcpChannel { get; set; }
+        
+        public enum NetworkType
+        {
+            TCP = 0x0,
+            KCP = 0x1
+        }
 
+        public NetworkType networkType => tcpChannel != null ? NetworkType.TCP : NetworkType.KCP;
+        
         public static NetPeer Create(uint connId, Ukcp kcpCh)
         {
             var obj = new NetPeer();
@@ -33,7 +39,7 @@ namespace Fenix
         }
 
         public void Send(byte[] bytes)
-        {     
+        {
             kcpChannel?.send(bytes);
             tcpChannel?.WriteAndFlushAsync(Unpooled.WrappedBuffer(bytes));
         }

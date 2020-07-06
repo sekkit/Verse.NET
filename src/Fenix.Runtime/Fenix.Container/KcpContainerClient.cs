@@ -31,15 +31,15 @@ namespace Fenix
             ChannelConfig channelConfig = new ChannelConfig();
             channelConfig.KcpTag = false;
             channelConfig.Crc32Check = true;
-            channelConfig.initNodelay(true, 40, 2, true);
+            channelConfig.initNodelay(true, 0, 2, true);
             channelConfig.Sndwnd = 512;
             channelConfig.Rcvwnd = 512;
             channelConfig.Mtu = 512;
             channelConfig.FecDataShardCount = 3;
             channelConfig.FecParityShardCount = 1;
             channelConfig.AckNoDelay = true;
-            channelConfig.Conv = 10;//.AutoSetConv = true;
-            channelConfig.UseConvChannel = true; 
+            //channelConfig.Conv = 10;//.AutoSetConv = true;
+            channelConfig.UseConvChannel = false; 
             listener.client = new KcpClient();
             listener.client.init(channelConfig);
 

@@ -1,0 +1,17 @@
+/Users/sekkit/code/Fenix/src/MessagePack/bin/Debug/netstandard2.0/MessagePack.dll.config
+/Users/sekkit/code/Fenix/src/MessagePack/bin/Debug/netstandard2.0/MessagePack.deps.json
+/Users/sekkit/code/Fenix/src/MessagePack/bin/Debug/netstandard2.0/MessagePack.dll
+/Users/sekkit/code/Fenix/src/MessagePack/bin/Debug/netstandard2.0/MessagePack.pdb
+/Users/sekkit/code/Fenix/src/MessagePack/bin/Debug/netstandard2.0/MessagePack.xml
+/Users/sekkit/code/Fenix/src/MessagePack/bin/Debug/netstandard2.0/MessagePack.Annotations.dll
+/Users/sekkit/code/Fenix/src/MessagePack/bin/Debug/netstandard2.0/MessagePack.Annotations.pdb
+/Users/sekkit/code/Fenix/src/MessagePack/bin/Debug/netstandard2.0/MessagePack.Annotations.xml
+/Users/sekkit/code/Fenix/src/MessagePack/obj/Debug/netstandard2.0/MessagePack.csprojAssemblyReference.cache
+/Users/sekkit/code/Fenix/src/MessagePack/obj/Debug/netstandard2.0/MessagePack.dll.config
+/Users/sekkit/code/Fenix/src/MessagePack/obj/Debug/netstandard2.0/MessagePack.AssemblyInfoInputs.cache
+/Users/sekkit/code/Fenix/src/MessagePack/obj/Debug/netstandard2.0/MessagePack.AssemblyInfo.cs
+/Users/sekkit/code/Fenix/src/MessagePack/obj/Debug/netstandard2.0/MessagePack.csproj.CoreCompileInputs.cache
+/Users/sekkit/code/Fenix/src/MessagePack/obj/Debug/netstandard2.0/MessagePack.csproj.CopyComplete
+/Users/sekkit/code/Fenix/src/MessagePack/obj/Debug/netstandard2.0/MessagePack.dll
+/Users/sekkit/code/Fenix/src/MessagePack/obj/Debug/netstandard2.0/MessagePack.xml
+/Users/sekkit/code/Fenix/src/MessagePack/obj/Debug/netstandard2.0/MessagePack.pdb
