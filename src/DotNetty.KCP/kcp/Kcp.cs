@@ -1665,10 +1665,10 @@ namespace DotNetty.KCP.Base
                 {
                     interval = 5000;
                 }
-                // else if (interval < 10)
-                // {
-                //     interval = 10;
-                // }
+                else if (interval < 10)
+                {
+                    interval = 10;
+                }
 
                 this.interval = interval;
             }
