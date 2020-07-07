@@ -4,9 +4,9 @@ using DotNetty.TCP;
 using DotNetty.Transport.Channels;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using Fenix.Fenix.Container;
 
 namespace Fenix
 {
@@ -52,6 +52,11 @@ namespace Fenix
             channel.WriteAndFlushAsync(buffer);
         }
 
+        public async static Task<TcpContainerServer> Create(IPEndPoint ep)
+        {
+            return null;
+        }
+        
         public async static Task<TcpContainerServer> Create(string ip, int port)
         {
             var channelConfig = new TcpChannelConfig();

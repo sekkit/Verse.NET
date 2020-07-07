@@ -1476,8 +1476,7 @@
           <e p="Program.cs" t="Include" />
         </e>
         <e p="Fenix.Runtime" t="IncludeRecursive">
-          <e p="bin" t="ExcludeRecursive" />
-          <e p="Fenix.Actor" t="Include">
+          <e p="Actor" t="Include">
             <e p="Actor.cs" t="Include" />
             <e p="ActorConfig.cs" t="Include" />
             <e p="ActorFactory.cs" t="Include" />
@@ -1485,7 +1484,8 @@
             <e p="ActorRef.cs" t="Include" />
             <e p="ActorTypeAttribute.cs" t="Include" />
           </e>
-          <e p="Fenix.Common" t="Include">
+          <e p="bin" t="ExcludeRecursive" />
+          <e p="Common" t="Include">
             <e p="Log.cs" t="Include" />
             <e p="Mailbox.cs" t="Include" />
             <e p="OneThreadSynchronizationContext.cs" t="Include" />
@@ -1495,7 +1495,7 @@
               <e p="RpcUtil.cs" t="Include" />
             </e>
           </e>
-          <e p="Fenix.Container" t="Include">
+          <e p="Container" t="Include">
             <e p="Container.cs" t="Include" />
             <e p="ContainerConfig.cs" t="Include" />
             <e p="ContainerHelper.cs" t="Include" />
@@ -1506,14 +1506,25 @@
             <e p="TcpContainerClient.cs" t="Include" />
             <e p="TcpContainerServer.cs" t="Include" />
           </e>
-          <e p="Fenix.Global" t="Include">
+          <e p="Fenix.Runtime.csproj" t="IncludeRecursive" />
+          <e p="Global" t="Include">
             <e p="Global.cs" t="Include" />
             <e p="IdManager.cs" t="Include" />
           </e>
-          <e p="Fenix.Host" t="Include">
+          <e p="Host" t="Include">
             <e p="Program.cs" t="Include" />
           </e>
-          <e p="Fenix.Redis" t="Include">
+          <e p="obj" t="ExcludeRecursive">
+            <e p="Debug" t="Include">
+              <e p="netstandard2.0" t="Include">
+                <e p="Fenix.Runtime.AssemblyInfo.cs" t="Include" />
+              </e>
+              <e p="netstandard2.1" t="Include">
+                <e p="Fenix.Runtime.AssemblyInfo.cs" t="Include" />
+              </e>
+            </e>
+          </e>
+          <e p="Redis" t="Include">
             <e p="CSRedisCore" t="Include">
               <e p="CSRedisClient.cs" t="Include" />
               <e p="CSRedisClientAsync.cs" t="Include" />
@@ -1587,17 +1598,6 @@
             <e p="Microsoft.Extensions.Caching.CSRedis" t="Include">
               <e p="CSRedisCache.cs" t="Include" />
               <e p="IDistributedCacheExtensions.cs" t="Include" />
-            </e>
-          </e>
-          <e p="Fenix.Runtime.csproj" t="IncludeRecursive" />
-          <e p="obj" t="ExcludeRecursive">
-            <e p="Debug" t="Include">
-              <e p="netstandard2.0" t="Include">
-                <e p="Fenix.Runtime.AssemblyInfo.cs" t="Include" />
-              </e>
-              <e p="netstandard2.1" t="Include">
-                <e p="Fenix.Runtime.AssemblyInfo.cs" t="Include" />
-              </e>
             </e>
           </e>
         </e>

@@ -5,6 +5,7 @@ using Fenix.Common;
 using Fenix.Common.Utils;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using System.Threading;
 
@@ -23,7 +24,7 @@ namespace Fenix
         protected KcpServer server; 
         
 
-        public static KcpContainerServer Create(string ip, int port)
+        public static KcpContainerServer Create(IPEndPoint ep)
         {
             KcpContainerServer listener = new KcpContainerServer();
 
@@ -40,9 +41,9 @@ namespace Fenix
             channelConfig.TimeoutMillis = 10000;
             //channelConfig.Conv = 55;
             ////AutoSetConv = true;
-            channelConfig.UseConvChannel = false; 
+            channelConfig.UseConvChannel = true; 
             listener.server = new KcpServer();
-            listener.server.init(Environment.ProcessorCount, listener, channelConfig, port);
+            listener.server.init(Environment.ProcessorCount, listener, channelConfig, ep.Port);
             
             return listener;
         }

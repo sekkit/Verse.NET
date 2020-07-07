@@ -4,9 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 
-
-
-namespace Fenix.Global
+namespace Fenix
 {
     public class IdManager
     {
@@ -16,16 +14,16 @@ namespace Fenix.Global
 
         protected ConcurrentDictionary<uint, uint> ActorContainerMap = new ConcurrentDictionary<uint, uint>();
         
-        protected ConcurrentDictionary<string, ulong> ChannelToActor
+        protected ConcurrentDictionary<string, ulong> ChannelToActorIdMap = new ConcurrentDictionary<string, ulong>();
 
         protected IdManager()
         {
-             
+            //
         }
 
         ~IdManager()
         {
-             
+            //
         }
 
         public void RegisterContainer(uint containerId, string address)

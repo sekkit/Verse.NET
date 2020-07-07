@@ -4,7 +4,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
-namespace Fenix.Global
+namespace Fenix
 {
     public class Global
     {
@@ -49,22 +49,28 @@ namespace Fenix.Global
 
         public bool RegisterContainer(uint containerId, string address)
         {
-            string key = containerId.ToString();
+            var key = containerId.ToString();
             using (var lk = RedisHelper.Lock(key, 3))
             {
-                return redisClient.Set(key, address);
+                bool ret = redisClient.Set(address, containerId);
+                return redisClient.Set(key, address) && ret;
             }
         }
 
         public string GetContainerAddr(uint containerId)
         {
-            string key = containerId.ToString();
+            var key = containerId.ToString();
             return redisClient.Get(key);
+        }
+
+        public uint GetContainerId(string addr)
+        {
+            return redisClient.Get<uint>(addr);
         }
 
         public bool RegisterActor(uint actorId, uint containerId)
         {
-            string key = actorId.ToString();
+            var key = actorId.ToString();
             using (var lk = RedisHelper.Lock(key, 3))
             {
                 return redisClient.Set(key, containerId);
@@ -73,13 +79,13 @@ namespace Fenix.Global
 
         public uint GetContainerIdByActorId(uint actorId)
         {
-            string key = actorId.ToString();
+            var key = actorId.ToString();
             return redisClient.Get<uint>(key);
         }
 
         public string GetContainerAddrByActorId(uint actorId)
         {
-            uint containerId = GetContainerIdByActorId(actorId);
+            var containerId = GetContainerIdByActorId(actorId);
             return GetContainerAddr(containerId);
         }
     }

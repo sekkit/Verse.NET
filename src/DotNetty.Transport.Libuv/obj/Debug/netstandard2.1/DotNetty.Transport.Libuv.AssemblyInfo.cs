@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("Libuv transport model in DotNetty.")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("0.7.0.5100")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.7.0-beta. Commit Hash: e3ad133336773bc1a6b67805f6309685acb8e2c7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.7.0-beta. Commit Hash: 435d96ebefb0f3b345c9d8bbafc49608a68e7c3f")]
 [assembly: System.Reflection.AssemblyProductAttribute("SpanNetty")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DotNetty.Transport.Libuv")]
 [assembly: System.Reflection.AssemblyVersionAttribute("0.7.0.0")]

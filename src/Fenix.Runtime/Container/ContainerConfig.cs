@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Fenix.Fenix.Container
+namespace Fenix
 {
     public class ContainerConfig
     {

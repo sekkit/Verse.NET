@@ -21,6 +21,14 @@ namespace Fenix
         }
 
         public NetworkType networkType => tcpChannel != null ? NetworkType.TCP : NetworkType.KCP;
+
+        public static NetPeer Create(IChannel channel)
+        {
+            var obj = new NetPeer(); 
+            obj.ConnId = 0;
+            obj.tcpChannel = channel;
+            return obj;
+        }
         
         public static NetPeer Create(uint connId, Ukcp kcpCh)
         {

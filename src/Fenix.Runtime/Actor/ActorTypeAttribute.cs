@@ -1,4 +1,4 @@
-﻿using Fenix.Global;
+﻿ 
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,7 +12,7 @@ namespace Fenix
         public ActorTypeAttribute(Type type)
         {
             this.ActorTypeName = type.GetType().Name;
-            Global.Global.Instance.RegisterActorType(type); 
+            Global.Instance.RegisterActorType(type); 
         }
     }
 }

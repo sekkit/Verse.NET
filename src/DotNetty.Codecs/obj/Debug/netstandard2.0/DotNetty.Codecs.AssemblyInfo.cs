@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyDescriptionAttribute("General purpose codecs for DotNetty：the complete port of the DotNetty.Codecs asse" +
     "mbly to support .NET 4.5.1 and newer.")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("0.7.0.5000")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.7.0-beta. Commit Hash: e3ad133336773bc1a6b67805f6309685acb8e2c7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.7.0-beta. Commit Hash: 435d96ebefb0f3b345c9d8bbafc49608a68e7c3f")]
 [assembly: System.Reflection.AssemblyProductAttribute("SpanNetty")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DotNetty.Codecs")]
 [assembly: System.Reflection.AssemblyVersionAttribute("0.7.0.0")]
