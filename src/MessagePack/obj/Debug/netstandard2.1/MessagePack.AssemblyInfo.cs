@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyDescriptionAttribute("Extremely Fast MessagePack(MsgPack) Serializer for C#(.NET, .NET Core, Unity, Xam" +
     "arin).")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0. Commit Hash: 435d96ebefb0f3b345c9d8bbafc49608a68e7c3f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0. Commit Hash: 4fb056c1e0c628afb12a27dd25060093cdf5dca9")]
 [assembly: System.Reflection.AssemblyProductAttribute("MessagePack")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MessagePack")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

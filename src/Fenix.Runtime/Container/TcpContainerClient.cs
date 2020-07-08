@@ -3,6 +3,7 @@ using DotNetty.TCP;
 using DotNetty.Transport.Channels;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -49,11 +50,11 @@ namespace Fenix
             Exception?.Invoke(channel);
         }
 
-        public async static Task<TcpContainerClient> Create(string ip, int port)
+        public async static Task<TcpContainerClient> Create(IPEndPoint addr)
         {
             var channelConfig = new TcpChannelConfig();
-            channelConfig.Address = "127.0.0.1";
-            channelConfig.Port = port;
+            channelConfig.Address = addr.Address.ToString();
+            channelConfig.Port = addr.Port;
             channelConfig.UseLibuv = true;
 
             var listener = new TcpContainerClient();

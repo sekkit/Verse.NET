@@ -9,7 +9,7 @@ namespace Server.App
     {
         public static void Start()
         {
-            var c = Container.Create("0.0.0.0", 7777);
+            var c = Container.Create(7777);
             ContainerHelper.Run(c);
         }
     }

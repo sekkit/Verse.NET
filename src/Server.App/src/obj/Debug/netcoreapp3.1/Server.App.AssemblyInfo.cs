@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Server.App")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0. Commit Hash: 435d96ebefb0f3b345c9d8bbafc49608a68e7c3f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0. Commit Hash: 4fb056c1e0c628afb12a27dd25060093cdf5dca9")]
 [assembly: System.Reflection.AssemblyProductAttribute("Server.App")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Server.App")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

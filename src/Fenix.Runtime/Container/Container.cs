@@ -1,8 +1,8 @@
 ﻿// 
 
 using System;
-using System.Collections.Generic;
 using System.Net;
+using System.Net.NetworkInformation;
 using DotNetty.KCP;
 using DotNetty.Buffers; 
 using DotNetty.Common.Utilities;
@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DotNetty.Transport.Channels;
 using Fenix.Common.Utils;
+using NetUtil = Fenix.Common.Utils.NetUtil;
 
 namespace Fenix
 {
@@ -17,56 +18,56 @@ namespace Fenix
     {
         public uint InstanceId { get; set; }
 
-        public string Tag { get; set; } 
+        public string Tag { get; set; }
         
-        protected IPEndPoint LocalEndPoint { get; set; }
-        
-        protected IPEndPoint RemoteEndPoint { get; set; } 
+        protected IPEndPoint LocalAddress { get; set; } 
 
-        protected KcpContainerServer kcpServer { get; set; } 
+        protected KcpContainerServer kcpServer { get; set; }
 
-        protected TcpContainerServer tcpServer = new TcpContainerServer(); 
+        protected TcpContainerServer tcpServer { get; set; }
         
-        protected Container(IPEndPoint localEP, IPEndPoint remoteEP)
+        protected Container(int port=0)
         {
-            this.LocalEndPoint = localEP;
-            this.RemoteEndPoint = remoteEP;
-
+            string addr = NetUtil.GetLocalIPv4(NetworkInterfaceType.Ethernet);
+            IPAddress ipAddr = IPAddress.Parse(addr);
+            
+            if (port == 0)
+                port = NetUtil.GetAvailablePort(ipAddr);
+            this.LocalAddress = new IPEndPoint(ipAddr, port);  
+            
             this.RegisterToIdManager(this);
 
             this.SetupKcpServer();
 
-            this.InitTcp();
-
-            //kcpClient.Send(Encoding.UTF8.GetBytes("hello"));
+            this.InitTcp(); 
         }
 
-        async Task InitTcp()
+        protected async Task InitTcp()
         {
             await this.SetupTcpServer();
 
             //await this.SetupTcpClient();
         }
 
-        public static Container Create(IPEndPoint localEP, IPEndPoint remoteEP)
+        public static Container Create(int port)
         {
-            return new Container(localEP, remoteEP);
+            return new Container(port);
         }
         
         #region KCP
 
         protected void SetupKcpServer()
         {
-            kcpServer = KcpContainerServer.Create(this.RemoteEndPoint);
+            kcpServer = KcpContainerServer.Create(this.LocalAddress);
             kcpServer.OnReceive += KcpServer_OnReceive;
             kcpServer.OnClose += KcpServer_OnClose;
             kcpServer.OnException += KcpServer_OnException;
         }
  
         //private long last_ts = DateTime.Now.Ticks;
-        protected KcpContainerClient CreateKcpClient()
+        protected KcpContainerClient CreateKcpClient(IPEndPoint remoteAddreses)
         {
-            var kcpClient = KcpContainerClient.Create(this.ip, this.port);
+            var kcpClient = KcpContainerClient.Create(remoteAddreses);
             kcpClient.OnReceive += KcpClient_OnReceive;
             kcpClient.OnClose += KcpClient_OnClose;
             kcpClient.OnException += KcpClient_OnException;
@@ -127,9 +128,8 @@ namespace Fenix
 
         #region TCP
         protected async Task<TcpContainerServer> SetupTcpServer()
-        {
-            IPEndPoint ep = new IPEndPoint(IPAddress.Parse(this.ip), this.port);
-            tcpServer = await TcpContainerServer.Create(ep);//this.ip, this.port);
+        { 
+            tcpServer = await TcpContainerServer.Create(this.LocalAddress);//this.ip, this.port);
             tcpServer.Connect   += OnTcpIncomingConnect;
             tcpServer.Receive   += OnTcpServerReceive;
             tcpServer.Close     += OnTcpServerClose;
@@ -137,9 +137,9 @@ namespace Fenix
             return tcpServer;
         }
 
-        protected async Task<TcpContainerClient> CreateTcpClient(string _ip, int _port)
+        protected async Task<TcpContainerClient> CreateTcpClient(IPEndPoint remoteAddress)
         {
-            var tcpClient = await TcpContainerClient.Create(_ip, _port);
+            var tcpClient = await TcpContainerClient.Create(remoteAddress);
             tcpClient.Receive    += OnTcpClientReceive;
             tcpClient.Close      += OnTcpClientClose;
             tcpClient.Exception  += OnTcpClientException;
@@ -155,12 +155,6 @@ namespace Fenix
             //新连接
             NetManager.Instance.RegisterChannel(channel);
             ulong containerId = Global.Instance.GetContainerId(channel.RemoteAddress.ToString());
-            //NetManager.Instance.CreatePeer(channel);
-            //var peer = NetPeer.Create(channel);
-            //string chId = channel.Id.AsLongText();
-            //重连
-            
-            
         }
         
         void OnTcpServerReceive(IChannel channel, IByteBuffer buffer)
@@ -206,7 +200,7 @@ namespace Fenix
 
         protected void RegisterToIdManager(Container container)
         {
-            IdManager.Instance.RegisterContainer(container.InstanceId, string.Format("{0}:{1}", ip, port));
+            IdManager.Instance.RegisterContainer(container.InstanceId, string.Format("{0}", this.LocalAddress.ToString()));
         }
 
         protected void RegisterToIdManager(Actor actor)
@@ -229,7 +223,7 @@ namespace Fenix
         //移除actor
         protected void RemoveActor(uint actorId)
         {
-
+            
         }
 
         //调用Actor身上的方法

@@ -24,7 +24,7 @@ namespace Fenix
 
         private static Ukcp _ukcp;
 
-        public static KcpContainerClient Create(string ip, int port)
+        public static KcpContainerClient Create(IPEndPoint remoteAddress)
         {
             KcpContainerClient listener = new KcpContainerClient();
 
@@ -42,8 +42,7 @@ namespace Fenix
             channelConfig.UseConvChannel = false; 
             listener.client = new KcpClient();
             listener.client.init(channelConfig);
-
-            EndPoint remoteAddress = new IPEndPoint(IPAddress.Parse("127.0.0.1"), port);
+ 
             _ukcp = listener.client.connect(remoteAddress, channelConfig, listener);
 
             return listener;
