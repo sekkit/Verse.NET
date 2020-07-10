@@ -1,4 +1,5 @@
-﻿// 
+﻿//Fenix, Inc.
+//
 
 using System;
 using System.Net;
@@ -9,37 +10,53 @@ using DotNetty.Common.Utilities;
 using System.Text;
 using System.Threading.Tasks;
 using DotNetty.Transport.Channels;
+using Fenix.Common;
 using Fenix.Common.Utils;
+using MessagePack;
+using MessagePack.Formatters;
 using NetUtil = Fenix.Common.Utils.NetUtil;
 
 namespace Fenix
 {
+    //一个内网IP，必须
+    //一个外网IP
+    
     public class Container
     {
+        public Container(uint instanceId, string tag, IPEndPoint localAddress, KcpContainerServer kcpServer, TcpContainerServer tcpServer)
+        {
+            InstanceId = instanceId;
+            Tag = tag;
+            LocalAddress = localAddress;
+            this.kcpServer = kcpServer;
+            this.tcpServer = tcpServer;
+        } 
+
         public uint InstanceId { get; set; }
 
         public string Tag { get; set; }
         
-        protected IPEndPoint LocalAddress { get; set; } 
+        protected IPEndPoint LocalAddress { get; set; }
 
         protected KcpContainerServer kcpServer { get; set; }
-
+        
         protected TcpContainerServer tcpServer { get; set; }
         
         protected Container(int port=0)
         {
             string addr = NetUtil.GetLocalIPv4(NetworkInterfaceType.Ethernet);
             IPAddress ipAddr = IPAddress.Parse(addr);
-            
+
             if (port == 0)
                 port = NetUtil.GetAvailablePort(ipAddr);
-            this.LocalAddress = new IPEndPoint(ipAddr, port);  
+            
+            this.LocalAddress = new IPEndPoint(ipAddr, port);
             
             this.RegisterToIdManager(this);
 
             this.SetupKcpServer();
 
-            this.InitTcp(); 
+            this.InitTcp();
         }
 
         protected async Task InitTcp()
@@ -154,21 +171,19 @@ namespace Fenix
         {
             //新连接
             NetManager.Instance.RegisterChannel(channel);
-            ulong containerId = Global.Instance.GetContainerId(channel.RemoteAddress.ToString());
+            ulong containerId = Global.IdManager.GetContainerId(channel.RemoteAddress.ToString());
+            Console.WriteLine(channel.RemoteAddress.ToString());
         }
         
         void OnTcpServerReceive(IChannel channel, IByteBuffer buffer)
         {
-            //var cur_ts = DateTime.Now.Ticks;
-            //Console.WriteLine("FROM_CLIENT:" + buffer.ToString() + " => " + ((cur_ts - last_ts)/10000.0).ToString()); //stopWatch.Elapsed.TotalMilliseconds.ToString());
-            //last_ts = cur_ts;
-            if (channel.Id.AsLongText() == "")
-            {
-                
-            }
-
+            var peer = NetManager.Instance.GetPeer(channel);
             var bytes = buffer.ToArray();
             
+            //解析包
+            var mb = MessagePackSerializer.Deserialize<Mailbox>(bytes); 
+            Console.WriteLine(MessagePackSerializer.SerializeToJson(mb));
+            HandleIncomingMessage(peer, mb);
         }
         
         void OnTcpServerClose(IChannel channel)
@@ -200,24 +215,58 @@ namespace Fenix
 
         protected void RegisterToIdManager(Container container)
         {
-            IdManager.Instance.RegisterContainer(container.InstanceId, string.Format("{0}", this.LocalAddress.ToString()));
+            Global.IdManager.RegisterContainer(container.InstanceId, string.Format("{0}", this.LocalAddress.ToString()));
         }
 
         protected void RegisterToIdManager(Actor actor)
         {
-            IdManager.Instance.RegisterActor(actor.InstanceId, this.InstanceId);
+            Global.IdManager.RegisterActor(actor.InstanceId, this.InstanceId);
         }
 
-        protected void SpawnActor<T>() where T: ActorLogic, new()
+        public void HandleIncomingMessage(NetPeer fromPeer, Mailbox mailbox)
         {
-            var newActor = Actor.Create<T>();
+            if (mailbox.ProtocolId == Protocol.HEARTBEAT) //心跳
+            {
+                var result = Heartbeat(MessagePackSerializer.Deserialize<HeartbeatMsg>(mailbox.Payload));
+                if (result != null)
+                {
+                    mailbox.Payload = MessagePackSerializer.Serialize(result);
+                    fromPeer.Send(MessagePackSerializer.Serialize(mailbox));
+                }
+            }
+            else if (mailbox.ProtocolId == Protocol.SPAWN_ACTOR)
+            {
+                var param = MessagePackSerializer.Deserialize<SpawnActorParam>(mailbox.Payload);
+                this.SpawnActor(param);
+            }
+            else if(mailbox.ProtocolId == Protocol.CALL_ACTOR_METHOD)
+            {
+                
+            }
+        }
+        
+        [ServerApi(Protocol.HEARTBEAT)]
+        protected HeartbeatMsg Heartbeat(HeartbeatMsg msg)
+        {
+            return msg;
+        }
+        
+        protected Actor SpawnActor<T>() where T: ActorLogic, new()
+        {
+            return SpawnActor(typeof(T));
+        }
+
+        protected Actor SpawnActor(Type type)
+        {
+            var newActor = Actor.Create(type);
             this.RegisterToIdManager(newActor);
+            return newActor;
         }
 
         //迁移actor
         protected void MigrateActor(uint actorId)
         {
-
+            
         }
 
         //移除actor

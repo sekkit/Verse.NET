@@ -29,5 +29,10 @@ namespace Fenix
         {
             return Actor.Create(new T());
         }
+        
+        public static Actor Create(Type type)
+        {
+            return Actor.Create((ActorLogic)Activator.CreateInstance(type)); 
+        }
     }
 }

@@ -1489,6 +1489,7 @@
             <e p="Log.cs" t="Include" />
             <e p="Mailbox.cs" t="Include" />
             <e p="OneThreadSynchronizationContext.cs" t="Include" />
+            <e p="Protocol.cs" t="Include" />
             <e p="Utils" t="Include">
               <e p="Extension.cs" t="Include" />
               <e p="NetUtil.cs" t="Include" />

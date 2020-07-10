@@ -9,26 +9,38 @@ namespace Fenix
 {
     public class NetManager
     {
-        protected ConcurrentDictionary<ulong, string> Id2ChannelName = new ConcurrentDictionary<ulong, string>();
+        protected ConcurrentDictionary<ulong, string> mId2ChName = new ConcurrentDictionary<ulong, string>();
         
-        protected ConcurrentDictionary<string, IChannel> ChannelName2Channel = new ConcurrentDictionary<string, IChannel>();
+        protected ConcurrentDictionary<string, IChannel> mChName2Ch = new ConcurrentDictionary<string, IChannel>();
         
-        protected Dictionary<uint, NetPeer> peers { get; set; }
+        protected Dictionary<uint, NetPeer> mPeers { get; set; }
         
-        protected Dictionary<uint, TcpContainerClient> tcpClientDic { get; set; }
+        protected Dictionary<uint, TcpContainerClient> mTcpClientDic { get; set; }
         
-        protected Dictionary<uint, KcpContainerClient> kcpClientDic { get; set; }
+        protected Dictionary<uint, KcpContainerClient> mKcpClientDic { get; set; }
         
         public static NetManager Instance = new NetManager();
 
         public void RegisterChannel(IChannel channel)
-        { 
+        {
             var channelId = channel.Id;
             var channelName = channelId.AsLongText(); 
-            ChannelName2Channel[channelName] = channel;
+            mChName2Ch[channelName] = channel;
+
+            var addr = channel.RemoteAddress.ToString();
+
+            var Id = Global.IdManager.GetContainerId(addr);
+            
+            var peer = NetPeer.Create(Id, channel);
+            mPeers[peer.ConnId] = peer;
         }
 
-        public void DeregisterChannel(ulong id, IChannel channel)
+        public void DeregisterChannel(ulong connId, IChannel channel)
+        {
+            
+        }
+
+        public NetPeer GetPeer(IChannel ch)
         {
             
         }

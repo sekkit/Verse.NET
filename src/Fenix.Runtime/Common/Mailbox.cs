@@ -1,6 +1,7 @@
 //
 
 using System;
+using Fenix.Common;
 using MessagePack;
 
 namespace Fenix
@@ -12,7 +13,7 @@ namespace Fenix
         public ulong Id { get; set; }
         
         [Key(1)]
-        public ulong ProtocolId { get; set; }
+        public Protocol ProtocolId { get; set; }
         
         [Key(2)]
         public byte[] Payload { get; set; }

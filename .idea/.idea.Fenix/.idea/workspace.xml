@@ -751,9 +751,12 @@
     <setting file="file://$PROJECT_DIR$/src/DotNetty.Transport/Channels/IChannelHandlerContext.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/Fenix.Runtime/Common/Utils/Extension.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/Fenix.Runtime/Common/Utils/NetUtil.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/Fenix.Runtime/Common/Mailbox.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/Fenix.Runtime/Actor/ActorTypeAttribute.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/DotNetty.TCP/TcpSocketClient.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/DotNetty.Transport/Channels/AbstractChannelHandlerContext.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/Fenix.Runtime/Actor/Actor.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/Fenix.Runtime/Container/NetPeer.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/DotNetty.Codecs/DecoderException.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/Fenix.Runtime/Container/TcpContainerClient.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/Fenix.Runtime/Container/Container.cs" root0="FORCE_HIGHLIGHTING" />
@@ -818,6 +821,8 @@
     <setting file="file://$PROJECT_DIR$/src/DotNetty.Transport.Libuv/EventLoop.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/DotNetty.Transport.Libuv/EventLoopGroup.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/DotNetty.Transport.Libuv/LoopExecutor.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5A41D6B7-1898-42EC-A409-FD0B1C3E3DCF/25/32f9214d/Activator.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/Fenix.Runtime/Common/Protocol.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/Fenix.Gate/Program.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/DotNetty.KCP/kcp/DelayPacket.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/DotNetty.KCP/kcp/Program.cs" root0="FORCE_HIGHLIGHTING" />
@@ -869,17 +874,21 @@
         <option value="$PROJECT_DIR$/src/Fenix.Runtime/Fenix.Global/Global.cs" />
         <option value="$PROJECT_DIR$/src/Fenix.Runtime/Fenix.Container/Container.cs" />
         <option value="$PROJECT_DIR$/src/Fenix.Runtime/Actor/ActorTypeAttribute.cs" />
-        <option value="$PROJECT_DIR$/src/Fenix.Runtime/Global/Global.cs" />
-        <option value="$PROJECT_DIR$/src/Fenix.Runtime/Global/IdManager.cs" />
         <option value="$PROJECT_DIR$/src/Fenix.Runtime/Container/ContainerConfig.cs" />
         <option value="$PROJECT_DIR$/src/Fenix.Runtime/Container/TcpContainerServer.cs" />
-        <option value="$PROJECT_DIR$/src/Fenix.Runtime/Container/NetManager.cs" />
         <option value="$PROJECT_DIR$/src/Fenix.Runtime/Container/KcpContainerServer.cs" />
         <option value="$PROJECT_DIR$/src/Fenix.Runtime/Container/KcpContainerClient.cs" />
         <option value="$PROJECT_DIR$/src/Fenix.Runtime/Container/TcpContainerClient.cs" />
         <option value="$PROJECT_DIR$/src/Fenix.Runtime/Common/Utils/NetUtil.cs" />
-        <option value="$PROJECT_DIR$/src/Fenix.Runtime/Container/Container.cs" />
         <option value="$PROJECT_DIR$/src/Server.App/src/Bootstrap.cs" />
+        <option value="$PROJECT_DIR$/src/Fenix.Runtime/Container/NetPeer.cs" />
+        <option value="$PROJECT_DIR$/src/Fenix.Runtime/Global/Global.cs" />
+        <option value="$PROJECT_DIR$/src/Fenix.Runtime/Global/IdManager.cs" />
+        <option value="$PROJECT_DIR$/src/Fenix.Runtime/Actor/Actor.cs" />
+        <option value="$PROJECT_DIR$/src/Fenix.Runtime/Container/NetManager.cs" />
+        <option value="$PROJECT_DIR$/src/Fenix.Runtime/Common/Mailbox.cs" />
+        <option value="$PROJECT_DIR$/src/Fenix.Runtime/Common/Protocol.cs" />
+        <option value="$PROJECT_DIR$/src/Fenix.Runtime/Container/Container.cs" />
       </list>
     </option>
   </component>
@@ -970,6 +979,9 @@
       <workItem from="1594134795932" duration="6897000" />
       <workItem from="1594141928507" duration="423000" />
       <workItem from="1594219356600" duration="5203000" />
+      <workItem from="1594316852150" duration="1520000" />
+      <workItem from="1594318459911" duration="363000" />
+      <workItem from="1594389981905" duration="11209000" />
     </task>
     <servers />
   </component>
@@ -1090,10 +1102,10 @@
       <screen x="0" y="25" width="2560" height="1345" />
     </state>
     <state x="1096" y="413" key="RiderGenerateDialog/0.25.2560.1345@0.25.2560.1345" timestamp="1593786284381" />
-    <state x="1048" y="233" key="SettingsEditor" timestamp="1594219883780">
+    <state x="614" y="220" key="SettingsEditor" timestamp="1594398262543">
       <screen x="0" y="25" width="2560" height="1345" />
     </state>
-    <state x="1048" y="233" key="SettingsEditor/0.25.2560.1345@0.25.2560.1345" timestamp="1594219883780" />
+    <state x="614" y="220" key="SettingsEditor/0.25.2560.1345@0.25.2560.1345" timestamp="1594398262543" />
     <state x="100" y="125" width="1755" height="1145" key="VCS.FileHistoryDialog" timestamp="1594047718560">
       <screen x="0" y="25" width="2560" height="1345" />
     </state>

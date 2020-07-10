@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DotNetty.TCP")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0. Commit Hash: 4fb056c1e0c628afb12a27dd25060093cdf5dca9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0. Commit Hash: b5cd95f90ea5e9609aad42bb967c9e8c24a84399")]
 [assembly: System.Reflection.AssemblyProductAttribute("DotNetty.TCP")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DotNetty.TCP")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
