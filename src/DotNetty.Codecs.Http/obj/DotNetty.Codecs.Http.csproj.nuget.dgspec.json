@@ -1,22 +1,26 @@
 {
   "format": 1,
   "restore": {
-    "/Users/sekkit/code/Fenix/src/DotNetty.Codecs.Http/DotNetty.Codecs.Http.csproj": {}
+    "C:\\Projects\\Fenix\\src\\DotNetty.Codecs.Http\\DotNetty.Codecs.Http.csproj": {}
   },
   "projects": {
-    "/Users/sekkit/code/Fenix/src/DotNetty.Buffers/DotNetty.Buffers.csproj": {
+    "C:\\Projects\\Fenix\\src\\DotNetty.Buffers\\DotNetty.Buffers.csproj": {
       "version": "0.7.0-beta",
       "restore": {
-        "projectUniqueName": "/Users/sekkit/code/Fenix/src/DotNetty.Buffers/DotNetty.Buffers.csproj",
+        "projectUniqueName": "C:\\Projects\\Fenix\\src\\DotNetty.Buffers\\DotNetty.Buffers.csproj",
         "projectName": "SpanNetty.Buffers",
-        "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Buffers/DotNetty.Buffers.csproj",
-        "packagesPath": "/Users/sekkit/.nuget/packages/",
-        "outputPath": "/Users/sekkit/code/Fenix/src/DotNetty.Buffers/obj/",
+        "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Buffers\\DotNetty.Buffers.csproj",
+        "packagesPath": "C:\\Users\\sekkit\\.nuget\\packages\\",
+        "outputPath": "C:\\Projects\\Fenix\\src\\DotNetty.Buffers\\obj\\",
         "projectStyle": "PackageReference",
         "crossTargeting": true,
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
         "configFilePaths": [
-          "/Users/sekkit/code/Fenix/NuGet.Config",
-          "/Users/sekkit/.nuget/NuGet/NuGet.Config"
+          "C:\\Projects\\Fenix\\NuGet.Config",
+          "C:\\Users\\sekkit\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.1",
@@ -30,22 +34,22 @@
         "frameworks": {
           "netcoreapp3.1": {
             "projectReferences": {
-              "/Users/sekkit/code/Fenix/src/DotNetty.Common/DotNetty.Common.csproj": {
-                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Common/DotNetty.Common.csproj"
+              "C:\\Projects\\Fenix\\src\\DotNetty.Common\\DotNetty.Common.csproj": {
+                "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Common\\DotNetty.Common.csproj"
               }
             }
           },
           "netstandard2.0": {
             "projectReferences": {
-              "/Users/sekkit/code/Fenix/src/DotNetty.Common/DotNetty.Common.csproj": {
-                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Common/DotNetty.Common.csproj"
+              "C:\\Projects\\Fenix\\src\\DotNetty.Common\\DotNetty.Common.csproj": {
+                "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Common\\DotNetty.Common.csproj"
               }
             }
           },
           "netstandard2.1": {
             "projectReferences": {
-              "/Users/sekkit/code/Fenix/src/DotNetty.Common/DotNetty.Common.csproj": {
-                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Common/DotNetty.Common.csproj"
+              "C:\\Projects\\Fenix\\src\\DotNetty.Common\\DotNetty.Common.csproj": {
+                "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Common\\DotNetty.Common.csproj"
               }
             }
           }
@@ -73,7 +77,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.301\\RuntimeIdentifierGraph.json"
         },
         "netstandard2.0": {
           "dependencies": {
@@ -94,7 +98,7 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.301\\RuntimeIdentifierGraph.json"
         },
         "netstandard2.1": {
           "imports": [
@@ -112,23 +116,27 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.301\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "/Users/sekkit/code/Fenix/src/DotNetty.Codecs.Http/DotNetty.Codecs.Http.csproj": {
+    "C:\\Projects\\Fenix\\src\\DotNetty.Codecs.Http\\DotNetty.Codecs.Http.csproj": {
       "version": "0.7.0-beta",
       "restore": {
-        "projectUniqueName": "/Users/sekkit/code/Fenix/src/DotNetty.Codecs.Http/DotNetty.Codecs.Http.csproj",
+        "projectUniqueName": "C:\\Projects\\Fenix\\src\\DotNetty.Codecs.Http\\DotNetty.Codecs.Http.csproj",
         "projectName": "SpanNetty.Codecs.Http",
-        "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Codecs.Http/DotNetty.Codecs.Http.csproj",
-        "packagesPath": "/Users/sekkit/.nuget/packages/",
-        "outputPath": "/Users/sekkit/code/Fenix/src/DotNetty.Codecs.Http/obj/",
+        "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Codecs.Http\\DotNetty.Codecs.Http.csproj",
+        "packagesPath": "C:\\Users\\sekkit\\.nuget\\packages\\",
+        "outputPath": "C:\\Projects\\Fenix\\src\\DotNetty.Codecs.Http\\obj\\",
         "projectStyle": "PackageReference",
         "crossTargeting": true,
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
         "configFilePaths": [
-          "/Users/sekkit/code/Fenix/NuGet.Config",
-          "/Users/sekkit/.nuget/NuGet/NuGet.Config"
+          "C:\\Projects\\Fenix\\NuGet.Config",
+          "C:\\Users\\sekkit\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.1",
@@ -142,22 +150,22 @@
         "frameworks": {
           "netcoreapp3.1": {
             "projectReferences": {
-              "/Users/sekkit/code/Fenix/src/DotNetty.Handlers/DotNetty.Handlers.csproj": {
-                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Handlers/DotNetty.Handlers.csproj"
+              "C:\\Projects\\Fenix\\src\\DotNetty.Handlers\\DotNetty.Handlers.csproj": {
+                "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Handlers\\DotNetty.Handlers.csproj"
               }
             }
           },
           "netstandard2.0": {
             "projectReferences": {
-              "/Users/sekkit/code/Fenix/src/DotNetty.Handlers/DotNetty.Handlers.csproj": {
-                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Handlers/DotNetty.Handlers.csproj"
+              "C:\\Projects\\Fenix\\src\\DotNetty.Handlers\\DotNetty.Handlers.csproj": {
+                "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Handlers\\DotNetty.Handlers.csproj"
               }
             }
           },
           "netstandard2.1": {
             "projectReferences": {
-              "/Users/sekkit/code/Fenix/src/DotNetty.Handlers/DotNetty.Handlers.csproj": {
-                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Handlers/DotNetty.Handlers.csproj"
+              "C:\\Projects\\Fenix\\src\\DotNetty.Handlers\\DotNetty.Handlers.csproj": {
+                "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Handlers\\DotNetty.Handlers.csproj"
               }
             }
           }
@@ -185,7 +193,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.301\\RuntimeIdentifierGraph.json"
         },
         "netstandard2.0": {
           "dependencies": {
@@ -210,7 +218,7 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.301\\RuntimeIdentifierGraph.json"
         },
         "netstandard2.1": {
           "dependencies": {
@@ -234,23 +242,27 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.301\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "/Users/sekkit/code/Fenix/src/DotNetty.Codecs/DotNetty.Codecs.csproj": {
+    "C:\\Projects\\Fenix\\src\\DotNetty.Codecs\\DotNetty.Codecs.csproj": {
       "version": "0.7.0-beta",
       "restore": {
-        "projectUniqueName": "/Users/sekkit/code/Fenix/src/DotNetty.Codecs/DotNetty.Codecs.csproj",
+        "projectUniqueName": "C:\\Projects\\Fenix\\src\\DotNetty.Codecs\\DotNetty.Codecs.csproj",
         "projectName": "SpanNetty.Codecs",
-        "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Codecs/DotNetty.Codecs.csproj",
-        "packagesPath": "/Users/sekkit/.nuget/packages/",
-        "outputPath": "/Users/sekkit/code/Fenix/src/DotNetty.Codecs/obj/",
+        "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Codecs\\DotNetty.Codecs.csproj",
+        "packagesPath": "C:\\Users\\sekkit\\.nuget\\packages\\",
+        "outputPath": "C:\\Projects\\Fenix\\src\\DotNetty.Codecs\\obj\\",
         "projectStyle": "PackageReference",
         "crossTargeting": true,
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
         "configFilePaths": [
-          "/Users/sekkit/code/Fenix/NuGet.Config",
-          "/Users/sekkit/.nuget/NuGet/NuGet.Config"
+          "C:\\Projects\\Fenix\\NuGet.Config",
+          "C:\\Users\\sekkit\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netstandard2.0",
@@ -263,15 +275,15 @@
         "frameworks": {
           "netstandard2.0": {
             "projectReferences": {
-              "/Users/sekkit/code/Fenix/src/DotNetty.Transport/DotNetty.Transport.csproj": {
-                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Transport/DotNetty.Transport.csproj"
+              "C:\\Projects\\Fenix\\src\\DotNetty.Transport\\DotNetty.Transport.csproj": {
+                "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Transport\\DotNetty.Transport.csproj"
               }
             }
           },
           "netstandard2.1": {
             "projectReferences": {
-              "/Users/sekkit/code/Fenix/src/DotNetty.Transport/DotNetty.Transport.csproj": {
-                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Transport/DotNetty.Transport.csproj"
+              "C:\\Projects\\Fenix\\src\\DotNetty.Transport\\DotNetty.Transport.csproj": {
+                "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Transport\\DotNetty.Transport.csproj"
               }
             }
           }
@@ -306,7 +318,7 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.301\\RuntimeIdentifierGraph.json"
         },
         "netstandard2.1": {
           "dependencies": {
@@ -330,23 +342,27 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.301\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "/Users/sekkit/code/Fenix/src/DotNetty.Common/DotNetty.Common.csproj": {
+    "C:\\Projects\\Fenix\\src\\DotNetty.Common\\DotNetty.Common.csproj": {
       "version": "0.7.0-beta",
       "restore": {
-        "projectUniqueName": "/Users/sekkit/code/Fenix/src/DotNetty.Common/DotNetty.Common.csproj",
+        "projectUniqueName": "C:\\Projects\\Fenix\\src\\DotNetty.Common\\DotNetty.Common.csproj",
         "projectName": "SpanNetty.Common",
-        "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Common/DotNetty.Common.csproj",
-        "packagesPath": "/Users/sekkit/.nuget/packages/",
-        "outputPath": "/Users/sekkit/code/Fenix/src/DotNetty.Common/obj/",
+        "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Common\\DotNetty.Common.csproj",
+        "packagesPath": "C:\\Users\\sekkit\\.nuget\\packages\\",
+        "outputPath": "C:\\Projects\\Fenix\\src\\DotNetty.Common\\obj\\",
         "projectStyle": "PackageReference",
         "crossTargeting": true,
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
         "configFilePaths": [
-          "/Users/sekkit/code/Fenix/NuGet.Config",
-          "/Users/sekkit/.nuget/NuGet/NuGet.Config"
+          "C:\\Projects\\Fenix\\NuGet.Config",
+          "C:\\Users\\sekkit\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.1",
@@ -397,7 +413,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.301\\RuntimeIdentifierGraph.json"
         },
         "netstandard2.0": {
           "dependencies": {
@@ -438,7 +454,7 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.301\\RuntimeIdentifierGraph.json"
         },
         "netstandard2.1": {
           "dependencies": {
@@ -466,23 +482,27 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.301\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "/Users/sekkit/code/Fenix/src/DotNetty.Handlers/DotNetty.Handlers.csproj": {
+    "C:\\Projects\\Fenix\\src\\DotNetty.Handlers\\DotNetty.Handlers.csproj": {
       "version": "0.7.0-beta",
       "restore": {
-        "projectUniqueName": "/Users/sekkit/code/Fenix/src/DotNetty.Handlers/DotNetty.Handlers.csproj",
+        "projectUniqueName": "C:\\Projects\\Fenix\\src\\DotNetty.Handlers\\DotNetty.Handlers.csproj",
         "projectName": "SpanNetty.Handlers",
-        "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Handlers/DotNetty.Handlers.csproj",
-        "packagesPath": "/Users/sekkit/.nuget/packages/",
-        "outputPath": "/Users/sekkit/code/Fenix/src/DotNetty.Handlers/obj/",
+        "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Handlers\\DotNetty.Handlers.csproj",
+        "packagesPath": "C:\\Users\\sekkit\\.nuget\\packages\\",
+        "outputPath": "C:\\Projects\\Fenix\\src\\DotNetty.Handlers\\obj\\",
         "projectStyle": "PackageReference",
         "crossTargeting": true,
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
         "configFilePaths": [
-          "/Users/sekkit/code/Fenix/NuGet.Config",
-          "/Users/sekkit/.nuget/NuGet/NuGet.Config"
+          "C:\\Projects\\Fenix\\NuGet.Config",
+          "C:\\Users\\sekkit\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.1",
@@ -496,31 +516,31 @@
         "frameworks": {
           "netcoreapp3.1": {
             "projectReferences": {
-              "/Users/sekkit/code/Fenix/src/DotNetty.Codecs/DotNetty.Codecs.csproj": {
-                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Codecs/DotNetty.Codecs.csproj"
+              "C:\\Projects\\Fenix\\src\\DotNetty.Codecs\\DotNetty.Codecs.csproj": {
+                "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Codecs\\DotNetty.Codecs.csproj"
               },
-              "/Users/sekkit/code/Fenix/src/DotNetty.Transport.Libuv/DotNetty.Transport.Libuv.csproj": {
-                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Transport.Libuv/DotNetty.Transport.Libuv.csproj"
+              "C:\\Projects\\Fenix\\src\\DotNetty.Transport.Libuv\\DotNetty.Transport.Libuv.csproj": {
+                "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Transport.Libuv\\DotNetty.Transport.Libuv.csproj"
               }
             }
           },
           "netstandard2.0": {
             "projectReferences": {
-              "/Users/sekkit/code/Fenix/src/DotNetty.Codecs/DotNetty.Codecs.csproj": {
-                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Codecs/DotNetty.Codecs.csproj"
+              "C:\\Projects\\Fenix\\src\\DotNetty.Codecs\\DotNetty.Codecs.csproj": {
+                "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Codecs\\DotNetty.Codecs.csproj"
               },
-              "/Users/sekkit/code/Fenix/src/DotNetty.Transport.Libuv/DotNetty.Transport.Libuv.csproj": {
-                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Transport.Libuv/DotNetty.Transport.Libuv.csproj"
+              "C:\\Projects\\Fenix\\src\\DotNetty.Transport.Libuv\\DotNetty.Transport.Libuv.csproj": {
+                "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Transport.Libuv\\DotNetty.Transport.Libuv.csproj"
               }
             }
           },
           "netstandard2.1": {
             "projectReferences": {
-              "/Users/sekkit/code/Fenix/src/DotNetty.Codecs/DotNetty.Codecs.csproj": {
-                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Codecs/DotNetty.Codecs.csproj"
+              "C:\\Projects\\Fenix\\src\\DotNetty.Codecs\\DotNetty.Codecs.csproj": {
+                "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Codecs\\DotNetty.Codecs.csproj"
               },
-              "/Users/sekkit/code/Fenix/src/DotNetty.Transport.Libuv/DotNetty.Transport.Libuv.csproj": {
-                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Transport.Libuv/DotNetty.Transport.Libuv.csproj"
+              "C:\\Projects\\Fenix\\src\\DotNetty.Transport.Libuv\\DotNetty.Transport.Libuv.csproj": {
+                "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Transport.Libuv\\DotNetty.Transport.Libuv.csproj"
               }
             }
           }
@@ -548,7 +568,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.301\\RuntimeIdentifierGraph.json"
         },
         "netstandard2.0": {
           "dependencies": {
@@ -569,7 +589,7 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.301\\RuntimeIdentifierGraph.json"
         },
         "netstandard2.1": {
           "imports": [
@@ -587,23 +607,27 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.301\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "/Users/sekkit/code/Fenix/src/DotNetty.Transport.Libuv/DotNetty.Transport.Libuv.csproj": {
+    "C:\\Projects\\Fenix\\src\\DotNetty.Transport.Libuv\\DotNetty.Transport.Libuv.csproj": {
       "version": "0.7.0-beta",
       "restore": {
-        "projectUniqueName": "/Users/sekkit/code/Fenix/src/DotNetty.Transport.Libuv/DotNetty.Transport.Libuv.csproj",
+        "projectUniqueName": "C:\\Projects\\Fenix\\src\\DotNetty.Transport.Libuv\\DotNetty.Transport.Libuv.csproj",
         "projectName": "SpanNetty.Transport.Libuv",
-        "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Transport.Libuv/DotNetty.Transport.Libuv.csproj",
-        "packagesPath": "/Users/sekkit/.nuget/packages/",
-        "outputPath": "/Users/sekkit/code/Fenix/src/DotNetty.Transport.Libuv/obj/",
+        "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Transport.Libuv\\DotNetty.Transport.Libuv.csproj",
+        "packagesPath": "C:\\Users\\sekkit\\.nuget\\packages\\",
+        "outputPath": "C:\\Projects\\Fenix\\src\\DotNetty.Transport.Libuv\\obj\\",
         "projectStyle": "PackageReference",
         "crossTargeting": true,
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
         "configFilePaths": [
-          "/Users/sekkit/code/Fenix/NuGet.Config",
-          "/Users/sekkit/.nuget/NuGet/NuGet.Config"
+          "C:\\Projects\\Fenix\\NuGet.Config",
+          "C:\\Users\\sekkit\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.1",
@@ -617,22 +641,22 @@
         "frameworks": {
           "netcoreapp3.1": {
             "projectReferences": {
-              "/Users/sekkit/code/Fenix/src/DotNetty.Transport/DotNetty.Transport.csproj": {
-                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Transport/DotNetty.Transport.csproj"
+              "C:\\Projects\\Fenix\\src\\DotNetty.Transport\\DotNetty.Transport.csproj": {
+                "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Transport\\DotNetty.Transport.csproj"
               }
             }
           },
           "netstandard2.0": {
             "projectReferences": {
-              "/Users/sekkit/code/Fenix/src/DotNetty.Transport/DotNetty.Transport.csproj": {
-                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Transport/DotNetty.Transport.csproj"
+              "C:\\Projects\\Fenix\\src\\DotNetty.Transport\\DotNetty.Transport.csproj": {
+                "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Transport\\DotNetty.Transport.csproj"
               }
             }
           },
           "netstandard2.1": {
             "projectReferences": {
-              "/Users/sekkit/code/Fenix/src/DotNetty.Transport/DotNetty.Transport.csproj": {
-                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Transport/DotNetty.Transport.csproj"
+              "C:\\Projects\\Fenix\\src\\DotNetty.Transport\\DotNetty.Transport.csproj": {
+                "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Transport\\DotNetty.Transport.csproj"
               }
             }
           }
@@ -666,7 +690,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.301\\RuntimeIdentifierGraph.json"
         },
         "netstandard2.0": {
           "dependencies": {
@@ -691,7 +715,7 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.301\\RuntimeIdentifierGraph.json"
         },
         "netstandard2.1": {
           "dependencies": {
@@ -715,23 +739,27 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.301\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "/Users/sekkit/code/Fenix/src/DotNetty.Transport/DotNetty.Transport.csproj": {
+    "C:\\Projects\\Fenix\\src\\DotNetty.Transport\\DotNetty.Transport.csproj": {
       "version": "0.7.0-beta",
       "restore": {
-        "projectUniqueName": "/Users/sekkit/code/Fenix/src/DotNetty.Transport/DotNetty.Transport.csproj",
+        "projectUniqueName": "C:\\Projects\\Fenix\\src\\DotNetty.Transport\\DotNetty.Transport.csproj",
         "projectName": "SpanNetty.Transport",
-        "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Transport/DotNetty.Transport.csproj",
-        "packagesPath": "/Users/sekkit/.nuget/packages/",
-        "outputPath": "/Users/sekkit/code/Fenix/src/DotNetty.Transport/obj/",
+        "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Transport\\DotNetty.Transport.csproj",
+        "packagesPath": "C:\\Users\\sekkit\\.nuget\\packages\\",
+        "outputPath": "C:\\Projects\\Fenix\\src\\DotNetty.Transport\\obj\\",
         "projectStyle": "PackageReference",
         "crossTargeting": true,
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
         "configFilePaths": [
-          "/Users/sekkit/code/Fenix/NuGet.Config",
-          "/Users/sekkit/.nuget/NuGet/NuGet.Config"
+          "C:\\Projects\\Fenix\\NuGet.Config",
+          "C:\\Users\\sekkit\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.1",
@@ -745,22 +773,22 @@
         "frameworks": {
           "netcoreapp3.1": {
             "projectReferences": {
-              "/Users/sekkit/code/Fenix/src/DotNetty.Buffers/DotNetty.Buffers.csproj": {
-                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Buffers/DotNetty.Buffers.csproj"
+              "C:\\Projects\\Fenix\\src\\DotNetty.Buffers\\DotNetty.Buffers.csproj": {
+                "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Buffers\\DotNetty.Buffers.csproj"
               }
             }
           },
           "netstandard2.0": {
             "projectReferences": {
-              "/Users/sekkit/code/Fenix/src/DotNetty.Buffers/DotNetty.Buffers.csproj": {
-                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Buffers/DotNetty.Buffers.csproj"
+              "C:\\Projects\\Fenix\\src\\DotNetty.Buffers\\DotNetty.Buffers.csproj": {
+                "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Buffers\\DotNetty.Buffers.csproj"
               }
             }
           },
           "netstandard2.1": {
             "projectReferences": {
-              "/Users/sekkit/code/Fenix/src/DotNetty.Buffers/DotNetty.Buffers.csproj": {
-                "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Buffers/DotNetty.Buffers.csproj"
+              "C:\\Projects\\Fenix\\src\\DotNetty.Buffers\\DotNetty.Buffers.csproj": {
+                "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Buffers\\DotNetty.Buffers.csproj"
               }
             }
           }
@@ -788,7 +816,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.301\\RuntimeIdentifierGraph.json"
         },
         "netstandard2.0": {
           "dependencies": {
@@ -813,7 +841,7 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.301\\RuntimeIdentifierGraph.json"
         },
         "netstandard2.1": {
           "imports": [
@@ -831,7 +859,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.301\\RuntimeIdentifierGraph.json"
         }
       }
     }

@@ -1584,21 +1584,26 @@
     ]
   },
   "packageFolders": {
-    "/Users/sekkit/.nuget/packages/": {}
+    "C:\\Users\\sekkit\\.nuget\\packages\\": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "0.7.0-beta",
     "restore": {
-      "projectUniqueName": "/Users/sekkit/code/Fenix/src/DotNetty.Codecs.Mqtt/DotNetty.Codecs.Mqtt.csproj",
+      "projectUniqueName": "C:\\Projects\\Fenix\\src\\DotNetty.Codecs.Mqtt\\DotNetty.Codecs.Mqtt.csproj",
       "projectName": "SpanNetty.Codecs.Mqtt",
-      "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Codecs.Mqtt/DotNetty.Codecs.Mqtt.csproj",
-      "packagesPath": "/Users/sekkit/.nuget/packages/",
-      "outputPath": "/Users/sekkit/code/Fenix/src/DotNetty.Codecs.Mqtt/obj/",
+      "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Codecs.Mqtt\\DotNetty.Codecs.Mqtt.csproj",
+      "packagesPath": "C:\\Users\\sekkit\\.nuget\\packages\\",
+      "outputPath": "C:\\Projects\\Fenix\\src\\DotNetty.Codecs.Mqtt\\obj\\",
       "projectStyle": "PackageReference",
       "crossTargeting": true,
+      "fallbackFolders": [
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+      ],
       "configFilePaths": [
-        "/Users/sekkit/code/Fenix/NuGet.Config",
-        "/Users/sekkit/.nuget/NuGet/NuGet.Config"
+        "C:\\Projects\\Fenix\\NuGet.Config",
+        "C:\\Users\\sekkit\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp3.1",
@@ -1612,22 +1617,22 @@
       "frameworks": {
         "netcoreapp3.1": {
           "projectReferences": {
-            "/Users/sekkit/code/Fenix/src/DotNetty.Codecs/DotNetty.Codecs.csproj": {
-              "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Codecs/DotNetty.Codecs.csproj"
+            "C:\\Projects\\Fenix\\src\\DotNetty.Codecs\\DotNetty.Codecs.csproj": {
+              "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Codecs\\DotNetty.Codecs.csproj"
             }
           }
         },
         "netstandard2.0": {
           "projectReferences": {
-            "/Users/sekkit/code/Fenix/src/DotNetty.Codecs/DotNetty.Codecs.csproj": {
-              "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Codecs/DotNetty.Codecs.csproj"
+            "C:\\Projects\\Fenix\\src\\DotNetty.Codecs\\DotNetty.Codecs.csproj": {
+              "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Codecs\\DotNetty.Codecs.csproj"
             }
           }
         },
         "netstandard2.1": {
           "projectReferences": {
-            "/Users/sekkit/code/Fenix/src/DotNetty.Codecs/DotNetty.Codecs.csproj": {
-              "projectPath": "/Users/sekkit/code/Fenix/src/DotNetty.Codecs/DotNetty.Codecs.csproj"
+            "C:\\Projects\\Fenix\\src\\DotNetty.Codecs\\DotNetty.Codecs.csproj": {
+              "projectPath": "C:\\Projects\\Fenix\\src\\DotNetty.Codecs\\DotNetty.Codecs.csproj"
             }
           }
         }
@@ -1655,7 +1660,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.301\\RuntimeIdentifierGraph.json"
       },
       "netstandard2.0": {
         "dependencies": {
@@ -1676,7 +1681,7 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.301\\RuntimeIdentifierGraph.json"
       },
       "netstandard2.1": {
         "imports": [
@@ -1694,7 +1699,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.301\\RuntimeIdentifierGraph.json"
       }
     }
   }

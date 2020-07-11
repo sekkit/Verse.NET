@@ -4,9 +4,11 @@ namespace Fenix
 {
     public class Actor
     {
-        public uint InstanceId { get; set; }
+        public uint Id { get; set; }
 
         public uint ContainerId { get; set; }
+
+        public string UniqueName { get; set; }
 
         protected ActorLogic Logic { get; set; }
 

@@ -15,6 +15,8 @@ using Fenix.Common.Utils;
 using MessagePack;
 using MessagePack.Formatters;
 using NetUtil = Fenix.Common.Utils.NetUtil;
+using static Fenix.Common.RpcUtil;
+using System.Collections.Concurrent;
 
 namespace Fenix
 {
@@ -25,14 +27,14 @@ namespace Fenix
     {
         public Container(uint instanceId, string tag, IPEndPoint localAddress, KcpContainerServer kcpServer, TcpContainerServer tcpServer)
         {
-            InstanceId = instanceId;
+            Id = instanceId;
             Tag = tag;
             LocalAddress = localAddress;
             this.kcpServer = kcpServer;
             this.tcpServer = tcpServer;
         } 
 
-        public uint InstanceId { get; set; }
+        public uint Id { get; set; }
 
         public string Tag { get; set; }
         
@@ -41,6 +43,9 @@ namespace Fenix
         protected KcpContainerServer kcpServer { get; set; }
         
         protected TcpContainerServer tcpServer { get; set; }
+
+        protected ConcurrentDictionary<uint, Actor> actorDic = new ConcurrentDictionary<uint, Actor>();
+
         
         protected Container(int port=0)
         {
@@ -178,10 +183,29 @@ namespace Fenix
         void OnTcpServerReceive(IChannel channel, IByteBuffer buffer)
         {
             var peer = NetManager.Instance.GetPeer(channel);
+
+            //Ping/Pong msg process
+            if(buffer.ReadableBytes == 1)
+            {
+                byte data = buffer.ReadByte();
+                if(data == (byte)InternalProtocol.PING)
+                {
+                    peer.Send(new byte[] { (byte)InternalProtocol.PONG });
+                }
+                else if(data == (byte)InternalProtocol.GOODBYE)
+                {
+                    //删除这个连接
+                    NetManager.Instance.DeregisterChannel(channel);
+                    peer.Send(new byte[] { (byte)InternalProtocol.GOODBYE });
+                }
+                
+                return;
+            }
+
             var bytes = buffer.ToArray();
             
             //解析包
-            var mb = MessagePackSerializer.Deserialize<Mailbox>(bytes); 
+            var mb = MessagePackSerializer.Deserialize<Message>(bytes);
             Console.WriteLine(MessagePackSerializer.SerializeToJson(mb));
             HandleIncomingMessage(peer, mb);
         }
@@ -215,52 +239,54 @@ namespace Fenix
 
         protected void RegisterToIdManager(Container container)
         {
-            Global.IdManager.RegisterContainer(container.InstanceId, string.Format("{0}", this.LocalAddress.ToString()));
+            Global.IdManager.RegisterContainer(container.Id, string.Format("{0}", this.LocalAddress.ToString()));
         }
 
         protected void RegisterToIdManager(Actor actor)
         {
-            Global.IdManager.RegisterActor(actor.InstanceId, this.InstanceId);
+            Global.IdManager.RegisterActor(actor.Id, this.Id);
         }
 
-        public void HandleIncomingMessage(NetPeer fromPeer, Mailbox mailbox)
+        public void HandleIncomingMessage(NetPeer fromPeer, Message msg)
         {
-            if (mailbox.ProtocolId == Protocol.HEARTBEAT) //心跳
+            switch(msg.ProtocolId)
             {
-                var result = Heartbeat(MessagePackSerializer.Deserialize<HeartbeatMsg>(mailbox.Payload));
-                if (result != null)
-                {
-                    mailbox.Payload = MessagePackSerializer.Serialize(result);
-                    fromPeer.Send(MessagePackSerializer.Serialize(mailbox));
-                }
-            }
-            else if (mailbox.ProtocolId == Protocol.SPAWN_ACTOR)
-            {
-                var param = MessagePackSerializer.Deserialize<SpawnActorParam>(mailbox.Payload);
-                this.SpawnActor(param);
-            }
-            else if(mailbox.ProtocolId == Protocol.CALL_ACTOR_METHOD)
-            {
-                
-            }
+                case (uint)DefaultProtocol.SPAWN_ACTOR:
+                case (uint)DefaultProtocol.MIGRATE_ACTOR: 
+                    { 
+                        this.CallInternalMethod(msg);
+                    }
+                    break;
+                case (uint)DefaultProtocol.CALL_ACTOR_METHOD:
+                    {
+                        this.CallActorMethod(msg);
+                    }
+                    break;
+                default:
+                    Log.Error("incoming_msg_not_implemented");
+                    break;
+            } 
+
+            //Global.GetActor("FightService").rpc_spawn_actor(); 
+            //Global.GetActor("FightService").SpawnActor<MatchService>("Hello");
+            //Global.GetActor<FightService>().SpawnActor<MatchService>("Hello");
         }
-        
-        [ServerApi(Protocol.HEARTBEAT)]
-        protected HeartbeatMsg Heartbeat(HeartbeatMsg msg)
-        {
-            return msg;
-        }
-        
+
         protected Actor SpawnActor<T>() where T: ActorLogic, new()
         {
-            return SpawnActor(typeof(T));
+            return SpawnActor(typeof(T).Name);
         }
 
-        protected Actor SpawnActor(Type type)
+        [ServerApi]
+        protected void SpawnActor(string typename, Action<ErrCode> callback)
         {
+            var type = Global.TypeManager.Get(typename);
             var newActor = Actor.Create(type);
             this.RegisterToIdManager(newActor);
-            return newActor;
+
+            actorDic[newActor.Id] = newActor;
+
+            callback(ErrCode.OK);
         }
 
         //迁移actor
@@ -275,8 +301,13 @@ namespace Fenix
             
         }
 
+        protected void CallInternalMethod(Message msg)
+        {
+            
+        }
+
         //调用Actor身上的方法
-        protected void CallActorMethod(uint actorId, uint methodId, object[] args)
+        protected void CallActorMethod(Message msg) //uint actorId, uint methodId, object[] args)
         {
             
         }

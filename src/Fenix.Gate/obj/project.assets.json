@@ -2523,20 +2523,25 @@
     ]
   },
   "packageFolders": {
-    "/Users/sekkit/.nuget/packages/": {}
+    "C:\\Users\\sekkit\\.nuget\\packages\\": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/sekkit/code/Fenix/src/Fenix.Gate/Fenix.Gate.csproj",
+      "projectUniqueName": "C:\\Projects\\Fenix\\src\\Fenix.Gate\\Fenix.Gate.csproj",
       "projectName": "Fenix.Gate",
-      "projectPath": "/Users/sekkit/code/Fenix/src/Fenix.Gate/Fenix.Gate.csproj",
-      "packagesPath": "/Users/sekkit/.nuget/packages/",
-      "outputPath": "/Users/sekkit/code/Fenix/src/Fenix.Gate/obj/",
+      "projectPath": "C:\\Projects\\Fenix\\src\\Fenix.Gate\\Fenix.Gate.csproj",
+      "packagesPath": "C:\\Users\\sekkit\\.nuget\\packages\\",
+      "outputPath": "C:\\Projects\\Fenix\\src\\Fenix.Gate\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+      ],
       "configFilePaths": [
-        "/Users/sekkit/code/Fenix/NuGet.Config",
-        "/Users/sekkit/.nuget/NuGet/NuGet.Config"
+        "C:\\Projects\\Fenix\\NuGet.Config",
+        "C:\\Users\\sekkit\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp3.1"
@@ -2548,8 +2553,8 @@
       "frameworks": {
         "netcoreapp3.1": {
           "projectReferences": {
-            "/Users/sekkit/code/Fenix/src/Fenix.Runtime/Fenix.Runtime.csproj": {
-              "projectPath": "/Users/sekkit/code/Fenix/src/Fenix.Runtime/Fenix.Runtime.csproj"
+            "C:\\Projects\\Fenix\\src\\Fenix.Runtime\\Fenix.Runtime.csproj": {
+              "projectPath": "C:\\Projects\\Fenix\\src\\Fenix.Runtime\\Fenix.Runtime.csproj"
             }
           }
         }
@@ -2577,7 +2582,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.301\\RuntimeIdentifierGraph.json"
       }
     }
   }

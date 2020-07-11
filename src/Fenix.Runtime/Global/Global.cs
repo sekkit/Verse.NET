@@ -11,5 +11,18 @@ namespace Fenix
         //public static Global Instance = new Global();
 
         public static IdManager IdManager => IdManager.Instance;
+
+        public static TypeManager TypeManager => TypeManager.Instance;
+
+        public static ActorRef GetActor<T>() where T: Actor
+        {
+            var actorName = nameof(T);
+
+        }
+
+        public static ActorRef GetActor(string actorName)
+        {
+
+        }
     }
 }

@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "3REA8kBd9BjmkWoOIEExSQMfBgSvbeXrkruNQM/FGvX++CFI13KAy1AfV3EYJphClmMqs9AXwEtfqWnyGSBLQQ==",
+  "dgSpecHash": "GquW4E0GgJkRtgbnHozXUy0GWktFT6naG2yD28Un5RnkJMrViFeC0OErHsrmsJacGQr0GTv/AeSswlTESnmAuQ==",
   "success": true,
-  "projectFilePath": "/Users/sekkit/code/Fenix/src/MessagePack.Annotations/MessagePack.Annotations.csproj",
+  "projectFilePath": "C:\\Projects\\Fenix\\src\\MessagePack.Annotations\\MessagePack.Annotations.csproj",
   "expectedPackageFiles": [
-    "/Users/sekkit/.nuget/packages/microsoft.netcore.platforms/1.1.0/microsoft.netcore.platforms.1.1.0.nupkg.sha512",
-    "/Users/sekkit/.nuget/packages/netstandard.library/2.0.3/netstandard.library.2.0.3.nupkg.sha512"
+    "C:\\Users\\sekkit\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512"
   ],
   "logs": []
 }

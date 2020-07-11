@@ -9,7 +9,7 @@ namespace Fenix
 {
     public class NetManager
     {
-        protected ConcurrentDictionary<ulong, string> mId2ChName = new ConcurrentDictionary<ulong, string>();
+        protected ConcurrentDictionary<ulong, string> mChId2ChName = new ConcurrentDictionary<ulong, string>();
         
         protected ConcurrentDictionary<string, IChannel> mChName2Ch = new ConcurrentDictionary<string, IChannel>();
         
@@ -29,20 +29,27 @@ namespace Fenix
 
             var addr = channel.RemoteAddress.ToString();
 
-            var Id = Global.IdManager.GetContainerId(addr);
-            
-            var peer = NetPeer.Create(Id, channel);
+            var id = Global.IdManager.GetContainerId(addr);
+
+            mChId2ChName[id] = channelName;
+
+            var peer = NetPeer.Create(id, channel);
             mPeers[peer.ConnId] = peer;
         }
 
-        public void DeregisterChannel(ulong connId, IChannel channel)
+        public void DeregisterChannel(IChannel ch)
         {
-            
+            var id = Global.IdManager.GetContainerId(ch.RemoteAddress.ToString());
+            this.mPeers.Remove(id);
+
+            this.mChName2Ch.TryRemove(ch.Id.AsLongText(), out var c);
+            this.mChId2ChName.TryRemove(id, out var cn);
         }
 
         public NetPeer GetPeer(IChannel ch)
         {
-            
+            var id = Global.IdManager.GetContainerId(ch.RemoteAddress.ToString());
+            return mPeers[id];
         }
     }
 }
