@@ -610,6 +610,26 @@
             Invoked when this thread local variable is removed by <see cref="M:DotNetty.Common.FastThreadLocal`1.Remove"/>.
             </summary>
         </member>
+        <member name="T:DotNetty.Common.InternalThreadLocalMap">
+            <summary>
+            The internal data structure that stores the thread-local variables for DotNetty and all
+            <see cref="T:DotNetty.Common.FastThreadLocal"/>s. Note that this class is for internal use only and is subject to change at any
+            time. Use <see cref="T:DotNetty.Common.FastThreadLocal"/> unless you know what you are doing.
+            </summary>
+        </member>
+        <member name="F:DotNetty.Common.InternalThreadLocalMap._indexedVariables">
+            <summary>
+            Used by <see cref="T:DotNetty.Common.FastThreadLocal"/>.
+            </summary>
+        </member>
+        <member name="M:DotNetty.Common.InternalThreadLocalMap.SetIndexedVariable(System.Int32,System.Object)">
+            <summary>
+            Sets a value at the given index in this <see cref="T:DotNetty.Common.InternalThreadLocalMap"/>.
+            </summary>
+            <param name="index">The desired index at which a value should be set.</param>
+            <param name="value">The value to set at the given index.</param>
+            <returns><c>true</c> if and only if a new thread-local variable has been created.</returns>
+        </member>
         <member name="M:DotNetty.Common.Internal.AppendableCharSequence.Reset">
             <summary>
             Resets the <see cref="T:DotNetty.Common.Internal.AppendableCharSequence"/>. Be aware this will only reset the current internal
@@ -3043,26 +3063,6 @@
         </member>
         <member name="T:DotNetty.Common.ExceptionResource">
             <summary>The convention for this enum is using the resource name as the enum name</summary>
-        </member>
-        <member name="T:DotNetty.Common.InternalThreadLocalMap">
-            <summary>
-            The internal data structure that stores the thread-local variables for DotNetty and all
-            <see cref="T:DotNetty.Common.FastThreadLocal"/>s. Note that this class is for internal use only and is subject to change at any
-            time. Use <see cref="T:DotNetty.Common.FastThreadLocal"/> unless you know what you are doing.
-            </summary>
-        </member>
-        <member name="F:DotNetty.Common.InternalThreadLocalMap._indexedVariables">
-            <summary>
-            Used by <see cref="T:DotNetty.Common.FastThreadLocal"/>.
-            </summary>
-        </member>
-        <member name="M:DotNetty.Common.InternalThreadLocalMap.SetIndexedVariable(System.Int32,System.Object)">
-            <summary>
-            Sets a value at the given index in this <see cref="T:DotNetty.Common.InternalThreadLocalMap"/>.
-            </summary>
-            <param name="index">The desired index at which a value should be set.</param>
-            <param name="value">The value to set at the given index.</param>
-            <returns><c>true</c> if and only if a new thread-local variable has been created.</returns>
         </member>
         <member name="T:DotNetty.Common.IReferenceCounted">
             <summary>

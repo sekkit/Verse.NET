@@ -17,13 +17,16 @@ using MessagePack.Formatters;
 using NetUtil = Fenix.Common.Utils.NetUtil;
 using static Fenix.Common.RpcUtil;
 using System.Collections.Concurrent;
+using System.Security.Cryptography;
+using System.Reflection;
+using System.Linq;
 
 namespace Fenix
 {
     //一个内网IP，必须
     //一个外网IP
     
-    public class Container
+    public class Container : RpcModule
     {
         public Container(uint instanceId, string tag, IPEndPoint localAddress, KcpContainerServer kcpServer, TcpContainerServer tcpServer)
         {
@@ -37,6 +40,8 @@ namespace Fenix
         public uint Id { get; set; }
 
         public string Tag { get; set; }
+
+        public string UniqueName { get; set; }
         
         protected IPEndPoint LocalAddress { get; set; }
 
@@ -44,11 +49,10 @@ namespace Fenix
         
         protected TcpContainerServer tcpServer { get; set; }
 
-        protected ConcurrentDictionary<uint, Actor> actorDic = new ConcurrentDictionary<uint, Actor>();
-
-        
-        protected Container(int port=0)
-        {
+        protected ConcurrentDictionary<UInt32, Actor> actorDic = new ConcurrentDictionary<UInt32, Actor>();
+         
+        protected Container(int port=0): base()
+        {  
             string addr = NetUtil.GetLocalIPv4(NetworkInterfaceType.Ethernet);
             IPAddress ipAddr = IPAddress.Parse(addr);
 
@@ -166,9 +170,6 @@ namespace Fenix
             tcpClient.Close      += OnTcpClientClose;
             tcpClient.Exception  += OnTcpClientException;
             return tcpClient;
-            
-            //tcpClient.Send(Encoding.UTF8.GetBytes("hello"));
-            //Console.WriteLine("send:hello");
         }
         
         
@@ -188,26 +189,50 @@ namespace Fenix
             if(buffer.ReadableBytes == 1)
             {
                 byte data = buffer.ReadByte();
-                if(data == (byte)InternalProtocol.PING)
+                if(data == (byte)DefaultProtocol.PING)
                 {
-                    peer.Send(new byte[] { (byte)InternalProtocol.PONG });
+                    peer.Send(new byte[] { (byte)DefaultProtocol.PONG });
                 }
-                else if(data == (byte)InternalProtocol.GOODBYE)
+                else if(data == (byte)DefaultProtocol.GOODBYE)
                 {
                     //删除这个连接
                     NetManager.Instance.DeregisterChannel(channel);
-                    peer.Send(new byte[] { (byte)InternalProtocol.GOODBYE });
+                    peer.Send(new byte[] { (byte)DefaultProtocol.GOODBYE });
                 }
                 
                 return;
             }
+            else
+            {
+                byte pid = buffer.ReadByte();
+                if (pid == (byte)DefaultProtocol.CALL_ACTOR_METHOD)
+                {
+                    ulong msgId = (ulong)buffer.ReadLongLE();
+                    uint protocolId = buffer.ReadUnsignedIntLE();
+                    uint fromActorId = buffer.ReadUnsignedIntLE();
+                    uint toActorId = buffer.ReadUnsignedIntLE(); 
+                    byte[] bytes = new byte[buffer.ReadableBytes];
+                    buffer.ReadBytes(bytes);
 
-            var bytes = buffer.ToArray();
+                    //var msg = MessagePackSerializer.Deserialize<ActorMessage>(bytes);
+                    var msg = Message.Create(msgId, protocolId, fromActorId, toActorId, bytes);
+                    HandleIncomingActorMessage(peer, msg);
+                }
+                else
+                {
+                    ulong msgId = (ulong)buffer.ReadLongLE();
+                    byte[] bytes = new byte[buffer.ReadableBytes];
+                    buffer.ReadBytes(bytes);
+                    var msg = Message.Create(msgId, pid, bytes);
+
+                    this.CallMethod(peer.ConnId, msg);
+                }
+            }
             
             //解析包
-            var mb = MessagePackSerializer.Deserialize<Message>(bytes);
-            Console.WriteLine(MessagePackSerializer.SerializeToJson(mb));
-            HandleIncomingMessage(peer, mb);
+            //var msg = MessagePackSerializer.Deserialize<Message>(bytes);
+            //Console.WriteLine(MessagePackSerializer.SerializeToJson(msg)); 
+            //
         }
         
         void OnTcpServerClose(IChannel channel)
@@ -247,38 +272,15 @@ namespace Fenix
             Global.IdManager.RegisterActor(actor.Id, this.Id);
         }
 
-        public void HandleIncomingMessage(NetPeer fromPeer, Message msg)
-        {
-            switch(msg.ProtocolId)
-            {
-                case (uint)DefaultProtocol.SPAWN_ACTOR:
-                case (uint)DefaultProtocol.MIGRATE_ACTOR: 
-                    { 
-                        this.CallInternalMethod(msg);
-                    }
-                    break;
-                case (uint)DefaultProtocol.CALL_ACTOR_METHOD:
-                    {
-                        this.CallActorMethod(msg);
-                    }
-                    break;
-                default:
-                    Log.Error("incoming_msg_not_implemented");
-                    break;
-            } 
-
+        public void HandleIncomingActorMessage(NetPeer fromPeer, Message msg)
+        { 
             //Global.GetActor("FightService").rpc_spawn_actor(); 
             //Global.GetActor("FightService").SpawnActor<MatchService>("Hello");
             //Global.GetActor<FightService>().SpawnActor<MatchService>("Hello");
         }
-
-        protected Actor SpawnActor<T>() where T: ActorLogic, new()
-        {
-            return SpawnActor(typeof(T).Name);
-        }
-
-        [ServerApi]
-        protected void SpawnActor(string typename, Action<ErrCode> callback)
+        
+        [ServerOnly]
+        protected void SpawnActor(string typename, string name, Action<ErrCode> callback)
         {
             var type = Global.TypeManager.Get(typename);
             var newActor = Actor.Create(type);
@@ -289,27 +291,35 @@ namespace Fenix
             callback(ErrCode.OK);
         }
 
+        //public void __SpawnActor(RpcCommand cmd)
+        //{
+        //    var msg = cmd.ToMessage<SpawnActorMsg>();
+        //    this.SpawnActor(msg.typeName, msg.name, (code) =>
+        //    {
+
+        //        cmd.Callback(cb_msg);
+        //    });
+        //}
+
         //迁移actor
+        [ServerOnly]
         protected void MigrateActor(uint actorId)
         {
             
         }
 
+        [ServerOnly]
         //移除actor
         protected void RemoveActor(uint actorId)
         {
             
         }
-
-        protected void CallInternalMethod(Message msg)
-        {
-            
-        }
-
+  
         //调用Actor身上的方法
-        protected void CallActorMethod(Message msg) //uint actorId, uint methodId, object[] args)
+        protected void CallActorMethod(uint fromPeerId, Message msg) //uint actorId, uint methodId, object[] args)
         {
-            
+            var actor = this.actorDic[msg.toActorId];
+            actor.CallMethod(fromPeerId, msg);
         }
 
         public virtual void Update()

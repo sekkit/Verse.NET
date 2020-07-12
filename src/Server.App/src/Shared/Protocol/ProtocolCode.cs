@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Fenix.FACG.Shared
+namespace Shared
 {
     public enum MatchCode
     {

@@ -70,6 +70,28 @@ namespace DotNetty.Buffers
         }
 
         [MethodImpl(InlineMethod.AggressiveInlining)]
+        internal static ulong GetUnsignedLong(byte* bytes)
+        {
+            unchecked
+            {
+                int i1 = (*bytes << 24) | (*(bytes + 1) << 16) | (*(bytes + 2) << 8) | (*(bytes + 3));
+                int i2 = (*(bytes + 4) << 24) | (*(bytes + 5) << 16) | (*(bytes + 6) << 8) | *(bytes + 7);
+                return (uint)i2 | ((ulong)i1 << 32);
+            }
+        }
+
+        [MethodImpl(InlineMethod.AggressiveInlining)]
+        internal static ulong GetUnsignedLongLE(byte* bytes)
+        {
+            unchecked
+            {
+                int i1 = *bytes | (*(bytes + 1) << 8) | (*(bytes + 2) << 16) | (*(bytes + 3) << 24);
+                int i2 = *(bytes + 4) | (*(bytes + 5) << 8) | (*(bytes + 6) << 16) | (*(bytes + 7) << 24);
+                return (uint)i1 | ((ulong)i2 << 32);
+            }
+        }
+
+        [MethodImpl(InlineMethod.AggressiveInlining)]
         internal static void SetShort(byte* bytes, int value)
         {
             unchecked

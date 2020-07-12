@@ -51,5 +51,10 @@ namespace Fenix
             var id = Global.IdManager.GetContainerId(ch.RemoteAddress.ToString());
             return mPeers[id];
         }
+
+        public NetPeer GetPeerById(uint peerId)
+        { 
+            return mPeers[peerId];
+        }
     }
 }

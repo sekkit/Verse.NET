@@ -36,6 +36,42 @@
             <param name="bytes">Buffer to calculate</param>
             <returns></returns>
         </member>
+        <member name="T:DotNetty.KCP.KcpClient">
+            kcp客户端
+            客户端使用方式:
+            1,与服务器tcp通讯得到conv
+            2,kcp通过conv标识与服务器通讯
+            3,客户端发现网络断开重连之后必须通过kcp发送一个心跳包出去 用于服务器确定客户端的出口地址
+            4,客户端需要最少每60秒发送一个心跳数据包服务端收到后回复客户端用于 路由表记录映射信息
+             TODO 需要测试一下移动环境ip切换了  是否需要重新绑定本地ip  朋友说是不用的  还是需要测一下
+        </member>
+        <member name="M:DotNetty.KCP.KcpClient.connect(System.Net.EndPoint,System.Net.EndPoint,DotNetty.KCP.ChannelConfig,DotNetty.KCP.KcpListener)">
+            连接一个服务器
+        </member>
+        <member name="M:DotNetty.KCP.KcpClient.connect(System.Net.EndPoint,DotNetty.KCP.ChannelConfig,DotNetty.KCP.KcpListener)">
+            连接一个服务器
+        </member>
+        <member name="M:DotNetty.KCP.KcpListener.handleReceive(DotNetty.Buffers.IByteBuffer,DotNetty.KCP.Ukcp)">
+             kcp message
+            
+             @param byteBuf the data
+             @param ukcp
+        </member>
+        <member name="M:DotNetty.KCP.KcpListener.handleException(System.Exception,DotNetty.KCP.Ukcp)">
+            
+             kcp异常，之后此kcp就会被关闭
+            
+             @param ex 异常
+             @param ukcp 发生异常的kcp，null表示非kcp错误
+        </member>
+        <member name="M:DotNetty.KCP.KcpListener.handleClose(DotNetty.KCP.Ukcp)">
+             关闭
+            
+             @param ukcp
+        </member>
+        <member name="M:DotNetty.KCP.KcpServer.stop">
+            同步关闭服务器
+        </member>
         <member name="F:DotNetty.KCP.Base.Kcp.IKCP_RTO_NDL">
             no delay min rto
         </member>
@@ -365,42 +401,6 @@
             <param name="index">The desired element index.</param>
             <param name="mask">Mask for the index.</param>
             <returns>The offset (in bytes) within the array for a given index.</returns>
-        </member>
-        <member name="T:DotNetty.KCP.KcpClient">
-            kcp客户端
-            客户端使用方式:
-            1,与服务器tcp通讯得到conv
-            2,kcp通过conv标识与服务器通讯
-            3,客户端发现网络断开重连之后必须通过kcp发送一个心跳包出去 用于服务器确定客户端的出口地址
-            4,客户端需要最少每60秒发送一个心跳数据包服务端收到后回复客户端用于 路由表记录映射信息
-             TODO 需要测试一下移动环境ip切换了  是否需要重新绑定本地ip  朋友说是不用的  还是需要测一下
-        </member>
-        <member name="M:DotNetty.KCP.KcpClient.connect(System.Net.EndPoint,System.Net.EndPoint,DotNetty.KCP.ChannelConfig,DotNetty.KCP.KcpListener)">
-            连接一个服务器
-        </member>
-        <member name="M:DotNetty.KCP.KcpClient.connect(System.Net.EndPoint,DotNetty.KCP.ChannelConfig,DotNetty.KCP.KcpListener)">
-            连接一个服务器
-        </member>
-        <member name="M:DotNetty.KCP.KcpListener.handleReceive(DotNetty.Buffers.IByteBuffer,DotNetty.KCP.Ukcp)">
-             kcp message
-            
-             @param byteBuf the data
-             @param ukcp
-        </member>
-        <member name="M:DotNetty.KCP.KcpListener.handleException(System.Exception,DotNetty.KCP.Ukcp)">
-            
-             kcp异常，之后此kcp就会被关闭
-            
-             @param ex 异常
-             @param ukcp 发生异常的kcp，null表示非kcp错误
-        </member>
-        <member name="M:DotNetty.KCP.KcpListener.handleClose(DotNetty.KCP.Ukcp)">
-             关闭
-            
-             @param ukcp
-        </member>
-        <member name="M:DotNetty.KCP.KcpServer.stop">
-            同步关闭服务器
         </member>
         <member name="M:DotNetty.KCP.thread.AbstratcMessageExecutor.start">
             启动消息处理器

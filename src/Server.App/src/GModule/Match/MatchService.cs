@@ -1,18 +1,27 @@
 ﻿using DotNetty.Codecs.Mqtt.Packets;
-using Fenix.FACG.Shared;
+using Fenix;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using static Fenix.Common.RpcUtil;
 
-namespace Fenix.FACG.GModule
+namespace GModule.Match
 {
-    [ActorType(typeof(MatchService))]
-    public class MatchService: ActorLogic
-    { 
+    [RuntimeData(typeof(MatchData))] 
+    public class MatchService : Actor
+    {
+        public void onLoad()
+        {
+            //Get<MatchData>().matchData
+        }
+
+        public new string UniqueName => nameof(MatchService);
+
         [ServerApi]
         public void add_to_match(string uid, int match_type, Action<MatchCode> callback)
-        {
+        {   
 
             callback(MatchCode.OK);
         }

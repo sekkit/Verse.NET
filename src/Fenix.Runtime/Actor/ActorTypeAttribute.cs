@@ -1,18 +1,18 @@
-﻿ 
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿
+//using System;
+//using System.Collections.Generic;
+//using System.Text;
 
-namespace Fenix
-{
-    public class ActorTypeAttribute: Attribute
-    {
-        public string ActorTypeName { get; set; }
+//namespace Fenix
+//{
+//    public class ActorTypeAttribute : Attribute
+//    {
+//        public string ActorTypeName { get; set; }
 
-        public ActorTypeAttribute(Type type)
-        {
-            this.ActorTypeName = type.GetType().Name;
-            Global.Instance.RegisterActorType(type); 
-        }
-    }
-}
+//        public ActorTypeAttribute(Type type)
+//        {
+//            this.ActorTypeName = type.GetType().Name;
+//            Global.TypeManager.RegisterActorType(type);
+//        }
+//    }
+//}

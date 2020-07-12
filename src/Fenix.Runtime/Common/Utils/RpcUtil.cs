@@ -6,7 +6,7 @@ namespace Fenix.Common
 {
     public class RpcUtil
     {
-        public enum Kind
+        public enum Api
         {
             ServerApi=1,
             ServerOnly=2,
@@ -23,7 +23,7 @@ namespace Fenix.Common
         public class ClientApiAttribute : Attribute
         { 
             public ClientApiAttribute()
-            { 
+            {
             }
         }
 
@@ -36,10 +36,10 @@ namespace Fenix.Common
 
         public class RpcAttribute : Attribute
         {
-            public Kind ApiType { get; set; }
-            public RpcAttribute(Kind api)
+            public Api RpcType { get; set; }
+            public RpcAttribute(Api api)
             {
-                ApiType = api;
+                RpcType = api;
             }
         }
     }
