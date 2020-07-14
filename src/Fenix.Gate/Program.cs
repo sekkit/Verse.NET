@@ -6,8 +6,8 @@ namespace Fenix.Gate
     {
         static void Main(string[] args)
         {
-            var gateContainer = Container.Create(1111);
-            ContainerHelper.Run(gateContainer); 
+            //var gateContainer = Container.Create(1111);
+            //ContainerHelper.Run(gateContainer); 
         }
     }
 }
