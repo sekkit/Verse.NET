@@ -1,0 +1,82 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\bin</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\..\bin</OutputPath>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Model\**" />
+    <EmbeddedResource Remove="Model\**" />
+    <None Remove="Model\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="UModule\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Fenix.Runtime\Fenix.Runtime.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="DotNetty.Buffers">
+      <HintPath>..\..\..\Libs\netstandard2.0\DotNetty.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetty.Codecs">
+      <HintPath>..\..\..\Libs\netstandard2.0\DotNetty.Codecs.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetty.Codecs.Http">
+      <HintPath>..\..\..\Libs\netstandard2.0\DotNetty.Codecs.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetty.Codecs.Http2">
+      <HintPath>..\..\..\Libs\netstandard2.0\DotNetty.Codecs.Http2.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetty.Codecs.Mqtt">
+      <HintPath>..\..\..\Libs\netstandard2.0\DotNetty.Codecs.Mqtt.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetty.Codecs.Redis">
+      <HintPath>..\..\..\Libs\netstandard2.0\DotNetty.Codecs.Redis.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetty.Common">
+      <HintPath>..\..\..\Libs\netstandard2.0\DotNetty.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetty.Handlers">
+      <HintPath>..\..\..\Libs\netstandard2.0\DotNetty.Handlers.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetty.KCP">
+      <HintPath>..\..\..\Libs\netstandard2.0\DotNetty.KCP.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetty.TCP">
+      <HintPath>..\..\..\Libs\netstandard2.0\DotNetty.TCP.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetty.Transport">
+      <HintPath>..\..\..\Libs\netstandard2.0\DotNetty.Transport.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetty.Transport.Libuv">
+      <HintPath>..\..\..\Libs\netstandard2.0\DotNetty.Transport.Libuv.dll</HintPath>
+    </Reference>
+    <Reference Include="MessagePack">
+      <HintPath>..\..\..\Libs\netstandard2.0\MessagePack.dll</HintPath>
+    </Reference>
+    <Reference Include="MessagePack.Annotations">
+      <HintPath>..\..\..\Libs\netstandard2.0\MessagePack.Annotations.dll</HintPath>
+    </Reference>
+    <Reference Include="MessagePack.UnityShims">
+      <HintPath>..\..\..\Libs\netstandard2.0\MessagePack.UnityShims.dll</HintPath>
+    </Reference>
+    <Reference Include="reedsolomon_csharp">
+      <HintPath>..\..\..\Libs\netstandard2.0\reedsolomon_csharp.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
