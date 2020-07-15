@@ -33,9 +33,8 @@ namespace Fenix
             //NetManager.Instance.SendTo(this.actorId, );
 
             var NetPeer = NetManager.Instance.GetPeerById(toContainerId);
-
-
             
+            fromContainer.Rpc(protocolCode, msg);
         }
     }
 }
