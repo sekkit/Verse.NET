@@ -9,12 +9,12 @@ using static Fenix.Common.RpcUtil;
 
 namespace GModule.Match
 {
-    [RuntimeData(typeof(MatchData))] 
+    [RuntimeData(typeof(MatchData))]
     public class MatchService : Actor
     {
         public void onLoad()
         {
-            //Get<MatchData>().matchData
+            //
         }
 
         public new string UniqueName => nameof(MatchService);

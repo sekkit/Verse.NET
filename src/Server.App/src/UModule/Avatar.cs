@@ -16,10 +16,8 @@ namespace UModule
         public Avatar(): base()
         {
             //GetService("MatchService").add_to_match();
-
-            Global.Get("MatchService").add_to_match(this.Get<User>().uid, 0, new Action<MatchCode>((code)=> { 
-                
-            }));
+            //Global.Get("MatchService").add_to_match(this.Get<User>().uid, 0, new Action<MatchCode>((code)=> {
+            //}));
         }
     }
 }

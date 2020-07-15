@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -18,21 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DotNetty.Buffers\DotNetty.Buffers.csproj" />
-    <ProjectReference Include="..\DotNetty.Codecs.Http2\DotNetty.Codecs.Http2.csproj" />
-    <ProjectReference Include="..\DotNetty.Codecs.Http\DotNetty.Codecs.Http.csproj" />
-    <ProjectReference Include="..\DotNetty.Codecs.Mqtt\DotNetty.Codecs.Mqtt.csproj" />
-    <ProjectReference Include="..\DotNetty.Codecs.Redis\DotNetty.Codecs.Redis.csproj" />
-    <ProjectReference Include="..\DotNetty.Codecs\DotNetty.Codecs.csproj" />
-    <ProjectReference Include="..\DotNetty.Common\DotNetty.Common.csproj" />
-    <ProjectReference Include="..\DotNetty.Handlers\DotNetty.Handlers.csproj" />
-    <ProjectReference Include="..\DotNetty.KCP\DotNetty.KCP.csproj" />
-    <ProjectReference Include="..\DotNetty.TCP\DotNetty.TCP.csproj" />
-    <ProjectReference Include="..\DotNetty.Transport.Libuv\DotNetty.Transport.Libuv.csproj" />
-    <ProjectReference Include="..\DotNetty.Transport\DotNetty.Transport.csproj" />
-    <ProjectReference Include="..\MessagePack.Annotations\MessagePack.Annotations.csproj" />
-    <ProjectReference Include="..\MessagePack.UnityShims\MessagePack.UnityShims.csproj" />
-    <ProjectReference Include="..\MessagePack\MessagePack.csproj" />
+    <ProjectReference Include="..\Fenix.Runtime\Fenix.Runtime.csproj" />
   </ItemGroup>
 
 </Project>

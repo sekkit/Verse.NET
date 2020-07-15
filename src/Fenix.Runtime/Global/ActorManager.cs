@@ -12,7 +12,7 @@ namespace Fenix
         protected ConcurrentDictionary<string, ActorRef> actorDic = new ConcurrentDictionary<string, ActorRef>();
         protected ConcurrentDictionary<string, ActorRef> ContainerDic = new ConcurrentDictionary<string, ActorRef>();
 
-        public ActorRef GetActorRefByName(string name)
+        public ActorRef GetActorRefByName(string name, Container fromContainer)
         {
             if(!actorDic.ContainsKey(name))
             {
@@ -22,7 +22,7 @@ namespace Fenix
             uint actorId = Global.IdManager.GetActorId(name);
             uint containerId = Global.IdManager.GetContainerIdByActorId(actorId);
 
-            actorDic[name] = ActorRef.Create(actorId);
+            actorDic[name] = ActorRef.Create(actorId, fromContainer);
             return actorDic[name];
         }
     }

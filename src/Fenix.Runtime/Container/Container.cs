@@ -155,7 +155,7 @@ namespace Fenix
         #region TCP
         protected async Task<TcpContainerServer> SetupTcpServer()
         { 
-            tcpServer = await TcpContainerServer.Create(this.LocalAddress);//this.ip, this.port);
+            tcpServer = await TcpContainerServer.Create(this.LocalAddress);
             tcpServer.Connect   += OnTcpIncomingConnect;
             tcpServer.Receive   += OnTcpServerReceive;
             tcpServer.Close     += OnTcpServerClose;

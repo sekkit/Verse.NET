@@ -31,6 +31,15 @@ namespace Server.App
             hello[typeof(A).Name] = new B();
         }
     }
+    
+    [MessagePackObject]
+    public class BBB
+    {
+        [Key(0)]
+        public string uid = "1123123";
+        [Key(1)]
+        public int match_type = 1;
+    }
 
     class Program
     {
@@ -58,6 +67,21 @@ namespace Server.App
             var act3 = (A)b.Deserialize(new MemoryStream(bytes));
             Console.WriteLine(act3.hello);
 
+            Dictionary<string, object> msg = new Dictionary<string, object>();
+            msg["uid"] = "1123123";
+            msg["match_type"] = 1;
+
+            
+
+            var bytes9 = MessagePackSerializer.Serialize(msg);
+            Console.WriteLine(DotNetty.Common.Utilities.StringUtil.ToHexString(bytes9));
+
+            var bbb = new BBB();
+            bbb.uid = "1123123";
+            bbb.match_type = 1;
+
+            var bytes10 = MessagePackSerializer.Serialize(bbb);
+            Console.WriteLine(DotNetty.Common.Utilities.StringUtil.ToHexString(bytes10));
 
             //Bootstrap.Start();
         }
