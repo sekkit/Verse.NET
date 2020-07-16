@@ -29,6 +29,7 @@ public class RpcCommand
 
     protected RpcCommand()
     {
+
     }
 
     public static RpcCommand Create(uint fromPeerId, Api apiType, Message msg, RpcModule invoker)

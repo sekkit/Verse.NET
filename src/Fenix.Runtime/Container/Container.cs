@@ -296,7 +296,6 @@ namespace Fenix
         //    var msg = cmd.ToMessage<SpawnActorMsg>();
         //    this.SpawnActor(msg.typeName, msg.name, (code) =>
         //    {
-
         //        cmd.Callback(cb_msg);
         //    });
         //}
@@ -325,6 +324,17 @@ namespace Fenix
         public virtual void Update()
         {
             
-        } 
+        }
+        
+        public void Rpc(uint protocolCode, uint remoteActorId, object msg, bool hasCallback)
+        {
+            var toContainerId = Global.IdManager.GetContainerIdByActorId(remoteActorId);
+
+            var netPeer = NetManager.Instance.GetPeerById(toContainerId);
+
+            netPeer.Send(MessagePackSerializer.Serialize(msg));
+
+
+        }
     }
 }

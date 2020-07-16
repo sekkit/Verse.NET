@@ -4,12 +4,6 @@ using System.Text;
 
 namespace Fenix
 {
-    //Proxy for Actor
-    //public class ActorRef<T>
-    //{
-        
-    //}
-
     public partial class ActorRef
     {
         public Container fromContainer;
@@ -20,21 +14,14 @@ namespace Fenix
         {
             var obj = new ActorRef();
             obj.actorId = actorId;
-
             obj.fromContainer = fromContainer;
 
             return obj;
         } 
 
-        public void CallActorMethod(uint protocolCode, object msg)
+        public void CallActorMethod(uint protocolCode, object msg, bool hasCallback)
         {
-            var toContainerId = Global.IdManager.GetContainerIdByActorId(this.actorId);
-
-            //NetManager.Instance.SendTo(this.actorId, );
-
-            var NetPeer = NetManager.Instance.GetPeerById(toContainerId);
-            
-            fromContainer.Rpc(protocolCode, msg);
+            fromContainer.Rpc(protocolCode, this.actorId, msg, hasCallback);
         }
     }
 }
