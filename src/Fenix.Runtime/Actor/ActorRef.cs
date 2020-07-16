@@ -6,22 +6,21 @@ namespace Fenix
 {
     public partial class ActorRef
     {
-        public Container fromContainer;
+        public Actor fromActor;
 
-        public uint actorId;
+        public uint toActorId;
 
-        public static ActorRef Create(uint actorId, Container fromContainer)
+        public static ActorRef Create(uint toActorId, Actor fromActor)
         {
             var obj = new ActorRef();
-            obj.actorId = actorId;
-            obj.fromContainer = fromContainer;
-
+            obj.toActorId = toActorId;
+            obj.fromActor = fromActor;
             return obj;
         } 
 
         public void CallActorMethod(uint protocolCode, object msg, bool hasCallback)
         {
-            fromContainer.Rpc(protocolCode, this.actorId, msg, hasCallback);
+            fromActor.Rpc(protocolCode, this.toActorId, msg, hasCallback);
         }
     }
 }

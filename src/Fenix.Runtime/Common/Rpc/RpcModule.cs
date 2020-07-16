@@ -68,5 +68,17 @@ namespace Fenix
             }
             this.rpcStubDic[protocolId].Invoke(this, kv.Values.ToArray());
         }
+
+        public void Rpc(uint protocolCode, uint remoteActorId, object msg, bool hasCallback)
+        {
+            var toContainerId = Global.IdManager.GetContainerIdByActorId(remoteActorId);
+            var netPeer = NetManager.Instance.GetPeerById(toContainerId);
+
+
+
+            var cmd = RpcCommand.Create();
+
+            netPeer.Send(MessagePackSerializer.Serialize(msg)); 
+        }
     }
 }
