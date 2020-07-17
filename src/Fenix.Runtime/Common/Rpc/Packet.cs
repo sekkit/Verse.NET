@@ -1,0 +1,48 @@
+//
+
+using System;
+using System.Dynamic;
+using Fenix.Common;
+using MessagePack;
+
+namespace Fenix
+{ 
+    [MessagePackObject]
+    public class Packet
+    {
+        [Key(0)]
+        public ulong Id { get; set; }
+
+        [Key(1)]
+        public uint ProtocolId { get; set; }
+
+        [Key(2)]
+        public uint fromActorId { get; set; }
+
+        [Key(3)]
+        public uint toActorId { get; set; }
+
+        [Key(100)]
+        public byte[] Payload { get; set; }
+
+        public static Packet Create(ulong id, uint protocolId, uint fromActorId, uint toActorId, byte[] data)
+        {
+            var obj = new Packet();
+            obj.Id = id;
+            obj.ProtocolId = protocolId;
+            obj.fromActorId = fromActorId;
+            obj.toActorId = toActorId;
+            obj.Payload = data;
+            return obj;
+        }
+
+        public static Packet Create(ulong id, byte protocolId, byte[] data)
+        {
+            var obj = new Packet();
+            obj.Id = id;
+            obj.ProtocolId = protocolId;
+            obj.Payload = data;
+            return obj;
+        }
+    } 
+}
