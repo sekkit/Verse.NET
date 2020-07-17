@@ -25,6 +25,10 @@ namespace Shared.Protocol.Message
         }
 
         [Key(199)]
-        public Callback callback => _callback as Callback;
+        public Callback callback 
+        {
+	        get => _callback as Callback;
+	        set => _callback = value;
+        } 
     }
 }
