@@ -1,20 +1,22 @@
 ﻿using Fenix;
+using MessagePack;
+using Shared.Protocol.Message;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Shared
 {
     public class MatchServiceRef : ActorRef
     {
-        public void add_to_match(string uid, int match_type, Action<MatchCode> callback)
+        public void rpc_join_match(string uid, int match_type, Action<MatchCode> callback)
         {
             //发送callmethod消息到目标actor
+            var msg = new JoinMatchReq()
+            {
+                uid=uid,
+                match_type=match_type
+            };
 
-            var msg = new AddToMatchMsg();
-            msg.uid = uid;
-            msg.match_type = match_type;
-            this.CallActorMethod(ProtocolCode.ADD_TO_MATCH_REQ, msg);
+            this.CallRemoteMethod(ProtocolCode.ADD_TO_MATCH_REQ, msg);
         }
     }
 }

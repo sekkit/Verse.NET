@@ -49,9 +49,26 @@ namespace Fenix
     [MessagePackObject]
     public class IMessage
     {
-        public bool HasCallback()
+        public byte[] Pack()
         {
+            return MessagePackSerializer.Serialize(this);
+        }
 
+        public virtual bool HasCallback()
+        {
+            return false;
+        }
+    }
+
+    [MessagePackObject]
+    public class IMessageWithCallback: IMessage
+    {
+        [IgnoreMember]
+        public object _callback;
+
+        public override bool HasCallback()
+        {
+            return true;
         }
     }
 }
