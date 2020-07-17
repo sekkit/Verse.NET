@@ -1,4 +1,5 @@
-﻿using Fenix.Common.Utils;
+﻿using Fenix.Common.Rpc;
+using Fenix.Common.Utils;
 using MessagePack;
 using System;
 using System.Collections.Concurrent;
@@ -41,7 +42,7 @@ namespace Fenix
             }
         }
 
-        public virtual void CallMethod(uint fromPeerId, Message msg)
+        public virtual void CallMethod(uint fromPeerId, Packet msg)
         { 
             bool isCallback = this.rpcDic.ContainsKey(msg.Id);
             if (isCallback)

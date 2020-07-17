@@ -11,7 +11,7 @@ public class RpcCommand
 { 
     public uint fromPeerId;
 
-    public Message msg;
+    public Packet msg;
 
     public Api RpcType;
 
@@ -28,7 +28,7 @@ public class RpcCommand
 
     }
 
-    public static RpcCommand Create(uint fromPeerId, Api apiType, Message msg, RpcModule invoker)
+    public static RpcCommand Create(uint fromPeerId, Api apiType, Packet msg, RpcModule invoker)
     {
         var obj = new RpcCommand();
         obj.msg = msg;

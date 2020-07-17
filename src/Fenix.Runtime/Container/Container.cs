@@ -215,7 +215,7 @@ namespace Fenix
                     buffer.ReadBytes(bytes);
 
                     //var msg = MessagePackSerializer.Deserialize<ActorMessage>(bytes);
-                    var msg = Message.Create(msgId, protocolId, fromActorId, toActorId, bytes);
+                    var msg = Packet.Create(msgId, protocolId, fromActorId, toActorId, bytes);
                     HandleIncomingActorMessage(peer, msg);
                 }
                 else
@@ -223,7 +223,7 @@ namespace Fenix
                     ulong msgId = (ulong)buffer.ReadLongLE();
                     byte[] bytes = new byte[buffer.ReadableBytes];
                     buffer.ReadBytes(bytes);
-                    var msg = Message.Create(msgId, pid, bytes);
+                    var msg = Packet.Create(msgId, pid, bytes);
 
                     this.CallMethod(peer.ConnId, msg);
                 }
@@ -272,7 +272,7 @@ namespace Fenix
             Global.IdManager.RegisterActor(actor, this);
         }
 
-        public void HandleIncomingActorMessage(NetPeer fromPeer, Message msg)
+        public void HandleIncomingActorMessage(NetPeer fromPeer, Packet msg)
         { 
             //Global.GetActor("FightService").rpc_spawn_actor(); 
             //Global.GetActor("FightService").SpawnActor<MatchService>("Hello");
@@ -315,7 +315,7 @@ namespace Fenix
         }
   
         //调用Actor身上的方法
-        protected void CallActorMethod(uint fromPeerId, Message msg) //uint actorId, uint methodId, object[] args)
+        protected void CallActorMethod(uint fromPeerId, Packet msg) //uint actorId, uint methodId, object[] args)
         {
             var actor = this.actorDic[msg.toActorId];
             actor.CallMethod(fromPeerId, msg);

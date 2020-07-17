@@ -1,7 +1,7 @@
+//
 using DotNetty.Transport.Libuv.Native;
 using MessagePack;
 using System;
-using System.Runtime.Serialization;
 
 namespace Fenix.Common
 { 

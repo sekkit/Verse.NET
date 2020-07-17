@@ -1,3 +1,4 @@
+using Fenix.Common.Rpc;
 using System;
 using System.Collections.Generic;
 using System.Text;
