@@ -3,12 +3,8 @@
  */
 
 using Fenix;
-using Fenix.Common;
 using MessagePack;
 using System;
-using System.Collections.Generic;
-using System.Net.Sockets;
-using System.Text;
 using static Fenix.Common.RpcUtil;
 
 public class RpcCommand
@@ -67,6 +63,8 @@ public class RpcCommand
 
     public void Callback(byte[] cbMsg)
     {
+
+
         //SpawnActorMsg.Callback cb_msg;
         //var peer = NetManager.Instance.GetPeerById(this.fromPeerId);
         //SpawnActorMsg _msg = new SpawnActorMsg();

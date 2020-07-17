@@ -45,4 +45,13 @@ namespace Fenix
             return obj;
         }
     }
+
+    [MessagePackObject]
+    public class IMessage
+    {
+        public bool HasCallback()
+        {
+
+        }
+    }
 }

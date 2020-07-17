@@ -18,7 +18,7 @@ namespace Fenix
             return obj;
         } 
 
-        public void CallActorMethod(uint protocolCode, object msg, bool hasCallback)
+        public void CallRemoteMethod(uint protocolCode, object msg, bool hasCallback)
         {
             fromActor.Rpc(protocolCode, this.toActorId, msg, hasCallback);
         }
