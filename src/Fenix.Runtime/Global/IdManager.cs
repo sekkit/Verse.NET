@@ -1,8 +1,7 @@
-﻿using CSRedis;
-using System;
+﻿//
+using CSRedis;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Text;
+using System.Collections.Generic; 
 using Fenix.Common;
 
 namespace Fenix

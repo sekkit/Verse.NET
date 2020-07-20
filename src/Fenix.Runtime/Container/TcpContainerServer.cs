@@ -13,7 +13,6 @@ namespace Fenix
     public class TcpContainerServer: ITcpListener
     {
         public TcpSocketServer server;
-
         
         public event Action<IChannel> Close;
 
@@ -49,7 +48,7 @@ namespace Fenix
         {
             Console.WriteLine("server_rcv");
             Receive?.Invoke(channel, buffer);
-            channel.WriteAndFlushAsync(buffer);
+            //channel.WriteAndFlushAsync(buffer);
         }
 
         public async static Task<TcpContainerServer> Create(IPEndPoint ep)

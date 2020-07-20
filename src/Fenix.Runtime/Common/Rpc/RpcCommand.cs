@@ -1,48 +1,67 @@
 ﻿/*
- * 
+ * RpcCommand
  */
 
+using DotNetty.Common.Utilities;
 using Fenix;
-using MessagePack;
-using System;
+using Fenix.Common.Rpc;
+using Fenix.Common.Utils;
 using static Fenix.Common.RpcUtil;
 
 public class RpcCommand
-{ 
-    public uint fromPeerId;
+{
+    public ulong Id;
 
-    public Packet msg;
+    public uint FromActorId;
+
+    public uint ToActorId;
+
+    public uint FromContainerId;
+
+    public uint ToContainerId;
+
+    public IMessage Msg;
 
     public Api RpcType;
 
-    public uint ProtocolId => msg.ProtocolId;
-
-    public ulong Id => msg.Id;
-
-    protected object mMsgObj;
+    public uint ProtoCode;
 
     protected RpcModule mInvoker;
 
     protected RpcCommand()
     {
-
+        this.Id = Basic.GenID64();
     }
-
-    public static RpcCommand Create(uint fromPeerId, Api apiType, Packet msg, RpcModule invoker)
+    
+    public static RpcCommand Create(
+        uint fromContainerId,
+        uint toContainerId,
+        uint fromActorId,
+        uint toActorId, 
+        uint protoCode,
+        IMessage msg,
+        RpcModule invoker)
     {
-        var obj = new RpcCommand();
-        obj.msg = msg;
-        obj.fromPeerId = fromPeerId;
-        obj.mInvoker = invoker;
-        obj.RpcType = apiType;
-        Type type = Global.TypeManager.GetMessageType(msg.ProtocolId);
-        obj.mMsgObj = MessagePackSerializer.Deserialize(type, obj.msg.Payload);
+        var obj             = new RpcCommand();
+        obj.Msg             = msg;
+        obj.FromContainerId = fromContainerId;
+        obj.ToContainerId   = toContainerId;
+        obj.FromActorId     = fromActorId;
+        obj.ToActorId       = toActorId;
+        obj.mInvoker        = invoker;
+        obj.RpcType         = invoker.GetRpcType(protoCode);
+        obj.ProtoCode       = protoCode;
+        //Type type         = Global.TypeManager.GetMessageType(obj.ProtoCode);
+        //obj.mMsgObj       = MessagePackSerializer.Deserialize(type, obj.packet.Payload);
         return obj;
     }
 
-    public T ToMessage<T>()
+    public T ToMessage<T>() where T : IMessage
     {
-        return (T)this.mMsgObj;
+        return this.Msg as T;
+        //Type type = Global.TypeManager.GetMessageType(this.ProtoCode);
+        //var msgObj    = MessagePackSerializer.Deserialize(type, this.msg.Pack());
+        //return (T)msgObj;
     }
 
     public void Call()
@@ -50,21 +69,19 @@ public class RpcCommand
         if(Global.IsServer)
         {
             if (RpcType == Api.ServerApi)
-                this.mInvoker.CallLocalMethod(this.msg.ProtocolId, this.mMsgObj);
+                this.mInvoker.CallLocalMethod(this.ProtoCode, this.Msg);
             else if (RpcType == Api.ServerOnly)
-                this.mInvoker.CallLocalMethod(this.msg.ProtocolId, this.mMsgObj);  
+                this.mInvoker.CallLocalMethod(this.ProtoCode, this.Msg); 
         }
         else
         {
             if (RpcType == Api.ClientApi)
-                this.mInvoker.CallLocalMethod(this.msg.ProtocolId, this.mMsgObj);
+                this.mInvoker.CallLocalMethod(this.ProtoCode, this.Msg);
         }
     }
 
     public void Callback(byte[] cbMsg)
     {
-
-
         //SpawnActorMsg.Callback cb_msg;
         //var peer = NetManager.Instance.GetPeerById(this.fromPeerId);
         //SpawnActorMsg _msg = new SpawnActorMsg();

@@ -6,11 +6,13 @@ namespace Fenix.Common
 {
     public class RpcUtil
     {
-        public enum Api
+
+        public enum Api : byte
         {
             ServerApi=1,
             ServerOnly=2,
-            ClientApi=3
+            ClientApi=3,
+            NoneApi=0xff
         }
 
         public class ServerApiAttribute : Attribute

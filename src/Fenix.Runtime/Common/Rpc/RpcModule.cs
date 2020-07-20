@@ -1,4 +1,5 @@
-﻿using Fenix.Common.Rpc;
+﻿using Fenix.Common;
+using Fenix.Common.Rpc;
 using Fenix.Common.Utils;
 using MessagePack;
 using System;
@@ -6,14 +7,15 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
-using System.Reflection;
+using System.Reflection; 
 using System.Text;
+using System.Threading.Tasks;
 using static Fenix.Common.RpcUtil;
 
 namespace Fenix
 {
     public class RpcModule
-    { 
+    {
         public ConcurrentDictionary<UInt64, RpcCommand> rpcDic = new ConcurrentDictionary<UInt64, RpcCommand>();
         public ConcurrentDictionary<UInt32, Api> rpcTypeDic = new ConcurrentDictionary<UInt32, Api>(); 
         public ConcurrentDictionary<UInt32, MethodInfo> rpcStubDic = new ConcurrentDictionary<UInt32, MethodInfo>(); 
@@ -27,37 +29,47 @@ namespace Fenix
                 var attrs = method.GetCustomAttributes(typeof(ServerApiAttribute));
                 if (attrs.Count() > 0)
                 {
-                    uint protocolId = NetUtil.GenID32FromName(method.Name);
-                    rpcStubDic[protocolId] = method;
-                    rpcTypeDic[protocolId] = Api.ServerApi;
+                    uint code = Basic.GenID32FromName(method.Name);
+                    rpcStubDic[code] = method;
+                    rpcTypeDic[code] = Api.ServerApi;
                 }
 
                 attrs = method.GetCustomAttributes(typeof(ServerOnlyAttribute));
                 if (attrs.Count() > 0)
                 {
-                    uint protocolId = NetUtil.GenID32FromName(method.Name);
-                    rpcStubDic[protocolId] = method;
-                    rpcTypeDic[protocolId] = Api.ServerOnly;
+                    uint code = Basic.GenID32FromName(method.Name);
+                    rpcStubDic[code] = method;
+                    rpcTypeDic[code] = Api.ServerOnly;
+                }
+
+                attrs = method.GetCustomAttributes(typeof(ClientApiAttribute));
+                if (attrs.Count() > 0)
+                {
+                    uint code = Basic.GenID32FromName(method.Name);
+                    rpcStubDic[code] = method;
+                    rpcTypeDic[code] = Api.ClientApi;
                 }
             }
         }
 
-        public virtual void CallMethod(uint fromPeerId, Packet msg)
-        { 
-            bool isCallback = this.rpcDic.ContainsKey(msg.Id);
+        public virtual void CallMethod(uint fromContainerId, uint toContainerId, Packet packet)
+        {
+            Type type = Global.TypeManager.GetMessageType(packet.ProtoCode);
+            IMessage msg = (IMessage)MessagePackSerializer.Deserialize(type, packet.Payload); 
+            bool isCallback = this.rpcDic.ContainsKey(packet.Id);
             if (isCallback)
             {
-                var cmd = this.rpcDic[msg.Id];
-                cmd.Callback(msg.Payload);
+                var cmd = this.rpcDic[packet.Id];
+                cmd.Callback(packet.Payload);
             }
             else
             {
-                var cmd = RpcCommand.Create(fromPeerId, this.rpcTypeDic[msg.ProtocolId], msg, this);
+                var cmd = RpcCommand.Create(fromContainerId, toContainerId, packet.FromActorId, packet.ToActorId, packet.ProtoCode, msg, this);
                 cmd.Call();
             }
         }
 
-        public virtual void CallLocalMethod(uint protocolId, object param)
+        public virtual void CallLocalMethod(uint protoCode, object param)
         {
             var kv = new SortedDictionary<int, object>();
             foreach (var fi in param.GetType().GetFields())
@@ -67,24 +79,38 @@ namespace Fenix
                     continue;
                 kv.Add(attr.IntKey.Value, fi.GetValue(param));
             }
-            this.rpcStubDic[protocolId].Invoke(this, kv.Values.ToArray());
+            this.rpcStubDic[protoCode].Invoke(this, kv.Values.ToArray());
         }
 
-        public void Rpc(uint protocolCode, uint remoteActorId, IMessage msg)
+        public Api GetRpcType(uint protoCode)
         {
-            var toContainerId = Global.IdManager.GetContainerIdByActorId(remoteActorId);
-            var netPeer = NetManager.Instance.GetPeerById(toContainerId);
+            Api api;
+            if (this.rpcTypeDic.TryGetValue(protoCode, out api))
+                return api;
+            return Api.NoneApi;
+        }
+
+        public async Task Rpc(uint protoCode, uint fromContainerId, uint fromActorId, uint toActorId, IMessage msg)
+        {
+            var toContainerId = Global.IdManager.GetContainerIdByActorId(toActorId);
+            var peer = NetManager.Instance.GetPeerById(toContainerId);
+            if (peer == null)
+                peer = await NetManager.Instance.CreatePeer(toContainerId);
+             
+            /*创建一个等待回调的rpc_command*/
+            var cmd = RpcCommand.Create(
+                fromContainerId, 
+                toContainerId,
+                fromActorId, 
+                toActorId,
+                protoCode,
+                msg, 
+                this);
 
             if(msg.HasCallback())
-            {
-                var cmd = RpcCommand.Create();
+                this.rpcDic[cmd.Id] = cmd;
 
-                netPeer.Send(MessagePackSerializer.Serialize(msg));
-            }
-            else
-            {
-
-            }
+            peer.Send(cmd.Id, protoCode, cmd.Msg);
         }
     }
 }

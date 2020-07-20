@@ -11,15 +11,10 @@ using System.Text;
 using System.Threading.Tasks;
 using DotNetty.Transport.Channels;
 using Fenix.Common;
-using Fenix.Common.Utils;
-using MessagePack;
-using MessagePack.Formatters;
-using NetUtil = Fenix.Common.Utils.NetUtil;
+using Basic = Fenix.Common.Utils.Basic;
 using static Fenix.Common.RpcUtil;
 using System.Collections.Concurrent;
-using System.Security.Cryptography;
-using System.Reflection;
-using System.Linq;
+using Fenix.Common.Utils;
 
 namespace Fenix
 {
@@ -53,11 +48,11 @@ namespace Fenix
          
         protected Container(int port=0): base()
         {  
-            string addr = NetUtil.GetLocalIPv4(NetworkInterfaceType.Ethernet);
+            string addr = Basic.GetLocalIPv4(NetworkInterfaceType.Ethernet);
             IPAddress ipAddr = IPAddress.Parse(addr);
 
             if (port == 0)
-                port = NetUtil.GetAvailablePort(ipAddr);
+                port = Basic.GetAvailablePort(ipAddr);
             
             this.LocalAddress = new IPEndPoint(ipAddr, port);
             
@@ -133,11 +128,11 @@ namespace Fenix
             
         }
 
-        private void KcpClient_OnReceive(byte[] bytes, Ukcp ukcp)
+        private void KcpClient_OnReceive(Ukcp ukcp, IByteBuffer buffer)
         {
-            string data = StringUtil.ToHexString(bytes); 
-            Console.WriteLine("FROM_SERVER:" + data + " => " + Encoding.UTF8.GetString(bytes));
-            ukcp.writeMessage(Unpooled.WrappedBuffer(bytes));
+            string data = StringUtil.ToHexString(buffer.ToArray()); 
+            Console.WriteLine("FROM_SERVER:" + data);
+            ukcp.writeMessage(buffer);
         }
         
         private void KcpClient_OnException(Exception ex, Ukcp arg2)
@@ -186,36 +181,35 @@ namespace Fenix
             var peer = NetManager.Instance.GetPeer(channel);
 
             //Ping/Pong msg process
-            if(buffer.ReadableBytes == 1)
-            {
-                byte data = buffer.ReadByte();
-                if(data == (byte)DefaultProtocol.PING)
+            byte pid = buffer.ReadByte();
+            if (buffer.ReadableBytes == 1)
+            { 
+                if(pid == (byte)ProtoCode.PING)
                 {
-                    peer.Send(new byte[] { (byte)DefaultProtocol.PONG });
+                    peer.Send(new byte[] { (byte)ProtoCode.PONG });
                 }
-                else if(data == (byte)DefaultProtocol.GOODBYE)
+                else if(pid == (byte)ProtoCode.GOODBYE)
                 {
                     //删除这个连接
                     NetManager.Instance.DeregisterChannel(channel);
-                    peer.Send(new byte[] { (byte)DefaultProtocol.GOODBYE });
+                    peer.Send(new byte[] { (byte)ProtoCode.GOODBYE });
                 }
                 
                 return;
             }
             else
-            {
-                byte pid = buffer.ReadByte();
-                if (pid == (byte)DefaultProtocol.CALL_ACTOR_METHOD)
+            { 
+                if (pid >= (uint)ProtoCode.CALL_ACTOR_METHOD)
                 {
                     ulong msgId = (ulong)buffer.ReadLongLE();
-                    uint protocolId = buffer.ReadUnsignedIntLE();
+                    uint protoCode = buffer.ReadUnsignedIntLE();
                     uint fromActorId = buffer.ReadUnsignedIntLE();
                     uint toActorId = buffer.ReadUnsignedIntLE(); 
                     byte[] bytes = new byte[buffer.ReadableBytes];
                     buffer.ReadBytes(bytes);
 
                     //var msg = MessagePackSerializer.Deserialize<ActorMessage>(bytes);
-                    var msg = Packet.Create(msgId, protocolId, fromActorId, toActorId, bytes);
+                    var msg = Packet.Create(msgId, protoCode, fromActorId, toActorId, bytes);
                     HandleIncomingActorMessage(peer, msg);
                 }
                 else
@@ -315,10 +309,10 @@ namespace Fenix
         }
   
         //调用Actor身上的方法
-        protected void CallActorMethod(uint fromPeerId, Packet msg) //uint actorId, uint methodId, object[] args)
+        protected void CallActorMethod(uint fromContainerId, Packet packet) //uint actorId, uint methodId, object[] args)
         {
-            var actor = this.actorDic[msg.toActorId];
-            actor.CallMethod(fromPeerId, msg);
+            var actor = this.actorDic[packet.ToActorId]; 
+            actor.CallMethod(fromContainerId, this.Id, packet);
         }
 
         public virtual void Update()

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using DotNetty.Transport.Channels;
 using DotNetty.Transport.Channels.Groups;
 
@@ -15,9 +17,9 @@ namespace Fenix
         
         protected Dictionary<uint, NetPeer> mPeers { get; set; }
         
-        protected Dictionary<uint, TcpContainerClient> mTcpClientDic { get; set; }
+        //protected Dictionary<uint, TcpContainerClient> mTcpClientDic { get; set; }
         
-        protected Dictionary<uint, KcpContainerClient> mKcpClientDic { get; set; }
+        //protected Dictionary<uint, KcpContainerClient> mKcpClientDic { get; set; }
         
         public static NetManager Instance = new NetManager();
 
@@ -53,8 +55,27 @@ namespace Fenix
         }
 
         public NetPeer GetPeerById(uint peerId)
-        { 
-            return mPeers[peerId];
+        {
+            NetPeer peer;
+            if (mPeers.TryGetValue(peerId, out peer))
+                return peer;
+            return null;
+        }
+
+        public async Task<NetPeer> CreatePeer(uint remoteContainerId)
+        {
+            var peer = GetPeerById(remoteContainerId);
+            if (peer != null)
+                return peer;
+             
+            peer = await NetPeer.Create(remoteContainerId, true);
+            mPeers[peer.ConnId] = peer;
+            return peer;
+        }
+
+        private void Client_Receive(IChannel arg1, DotNetty.Buffers.IByteBuffer arg2)
+        {
+            throw new NotImplementedException();
         }
     }
 }

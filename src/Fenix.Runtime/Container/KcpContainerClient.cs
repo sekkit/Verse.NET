@@ -14,7 +14,7 @@ namespace Fenix
 {
     public class KcpContainerClient : KcpListener
     {
-        public event Action<byte[], Ukcp> OnReceive;
+        public event Action<Ukcp, IByteBuffer> OnReceive;
 
         public event Action<Exception, Ukcp> OnException;
 
@@ -56,7 +56,7 @@ namespace Fenix
             //byte[] bytes = new byte[byteBuf.ReadableBytes];
             //byteBuf.GetBytes(byteBuf.ReaderIndex, bytes);
             //OnReceive?.Invoke(bytes, ukcp, protocolType);
-            OnReceive?.Invoke(byteBuf.ToArray(), ukcp);
+            OnReceive?.Invoke(ukcp, byteBuf);
                 //OnReceive?.Invoke(byteBuf, ukcp, protocolType);
             //}, null);
 
