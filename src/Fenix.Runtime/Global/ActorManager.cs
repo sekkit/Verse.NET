@@ -12,18 +12,17 @@ namespace Fenix
         protected ConcurrentDictionary<string, ActorRef> actorDic = new ConcurrentDictionary<string, ActorRef>();
         protected ConcurrentDictionary<string, ActorRef> containerDic = new ConcurrentDictionary<string, ActorRef>();
  
-        public ActorRef GetActorRefByName(string name, Container fromContainer)
+        public ActorRef GetActorRefByName(string name, Actor fromActor)
         {
             if(actorDic.ContainsKey(name))
             {
                 return actorDic[name];
             }
 
-            uint actorId = Global.IdManager.GetActorId(name);
-            //uint containerId = Global.IdManager.GetContainerIdByActorId(actorId);
-
-            var fromActor = fromContainer.GetActor(actorId); 
-            actorDic[name] = ActorRef.Create(actorId, fromActor);
+            uint toActorId = Global.IdManager.GetActorId(name);
+            //uint containerId = Global.IdManager.GetContainerIdByActorId(actorId); 
+            //var toActor = Container.Instance.GetActor(toActorId); 
+            actorDic[name] = ActorRef.Create(toActorId, fromActor);
             return actorDic[name];
         }
 

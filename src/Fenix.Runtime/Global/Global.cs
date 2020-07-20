@@ -15,21 +15,21 @@ namespace Fenix
 
         public static ActorManager ActorManager => ActorManager.Instance;
           
-        public static ActorRef GetActorRef(string actorName)
+        public static ActorRef GetActorRef(string actorName, Actor fromActor)
         {
-            return Global.ActorManager.GetActorRefByName(actorName, Container.Instance);
+            return Global.ActorManager.GetActorRefByName(actorName, fromActor);
         }
 
-        public static T Get<T>(string name, Container fromContainer) where T: ActorRef
+        public static T Get<T>(string name, Actor fromActor) where T: ActorRef
         {
-            var actorRef = ActorManager.Instance.GetActorRefByName(name, fromContainer);
+            var actorRef = ActorManager.Instance.GetActorRefByName(name, fromActor);
 
             return (T)actorRef;
         }
 
-        public static ActorRef Get(string name, Container fromContainer)
+        public static ActorRef Get(string name, Actor fromActor)
         {
-            var actorRef = ActorManager.Instance.GetActorRefByName(name, fromContainer);
+            var actorRef = ActorManager.Instance.GetActorRefByName(name, fromActor);
             return actorRef;
         }
 
