@@ -217,9 +217,9 @@ namespace Fenix
                     ulong msgId = (ulong)buffer.ReadLongLE();
                     byte[] bytes = new byte[buffer.ReadableBytes];
                     buffer.ReadBytes(bytes);
-                    var msg = Packet.Create(msgId, pid, bytes);
+                    var packet = Packet.Create(msgId, pid, bytes);
 
-                    this.CallMethod(peer.ConnId, msg);
+                    this.CallMethod(peer.ConnId, this.Id, packet);
                 }
             }
             
