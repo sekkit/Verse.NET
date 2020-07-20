@@ -120,6 +120,11 @@ namespace Fenix
             return redisClient.Get<uint>(key);
         }
 
+        //public string GetActorName(uint actorId)
+        //{
+        //    mAct
+        //}
+
         public uint GetContainerIdByActorId(uint actorId)
         {
             if (mActorId2ContainerId.ContainsKey(actorId))

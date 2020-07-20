@@ -16,8 +16,8 @@ namespace Fenix
 {
     public class RpcModule
     {
-        public ConcurrentDictionary<UInt64, RpcCommand> rpcDic = new ConcurrentDictionary<UInt64, RpcCommand>();
-        public ConcurrentDictionary<UInt32, Api> rpcTypeDic = new ConcurrentDictionary<UInt32, Api>(); 
+        public ConcurrentDictionary<UInt64, RpcCommand> rpcDic     = new ConcurrentDictionary<UInt64, RpcCommand>();
+        public ConcurrentDictionary<UInt32, Api> rpcTypeDic        = new ConcurrentDictionary<UInt32, Api>(); 
         public ConcurrentDictionary<UInt32, MethodInfo> rpcStubDic = new ConcurrentDictionary<UInt32, MethodInfo>(); 
 
         public RpcModule()
@@ -90,12 +90,13 @@ namespace Fenix
             return Api.NoneApi;
         }
 
-        public async Task Rpc(uint protoCode, uint fromContainerId, uint fromActorId, uint toActorId, IMessage msg)
-        {
+        public void Rpc(uint protoCode, uint fromContainerId, uint fromActorId, uint toActorId, IMessage msg)
+        { 
             var toContainerId = Global.IdManager.GetContainerIdByActorId(toActorId);
             var peer = NetManager.Instance.GetPeerById(toContainerId);
+            //Console.WriteLine(string.Format("{0} {1} {2} {3} {4}", fromContainerId, toContainerId, fromActorId, toActorId, peer==null?"NULL":""));
             if (peer == null)
-                peer = await NetManager.Instance.CreatePeer(toContainerId);
+                peer = NetManager.Instance.CreatePeer(toContainerId);
              
             /*创建一个等待回调的rpc_command*/
             var cmd = RpcCommand.Create(
@@ -110,7 +111,28 @@ namespace Fenix
             if(msg.HasCallback())
                 this.rpcDic[cmd.Id] = cmd;
 
-            peer.Send(cmd.Id, protoCode, cmd.Msg);
+            var packet = Packet.Create(cmd.Id, protoCode, fromActorId, toActorId, MessagePackSerializer.Serialize(msg));
+            peer.Send(packet);
+        }
+
+        public dynamic GetService(string name)
+        {
+            return Global.GetActorRef(name);
+        }
+
+        public T GetService<T>(string name) where T : ActorRef
+        {
+            return (T)Global.GetActorRef(name);
+        }
+
+        public T GetAvatar<T>(string uid) where T : ActorRef
+        {
+            return (T)Global.GetActorRef(uid);
+        }
+
+        public ActorRef GetActorRef(string name)
+        {
+            return Global.GetActorRef(name);
         }
     }
 }

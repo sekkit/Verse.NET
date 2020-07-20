@@ -46,8 +46,8 @@ namespace Fenix
         public byte[] Pack()
         {
             var buf = Unpooled.DirectBuffer();
-            buf.WriteLongLE((long)this.Id);
             buf.WriteIntLE((int)this.ProtoCode);
+            buf.WriteLongLE((long)this.Id);
             buf.WriteIntLE((int)this.FromActorId);
             buf.WriteIntLE((int)this.ToActorId);
             buf.WriteBytes(this.Payload);

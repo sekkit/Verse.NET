@@ -1,7 +1,9 @@
 ﻿using Fenix;
+using GModule.Match;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using UModule;
 
 namespace Server.App
 {
@@ -9,7 +11,11 @@ namespace Server.App
     {
         public static void Start()
         {
-            var c = Container.Create(7777);
+            Global.Init(typeof(Bootstrap).Assembly);
+
+            var c = Container.Create(null, 7777);
+            c.CreateActor<MatchService>("MatchService");
+            c.CreateActor<Avatar>("12345");
             ContainerHelper.Run(c);
         }
     }

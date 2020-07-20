@@ -11,13 +11,19 @@ namespace UModule
     [RuntimeData(typeof(User))]
     public partial class Avatar : Actor
     {
-        delegate void cb(MatchCode code);
-
-        public Avatar(): base()
+        public Avatar(string uid): base(uid)
         {
-            //GetService("MatchService").add_to_match();
-            //Global.Get("MatchService").add_to_match(this.Get<User>().uid, 0, new Action<MatchCode>((code)=> {
-            //}));
+        }
+
+        public override void Update()
+        {
+            base.Update();
+
+            var svc = GetService("MatchService");
+            svc.rpc_join_match("", 1, new Action<MatchCode>((code) =>
+            {
+
+            }));
         }
     }
 }

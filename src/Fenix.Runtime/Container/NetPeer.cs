@@ -106,6 +106,7 @@ namespace Fenix
         public async static Task<NetPeer> Create(uint connId, bool isTcp)
         {
             var obj = new NetPeer();
+            obj.ConnId = connId;
             if (isTcp)
                 await obj.InitTcpClient(connId);
             else
@@ -144,9 +145,8 @@ namespace Fenix
             });
         }
 
-        public void Send(ulong protoId, uint protoCode, IMessage msg)
-        {
-            var packet = Packet.Create(protoId, protoCode, MessagePackSerializer.Serialize(msg));
+        public void Send(Packet packet)
+        { 
             this.Send(packet.Pack());
         }
     }

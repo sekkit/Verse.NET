@@ -1,10 +1,13 @@
 ﻿using Fenix;
+using Fenix.Common.Attributes;
+using GModule.Match;
 using MessagePack;
 using Shared.Protocol.Message;
 using System;
 
 namespace Shared
 {
+    [RefType(typeof(MatchService))]
     public class MatchServiceRef : ActorRef
     {
         public void rpc_join_match(string uid, int match_type, Action<MatchCode> callback)

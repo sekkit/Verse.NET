@@ -1,9 +1,5 @@
-﻿using CSRedis;
-using Fenix.Common;
-using MessagePack;
-using System;
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
+﻿ 
+using System.Reflection; 
 
 namespace Fenix
 {
@@ -19,33 +15,27 @@ namespace Fenix
 
         public static ActorManager ActorManager => ActorManager.Instance;
           
-        public static ActorRef GetActor(string actorName)
+        public static ActorRef GetActorRef(string actorName)
         {
-
-            return null;
+            return Global.ActorManager.GetActorRefByName(actorName, Container.Instance);
         }
 
-        public static dynamic Get<T>(string name, Container fromContainer) where T: ActorRef
+        public static T Get<T>(string name, Container fromContainer) where T: ActorRef
         {
             var actorRef = ActorManager.Instance.GetActorRefByName(name, fromContainer);
 
-            return actorRef;
+            return (T)actorRef;
         }
 
-        public static dynamic Get(string name, Container fromContainer)
+        public static ActorRef Get(string name, Container fromContainer)
         {
             var actorRef = ActorManager.Instance.GetActorRefByName(name, fromContainer);
             return actorRef;
         }
 
-        public static ActorRef GetServiceByName<T>(string name) where T : Actor
+        public static void Init(Assembly asm)
         {
-            return null;
-        }
-
-        public static ActorRef GetAvatarByUid(string uid)
-        {
-            return null;
+            Global.TypeManager.ScanAssemblies(new Assembly[] { asm });
         }
     }
 }

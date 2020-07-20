@@ -15,6 +15,8 @@ using Basic = Fenix.Common.Utils.Basic;
 using static Fenix.Common.RpcUtil;
 using System.Collections.Concurrent;
 using Fenix.Common.Utils;
+using System.Reflection;
+using Fenix.Common.Attributes;
 
 namespace Fenix
 {
@@ -23,14 +25,17 @@ namespace Fenix
     
     public class Container : RpcModule
     {
-        public Container(uint instanceId, string tag, IPEndPoint localAddress, KcpContainerServer kcpServer, TcpContainerServer tcpServer)
-        {
-            Id = instanceId;
-            Tag = tag;
-            LocalAddress = localAddress;
-            this.kcpServer = kcpServer;
-            this.tcpServer = tcpServer;
-        } 
+        public static Container Instance = null;
+
+        //public Container(uint instanceId, string tag, IPEndPoint localAddress, KcpContainerServer kcpServer, TcpContainerServer tcpServer)
+        //{
+        //    Id = instanceId;
+        //    Tag = tag;
+        //    LocalAddress = localAddress;
+        //    this.kcpServer = kcpServer;
+        //    this.tcpServer = tcpServer; 
+        //}  
+        
 
         public uint Id { get; set; }
 
@@ -46,8 +51,14 @@ namespace Fenix
 
         protected ConcurrentDictionary<UInt32, Actor> actorDic = new ConcurrentDictionary<UInt32, Actor>();
          
-        protected Container(int port=0): base()
-        {  
+        protected Container(string name, int port=0): base()
+        {
+            if (name == null)
+                this.UniqueName = Basic.GenID64().ToString();
+            else
+                this.UniqueName = name;
+            this.Id = Basic.GenID32FromName(this.UniqueName);
+
             string addr = Basic.GetLocalIPv4(NetworkInterfaceType.Ethernet);
             IPAddress ipAddr = IPAddress.Parse(addr);
 
@@ -56,7 +67,7 @@ namespace Fenix
             
             this.LocalAddress = new IPEndPoint(ipAddr, port);
             
-            this.RegisterToIdManager(this);
+            this.RegisterGlobalManager(this);
 
             this.SetupKcpServer();
 
@@ -70,10 +81,14 @@ namespace Fenix
             //await this.SetupTcpClient();
         }
 
-        public static Container Create(int port)
+        public static Container Create(string name, int port)
         {
-            return new Container(port);
-        }
+            if (Instance != null)
+                return Instance;
+            var c = new Container(name, port);
+            Instance = c;
+            return Instance;
+        } 
         
         #region KCP
 
@@ -180,15 +195,15 @@ namespace Fenix
         {
             var peer = NetManager.Instance.GetPeer(channel);
 
-            //Ping/Pong msg process
-            byte pid = buffer.ReadByte();
+            //Ping/Pong msg process 
             if (buffer.ReadableBytes == 1)
-            { 
-                if(pid == (byte)ProtoCode.PING)
+            {
+                byte protoCode = buffer.ReadByte();
+                if (protoCode == (byte)ProtoCode.PING)
                 {
                     peer.Send(new byte[] { (byte)ProtoCode.PONG });
                 }
-                else if(pid == (byte)ProtoCode.GOODBYE)
+                else if(protoCode == (byte)ProtoCode.GOODBYE)
                 {
                     //删除这个连接
                     NetManager.Instance.DeregisterChannel(channel);
@@ -198,11 +213,11 @@ namespace Fenix
                 return;
             }
             else
-            { 
-                if (pid >= (uint)ProtoCode.CALL_ACTOR_METHOD)
+            {
+                uint protoCode = buffer.ReadUnsignedIntLE();
+                if (protoCode >= (uint)ProtoCode.CALL_ACTOR_METHOD)
                 {
-                    ulong msgId = (ulong)buffer.ReadLongLE();
-                    uint protoCode = buffer.ReadUnsignedIntLE();
+                    ulong msgId = (ulong)buffer.ReadLongLE(); 
                     uint fromActorId = buffer.ReadUnsignedIntLE();
                     uint toActorId = buffer.ReadUnsignedIntLE(); 
                     byte[] bytes = new byte[buffer.ReadableBytes];
@@ -217,7 +232,7 @@ namespace Fenix
                     ulong msgId = (ulong)buffer.ReadLongLE();
                     byte[] bytes = new byte[buffer.ReadableBytes];
                     buffer.ReadBytes(bytes);
-                    var packet = Packet.Create(msgId, pid, bytes);
+                    var packet = Packet.Create(msgId, protoCode, bytes);
 
                     this.CallMethod(peer.ConnId, this.Id, packet);
                 }
@@ -256,33 +271,47 @@ namespace Fenix
         
         #endregion
 
-        protected void RegisterToIdManager(Container container)
+        protected void RegisterGlobalManager(Container container)
         {
-            Global.IdManager.RegisterContainer(container, string.Format("{0}", this.LocalAddress.ToString()));
+            Global.IdManager.RegisterContainer(container, this.LocalAddress.ToString());
         }
 
-        protected void RegisterToIdManager(Actor actor)
+        protected void RegisterGlobalManager(Actor actor)
         {
-            Global.IdManager.RegisterActor(actor, this);
+            Global.IdManager.RegisterActor(actor, this); 
         }
 
-        public void HandleIncomingActorMessage(NetPeer fromPeer, Packet msg)
-        { 
-            //Global.GetActor("FightService").rpc_spawn_actor(); 
-            //Global.GetActor("FightService").SpawnActor<MatchService>("Hello");
-            //Global.GetActor<FightService>().SpawnActor<MatchService>("Hello");
+        public Actor GetActor(uint actorId)
+        {
+            Actor a;
+            this.actorDic.TryGetValue(actorId, out a);
+            return a;
         }
-        
+
+        protected void HandleIncomingActorMessage(NetPeer fromPeer, Packet packet)
+        {
+            var remoteContainerId = fromPeer.ConnId;
+            CallActorMethod(remoteContainerId, packet);
+        }
+
         [ServerOnly]
-        protected void SpawnActor(string typename, string name, Action<ErrCode> callback)
+        protected void CreateActor(string typename, string name, Action<ErrCode> callback)
         {
             var type = Global.TypeManager.Get(typename);
-            var newActor = Actor.Create(type);
-            this.RegisterToIdManager(newActor);
+            var newActor = Actor.Create(type, name);
+            this.RegisterGlobalManager(newActor);
 
             actorDic[newActor.Id] = newActor;
 
             callback(ErrCode.OK);
+        }
+
+        public Actor CreateActor<T>(string name) where T : Actor
+        { 
+            var newActor = Actor.Create(typeof(T), name);
+            this.RegisterGlobalManager(newActor);
+            actorDic[newActor.Id] = newActor;
+            return newActor;
         }
 
         //public void __SpawnActor(RpcCommand cmd)
@@ -317,7 +346,10 @@ namespace Fenix
 
         public virtual void Update()
         {
-            
+            foreach(var a in this.actorDic.Keys)
+            {
+                this.actorDic[a].Update();
+            }
         } 
     }
 }

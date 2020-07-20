@@ -7,13 +7,14 @@ namespace Fenix
 {
     public partial class ActorRef
     {
-        public Actor fromActor;
+        protected Actor fromActor;
 
-        public uint toActorId;
+        protected uint toActorId;
 
         public static ActorRef Create(uint toActorId, Actor fromActor)
         {
-            var obj = new ActorRef();
+            var refType = Global.TypeManager.GetRefType(fromActor.GetType());
+            var obj = (ActorRef)Activator.CreateInstance(refType);
             obj.toActorId = toActorId;
             obj.fromActor = fromActor;
             return obj;

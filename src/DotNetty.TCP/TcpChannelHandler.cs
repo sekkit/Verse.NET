@@ -20,15 +20,14 @@ namespace DotNetty.TCP
         public override void ChannelActive(IChannelHandlerContext context)
         {
             base.ChannelActive(context);
-
-            this.listener?.OnDisconnect(context.Channel);
+            this.listener?.OnConnect(context.Channel);
+            
         }
 
         public override void ChannelInactive(IChannelHandlerContext context)
         {
-            base.ChannelInactive(context);
-
-            this.listener?.OnConnect(context.Channel);
+            base.ChannelInactive(context); 
+            this.listener?.OnDisconnect(context.Channel);
         }
 
         public override void ChannelRead(IChannelHandlerContext context, object message)

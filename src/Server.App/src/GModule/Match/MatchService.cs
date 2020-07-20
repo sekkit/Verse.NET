@@ -12,12 +12,17 @@ namespace GModule.Match
     [RuntimeData(typeof(MatchData))]
     public class MatchService : Actor
     {
+        public MatchService(string name): base(name)
+        {
+
+        }
+
         public void onLoad()
         {
             //
         }
 
-        public new string UniqueName => nameof(MatchService);
+        //public new string UniqueName => nameof(MatchService);
 
         [ServerApi]
         public void add_to_match(string uid, int match_type, Action<MatchCode> callback)

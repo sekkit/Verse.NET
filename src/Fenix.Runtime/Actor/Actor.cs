@@ -1,3 +1,4 @@
+using Fenix.Common.Utils;
 using MessagePack;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace Fenix
 
         [IgnoreMember]
         [IgnoreDataMember]
-        public uint ContainerId { get; set; }
+        public uint ContainerId => Container.Instance.Id;
 
         [Key(2)]
         [DataMember]
@@ -30,7 +31,22 @@ namespace Fenix
         [IgnoreMember]
         [IgnoreDataMember]
         protected Dictionary<Type, object> mPersistentDic = new Dictionary<Type, object>();
-         
+
+        //[IgnoreMember]
+        //[IgnoreDataMember]
+        //private Container _c;
+
+        //[IgnoreMember]
+        //[IgnoreDataMember]
+        //public Container Container
+        //{
+        //    get
+        //    {
+        //        if(_c == null)
+
+        //    }
+        //}
+
         public T Get<T>()
         {
             object value;
@@ -38,12 +54,15 @@ namespace Fenix
             return (T)value;
         }
         
-        protected Actor() : base()
+        protected Actor(string name) : base()
         {
+            this.UniqueName = name;
+            this.Id = Basic.GenID32FromName(this.UniqueName);
+
             this.Init();
         }
 
-        public void Init()
+        public virtual void Init()
         {
             var methods = GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);//.GetCustomAttributes(typeof(ResponseAttribute));
             for (int i = 0; i < methods.Length; ++i)
@@ -65,20 +84,19 @@ namespace Fenix
             
         }
 
-        public static Actor Create()
+        //public static Actor Create(string name)
+        //{
+        //    return new Actor();
+        //}
+
+        public static Actor Create<T>(string name) where T: Actor, new()
         {
-            return new Actor();
+            return Actor.Create(typeof(T), name);
         }
 
-        public static Actor Create<T>() where T: Actor, new()
+        public static Actor Create(Type type, string name)
         {
-            return Actor.Create(typeof(T));
-        }
-        
-        public static Actor Create(Type type)
-        {
-            return (Actor)Activator.CreateInstance(type);
-            //Global.GetActorRef<FightService>("11036").DoSomething();
+            return (Actor)Activator.CreateInstance(type, new object[] { name }); 
         }
 
         public virtual void Update()

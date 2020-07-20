@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DotNetty.Transport.Channels;
 using DotNetty.Transport.Channels.Groups;
+using Serilog.Sinks.File;
 
 namespace Fenix
 {
@@ -14,8 +15,8 @@ namespace Fenix
         protected ConcurrentDictionary<ulong, string> mChId2ChName = new ConcurrentDictionary<ulong, string>();
         
         protected ConcurrentDictionary<string, IChannel> mChName2Ch = new ConcurrentDictionary<string, IChannel>();
-        
-        protected Dictionary<uint, NetPeer> mPeers { get; set; }
+
+        protected Dictionary<uint, NetPeer> mPeers = new Dictionary<uint, NetPeer>();
         
         //protected Dictionary<uint, TcpContainerClient> mTcpClientDic { get; set; }
         
@@ -62,20 +63,16 @@ namespace Fenix
             return null;
         }
 
-        public async Task<NetPeer> CreatePeer(uint remoteContainerId)
-        {
+        public NetPeer CreatePeer(uint remoteContainerId)
+        { 
             var peer = GetPeerById(remoteContainerId);
             if (peer != null)
                 return peer;
-             
-            peer = await NetPeer.Create(remoteContainerId, true);
+            var task = Task.Run(() => NetPeer.Create(remoteContainerId, true));
+            task.Wait();
+            peer = task.Result;
             mPeers[peer.ConnId] = peer;
-            return peer;
-        }
-
-        private void Client_Receive(IChannel arg1, DotNetty.Buffers.IByteBuffer arg2)
-        {
-            throw new NotImplementedException();
+            return peer; 
         }
     }
 }

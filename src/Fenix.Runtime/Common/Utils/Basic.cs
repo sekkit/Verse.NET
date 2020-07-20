@@ -6,6 +6,9 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
+using System.Globalization;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace Fenix.Common.Utils
 {

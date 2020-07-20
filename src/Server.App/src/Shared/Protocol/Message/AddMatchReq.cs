@@ -1,13 +1,12 @@
-﻿using Fenix;
+﻿//AUTOGEN, do not modify it!
+
+using Fenix.Common.Attributes;
 using Fenix.Common.Rpc;
-using MessagePack;
-using Shared;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using MessagePack; 
 
 namespace Shared.Protocol.Message
 {
+    [MessageType(ProtocolCode.ADD_TO_MATCH_REQ)]
     [MessagePackObject]
     public class JoinMatchReq : IMessageWithCallback
     {
@@ -25,7 +24,7 @@ namespace Shared.Protocol.Message
         }
 
         [Key(199)]
-        public Callback callback 
+        public Callback callback
         {
 	        get => _callback as Callback;
 	        set => _callback = value;

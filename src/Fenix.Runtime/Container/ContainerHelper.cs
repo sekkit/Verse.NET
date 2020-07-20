@@ -1,4 +1,5 @@
-﻿using Fenix.Common;
+﻿using DotNetty.Codecs.Http.WebSockets;
+using Fenix.Common;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -20,7 +21,7 @@ namespace Fenix
                     {
                         Thread.Sleep(0);
                         OneThreadSynchronizationContext.Instance.Update();
-                        container.Update();
+                        container.Update(); 
                     }
                     catch (Exception e)
                     {

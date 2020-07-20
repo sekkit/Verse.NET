@@ -46,14 +46,12 @@ namespace Fenix
 
         public void OnReceive(IChannel channel, IByteBuffer buffer)
         {
-            Console.WriteLine("server_rcv");
-            Receive?.Invoke(channel, buffer);
-            //channel.WriteAndFlushAsync(buffer);
+            Receive?.Invoke(channel, buffer); 
         }
 
         public async static Task<TcpContainerServer> Create(IPEndPoint ep)
         {
-            return null;
+            return await Create(ep.Address.ToString(), ep.Port);
         }
         
         public async static Task<TcpContainerServer> Create(string ip, int port)

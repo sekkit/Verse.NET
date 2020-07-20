@@ -13,13 +13,13 @@ namespace Fenix.Common
         PING              = 0x1,
         PONG              = 0x2,
         GOODBYE           = 0x4,
-        SPAWN_ACTOR       = 0x5,
+        CREATE_ACTOR      = 0x5,
         MIGRATE_ACTOR     = 0x6,
         CALL_ACTOR_METHOD = 0xff,
     }
 
     [MessagePackObject]
-    public class SpawnActorReq : IMessageWithCallback
+    public class CreateActorReq : IMessageWithCallback
     {
         [Key(0)]
         public string typeName;
