@@ -2,10 +2,12 @@
  * RpcCommand
  */
 
-using DotNetty.Common.Utilities;
 using Fenix;
 using Fenix.Common.Rpc;
-using Fenix.Common.Utils;
+using Fenix.Common.Utils; 
+using System; 
+using System.Linq;
+using System.Reflection;
 using static Fenix.Common.RpcUtil;
 
 public class RpcCommand
@@ -28,21 +30,26 @@ public class RpcCommand
 
     protected RpcModule mInvoker;
 
+    protected Action<byte[]> callbackMethod;
+
     protected RpcCommand()
     {
-        this.Id = Basic.GenID64();
+        
     }
-    
+     
     public static RpcCommand Create(
+        ulong protoId,
         uint fromContainerId,
         uint toContainerId,
         uint fromActorId,
         uint toActorId, 
         uint protoCode,
         IMessage msg,
+        Action<byte[]> cb,
         RpcModule invoker)
     {
         var obj             = new RpcCommand();
+        obj.Id = protoId;
         obj.Msg             = msg;
         obj.FromContainerId = fromContainerId;
         obj.ToContainerId   = toContainerId;
@@ -51,8 +58,7 @@ public class RpcCommand
         obj.mInvoker        = invoker;
         obj.RpcType         = invoker.GetRpcType(protoCode);
         obj.ProtoCode       = protoCode;
-        //Type type         = Global.TypeManager.GetMessageType(obj.ProtoCode);
-        //obj.mMsgObj       = MessagePackSerializer.Deserialize(type, obj.packet.Payload);
+        obj.callbackMethod  = cb;
         return obj;
     }
 
@@ -64,38 +70,43 @@ public class RpcCommand
         //return (T)msgObj;
     }
 
-    public void Call()
+    public void Call(Action callDone)
     {
-        if(Global.IsServer)
+        object[] args = new object[2];
+        args[0] = this.Msg;
+
+        if (!this.Msg.HasCallback())
+        {
+            callDone?.Invoke();
+        }
+        else
+        {
+            var cb = new Action<object>((cbMsg) =>
+            {
+                callDone?.Invoke();
+                this.mInvoker.RpcCallback(this.Id, this.ProtoCode, this.ToActorId, this.FromActorId, cbMsg);
+            });
+
+            args[1] = cb;
+        }
+
+        if (Global.IsServer)
         {
             if (RpcType == Api.ServerApi)
-                this.mInvoker.CallLocalMethod(this.ProtoCode, this.Msg);
+                this.mInvoker.CallLocalMethod(this.ProtoCode, args.ToArray());
             else if (RpcType == Api.ServerOnly)
-                this.mInvoker.CallLocalMethod(this.ProtoCode, this.Msg); 
+                this.mInvoker.CallLocalMethod(this.ProtoCode, args.ToArray());
         }
         else
         {
             if (RpcType == Api.ClientApi)
-                this.mInvoker.CallLocalMethod(this.ProtoCode, this.Msg);
+                this.mInvoker.CallLocalMethod(this.ProtoCode, args.ToArray());
         }
     }
 
-    public void Callback(byte[] cbMsg)
+    public void Callback(byte[] cbData)
     {
-        //SpawnActorMsg.Callback cb_msg;
-        //var peer = NetManager.Instance.GetPeerById(this.fromPeerId);
-        //SpawnActorMsg _msg = new SpawnActorMsg();
-        //_msg.callback = cbMsg;
-        //this.msg.Payload = MessagePackSerializer.Serialize(_msg);
-
-        //int payloadSz = this.msg.Payload.Length;
-        //byte[] bytes = new byte[8 + 4 + payloadSz];
-
-        //Array.Copy(BitConverter.GetBytes(this.msg.Id), 0, bytes, 0, 8);
-        //Array.Copy(BitConverter.GetBytes(this.msg.ProtocolId), 0, bytes, 8, 4);
-        //Array.Copy(BitConverter.GetBytes(this.msg.Id), 0, bytes, 12, payloadSz);  
-
-        //peer.Send(bytes);
+        this.callbackMethod?.Invoke(cbData);
     }
 }
 

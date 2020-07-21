@@ -224,8 +224,8 @@ namespace Fenix
                     buffer.ReadBytes(bytes);
 
                     //var msg = MessagePackSerializer.Deserialize<ActorMessage>(bytes);
-                    var msg = Packet.Create(msgId, protoCode, fromActorId, toActorId, bytes);
-                    HandleIncomingActorMessage(peer, msg);
+                    var packet = Packet.Create(msgId, protoCode, fromActorId, toActorId, bytes);
+                    HandleIncomingActorMessage(peer, packet);
                 }
                 else
                 {
@@ -278,14 +278,16 @@ namespace Fenix
 
         protected void RegisterGlobalManager(Actor actor)
         {
-            Global.IdManager.RegisterActor(actor, this); 
+            Global.IdManager.RegisterActor(actor, this);
+            Global.TypeManager.RegisterActorType(actor);
         }
 
         public Actor GetActor(uint actorId)
         {
             Actor a;
-            this.actorDic.TryGetValue(actorId, out a);
-            return a;
+            if (this.actorDic.TryGetValue(actorId, out a))
+                return a;
+            return null;
         }
 
         protected void HandleIncomingActorMessage(NetPeer fromPeer, Packet packet)
@@ -338,7 +340,7 @@ namespace Fenix
         }
   
         //调用Actor身上的方法
-        protected void CallActorMethod(uint fromContainerId, Packet packet) //uint actorId, uint methodId, object[] args)
+        protected void CallActorMethod(uint fromContainerId, Packet packet)  
         {
             var actor = this.actorDic[packet.ToActorId]; 
             actor.CallMethod(fromContainerId, this.Id, packet);
@@ -350,6 +352,26 @@ namespace Fenix
             {
                 this.actorDic[a].Update();
             }
-        } 
+        }
+
+        public dynamic GetService(string name)
+        {
+            return Global.GetActorRef(name, null);
+        }
+
+        public T GetService<T>(string name) where T : ActorRef
+        {
+            return (T)Global.GetActorRef(name, null);
+        }
+
+        public T GetAvatar<T>(string uid) where T : ActorRef
+        {
+            return (T)Global.GetActorRef(uid, null);
+        }
+
+        public ActorRef GetActorRef(string name)
+        {
+            return Global.GetActorRef(name, null);
+        }
     }
 }

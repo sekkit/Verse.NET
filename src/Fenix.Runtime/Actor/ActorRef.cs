@@ -13,16 +13,17 @@ namespace Fenix
 
         public static ActorRef Create(uint toActorId, Actor fromActor)
         {
-            var refType = Global.TypeManager.GetRefType(fromActor.GetType());
+            var toActorType = Global.TypeManager.GetActorType(toActorId);
+            var refType = Global.TypeManager.GetRefType(toActorType);
             var obj = (ActorRef)Activator.CreateInstance(refType);
             obj.toActorId = toActorId;
             obj.fromActor = fromActor;
             return obj;
         } 
 
-        public void CallRemoteMethod(uint protocolCode, IMessage msg)
+        public void CallRemoteMethod(uint protocolCode, IMessage msg, Action<byte[]> cb)
         {
-            fromActor.Rpc(protocolCode, fromActor.ContainerId, fromActor.Id, this.toActorId, msg);
+            fromActor.Rpc(protocolCode, fromActor.ContainerId, fromActor.Id, this.toActorId, msg, cb);
         }
     }
 }

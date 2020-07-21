@@ -20,11 +20,14 @@ namespace Fenix
 
         protected ConcurrentDictionary<uint, Type> mMessageTypeDic = new ConcurrentDictionary<uint, Type>();
 
-        protected ConcurrentDictionary<uint, string> mId2TypenameDic = new ConcurrentDictionary<uint, string>();
+        //protected ConcurrentDictionary<uint, string> mId2TypenameDic = new ConcurrentDictionary<uint, string>();
 
         protected ConcurrentDictionary<Type, Type> mRef2ActorTypeDic = new ConcurrentDictionary<Type, Type>();
 
         protected ConcurrentDictionary<Type, Type> mActor2RefTypeDic = new ConcurrentDictionary<Type, Type>();
+
+        protected ConcurrentDictionary<uint, Type> mId2TypeDic = new ConcurrentDictionary<uint, Type>();
+
 
         public void ScanAssemblies(Assembly[] asmList)
         {
@@ -52,7 +55,7 @@ namespace Fenix
             //    {
             //        Console.WriteLine(t);
             //    }
-        } 
+        }  
 
         public void RegisterRefType(Type refType, Type targetType)
         {
@@ -60,26 +63,32 @@ namespace Fenix
             this.mActor2RefTypeDic[targetType] = refType;
         }
 
-        public void Register(string typeName, Type type)
+        public void RegisterMessageType(uint protoCode, Type type)
         {
-            mTypeDic[typeName] = type;
+            mMessageTypeDic[protoCode] = type;
         }
 
-        public void RegisterMessageType(uint protocolId, Type type)
+        public void RegisterActorType(Actor actor)
         {
-            mMessageTypeDic[protocolId] = type;
-        }
-
-        public void RegisterActorType(uint actorId, Type type)
-        {
-            mId2TypenameDic[actorId] = type.Name;
+            uint actorId = actor.Id;
+            string actorName = actor.UniqueName;
+            Type type = actor.GetType();
+            //mId2TypenameDic[actorId] = type.Name;
             if(!mTypeDic.ContainsKey(type.Name))
                 mTypeDic[type.Name] = type;
+            mId2TypeDic[actorId] = type;
         }
 
         public Type Get(string typeName)
         {
             return mTypeDic[typeName];
+        }
+
+        public Type GetActorType(uint actorId)
+        {
+            Type t;
+            mId2TypeDic.TryGetValue(actorId, out t);
+            return t;
         }
 
         public Type GetMessageType(uint protocolId)
@@ -90,8 +99,9 @@ namespace Fenix
         public Type GetRefType(Type type)
         {
             Type t;
-            this.mActor2RefTypeDic.TryGetValue(type, out t);
-            return t;
+            if (this.mActor2RefTypeDic.TryGetValue(type, out t))
+                return t;
+            return typeof(ActorRef);
         }
     }
 }

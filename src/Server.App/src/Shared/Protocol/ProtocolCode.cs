@@ -12,6 +12,6 @@ namespace Shared
 
     public class ProtocolCode
     {
-        public const uint ADD_TO_MATCH_REQ = 247041346;
+        public const uint JOIN_MATCH_REQ = 3350615592;
     }
 }

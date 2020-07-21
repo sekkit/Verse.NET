@@ -17,6 +17,11 @@ namespace Fenix.Common.Rpc
         {
             return false;
         }
+
+        public virtual object GetCallbackMsg()
+        {
+            return null;
+        }
     }
 
     [MessagePackObject]
@@ -28,6 +33,11 @@ namespace Fenix.Common.Rpc
         public override bool HasCallback()
         {
             return true;
+        }
+
+        public override object GetCallbackMsg()
+        {
+            return _callback;
         }
     }
 }

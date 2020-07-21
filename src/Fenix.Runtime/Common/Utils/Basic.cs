@@ -9,6 +9,7 @@ using System.Security.Cryptography;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Threading;
+using MessagePack;
 
 namespace Fenix.Common.Utils
 {
@@ -151,6 +152,21 @@ namespace Fenix.Common.Utils
             l.Stop();
             Log.Info($"Available port found: {port}");
             return port;
+        }
+
+        public static byte[] Serialize(object msg)
+        {
+            return MessagePackSerializer.Serialize(msg);
+        }
+
+        public static T Deserialize<T>(byte[] bytes)
+        {
+            return MessagePackSerializer.Deserialize<T>(bytes);
+        }
+
+        public static object Deserialize(Type type, byte[] bytes)
+        {
+            return MessagePackSerializer.Deserialize(type, bytes);
         }
     }
 }

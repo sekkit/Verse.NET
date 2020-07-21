@@ -30,22 +30,7 @@ namespace Fenix
         
         [IgnoreMember]
         [IgnoreDataMember]
-        protected Dictionary<Type, object> mPersistentDic = new Dictionary<Type, object>();
-
-        //[IgnoreMember]
-        //[IgnoreDataMember]
-        //private Container _c;
-
-        //[IgnoreMember]
-        //[IgnoreDataMember]
-        //public Container Container
-        //{
-        //    get
-        //    {
-        //        if(_c == null)
-
-        //    }
-        //}
+        protected Dictionary<Type, object> mPersistentDic = new Dictionary<Type, object>(); 
 
         public T Get<T>()
         {
@@ -122,9 +107,9 @@ namespace Fenix
         public virtual void Pack()
         {
             Dictionary<string, byte[]> packData = new Dictionary<string, byte[]>();
-            packData["basic"] = MessagePackSerializer.Serialize(this);
+            packData["basic"] = Basic.Serialize(this);
             foreach(var kv in this.mPersistentDic) 
-                packData[kv.Key.Name] = MessagePackSerializer.Serialize(kv.Value);
+                packData[kv.Key.Name] = Basic.Serialize(kv.Value);
         }
 
         public virtual void Unpack()
@@ -135,6 +120,26 @@ namespace Fenix
         protected void Restore()
         {
 
+        }
+
+        public dynamic GetService(string name)
+        {
+            return Global.GetActorRef(name, this);
+        }
+
+        public T GetService<T>(string name) where T : ActorRef
+        {
+            return (T)Global.GetActorRef(name, this);
+        }
+
+        public T GetAvatar<T>(string uid) where T : ActorRef
+        {
+            return (T)Global.GetActorRef(uid, this);
+        }
+
+        public ActorRef GetActorRef(string name)
+        {
+            return Global.GetActorRef(name, this);
         }
     }
 }

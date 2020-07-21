@@ -71,7 +71,7 @@ namespace Server.App
             //msg["uid"] = "1123123";
             //msg["match_type"] = 1;
 
-            
+
 
             //var bytes9 = MessagePackSerializer.Serialize(msg);
             //Console.WriteLine(DotNetty.Common.Utilities.StringUtil.ToHexString(bytes9));
@@ -82,6 +82,14 @@ namespace Server.App
 
             //var bytes10 = MessagePackSerializer.Serialize(bbb);
             //Console.WriteLine(DotNetty.Common.Utilities.StringUtil.ToHexString(bytes10));
+
+            var msg = new Shared.Protocol.Message.JoinMatchReq()
+            {
+                uid = "",
+                match_type = 1
+            };
+
+            var obj = MessagePackSerializer.Serialize(msg);
 
             Bootstrap.Start();
         }

@@ -23,7 +23,6 @@ namespace Fenix
         public static T Get<T>(string name, Actor fromActor) where T: ActorRef
         {
             var actorRef = ActorManager.Instance.GetActorRefByName(name, fromActor);
-
             return (T)actorRef;
         }
 

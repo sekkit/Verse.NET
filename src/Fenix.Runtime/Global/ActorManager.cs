@@ -19,7 +19,7 @@ namespace Fenix
                 return actorDic[name];
             }
 
-            uint toActorId = Global.IdManager.GetActorId(name);
+            uint toActorId = Global.IdManager.GetActorId(name); 
             //uint containerId = Global.IdManager.GetContainerIdByActorId(actorId); 
             //var toActor = Container.Instance.GetActor(toActorId); 
             actorDic[name] = ActorRef.Create(toActorId, fromActor);
