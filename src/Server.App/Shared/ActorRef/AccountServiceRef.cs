@@ -37,7 +37,7 @@ namespace Shared
             this.CallRemoteMethod(ProtocolCode.CREATE_ACCOUNT_REQ, msg, cb);
         }
 
-public void rpc_delete_account(String username, String password, Action<ErrCode> callback)
+        public void rpc_delete_account(String username, String password, Action<ErrCode> callback)
         {
             var toContainerId = Global.IdManager.GetContainerIdByActorId(this.toActorId);
             if (this.fromActor.ContainerId == toContainerId)
@@ -57,7 +57,7 @@ public void rpc_delete_account(String username, String password, Action<ErrCode>
             this.CallRemoteMethod(ProtocolCode.DELETE_ACCOUNT_REQ, msg, cb);
         }
 
-public void rpc_login(String username, String password, Action<ErrCode> callback)
+        public void rpc_login(String username, String password, Action<ErrCode> callback)
         {
             var toContainerId = Global.IdManager.GetContainerIdByActorId(this.toActorId);
             if (this.fromActor.ContainerId == toContainerId)
@@ -77,7 +77,7 @@ public void rpc_login(String username, String password, Action<ErrCode> callback
             this.CallRemoteMethod(ProtocolCode.LOGIN_REQ, msg, cb);
         }
 
-public void rpc_reset_password(String username, String email)
+        public void rpc_reset_password(String username, String email)
         {
            var toContainerId = Global.IdManager.GetContainerIdByActorId(this.toActorId);
            if (this.fromActor.ContainerId == toContainerId)

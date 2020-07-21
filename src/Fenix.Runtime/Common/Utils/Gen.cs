@@ -386,7 +386,7 @@ namespace Shared
                         string cb_args = GenCbArgs(cbType.GetGenericArguments(), (attrs.First() as ServerApiAttribute).CallbackArgs, "cbMsg.");
 
                         builder = new StringBuilder()
-                        .AppendLine($"public void {rpc_name}({args_decl})")
+                        .AppendLine($"        public void {rpc_name}({args_decl})")
                         .AppendLine($"        {{")
                         .AppendLine($"            var toContainerId = Global.IdManager.GetContainerIdByActorId(this.toActorId);")
                         .AppendLine($"            if (this.fromActor.ContainerId == toContainerId)")
@@ -408,7 +408,7 @@ namespace Shared
                     else
                     {
                         builder = new StringBuilder()
-                        .AppendLine($"public void {rpc_name}({args_decl})")
+                        .AppendLine($"        public void {rpc_name}({args_decl})")
                         .AppendLine($"        {{")
                         .AppendLine($"           var toContainerId = Global.IdManager.GetContainerIdByActorId(this.toActorId);")
                         .AppendLine($"           if (this.fromActor.ContainerId == toContainerId)")
@@ -496,7 +496,7 @@ namespace Shared
 .AppendLine($"    [RefType(typeof({tname}))]")
 .AppendLine($"    public class {tname}Ref : ActorRef")
 .AppendLine($"    {{")
-.AppendLine($"        { refCode}    }}") 
+.AppendLine($"{refCode}    }}") 
 .AppendLine($"}}");
             var result = refBuilder.ToString();
 

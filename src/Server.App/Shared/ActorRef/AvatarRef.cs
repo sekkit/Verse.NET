@@ -16,6 +16,6 @@ namespace Shared
     [RefType(typeof(Avatar))]
     public class AvatarRef : ActorRef
     {
-            }
+    }
 }
 
