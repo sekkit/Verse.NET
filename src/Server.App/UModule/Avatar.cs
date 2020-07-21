@@ -26,6 +26,12 @@ namespace UModule
             {
                 Log.Info(code.ToString());
             }));
+
+            //var svc2 = GetService<MatchServiceRef>("");
+            //svc2.rpc_join_match("", 1, (code) =>
+            //{
+            //    Log.Info(code.ToString());
+            //});
         }
     }
 }

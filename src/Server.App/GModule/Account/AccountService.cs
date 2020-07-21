@@ -42,7 +42,7 @@ namespace GModule.Login
 
         }
 
-        bool sent = false;
+        //bool sent = false;
 
         int i = 0;
 
