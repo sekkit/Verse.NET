@@ -17,7 +17,6 @@ namespace UModule
 {
     public partial class Avatar
     {
-
     }
 }
 

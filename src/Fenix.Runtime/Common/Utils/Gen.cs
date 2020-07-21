@@ -433,11 +433,11 @@ namespace Shared
                     
                     string api_name = "_INTERNAL_SERVER_API_"+NameToApi(method.Name);
                     builder = new StringBuilder()
-                        .AppendLine($"    [RpcMethod(ProtocolCode.{proto_code})]")
-                        .AppendLine($"    [EditorBrowsable(EditorBrowsableState.Never)]")
-                        .AppendLine($"    public void {api_name}(IMessage msg, Action<object> cb)")
-                        .AppendLine($"    {{")
-                        .AppendLine($"        var _msg = ({msg_type})msg;");
+                        .AppendLine($"        [RpcMethod(ProtocolCode.{proto_code})]")
+                        .AppendLine($"        [EditorBrowsable(EditorBrowsableState.Never)]")
+                        .AppendLine($"        public void {api_name}(IMessage msg, Action<object> cb)")
+                        .AppendLine($"        {{")
+                        .AppendLine($"            var _msg = ({msg_type})msg;");
                     
                     if (callback_define != "")
                     {
@@ -445,17 +445,17 @@ namespace Shared
                         string api_cb_args = GenCbArgs(cbType2.GetGenericArguments(), (attrs.First() as ServerApiAttribute).CallbackArgs, "");
                         string api_cb_assign = ParseArgsMsgAssign(cbType2.GetGenericArguments(),
                                                         (attrs.First() as ServerApiAttribute).CallbackArgs,
-                                                        "            ",
+                                                        "                ",
                                                         "cbMsg.");
-                        builder.AppendLine($"        this.{method.Name}({api_rpc_args}, ({api_cb_args}) =>")
-                        .AppendLine($"        {{")
-                        .AppendLine($"            var cbMsg = new {msg_type}.Callback();")
+                        builder.AppendLine($"            this.{method.Name}({api_rpc_args}, ({api_cb_args}) =>")
+                        .AppendLine($"            {{")
+                        .AppendLine($"                var cbMsg = new {msg_type}.Callback();")
                         .AppendLine($"{api_cb_assign}")
-                        .AppendLine($"            cb.Invoke(cbMsg);")
-                        .AppendLine($"        }});");
+                        .AppendLine($"                cb.Invoke(cbMsg);")
+                        .AppendLine($"            }});");
                     }
 
-                    builder.AppendLine($"    }}");
+                    builder.AppendLine($"        }}");
 
                     var apiDefineCode = builder.ToString();
                     apiDefineDic[api_name] = apiDefineCode;
@@ -526,8 +526,7 @@ using System.Text;
 .AppendLine("{")
 .AppendLine($"    public partial class {tname}")
 .AppendLine($"    {{")
-.AppendLine($"{internalApiCode}")
-.AppendLine($"    }}")
+.AppendLine($"{internalApiCode}    }}")
 .AppendLine($"}}");
             var apiResultCode = apiBuilder.ToString();
             using (var sw = new StreamWriter(Path.Combine(output, "Stub", type.Name + ".Stub.cs"), false, Encoding.UTF8))

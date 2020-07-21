@@ -17,19 +17,18 @@ namespace GModule.Match
 {
     public partial class MatchService
     {
-    [RpcMethod(ProtocolCode.JOIN_MATCH_REQ)]
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public void _INTERNAL_SERVER_API_join_match(IMessage msg, Action<object> cb)
-    {
-        var _msg = (JoinMatchReq)msg;
-        this.JoinMatch(_msg.uid, _msg.match_type, (code) =>
+        [RpcMethod(ProtocolCode.JOIN_MATCH_REQ)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void _INTERNAL_SERVER_API_join_match(IMessage msg, Action<object> cb)
         {
-            var cbMsg = new JoinMatchReq.Callback();
-            cbMsg.code=code;
-            cb.Invoke(cbMsg);
-        });
-    }
-
+            var _msg = (JoinMatchReq)msg;
+            this.JoinMatch(_msg.uid, _msg.match_type, (code) =>
+            {
+                var cbMsg = new JoinMatchReq.Callback();
+                cbMsg.code=code;
+                cb.Invoke(cbMsg);
+            });
+        }
     }
 }
 
