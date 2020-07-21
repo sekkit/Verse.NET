@@ -1,4 +1,5 @@
 ﻿using Fenix.Common.Attributes;
+using Fenix.Common.Utils;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -19,15 +20,15 @@ namespace Fenix
         protected ConcurrentDictionary<string, Type> mTypeDic = new ConcurrentDictionary<string, Type>();
 
         protected ConcurrentDictionary<uint, Type> mMessageTypeDic = new ConcurrentDictionary<uint, Type>();
-
-        //protected ConcurrentDictionary<uint, string> mId2TypenameDic = new ConcurrentDictionary<uint, string>();
-
+         
         protected ConcurrentDictionary<Type, Type> mRef2ActorTypeDic = new ConcurrentDictionary<Type, Type>();
 
         protected ConcurrentDictionary<Type, Type> mActor2RefTypeDic = new ConcurrentDictionary<Type, Type>();
-
-        protected ConcurrentDictionary<uint, Type> mId2TypeDic = new ConcurrentDictionary<uint, Type>();
-
+         
+        public void RegisterType(string name, Type type)
+        {
+            this.mTypeDic[name] = type;
+        }
 
         public void ScanAssemblies(Assembly[] asmList)
         {
@@ -48,6 +49,9 @@ namespace Fenix
                     var mta = (MessageTypeAttribute)msgTypeAttrs.First();
                     Global.TypeManager.RegisterMessageType(mta.ProtoCode, t);
                 }
+
+                if(Basic.IsHeritedType(t, "Actor"))
+                    RegisterType(t.Name, t);
             }
 
             //foreach (var t in typeof(Global).Assembly.GetTypes())
@@ -76,19 +80,25 @@ namespace Fenix
             //mId2TypenameDic[actorId] = type.Name;
             if(!mTypeDic.ContainsKey(type.Name))
                 mTypeDic[type.Name] = type;
-            mId2TypeDic[actorId] = type;
+            //mId2TypeDic[actorId] = type;
         }
 
         public Type Get(string typeName)
         {
-            return mTypeDic[typeName];
+            if (typeName == null)
+                return null;
+            mTypeDic.TryGetValue(typeName, out var result);
+            return result;
         }
 
         public Type GetActorType(uint actorId)
         {
-            Type t;
-            mId2TypeDic.TryGetValue(actorId, out t);
-            return t;
+            var tname = Global.IdManager.GetActorTypename(actorId);
+
+            return this.Get(tname);
+            //Type t;
+            //mId2TypeDic.TryGetValue(actorId, out t);
+            //return t;
         }
 
         public Type GetMessageType(uint protocolId)

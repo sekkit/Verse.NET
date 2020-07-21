@@ -20,7 +20,7 @@ namespace Fenix
 
         public event Action<IChannel> Disconnect;
 
-        public event Action<IChannel> Exception;
+        public event Action<IChannel, Exception> Exception;
 
         public event Action<IChannel, IByteBuffer> Receive;
         
@@ -39,9 +39,9 @@ namespace Fenix
             Disconnect?.Invoke(channel);
         }
 
-        public void OnException(IChannel channel)
+        public void OnException(IChannel channel, Exception ex)
         {
-            Exception?.Invoke(channel);
+            Exception?.Invoke(channel, ex);
         }
 
         public void OnReceive(IChannel channel, IByteBuffer buffer)
@@ -49,12 +49,12 @@ namespace Fenix
             Receive?.Invoke(channel, buffer); 
         }
 
-        public async static Task<TcpContainerServer> Create(IPEndPoint ep)
+        public static TcpContainerServer Create(IPEndPoint ep)
         {
-            return await Create(ep.Address.ToString(), ep.Port);
+            return Create(ep.Address.ToString(), ep.Port);
         }
         
-        public async static Task<TcpContainerServer> Create(string ip, int port)
+        public static TcpContainerServer Create(string ip, int port)
         {
             var channelConfig = new TcpChannelConfig();
             channelConfig.Address = "0.0.0.0";
@@ -62,7 +62,8 @@ namespace Fenix
             channelConfig.UseLibuv = true;
             var listener = new TcpContainerServer();
             var server = new TcpSocketServer();
-            await server.Start(channelConfig, listener);
+            if (!server.Start(channelConfig, listener))
+                return null;
             return listener;
         }
 

@@ -72,17 +72,17 @@ namespace Fenix
             this.SetupKcpServer();
 
             this.InitTcp();
+
+            Log.Info(string.Format("{0} is running at {1}", this.UniqueName, LocalAddress.ToString()));
         }
 
-        protected async Task InitTcp()
+        protected void InitTcp()
         {
-            await this.SetupTcpServer();
-
-            //await this.SetupTcpClient();
+            this.SetupTcpServer(); 
         }
 
         public static Container Create(string name, int port)
-        {
+        { 
             if (Instance != null)
                 return Instance;
             var c = new Container(name, port);
@@ -163,9 +163,9 @@ namespace Fenix
         #endregion
 
         #region TCP
-        protected async Task<TcpContainerServer> SetupTcpServer()
+        protected TcpContainerServer SetupTcpServer()
         { 
-            tcpServer = await TcpContainerServer.Create(this.LocalAddress);
+            tcpServer = TcpContainerServer.Create(this.LocalAddress);
             tcpServer.Connect   += OnTcpIncomingConnect;
             tcpServer.Receive   += OnTcpServerReceive;
             tcpServer.Close     += OnTcpServerClose;
@@ -173,9 +173,9 @@ namespace Fenix
             return tcpServer;
         }
 
-        protected async Task<TcpContainerClient> CreateTcpClient(IPEndPoint remoteAddress)
+        protected TcpContainerClient CreateTcpClient(IPEndPoint remoteAddress)
         {
-            var tcpClient = await TcpContainerClient.Create(remoteAddress);
+            var tcpClient = TcpContainerClient.Create(remoteAddress);
             tcpClient.Receive    += OnTcpClientReceive;
             tcpClient.Close      += OnTcpClientClose;
             tcpClient.Exception  += OnTcpClientException;
@@ -246,12 +246,13 @@ namespace Fenix
         
         void OnTcpServerClose(IChannel channel)
         {
-            
+            NetManager.Instance.DeregisterChannel(channel);
         }
         
-        void OnTcpServerException(IChannel channel)
+        void OnTcpServerException(IChannel channel, Exception ex)
         {
-            
+            Log.Error(ex.StackTrace);
+            NetManager.Instance.DeregisterChannel(channel); 
         }
         
         void OnTcpClientReceive(IChannel channel, IByteBuffer buffer)
@@ -261,12 +262,13 @@ namespace Fenix
         
         void OnTcpClientClose(IChannel channel)
         {
-            
+            NetManager.Instance.DeregisterChannel(channel);
         }
         
-        void OnTcpClientException(IChannel channel)
+        void OnTcpClientException(IChannel channel, Exception ex)
         {
-            
+            Log.Error(ex.StackTrace);
+            NetManager.Instance.DeregisterChannel(channel);
         }
         
         #endregion
@@ -297,15 +299,13 @@ namespace Fenix
         }
 
         [ServerOnly]
-        protected void CreateActor(string typename, string name, Action<ErrCode> callback)
+        public void CreateActor(string typename, string name, Action<ErrCode> callback)
         {
-            var type = Global.TypeManager.Get(typename);
-            var newActor = Actor.Create(type, name);
-            this.RegisterGlobalManager(newActor);
-
-            actorDic[newActor.Id] = newActor;
-
-            callback(ErrCode.OK);
+            var a = CreateActor(typename, name);
+            if (a != null)
+                callback(ErrCode.OK);
+            else
+                callback(ErrCode.ERROR);
         }
 
         public Actor CreateActor<T>(string name) where T : Actor
@@ -316,14 +316,15 @@ namespace Fenix
             return newActor;
         }
 
-        //public void __SpawnActor(RpcCommand cmd)
-        //{
-        //    var msg = cmd.ToMessage<SpawnActorMsg>();
-        //    this.SpawnActor(msg.typeName, msg.name, (code) =>
-        //    {
-        //        cmd.Callback(cb_msg);
-        //    });
-        //}
+        public Actor CreateActor(string typename, string name) 
+        {
+            var type = Global.TypeManager.Get(typename);
+            var newActor = Actor.Create(type, name);
+            this.RegisterGlobalManager(newActor);
+
+            actorDic[newActor.Id] = newActor;
+            return newActor;
+        }
 
         //Ç¨ÒÆactor
         [ServerOnly]
@@ -352,6 +353,8 @@ namespace Fenix
             {
                 this.actorDic[a].Update();
             }
+
+            //Log.Info(string.Format("C: {0}", rpcDic.Count));
         }
 
         public dynamic GetService(string name)

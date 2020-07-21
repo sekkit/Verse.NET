@@ -1,97 +1,86 @@
+
+/*
+ * (c)2020 Sekkit.com
+ * Fenix是一个基于Actor网络模型的分布式游戏服务器
+ * server端通信都是走tcp
+ * server/client之间可以走tcp/kcp/websockets
+ */
+
+using DotNetty.Buffers;
 using Fenix;
+using Fenix.Config;
+using Fenix.Host;
 using MessagePack;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
+using Microsoft.Extensions.Configuration;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
 
 namespace Server.App
-{
-    //[Serializable]
-    //public class B
-    //{
-
-    //}
-
-    //[Serializable]
-    ////[MessagePack.MessagePackObject]
-    //public class A
-    //{
-    //    //[Key(0)]
-    //    //[DataMember]
-    //    //public object a;
-
-    //    //[Key(1)]
-    //    [DataMember]
-    //    public Dictionary<string, object> hello = new Dictionary<string, object>();
-
-    //    public A()
-    //    {
-    //        hello[typeof(A).Name] = new B();
-    //    }
-    //}
-    
-    //[MessagePackObject]
-    //public class BBB
-    //{
-    //    [Key(0)]
-    //    public string uid = "1123123";
-    //    [Key(1)]
-    //    public int match_type = 1;
-    //}
-
+{ 
     class Program
-    {
+    { 
         static void Main(string[] args)
         {
-            //var act = new A();
-            //MemoryStream s = new MemoryStream();
-            //BinaryFormatter b = new BinaryFormatter();
-            //b.Serialize(s, act);
-            //s.Close();
-
-            //var bytes = s.ToArray(); 
-
-            //////var bytes = MessagePack.MessagePackSerializer.Serialize(act);
-            ////Console.WriteLine(DotNetty.Common.Utilities.StringUtil.ToHexString(bytes)); 
-            //////act.a = new object();
-            ////bytes = MessagePack.MessagePackSerializer.Serialize(act);
-            ////Console.WriteLine(DotNetty.Common.Utilities.StringUtil.ToHexString(bytes));
-
-            ////var act2 = new A();
-            ////var bytes2 = MessagePack.MessagePackSerializer.Serialize(act2);
-            ////Console.WriteLine(DotNetty.Common.Utilities.StringUtil.ToHexString(bytes2));
-
-            ////var act3 =  MessagePack.MessagePackSerializer.Deserialize<A>(bytes);
-            //var act3 = (A)b.Deserialize(new MemoryStream(bytes));
-            //Console.WriteLine(act3.hello);
-
-            //Dictionary<string, object> msg = new Dictionary<string, object>();
-            //msg["uid"] = "1123123";
-            //msg["match_type"] = 1;
-
-
-
-            //var bytes9 = MessagePackSerializer.Serialize(msg);
-            //Console.WriteLine(DotNetty.Common.Utilities.StringUtil.ToHexString(bytes9));
-
-            //var bbb = new BBB();
-            //bbb.uid = "1123123";
-            //bbb.match_type = 1;
-
-            //var bytes10 = MessagePackSerializer.Serialize(bbb);
-            //Console.WriteLine(DotNetty.Common.Utilities.StringUtil.ToHexString(bytes10));
-
-            var msg = new Shared.Protocol.Message.JoinMatchReq()
+            /*
+            using (StreamWriter sw = new StreamWriter("app.json", false, Encoding.UTF8))
             {
-                uid = "",
-                match_type = 1
-            };
+                var content = JsonConvert.SerializeObject(conf, Formatting.Indented);
+                sw.Write(content);
+            }
+            */
+             
+            if (args.Length == 0)
+            {
+                var cfgList = new List<RuntimeConfig>();
 
-            var obj = MessagePackSerializer.Serialize(msg);
+                var obj = new RuntimeConfig();
+                obj.ExternalIp = "auto";
+                obj.InternalIp = "auto";
+                obj.Port = 17777; //auto
+                obj.AppName = "Account.App";
+                obj.DefaultActorNames = new List<string>()
+                {
+                    "AccountService"
+                };
 
-            Bootstrap.Start();
+                cfgList.Add(obj);
+
+                obj = new RuntimeConfig();
+                obj.ExternalIp = "auto";
+                obj.InternalIp = "auto";
+                obj.Port = 17778; //auto
+                obj.AppName = "Match.App";
+                obj.DefaultActorNames = new List<string>()
+                {
+                    "MatchService"
+                };
+
+                cfgList.Add(obj);
+
+                Environment.SetEnvironmentVariable("AppName", "Match.App");
+
+                Bootstrap.Start(new Assembly[] { typeof(Program).Assembly }, cfgList, isMultiProcess:true); //单进程模式
+            }
+            else
+            {
+                var builder = new ConfigurationBuilder().AddCommandLine(args);
+                var cmdLine = builder.Build();
+                
+                //将命令行参数，设置到进程的环境变量
+                Environment.SetEnvironmentVariable("AppName", cmdLine["AppName"]);
+
+                using (var sr = new StreamReader(cmdLine["Config"]))
+                {
+                    var cfgList = JsonConvert.DeserializeObject<List<RuntimeConfig>>(sr.ReadToEnd());
+                    Bootstrap.Start(new Assembly[] { typeof(Program).Assembly }, cfgList, isMultiProcess: true); //分布式
+                }
+            }
         }
     }
 }

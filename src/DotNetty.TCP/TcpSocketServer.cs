@@ -19,7 +19,7 @@ namespace DotNetty.TCP
 
         IChannel boundChannel;
 
-        public async Task Start(TcpChannelConfig channelConfig, ITcpListener listener)
+        public bool Start(TcpChannelConfig channelConfig, ITcpListener listener)
         {
             if (channelConfig.UseLibuv)
             {
@@ -71,13 +71,21 @@ namespace DotNetty.TCP
                       pipeline.AddLast("tcp-handler", new TcpChannelHandler(listener));
 
                   }));
-
-                boundChannel = await bootstrap.BindAsync(channelConfig.Port);
+ 
+                var task = Task<IChannel>.Run(() => bootstrap.BindAsync(channelConfig.Port));
+                task.Wait();
+                boundChannel = task.Result;
             }
             catch(Exception ex)
             {
                 Console.WriteLine(ex.StackTrace);
+                return false;
             }
+
+            if (boundChannel == null)
+                return false;
+
+            return true;
         }
     
         public async void Shutdown()

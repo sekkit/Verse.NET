@@ -12,18 +12,15 @@ namespace UModule
     [RuntimeData(typeof(User))]
     public partial class Avatar : Actor
     {
-        bool sent = false;
-
         public Avatar(string uid): base(uid)
         {
+
         }
 
         public override void Update()
         {
             base.Update();
-            if (sent)
-                return;
-            sent = true;
+
             var svc = GetService("MatchService");
             svc.rpc_join_match("", 1, new Action<MatchCode>((code) =>
             {

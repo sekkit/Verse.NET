@@ -1,3 +1,4 @@
+using Fenix.Common;
 using Fenix.Common.Utils;
 using MessagePack;
 using System;
@@ -86,7 +87,7 @@ namespace Fenix
 
         public virtual void Update()
         {
-             
+            Log.Info(string.Format("{0}:{1}", this.GetType().Name, rpcDic.Count));
         }
 
         public virtual void onActive()

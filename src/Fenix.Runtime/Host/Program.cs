@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace Fenix.Host
 {
@@ -6,7 +7,17 @@ namespace Fenix.Host
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            if (args.Length == 0)
+            {
+                Bootstrap.Start(new Assembly[] { typeof(Program).Assembly }, null); //单进程模式
+            }
+            else
+            {
+                //将命令行参数，设置到进程的环境变量
+                Environment.SetEnvironmentVariable("ContainerType", "AccountService");
+
+                Bootstrap.Start(new Assembly[] { typeof(Program).Assembly }, null, isMultiProcess: true); //分布式
+            }
         }
     }
 }

@@ -32,9 +32,9 @@ namespace Fenix
             return actorRef;
         }
 
-        public static void Init(Assembly asm)
+        public static void Init(Assembly[] asmList)
         {
-            Global.TypeManager.ScanAssemblies(new Assembly[] { asm });
+            Global.TypeManager.ScanAssemblies(asmList);
         }
     }
 }

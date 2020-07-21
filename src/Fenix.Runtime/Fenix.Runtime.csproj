@@ -61,4 +61,8 @@
     <ProjectReference Include="..\MessagePack\MessagePack.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Common\Db\" />
+  </ItemGroup>
+
 </Project>

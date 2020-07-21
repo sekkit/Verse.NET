@@ -16,6 +16,6 @@ namespace DotNetty.TCP
 
         void OnClose(IChannel channel);
 
-        void OnException(IChannel channel);
+        void OnException(IChannel channel, Exception ex);
     }
 }

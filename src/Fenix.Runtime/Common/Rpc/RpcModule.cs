@@ -19,7 +19,7 @@ namespace Fenix
     public class RpcModule
     {
         public ConcurrentDictionary<UInt64, RpcCommand> rpcDic     = new ConcurrentDictionary<UInt64, RpcCommand>();
-        public static ConcurrentDictionary<UInt32, Api> rpcTypeDic        = new ConcurrentDictionary<UInt32, Api>(); 
+        public static ConcurrentDictionary<UInt32, Api> rpcTypeDic = new ConcurrentDictionary<UInt32, Api>(); 
         public ConcurrentDictionary<UInt32, MethodInfo> rpcStubDic = new ConcurrentDictionary<UInt32, MethodInfo>(); 
 
         public RpcModule()
@@ -74,7 +74,7 @@ namespace Fenix
                 Type type = Global.TypeManager.GetMessageType(packet.ProtoCode);
                 IMessage msg = (IMessage)Basic.Deserialize(type, packet.Payload);
                 var cmd = RpcCommand.Create(packet.Id, fromContainerId, toContainerId, packet.FromActorId, packet.ToActorId, packet.ProtoCode, msg,
-                    (cbData) => { },
+                    null,
                     this) ; 
                 cmd.Call(()=> {
                     this.rpcDic.TryRemove(cmd.Id, out var _);
@@ -129,7 +129,15 @@ namespace Fenix
             //Console.WriteLine(string.Format("{0} {1} {2} {3} {4}", fromContainerId, toContainerId, fromActorId, toActorId, peer==null?"NULL":""));
             if (peer == null)
                 peer = NetManager.Instance.CreatePeer(toContainerId);
-              
+             
+            if(peer == null || !peer.IsActive)
+            {
+                Log.Error(string.Format("peer disconnected {0}", toContainerId));
+                //这里可以尝试把global以及redis状态清空
+                NetManager.Instance.RemovePeerId(toContainerId);
+                return;
+            }
+
             if(msg.HasCallback())
                 this.rpcDic[cmd.Id] = cmd; 
             
@@ -153,15 +161,22 @@ namespace Fenix
 
             //否则通过网络调用
             var peer = NetManager.Instance.GetPeerById(toContainerId);
-
-            Console.WriteLine(string.Format("{0} {1} {2} {3} {4}", Container.Instance.Id, toContainerId, 
-                Global.TypeManager.GetActorType(fromActorId).Name, Global.TypeManager.GetActorType(toActorId).Name, 
-                peer==null?"NULL":""));
-
+             
             if (peer == null)
                 peer = NetManager.Instance.CreatePeer(toContainerId);
 
-            
+            if (peer == null || !peer.IsActive)
+            {
+                Log.Error(string.Format("peer disconnected {0}", toContainerId));
+                //这里可以尝试把global以及redis状态清空
+                NetManager.Instance.RemovePeerId(toContainerId);
+                return;
+            }
+
+            //Console.WriteLine(string.Format("{0} {1} {2} {3} {4}", Container.Instance.Id, toContainerId,
+            //    Global.TypeManager.GetActorType(fromActorId).Name, Global.TypeManager.GetActorType(toActorId).Name,
+            //    peer == null ? "NULL" : ""));
+
             peer.Send(packet);
         }
     }

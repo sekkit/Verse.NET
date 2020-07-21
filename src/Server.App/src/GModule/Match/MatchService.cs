@@ -20,7 +20,6 @@ namespace GModule.Match
 
         public void onLoad()
         {
-            //
         }
 
         //public new string UniqueName => nameof(MatchService);

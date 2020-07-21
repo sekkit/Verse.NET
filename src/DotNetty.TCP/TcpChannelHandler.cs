@@ -50,8 +50,8 @@ namespace DotNetty.TCP
 
         public override void ExceptionCaught(IChannelHandlerContext context, Exception exception)
         {
-            Console.WriteLine("Exception: " + exception.StackTrace); 
-            this.listener?.OnException(context.Channel);
+            //Console.WriteLine("Exception: " + exception.StackTrace); 
+            this.listener?.OnException(context.Channel, exception);
             context.CloseAsync();
         }
     }

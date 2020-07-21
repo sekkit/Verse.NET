@@ -16,11 +16,7 @@ namespace Fenix
         
         protected ConcurrentDictionary<string, IChannel> mChName2Ch = new ConcurrentDictionary<string, IChannel>();
 
-        protected Dictionary<uint, NetPeer> mPeers = new Dictionary<uint, NetPeer>();
-        
-        //protected Dictionary<uint, TcpContainerClient> mTcpClientDic { get; set; }
-        
-        //protected Dictionary<uint, KcpContainerClient> mKcpClientDic { get; set; }
+        protected ConcurrentDictionary<uint, NetPeer> mPeers = new ConcurrentDictionary<uint, NetPeer>();
         
         public static NetManager Instance = new NetManager();
 
@@ -42,11 +38,19 @@ namespace Fenix
 
         public void DeregisterChannel(IChannel ch)
         {
-            var id = Global.IdManager.GetContainerId(ch.RemoteAddress.ToString());
-            this.mPeers.Remove(id);
+            var id = Global.IdManager.GetContainerId(ch.RemoteAddress.ToString()); 
+            this.mPeers.TryRemove(id, out NetPeer peer);
+            if(id != 0 && peer != null)
+                Global.IdManager.RemoveContainerId(peer.ConnId);
 
             this.mChName2Ch.TryRemove(ch.Id.AsLongText(), out var c);
             this.mChId2ChName.TryRemove(id, out var cn);
+        }
+
+        public void RemovePeerId(uint connId)
+        {
+            mPeers.TryRemove(connId, out var peer);
+            Global.IdManager.RemoveContainerId(connId);
         }
 
         public NetPeer GetPeer(IChannel ch)
@@ -68,10 +72,10 @@ namespace Fenix
             var peer = GetPeerById(remoteContainerId);
             if (peer != null)
                 return peer;
-            var task = Task.Run(() => NetPeer.Create(remoteContainerId, true));
-            task.Wait();
-            peer = task.Result;
-            mPeers[peer.ConnId] = peer;
+            peer = NetPeer.Create(remoteContainerId, true);
+            if (peer == null)
+                return null;
+            mPeers[peer.ConnId] = peer; 
             return peer; 
         }
     }

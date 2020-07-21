@@ -17,11 +17,13 @@ namespace Fenix
 
         public event Action<IChannel> Disconnect;
 
-        public event Action<IChannel> Exception;
+        public event Action<IChannel, Exception> Exception;
 
         public event Action<IChannel, IByteBuffer> Receive;
 
         public TcpSocketClient client;
+
+        public bool IsActive => this.client.IsActive; 
         
         public void OnConnect(IChannel channel)
         {
@@ -45,12 +47,12 @@ namespace Fenix
             Close?.Invoke(channel);
         }
 
-        void ITcpListener.OnException(IChannel channel)
+        void ITcpListener.OnException(IChannel channel, Exception ex)
         {
-            Exception?.Invoke(channel);
+            Exception?.Invoke(channel, ex);
         }
 
-        public async static Task<TcpContainerClient> Create(IPEndPoint addr)
+        public static TcpContainerClient Create(IPEndPoint addr)
         {
             var channelConfig = new TcpChannelConfig();
             channelConfig.Address = addr.Address.ToString();
@@ -59,14 +61,18 @@ namespace Fenix
 
             var listener = new TcpContainerClient();
             listener.client = new TcpSocketClient();
-            await listener.client.Start(channelConfig, listener);
+            if (!listener.client.Start(channelConfig, listener))
+                return null;
             return listener;
         }
 
         public void Send(byte[] bytes)
         {
             this.client.SendAsync(bytes);
+                /*
+            var task = Task.Run(()=>this.client.SendAsync(bytes));
+            task.Wait();
+                */
         }
- 
     }
 }

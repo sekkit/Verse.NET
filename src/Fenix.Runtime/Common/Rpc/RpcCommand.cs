@@ -72,7 +72,7 @@ public class RpcCommand
 
     public void Call(Action callDone)
     {
-        object[] args = new object[2];
+        var args = new object[2];
         args[0] = this.Msg;
 
         if (!this.Msg.HasCallback())
@@ -106,7 +106,7 @@ public class RpcCommand
 
     public void Callback(byte[] cbData)
     {
-        this.callbackMethod?.Invoke(cbData);
+        this.callbackMethod?.Invoke(cbData); 
     }
 }
 

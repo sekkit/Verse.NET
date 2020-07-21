@@ -22,7 +22,7 @@ namespace DotNetty.TCP
         private IChannel clientChannel;
         private MultithreadEventLoopGroup group;
         
-        public async Task Start(TcpChannelConfig channelConfig, ITcpListener listener)
+        public bool Start(TcpChannelConfig channelConfig, ITcpListener listener)
         {  
             group = new MultithreadEventLoopGroup();
 
@@ -59,19 +59,25 @@ namespace DotNetty.TCP
 
                         pipeline.AddLast("tcp-handler", new TcpChannelHandler(listener));
                     }));
-
-                clientChannel = await bootstrap.ConnectAsync(new IPEndPoint(IPAddress.Parse(channelConfig.Address),
-                        channelConfig.Port));
+                var task = Task<IChannel>.Run(() => bootstrap.ConnectAsync(new IPEndPoint(IPAddress.Parse(channelConfig.Address), channelConfig.Port)));
+                task.Wait();
+                clientChannel = task.Result;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.StackTrace);
+                return false;
             }
+
+            if (clientChannel == null)
+                return false;
+
+            return true;
         }
 
         public async Task SendAsync(byte[] bytes)
         {
-            await clientChannel.WriteAndFlushAsync(Unpooled.WrappedBuffer(bytes));
+            await clientChannel?.WriteAndFlushAsync(Unpooled.WrappedBuffer(bytes));
         }
         
         public async void Shutdown()
@@ -79,5 +85,7 @@ namespace DotNetty.TCP
             await clientChannel.CloseAsync();
             await group.ShutdownGracefullyAsync(TimeSpan.FromMilliseconds(100), TimeSpan.FromSeconds(1));
         }
+
+        public bool IsActive => this.clientChannel==null?false:clientChannel.Active;
     }
 }

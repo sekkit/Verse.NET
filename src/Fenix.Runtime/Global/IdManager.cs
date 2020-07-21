@@ -3,6 +3,7 @@ using CSRedis;
 using System.Collections.Concurrent;
 using System.Collections.Generic; 
 using Fenix.Common;
+using Fenix.Redis;
 
 namespace Fenix
 {
@@ -10,39 +11,59 @@ namespace Fenix
     {
         public static IdManager Instance = new IdManager();
 
-        protected ConcurrentDictionary<uint, string> mContainerId2Addr = new ConcurrentDictionary<uint, string>();
+        protected ConcurrentDictionary<uint, string> mCID2ADDR = new ConcurrentDictionary<uint, string>();
             
-        protected ConcurrentDictionary<string, uint> mAddr2ContainerId = new ConcurrentDictionary<string, uint>();
+        protected ConcurrentDictionary<string, uint> mADDR2CID = new ConcurrentDictionary<string, uint>();
         
-        protected ConcurrentDictionary<uint, uint> mActorId2ContainerId = new ConcurrentDictionary<uint, uint>();
+        protected ConcurrentDictionary<uint, uint> mAID2CID = new ConcurrentDictionary<uint, uint>();
         
-        protected ConcurrentDictionary<uint, List<uint>> mContainerId2ActorId = new ConcurrentDictionary<uint, List<uint>>();
+        protected ConcurrentDictionary<uint, List<uint>> mCID2AID = new ConcurrentDictionary<uint, List<uint>>();
         
-        protected ConcurrentDictionary<string, uint> mActor2Id = new ConcurrentDictionary<string, uint>();
+        protected ConcurrentDictionary<string, uint> mCNAME2CID = new ConcurrentDictionary<string, uint>();
 
-        protected ConcurrentDictionary<string, uint> mContainer2Id = new ConcurrentDictionary<string, uint>();
+        protected ConcurrentDictionary<string, uint> mANAME2AID = new ConcurrentDictionary<string, uint>();
 
-        static readonly string CID2ADDR_KEY = "CID2ADDR";
-        static readonly string ADDR2CID_KEY = "ADDR2CID";
-        static readonly string AID2CID_KEY = "AID2CID";
-        static readonly string CID2AID_KEY = "CID2AID"; 
-        static readonly string ANAME2AID_KEY = "ANAME2AID";
-        static readonly string CNAME2CID_KEY = "CNAME2CID";
+        protected ConcurrentDictionary<uint, string> mAID2ANAME = new ConcurrentDictionary<uint, string>();
 
-        private CSRedisClient redisClient { get; set; } 
-        
+        protected ConcurrentDictionary<uint, string> mAID2TNAME = new ConcurrentDictionary<uint, string>();
+
+        public const string CID2ADDR  = "CID2ADDR";
+        public const string ADDR2CID  = "ADDR2CID";
+        public const string AID2CID   = "AID2CID";
+        public const string CID2AID   = "CID2AID";
+        public const string ANAME2AID = "ANAME2AID";
+        public const string CNAME2CID = "CNAME2CID";
+        public const string AID2ANAME = "AID2ANAME";
+        public const string AID2TNAME = "AID2TNAME";
+
+        protected ConcurrentDictionary<string, RedisDb> redisDic = new ConcurrentDictionary<string, RedisDb>();
+         
         protected IdManager()
         {
-            redisClient = new CSRedisClient(string.Format("{0}:{1},password=,defaultDatabase=0,prefix=ID_", "127.0.0.1", 7382));
-            RedisHelper.Initialization(redisClient);
+            redisDic[CID2ADDR]  = new RedisDb(CID2ADDR, "127.0.0.1", 7382);
+            redisDic[ADDR2CID] = new RedisDb(ADDR2CID, "127.0.0.1", 7382);
+            redisDic[AID2CID] = new RedisDb(AID2CID, "127.0.0.1", 7382);
+            redisDic[CID2AID] = new RedisDb(CID2AID, "127.0.0.1", 7382);
+            redisDic[ANAME2AID] = new RedisDb(ANAME2AID, "127.0.0.1", 7382);
+            redisDic[CNAME2CID] = new RedisDb(CNAME2CID, "127.0.0.1", 7382);
+            redisDic[AID2ANAME] = new RedisDb(AID2ANAME, "127.0.0.1", 7382);
+            redisDic[AID2TNAME] = new RedisDb(AID2TNAME, "127.0.0.1", 7382);
 
             var assembly = typeof(Global).Assembly;
             Log.Info(assembly.FullName);
         }
 
         ~IdManager()
+        { 
+            foreach (var kv in redisDic)
+                kv.Value.Dispose();
+        }
+
+        RedisDb GetDb(string key)
         {
-            redisClient.Dispose();
+            RedisDb db;
+            redisDic.TryGetValue(key, out db);
+            return db;
         }
 
         //public async Task<bool> RegisterContainerAsync(uint containerId, string address)
@@ -64,81 +85,153 @@ namespace Fenix
         //    this.mActor2Type[type.GetType().Name] = type;
         //}
 
+        string GetKey(string prefix, string key)
+        {
+            return prefix + ":" + key;
+        }
+
         public bool RegisterContainer(Container container, string address)
         {
-            mContainerId2Addr[container.Id] = address;
-            mAddr2ContainerId[address] = container.Id;
+            mCID2ADDR[container.Id] = address;
+            mADDR2CID[address] = container.Id;
 
-            mContainer2Id[container.UniqueName] = container.Id;
+            mCNAME2CID[container.UniqueName] = container.Id;
 
-            var key = container.Id.ToString();
-            using (var lk = RedisHelper.Lock(key, 3))
-            {
-                bool ret = redisClient.Set(address, container.Id);
-                ret = redisClient.Set(container.UniqueName, container.Id);
-                return redisClient.Set(key, address) && ret;
-            }
+            var key = container.Id.ToString(); 
+            bool ret = GetDb(ADDR2CID).Set(address, container.Id);
+            ret = GetDb(CNAME2CID).Set(container.UniqueName, container.Id);
+            return GetDb(CID2ADDR).Set(key, address) && ret; 
         }
 
         public string GetContainerAddr(uint containerId)
         {
-            if (mContainerId2Addr.ContainsKey(containerId))
-                return mContainerId2Addr[containerId];
+            if (mCID2ADDR.ContainsKey(containerId))
+                return mCID2ADDR[containerId];
             var key = containerId.ToString();
-            return redisClient.Get(key);
+            return GetDb(CID2ADDR).Get(key);
         }
 
         public uint GetContainerId(string addr)
         {
-            if (mAddr2ContainerId.ContainsKey(addr))
-                return mAddr2ContainerId[addr];
-            return redisClient.Get<uint>(addr);
+            if (mADDR2CID.ContainsKey(addr))
+                return mADDR2CID[addr];
+            return GetDb(ADDR2CID).Get<uint>(addr);
         }
 
         public bool RegisterActor(Actor actor, Container container)
         {
-            mActorId2ContainerId[actor.Id] = container.Id;
-            if (!mContainerId2ActorId.ContainsKey(container.Id))
-                mContainerId2ActorId[container.Id] = new List<uint>();
-            mContainerId2ActorId[container.Id].Add(actor.Id);
+            mAID2CID[actor.Id] = container.Id;
+            if (!mCID2AID.ContainsKey(container.Id))
+                mCID2AID[container.Id] = new List<uint>();
+            mCID2AID[container.Id].Add(actor.Id);
 
-            mActor2Id[actor.UniqueName] = actor.Id;
+            mANAME2AID[actor.UniqueName] = actor.Id;
+
+            mAID2ANAME[actor.Id] = actor.UniqueName;
+
+            mAID2TNAME[actor.Id] = actor.GetType().Name;
 
             var key = actor.Id.ToString();
-            using (var lk = RedisHelper.Lock(key, 3))
+
+            GetDb(ANAME2AID).Set(actor.UniqueName, actor.Id);
+            GetDb(AID2ANAME).Set(actor.Id.ToString(), actor.UniqueName);
+            GetDb(AID2TNAME).Set(actor.Id.ToString(), actor.GetType().Name);
+            GetDb(CID2AID).Set(container.Id.ToString(), mCID2AID[container.Id]);
+            return GetDb(AID2CID).Set(key, container.Id); 
+        } 
+
+        public void RemoveActorId(uint actorId)
+        {
+            this.mAID2ANAME.TryRemove(actorId, out var aname);
+            this.mANAME2AID.TryRemove(aname, out var _);
+            this.mAID2TNAME.TryRemove(actorId, out var _);
+            this.mAID2CID.TryRemove(actorId, out var cid); 
+            this.mCID2AID[cid].Remove(actorId);
+
+            GetDb(AID2ANAME).Delete(cid.ToString());
+            GetDb(ANAME2AID).Delete(cid.ToString());
+            GetDb(AID2TNAME).Delete(cid.ToString());
+            GetDb(AID2CID).Delete(cid.ToString());
+            GetDb(CID2AID).Set(cid.ToString(), mCID2AID[cid]);
+        }
+
+        public void RemoveContainerId(uint cid)
+        {
+            if (this.mCID2ADDR.TryRemove(cid, out var addr)) 
+                this.mADDR2CID.TryRemove(addr, out var _);
+
+            if (this.mCID2AID.TryGetValue(cid, out List<uint> aids))
             {
-                redisClient.Set(actor.UniqueName, actor.Id);
-                return redisClient.Set(key, container.Id);
+                this.mCID2AID.TryRemove(cid, out var _); 
+                foreach (var aid in aids)
+                {
+                    this.mAID2ANAME.TryRemove(aid, out var _);
+                    this.mAID2CID.TryRemove(aid, out var _);
+                    if (this.mAID2TNAME.TryRemove(aid, out string tname))
+                        this.mANAME2AID.TryRemove(tname, out var _);
+                }
             }
+
+            if (GetDb(CID2ADDR).Get(cid.ToString()) != null)
+            {
+                GetDb(CID2ADDR).Delete(cid.ToString());
+                GetDb(ADDR2CID).Delete(addr);
+            }
+
+            aids = GetDb(CID2AID).Get<List<uint>>(cid.ToString());
+            if (aids != null)
+            {
+                GetDb(CID2AID).Delete(cid.ToString());
+                foreach (var aid in aids)
+                {
+                    GetDb(AID2ANAME).Delete(aid.ToString());
+                    GetDb(AID2CID).Delete(aid.ToString());
+                    string tname = GetDb(AID2TNAME).Get(aid.ToString());
+                    if (tname != null)
+                    {
+                        GetDb(AID2TNAME).Delete(aid.ToString());
+                        GetDb(ANAME2AID).Delete(tname);
+                    }
+                }
+            } 
         }
 
         public uint GetActorId(string name)
         {
-            if (mActor2Id.ContainsKey(name))
-                return mActor2Id[name];
+            if (mANAME2AID.ContainsKey(name))
+                return mANAME2AID[name];
             var key = name;
-            return redisClient.Get<uint>(key);
+            return GetDb(ANAME2AID).Get<uint>(key);
         }
 
-        //public string GetActorName(uint actorId)
-        //{
-        //    mAct
-        //}
+        public string GetActorName(uint actorId)
+        {
+            if (mAID2ANAME.ContainsKey(actorId))
+                return mAID2ANAME[actorId];
+            return GetDb(AID2ANAME).Get(actorId.ToString());
+        }
+
+        public string GetActorTypename(uint actorId)
+        {
+            if (mAID2TNAME.ContainsKey(actorId))
+                return mAID2TNAME[actorId];
+            return GetDb(AID2TNAME).Get(actorId.ToString());
+        }
 
         public uint GetContainerIdByActorId(uint actorId)
         {
-            if (mActorId2ContainerId.ContainsKey(actorId))
-                return mActorId2ContainerId[actorId];
+            if (mAID2CID.ContainsKey(actorId))
+                return mAID2CID[actorId];
             var key = actorId.ToString();
-            return redisClient.Get<uint>(key);
+            return GetDb(AID2CID).Get<uint>(key);
         }
 
         public string GetContainerAddrByActorId(uint actorId)
         {
             uint containerId = 0;
-            if (mActorId2ContainerId.ContainsKey(actorId))
+            if (mAID2CID.ContainsKey(actorId))
             {
-                containerId = mActorId2ContainerId[actorId];
+                containerId = mAID2CID[actorId];
                 return GetContainerAddr(containerId);
             }
             containerId = GetContainerIdByActorId(actorId);
