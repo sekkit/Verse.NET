@@ -1,0 +1,20 @@
+﻿[
+  {
+    "AppName": "Account.App",
+    "ExternalIp": "auto",
+    "InternalIp": "auto",
+    "Port": 7777,
+    "DefaultActorNames": [
+      "AccountService"
+    ]
+  },
+  {
+    "AppName": "Match.App",
+    "ExternalIp": "auto",
+    "InternalIp": "auto",
+    "Port": 7778,
+    "DefaultActorNames": [
+      "MatchService"
+    ]
+  }
+]
