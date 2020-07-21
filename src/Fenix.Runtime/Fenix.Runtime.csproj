@@ -35,6 +35,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Common\Db\**" />
+    <EmbeddedResource Remove="Common\Db\**" />
+    <None Remove="Common\Db\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.5" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Serilog" Version="2.9.0" />
@@ -59,10 +65,6 @@
     <ProjectReference Include="..\MessagePack.Annotations\MessagePack.Annotations.csproj" />
     <ProjectReference Include="..\MessagePack.UnityShims\MessagePack.UnityShims.csproj" />
     <ProjectReference Include="..\MessagePack\MessagePack.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Common\Db\" />
   </ItemGroup>
 
 </Project>

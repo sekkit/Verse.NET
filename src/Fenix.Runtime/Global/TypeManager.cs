@@ -1,4 +1,5 @@
-﻿using Fenix.Common.Attributes;
+﻿using Fenix.Common;
+using Fenix.Common.Attributes;
 using Fenix.Common.Utils;
 using System;
 using System.Collections.Concurrent;
@@ -50,7 +51,7 @@ namespace Fenix
                     Global.TypeManager.RegisterMessageType(mta.ProtoCode, t);
                 }
 
-                if(Basic.IsHeritedType(t, "Actor"))
+                if(RpcUtil.IsHeritedType(t, "Actor"))
                     RegisterType(t.Name, t);
             }
 
@@ -107,9 +108,8 @@ namespace Fenix
         }
 
         public Type GetRefType(Type type)
-        {
-            Type t;
-            if (this.mActor2RefTypeDic.TryGetValue(type, out t))
+        { 
+            if (this.mActor2RefTypeDic.TryGetValue(type, out Type t))
                 return t;
             return typeof(ActorRef);
         }

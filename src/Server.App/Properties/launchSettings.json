@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Server.App": {
+      "commandName": "Project",
+      "commandLineArgs": "--autogen=1"
+    }
+  }
+}

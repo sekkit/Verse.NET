@@ -3,12 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Fenix.Common
+namespace Shared.Protocol
 {
     [RpcArg("code")]
-    public enum DefaultErrCode: Int16
+    public enum ErrCode : Int16
     {
         OK = 0,
-        ERROR = -1
+        ERROR = -1,
     }
 }

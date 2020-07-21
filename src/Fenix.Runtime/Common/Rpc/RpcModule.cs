@@ -18,8 +18,9 @@ namespace Fenix
 {
     public class RpcModule
     {
+        public static ConcurrentDictionary<UInt32, Api> rpcTypeDic = new ConcurrentDictionary<UInt32, Api>();
+
         public ConcurrentDictionary<UInt64, RpcCommand> rpcDic     = new ConcurrentDictionary<UInt64, RpcCommand>();
-        public static ConcurrentDictionary<UInt32, Api> rpcTypeDic = new ConcurrentDictionary<UInt32, Api>(); 
         public ConcurrentDictionary<UInt32, MethodInfo> rpcStubDic = new ConcurrentDictionary<UInt32, MethodInfo>(); 
 
         public RpcModule()
@@ -64,7 +65,7 @@ namespace Fenix
             bool isCallback = this.rpcDic.ContainsKey(packet.Id);
             
             if (isCallback)
-            { 
+            {
                 var cmd = this.rpcDic[packet.Id];
                 this.rpcDic.TryRemove(packet.Id, out var _);
                 cmd.Callback(packet.Payload);
@@ -72,7 +73,7 @@ namespace Fenix
             else
             {
                 Type type = Global.TypeManager.GetMessageType(packet.ProtoCode);
-                IMessage msg = (IMessage)Basic.Deserialize(type, packet.Payload);
+                IMessage msg = (IMessage)RpcUtil.Deserialize(type, packet.Payload);
                 var cmd = RpcCommand.Create(packet.Id, fromContainerId, toContainerId, packet.FromActorId, packet.ToActorId, packet.ProtoCode, msg,
                     null,
                     this) ; 
@@ -108,10 +109,10 @@ namespace Fenix
                 toActorId,
                 protoCode,
                 msg,
-                (data) => cb(data),
+                (data) => cb?.Invoke(data),
                 this);
 
-            var packet = Packet.Create(cmd.Id, cmd.ProtoCode, cmd.FromActorId, cmd.ToActorId, Basic.Serialize(msg));
+            var packet = Packet.Create(cmd.Id, cmd.ProtoCode, cmd.FromActorId, cmd.ToActorId, RpcUtil.Serialize(msg));
 
             //如果是同进程，则本地调用
             if (fromContainerId == toContainerId)
@@ -149,7 +150,7 @@ namespace Fenix
             var toContainerId = Global.IdManager.GetContainerIdByActorId(toActorId);
             var fromContainerId = Global.IdManager.GetContainerIdByActorId(fromActorId);
 
-            var packet = Packet.Create(protoId, protoCode, fromActorId, toActorId, Basic.Serialize(cbMsg));
+            var packet = Packet.Create(protoId, protoCode, fromActorId, toActorId, RpcUtil.Serialize(cbMsg));
 
             //如果是同进程，则本地调用
             if (fromContainerId == toContainerId)

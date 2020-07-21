@@ -299,13 +299,13 @@ namespace Fenix
         }
 
         [ServerOnly]
-        public void CreateActor(string typename, string name, Action<ErrCode> callback)
+        public void CreateActor(string typename, string name, Action<DefaultErrCode> callback)
         {
             var a = CreateActor(typename, name);
             if (a != null)
-                callback(ErrCode.OK);
+                callback(DefaultErrCode.OK);
             else
-                callback(ErrCode.ERROR);
+                callback(DefaultErrCode.ERROR);
         }
 
         public Actor CreateActor<T>(string name) where T : Actor

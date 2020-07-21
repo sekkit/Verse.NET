@@ -3,12 +3,12 @@
  */
 
 using Fenix;
+using Fenix.Common.Attributes;
 using Fenix.Common.Rpc;
 using Fenix.Common.Utils; 
 using System; 
 using System.Linq;
-using System.Reflection;
-using static Fenix.Common.RpcUtil;
+using System.Reflection; 
 
 public class RpcCommand
 {

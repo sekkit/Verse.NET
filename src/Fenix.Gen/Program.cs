@@ -16,9 +16,9 @@ namespace Fenix
             var appDll = File.ReadAllBytes(Path.Combine(rootFolder, "Server.App.dll"));
             Assembly asmRuntime = Assembly.Load(runtimeDll);
             Assembly asmApp = Assembly.Load(appDll);
-
-			Gen.Process(asmRuntime, "");
-			Gen.Process(asmApp, "");
+            ;
+			Gen.ProcessApi(asmRuntime, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../src/Server.App/Shared"));
+			Gen.ProcessApi(asmApp, "");
 		}
     }
 }

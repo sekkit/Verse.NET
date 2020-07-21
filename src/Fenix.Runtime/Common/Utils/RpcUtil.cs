@@ -1,3 +1,4 @@
+using MessagePack;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -6,43 +7,48 @@ namespace Fenix.Common
 {
     public class RpcUtil
     {
-
-        public enum Api : byte
+        public static byte[] Serialize(object msg)
         {
-            ServerApi=1,
-            ServerOnly=2,
-            ClientApi=3,
-            NoneApi=0xff
+            return MessagePackSerializer.Serialize(msg);
         }
 
-        public class ServerApiAttribute : Attribute
-        { 
-            public ServerApiAttribute()
-            {
-            }
-        }
-
-        public class ClientApiAttribute : Attribute
-        { 
-            public ClientApiAttribute()
-            {
-            }
-        }
-
-        public class ServerOnlyAttribute : Attribute
+        public static T Deserialize<T>(byte[] bytes)
         {
-            public ServerOnlyAttribute()
-            {
-            }
+            return MessagePackSerializer.Deserialize<T>(bytes);
         }
 
-        public class RpcAttribute : Attribute
+        public static object Deserialize(Type type, byte[] bytes)
         {
-            public Api RpcType { get; set; }
-            public RpcAttribute(Api api)
+            return MessagePackSerializer.Deserialize(type, bytes);
+        }
+
+        public static Type GetBaseType(Type type)
+        {
+            if (type.Name == "Object")
+                return type;
+
+            if (type.BaseType == null)
+                return type;
+
+            if (type.BaseType.Name == "Object")
+                return type;
+
+            return GetBaseType(type.BaseType);
+        }
+
+        public static bool IsHeritedType(Type type, string baseTypeName)
+        {
+            if (type.Name == baseTypeName)
             {
-                RpcType = api;
+                return true;
             }
+
+            if (type.Name == "Object" || type.BaseType == null || type.BaseType.Name == "Object")
+            {
+                return false;
+            }
+
+            return IsHeritedType(type.BaseType, baseTypeName);
         }
     }
 }

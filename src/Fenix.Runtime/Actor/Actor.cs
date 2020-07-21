@@ -87,7 +87,7 @@ namespace Fenix
 
         public virtual void Update()
         {
-            Log.Info(string.Format("{0}:{1}", this.GetType().Name, rpcDic.Count));
+            //Log.Info(string.Format("{0}:{1}", this.GetType().Name, rpcDic.Count));
         }
 
         public virtual void onActive()
@@ -108,9 +108,9 @@ namespace Fenix
         public virtual void Pack()
         {
             Dictionary<string, byte[]> packData = new Dictionary<string, byte[]>();
-            packData["basic"] = Basic.Serialize(this);
+            packData["basic"] = RpcUtil.Serialize(this);
             foreach(var kv in this.mPersistentDic) 
-                packData[kv.Key.Name] = Basic.Serialize(kv.Value);
+                packData[kv.Key.Name] = RpcUtil.Serialize(kv.Value);
         }
 
         public virtual void Unpack()
