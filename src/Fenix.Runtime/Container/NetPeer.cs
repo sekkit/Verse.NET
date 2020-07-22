@@ -68,22 +68,37 @@ namespace Fenix
 
         }
 
-        //protected NetPeer(uint connId, bool isTcp)
-        //{
-        //    if (isTcp)
-        //    {
-        //        CreateTcpClient(connId);
-        //    }
-        //    else
-        //    { 
-        //        var addr = Global.IdManager.GetContainerAddr(connId);
-        //        var parts = addr.Split(':');
-        //        IPEndPoint ep = new IPEndPoint(IPAddress.Parse(parts[0]), int.Parse(parts[1]));
+        public IPEndPoint RemoteAddress
+        {
+            get
+            {
+                if (this.kcpClient != null)
+                    return kcpClient.RemoteAddress;
+                if (this.tcpClient != null)
+                    return tcpClient.RemoteAddress;
+                if (this.kcpChannel != null)
+                    return (IPEndPoint)kcpChannel.user().RemoteAddress;
+                if (this.tcpChannel != null)
+                    return (IPEndPoint)tcpChannel.RemoteAddress;
+                return null;
+            }
+        }
 
-        //        kcpClient = KcpContainerClient.Create(ep);
-        //        kcpClient.OnReceive += KcpClient_OnReceive; 
-        //    }
-        //}
+        public IPEndPoint LocalAddress
+        {
+            get
+            {
+                if (this.kcpClient != null)
+                    return kcpClient.LocalAddress;
+                if (this.tcpClient != null)
+                    return tcpClient.LocalAddress;
+                if (this.kcpChannel != null)
+                    return (IPEndPoint)kcpChannel.user().LocalAddress;
+                if (this.tcpChannel != null)
+                    return (IPEndPoint)tcpChannel.LocalAddress;
+                return null;
+            }
+        }
 
         protected bool InitTcpClient(uint connId)
         {

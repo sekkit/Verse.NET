@@ -76,7 +76,7 @@ namespace Fenix
             mPeers[peer.ConnId] = peer;
 
             Log.Info(string.Format("Incoming KCP id: {0}", id));
-        }
+        }  
 
         public void DeregisterKcp(Ukcp ukcp)
         {
@@ -86,6 +86,20 @@ namespace Fenix
             this.mAddr2Ukcp.TryRemove(addr, out var _);
             var id = Global.IdManager.GetContainerId(addr);
             if(id == 0)
+            {
+                id = Basic.GenID32FromName(addr);
+            }
+            mPeers.TryRemove(id, out var _);
+        }
+
+        public void Deregister(NetPeer peer)
+        {
+            var ep = peer.RemoteAddress;// ukcp.user().RemoteAddress;
+            var addr = ep.ToString();
+
+            this.mAddr2Ukcp.TryRemove(addr, out var _);
+            var id = Global.IdManager.GetContainerId(addr);
+            if (id == 0)
             {
                 id = Basic.GenID32FromName(addr);
             }

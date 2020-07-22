@@ -24,6 +24,10 @@ namespace Fenix
 
         private static Ukcp _ukcp;
 
+        public IPEndPoint RemoteAddress => (IPEndPoint)(_ukcp?.user().RemoteAddress);
+
+        public IPEndPoint LocalAddress => (IPEndPoint)(_ukcp?.user().LocalAddress);
+
         public static KcpContainerClient Create(IPEndPoint remoteAddress)
         {
             KcpContainerClient listener = new KcpContainerClient();

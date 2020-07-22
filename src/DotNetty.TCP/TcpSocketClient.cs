@@ -87,5 +87,7 @@ namespace DotNetty.TCP
         }
 
         public bool IsActive => this.clientChannel==null?false:clientChannel.Active;
+
+        public IChannel ClientChannel => this.clientChannel;
     }
 }

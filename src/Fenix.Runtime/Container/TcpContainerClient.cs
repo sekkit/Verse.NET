@@ -24,8 +24,13 @@ namespace Fenix
 
         public TcpSocketClient client;
 
-        public bool IsActive => this.client.IsActive; 
-        
+        public bool IsActive => this.client.IsActive;
+
+
+        public IPEndPoint RemoteAddress => (IPEndPoint)client.ClientChannel.RemoteAddress; 
+
+        public IPEndPoint LocalAddress => (IPEndPoint)client.ClientChannel.LocalAddress; 
+
         public void OnConnect(IChannel channel)
         { 
             Connect?.Invoke(channel); 
@@ -59,6 +64,7 @@ namespace Fenix
             channelConfig.UseLibuv = true;
 
             var listener = new TcpContainerClient();
+            //listener.RemoteAddress = addr;
             listener.client = new TcpSocketClient();
             if (!listener.client.Start(channelConfig, listener))
                 return null;
