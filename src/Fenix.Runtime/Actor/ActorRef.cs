@@ -23,7 +23,7 @@ namespace Fenix
 
         public void CallRemoteMethod(uint protocolCode, IMessage msg, Action<byte[]> cb)
         {
-            fromActor.Rpc(protocolCode, fromActor.ContainerId, fromActor.Id, this.toActorId, msg, cb);
+            fromActor.Rpc(protocolCode, fromActor.HostId, fromActor.Id, this.toActorId, msg, cb);
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Fenix;
+using Server;
+using System;
 
 namespace Client.App
 {
@@ -6,10 +8,11 @@ namespace Client.App
     {
         static void Main(string[] args)
         {
-            var c = ClientApp.Create();
+            var c = ClientHost.Create("127.0.0.1", 17777);
 
-            c.Login("hello", "world", (code) => { 
-                
+            c.GetActorRef<AccountServiceRef>("").rpc_login("username", "password", (code) =>
+            {
+
             });
         }
     }

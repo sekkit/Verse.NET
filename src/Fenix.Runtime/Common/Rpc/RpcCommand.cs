@@ -18,9 +18,9 @@ public class RpcCommand
 
     public uint ToActorId;
 
-    public uint FromContainerId;
+    public uint FromHostId;
 
-    public uint ToContainerId;
+    public uint ToHostId;
 
     public IMessage Msg;
 
@@ -39,8 +39,8 @@ public class RpcCommand
      
     public static RpcCommand Create(
         ulong protoId,
-        uint fromContainerId,
-        uint toContainerId,
+        uint fromHostId,
+        uint toHostId,
         uint fromActorId,
         uint toActorId, 
         uint protoCode,
@@ -51,8 +51,8 @@ public class RpcCommand
         var obj             = new RpcCommand();
         obj.Id = protoId;
         obj.Msg             = msg;
-        obj.FromContainerId = fromContainerId;
-        obj.ToContainerId   = toContainerId;
+        obj.FromHostId = fromHostId;
+        obj.ToHostId   = toHostId;
         obj.FromActorId     = fromActorId;
         obj.ToActorId       = toActorId;
         obj.mInvoker        = invoker;
@@ -84,7 +84,7 @@ public class RpcCommand
             var cb = new Action<object>((cbMsg) =>
             {
                 callDone?.Invoke();
-                this.mInvoker.RpcCallback(this.Id, this.ProtoCode, this.ToContainerId, this.FromContainerId, this.ToActorId, this.FromActorId, cbMsg);
+                this.mInvoker.RpcCallback(this.Id, this.ProtoCode, this.ToHostId, this.FromHostId, this.ToActorId, this.FromActorId, cbMsg);
             });
 
             args[1] = cb;

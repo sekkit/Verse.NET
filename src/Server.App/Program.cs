@@ -72,22 +72,12 @@ namespace Server.App
                 var builder = new ConfigurationBuilder().AddCommandLine(args);
                 var cmdLine = builder.Build();
                 
-                if(cmdLine["autogen"] != null)
-                { 
-                    var rootFolder = Directory.GetCurrentDirectory();
-                    //var runtimeDll = File.ReadAllBytes(Path.Combine(rootFolder, "Fenix.Runtime.dll"));
-                    //var appDll = File.ReadAllBytes(Path.Combine(rootFolder, "Server.App.dll"));
-                    //Assembly asmRuntime = Assembly.Load(runtimeDll);
-                    //Assembly asmApp = Assembly.Load(appDll);
-
-                    //Assembly asmRuntime = typeof(Container).Assembly;
-                    Assembly asmApp = typeof(Program).Assembly;
-
-                    //Gen.Autogen(asmRuntime, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../src/Server.App/Shared"));
-                    Gen.Autogen(asmApp, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../src/Server.App/Shared")); 
-                }
-                else
-                {
+                //if(cmdLine["autogen"] != null)
+                //{ 
+                    
+                //}
+                //else
+                //{
                     //将命令行参数，设置到进程的环境变量
                     Environment.SetEnvironmentVariable("AppName", cmdLine["AppName"]);
 
@@ -96,7 +86,7 @@ namespace Server.App
                         var cfgList = JsonConvert.DeserializeObject<List<RuntimeConfig>>(sr.ReadToEnd());
                         Bootstrap.Start(new Assembly[] { typeof(Program).Assembly }, cfgList, isMultiProcess: true); //分布式
                     }
-                } 
+                //} 
             }
         }
     }

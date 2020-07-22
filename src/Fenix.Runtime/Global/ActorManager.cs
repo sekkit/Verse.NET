@@ -10,8 +10,10 @@ namespace Fenix
         public static ActorManager Instance = new ActorManager();
 
         //protected ConcurrentDictionary<string, ActorRef> actorDic = new ConcurrentDictionary<string, ActorRef>();
-        //protected ConcurrentDictionary<string, ActorRef> containerDic = new ConcurrentDictionary<string, ActorRef>();
- 
+        //protected ConcurrentDictionary<string, ActorRef> hostDic = new ConcurrentDictionary<string, ActorRef>();
+        
+        //
+
         public ActorRef GetActorRefByName(string name, Actor fromActor)
         {
             //if(actorDic.ContainsKey(name))
@@ -22,17 +24,17 @@ namespace Fenix
             uint toActorId = Global.IdManager.GetActorId(name);
             if (toActorId == 0)
                 return null;
-            //uint containerId = Global.IdManager.GetContainerIdByActorId(actorId); 
-            //var toActor = Container.Instance.GetActor(toActorId); 
+            //uint hostId = Global.IdManager.GetHostIdByActorId(actorId); 
+            //var toActor = Host.Instance.GetActor(toActorId); 
             //actorDic[name] = ActorRef.Create(toActorId, fromActor);
             //return actorDic[name];
             return ActorRef.Create(toActorId, fromActor);
         }
 
         /*远程创建actor*/
-        public void CreateActor()
-        {
-
-        }
+        //public void CreateActor()
+        //{
+        //    
+        //}
     }
 }

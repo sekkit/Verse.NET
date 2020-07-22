@@ -60,7 +60,7 @@ namespace Fenix
             }
         }
 
-        public virtual void CallMethod(uint fromContainerId, uint toContainerId, Packet packet)
+        public virtual void CallMethod(uint fromHostId, uint toHostId, Packet packet)
         {
             bool isCallback = this.rpcDic.ContainsKey(packet.Id);
             
@@ -74,7 +74,7 @@ namespace Fenix
             {
                 Type type = Global.TypeManager.GetMessageType(packet.ProtoCode);
                 IMessage msg = (IMessage)RpcUtil.Deserialize(type, packet.Payload);
-                var cmd = RpcCommand.Create(packet.Id, fromContainerId, toContainerId, packet.FromActorId, packet.ToActorId, packet.ProtoCode, msg,
+                var cmd = RpcCommand.Create(packet.Id, fromHostId, toHostId, packet.FromActorId, packet.ToActorId, packet.ProtoCode, msg,
                     null,
                     this) ; 
                 cmd.Call(()=> {
@@ -96,15 +96,15 @@ namespace Fenix
             return Api.NoneApi;
         }
 
-        public void Rpc(uint protoCode, uint fromContainerId, uint fromActorId, uint toActorId, IMessage msg, Action<byte[]> cb)
+        public void Rpc(uint protoCode, uint fromHostId, uint fromActorId, uint toActorId, IMessage msg, Action<byte[]> cb)
         { 
-            var toContainerId = Global.IdManager.GetContainerIdByActorId(toActorId);
+            var toHostId = Global.IdManager.GetHostIdByActorId(toActorId);
 
             /*创建一个等待回调的rpc_command*/
             var cmd = RpcCommand.Create(
                 Basic.GenID64(),
-                fromContainerId,
-                toContainerId,
+                fromHostId,
+                toHostId,
                 fromActorId,
                 toActorId,
                 protoCode,
@@ -112,30 +112,30 @@ namespace Fenix
                 (data) => cb?.Invoke(data),
                 this);
 
-            var packet = Packet.Create(cmd.Id, cmd.ProtoCode, cmd.FromContainerId, cmd.ToContainerId, cmd.FromActorId, cmd.ToActorId, RpcUtil.Serialize(msg));
+            var packet = Packet.Create(cmd.Id, cmd.ProtoCode, cmd.FromHostId, cmd.ToHostId, cmd.FromActorId, cmd.ToActorId, RpcUtil.Serialize(msg));
 
             //如果是同进程，则本地调用
-            if (fromContainerId == toContainerId)
+            if (fromHostId == toHostId)
             {
-                var toActor = Container.Instance.GetActor(toActorId);
+                var toActor = Host.Instance.GetActor(toActorId);
 
                 if (msg.HasCallback())
                     this.rpcDic[cmd.Id] = cmd; 
-                toActor.CallMethod(fromContainerId, toContainerId, packet);
+                toActor.CallMethod(fromHostId, toHostId, packet);
                 return;
             }
 
             //否则通过网络调用
-            var peer = NetManager.Instance.GetPeerById(toContainerId);
-            //Console.WriteLine(string.Format("{0} {1} {2} {3} {4}", fromContainerId, toContainerId, fromActorId, toActorId, peer==null?"NULL":""));
+            var peer = NetManager.Instance.GetPeerById(toHostId);
+            //Console.WriteLine(string.Format("{0} {1} {2} {3} {4}", fromHostId, toHostId, fromActorId, toActorId, peer==null?"NULL":""));
             if (peer == null)
-                peer = NetManager.Instance.CreatePeer(toContainerId);
+                peer = NetManager.Instance.CreatePeer(toHostId);
              
             if(peer == null || !peer.IsActive)
             {
-                Log.Error(string.Format("peer disconnected {0}", toContainerId));
+                Log.Error(string.Format("peer disconnected {0}", toHostId));
                 //这里可以尝试把global以及redis状态清空
-                NetManager.Instance.RemovePeerId(toContainerId);
+                NetManager.Instance.RemovePeerId(toHostId);
                 return;
             }
 
@@ -145,36 +145,36 @@ namespace Fenix
             peer.Send(packet);
         }
 
-        public void RpcCallback(ulong protoId, uint protoCode, uint fromContainerId, uint toContainerId, uint fromActorId, uint toActorId, object cbMsg)
+        public void RpcCallback(ulong protoId, uint protoCode, uint fromHostId, uint toHostId, uint fromActorId, uint toActorId, object cbMsg)
         { 
-            //var toContainerId = Global.IdManager.GetContainerIdByActorId(toActorId);
-            //var fromContainerId = Global.IdManager.GetContainerIdByActorId(fromActorId);
+            //var toHostId = Global.IdManager.GetHostIdByActorId(toActorId);
+            //var fromHostId = Global.IdManager.GetHostIdByActorId(fromActorId);
 
-            var packet = Packet.Create(protoId, protoCode, fromContainerId, toContainerId, fromActorId, toActorId, RpcUtil.Serialize(cbMsg));
+            var packet = Packet.Create(protoId, protoCode, fromHostId, toHostId, fromActorId, toActorId, RpcUtil.Serialize(cbMsg));
 
             //如果是同进程，则本地调用
-            if (fromContainerId == toContainerId)
+            if (fromHostId == toHostId)
             {
-                var toActor = Container.Instance.GetActor(toActorId);
-                toActor.CallMethod(fromContainerId, toContainerId, packet);
+                var toActor = Host.Instance.GetActor(toActorId);
+                toActor.CallMethod(fromHostId, toHostId, packet);
                 return;
             }
 
             //否则通过网络调用
-            var peer = NetManager.Instance.GetPeerById(toContainerId);
+            var peer = NetManager.Instance.GetPeerById(toHostId);
              
             if (peer == null)
-                peer = NetManager.Instance.CreatePeer(toContainerId);
+                peer = NetManager.Instance.CreatePeer(toHostId);
 
             if (peer == null || !peer.IsActive)
             {
-                Log.Error(string.Format("peer disconnected {0}", toContainerId));
+                Log.Error(string.Format("peer disconnected {0}", toHostId));
                 //这里可以尝试把global以及redis状态清空
-                NetManager.Instance.RemovePeerId(toContainerId);
+                NetManager.Instance.RemovePeerId(toHostId);
                 return;
             }
 
-            //Console.WriteLine(string.Format("{0} {1} {2} {3} {4}", Container.Instance.Id, toContainerId,
+            //Console.WriteLine(string.Format("{0} {1} {2} {3} {4}", Host.Instance.Id, toHostId,
             //    Global.TypeManager.GetActorType(fromActorId).Name, Global.TypeManager.GetActorType(toActorId).Name,
             //    peer == null ? "NULL" : ""));
 

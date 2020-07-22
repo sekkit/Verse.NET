@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -16,7 +17,7 @@ namespace Fenix
 {
     public class Gen
     { 
-        public static void Autogen(Assembly asm, string output)
+        public static void Autogen(Assembly asm, string sharedPath, string clientPath, string serverPath)
         {
             List<Type> actorTypes = new List<Type>();
             foreach (Type type in asm.GetTypes())
@@ -30,10 +31,10 @@ namespace Fenix
                 actorTypes.Add(type);
             }
               
-            GenProtoCode(actorTypes, output); 
+            GenProtoCode(actorTypes, sharedPath, clientPath, serverPath); 
              
             foreach(var type in actorTypes)
-                GenFromActorType(type, output);
+                GenFromActorType(type, sharedPath, clientPath, serverPath);
         }  
 
         static string[] SplitCamelCase(string source)
@@ -216,7 +217,7 @@ namespace Fenix
             return (attr as CallbackArgsAttribute).Names;
         }
 
-        static void GenProtoCode(List<Type> types, string output)
+        static void GenProtoCode(List<Type> types, string sharedPath, string clientPath, string serverPath)
         {
             var codes = new SortedDictionary<string, uint>();
             foreach (var type in types)
@@ -259,7 +260,7 @@ namespace Fenix
                 } 
             }
 
-            using (var sw = new StreamWriter(Path.Combine(output, "Protocol", "ProtocolCode.cs"), false, Encoding.UTF8))
+            using (var sw = new StreamWriter(Path.Combine(sharedPath, "Protocol", "ProtocolCode.cs"), false, Encoding.UTF8))
             {
                 string lines = @"
 //AUTOGEN, do not modify it!
@@ -320,11 +321,13 @@ namespace Shared
             return "";
         }
 
-        static void GenFromActorType(Type type, string output)
+        static void GenFromActorType(Type type, string sharedPath, string clientPath, string serverPath)
         { 
             var rpcDefineDic = new SortedDictionary<string, string>();
             var apiDefineDic = new SortedDictionary<string, string>();
 
+            bool isServer = (type.GetCustomAttribute(typeof(ActorTypeAttribute), true) as ActorTypeAttribute).AType == AType.SERVER;
+             
             var methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
             for (int i = 0; i < methods.Length; ++i)
             {
@@ -344,7 +347,7 @@ namespace Shared
                         if (attr != null)
                             api = Api.ClientApi;
                     }
-                }
+                } 
 
                 if(api == Api.ClientApi)
                 {
@@ -379,9 +382,10 @@ namespace Shared
                         .AppendLine($"using Fenix.Common.Attributes;")
                         .AppendLine($"using Fenix.Common.Rpc;")
                         .AppendLine($"using MessagePack; ")
+                        .AppendLine($"using Shared;")
                         .AppendLine($"using Shared.Protocol;")
                         .AppendLine($"using System; ")
-                        .AppendLine($"using UModule;")
+                        .AppendLine($"using Server.UModule;")
                         .AppendLine($"")
                         .AppendLine($"namespace Shared.Protocol.Message")
                         .AppendLine($"{{")
@@ -407,7 +411,7 @@ namespace Shared
 
                     var msgCode = msgBuilder.ToString();
 
-                    using (var sw = new StreamWriter(Path.Combine(output, "Message", message_type + ".cs"), false, Encoding.UTF8))
+                    using (var sw = new StreamWriter(Path.Combine(sharedPath, "Message", message_type + ".cs"), false, Encoding.UTF8))
                     {
                         sw.WriteLine(msgCode.Replace("\r", ""));
                     }
@@ -438,10 +442,10 @@ namespace Shared
                         builder = new StringBuilder()
                         .AppendLine($"        public void {rpc_name}({args_decl})")
                         .AppendLine($"        {{")
-                        .AppendLine($"            var toContainerId = Global.IdManager.GetContainerIdByActorId(this.toActorId);")
-                        .AppendLine($"            if (this.fromActor.ContainerId == toContainerId)")
+                        .AppendLine($"            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);")
+                        .AppendLine($"            if (this.fromActor.HostId == toHostId)")
                         .AppendLine($"            {{")
-                        .AppendLine($"                (({typename})Container.Instance.GetActor(this.toActorId)).{method_name}({args});")
+                        .AppendLine($"                (({typename})Host.Instance.GetActor(this.toActorId)).{method_name}({args});")
                         .AppendLine($"                return;")
                         .AppendLine($"            }}")
                         .AppendLine($"            var msg = new {message_type}()")
@@ -460,10 +464,10 @@ namespace Shared
                         builder = new StringBuilder()
                         .AppendLine($"        public void {rpc_name}({args_decl})")
                         .AppendLine($"        {{")
-                        .AppendLine($"           var toContainerId = Global.IdManager.GetContainerIdByActorId(this.toActorId);")
-                        .AppendLine($"           if (this.fromActor.ContainerId == toContainerId)")
+                        .AppendLine($"           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);")
+                        .AppendLine($"           if (this.fromActor.HostId == toHostId)")
                         .AppendLine($"           {{")
-                        .AppendLine($"               (({typename})Container.Instance.GetActor(this.toActorId)).{method_name}({args});")
+                        .AppendLine($"               (({typename})Host.Instance.GetActor(this.toActorId)).{method_name}({args});")
                         .AppendLine($"               return;")
                         .AppendLine($"           }}")
                         .AppendLine($"           var msg = new {message_type}()")
@@ -521,6 +525,19 @@ namespace Shared
             string refCode = string.Join("\n", rpcDefineDic.Values);
             string tname = type.Name;
             string ns = type.Namespace;
+
+            var alAttr = type.GetCustomAttribute(typeof(AccessLevelAttribute));
+            if (alAttr == null)
+            {
+                Console.WriteLine(string.Format("ERROR: {0} has no AccessLevel", type.Name));
+                return;
+            }
+
+            var al = (alAttr as AccessLevelAttribute).AccessLevel;
+            Console.WriteLine(string.Format("AccessLevel {0} : {1}", type.Name, al));
+
+            string root_ns = isServer ? "Server" : "Client";
+
             var refBuilder = new StringBuilder()
                 .AppendLine(@"
 //AUTOGEN, do not modify it!
@@ -529,24 +546,27 @@ using Fenix;
 using Fenix.Common;
 using Fenix.Common.Attributes;
 using Fenix.Common.Utils;
+using Shared;
 using Shared.Protocol;
-using UModule;
+using Server.UModule;
 ").AppendLine($"using {ns};")
 .AppendLine(@"using MessagePack;
 using Shared.Protocol.Message;
 using System;
-
-namespace Shared
-{
+")
+.AppendLine($"namespace {root_ns}")
+.AppendLine(@"{
 ")
 .AppendLine($"    [RefType(typeof({tname}))]")
-.AppendLine($"    public class {tname}Ref : ActorRef")
+.AppendLine($"    public partial class {tname}Ref : ActorRef")
 .AppendLine($"    {{")
 .AppendLine($"{refCode}    }}") 
 .AppendLine($"}}");
             var result = refBuilder.ToString();
 
-            using (var sw = new StreamWriter(Path.Combine(output, "ActorRef", type.Name + "Ref.cs"), false, Encoding.UTF8))
+            
+
+            using (var sw = new StreamWriter(Path.Combine(sharedPath, "ActorRef", root_ns, type.Name + "Ref.cs"), false, Encoding.UTF8))
             { 
                 sw.WriteLine(result);
             }
@@ -566,7 +586,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
-using UModule;
+using Server.UModule;
 
 ")
                 .AppendLine($"namespace {ns}")
@@ -576,6 +596,7 @@ using UModule;
 .AppendLine($"{internalApiCode}    }}")
 .AppendLine($"}}");
             var apiResultCode = apiBuilder.ToString();
+            string output = isServer ? serverPath : clientPath;
             using (var sw = new StreamWriter(Path.Combine(output, "Stub", type.Name + ".Stub.cs"), false, Encoding.UTF8))
             {
                 sw.WriteLine(apiResultCode);

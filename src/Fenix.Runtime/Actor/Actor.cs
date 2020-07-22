@@ -1,3 +1,4 @@
+
 using Fenix.Common;
 using Fenix.Common.Utils;
 using MessagePack;
@@ -19,7 +20,7 @@ namespace Fenix
 
         [IgnoreMember]
         [IgnoreDataMember]
-        public uint ContainerId => Container.Instance.Id;
+        public uint HostId => Host.Instance.Id;
 
         [Key(2)]
         [DataMember]
@@ -28,7 +29,9 @@ namespace Fenix
         [Key(3)]
         [DataMember]
         public bool CanTransfer { get; set; }
-        
+
+        public ActorRef Client;
+
         [IgnoreMember]
         [IgnoreDataMember]
         protected Dictionary<Type, object> mPersistentDic = new Dictionary<Type, object>(); 
@@ -50,7 +53,7 @@ namespace Fenix
 
         public virtual void Init()
         {
-            var methods = GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);//.GetCustomAttributes(typeof(ResponseAttribute));
+            var methods = GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
             for (int i = 0; i < methods.Length; ++i)
             {
                 MethodInfo method = methods[i];
@@ -69,11 +72,6 @@ namespace Fenix
         {
             
         }
-
-        //public static Actor Create(string name)
-        //{
-        //    return new Actor();
-        //}
 
         public static Actor Create<T>(string name) where T: Actor, new()
         {
@@ -141,6 +139,11 @@ namespace Fenix
         public ActorRef GetActorRef(string name)
         {
             return Global.GetActorRef(name, this);
+        }
+
+        public T GetActorRef<T>(string name) where T: ActorRef
+        {
+            return (T)Global.GetActorRef(name, this);
         }
     }
 }
