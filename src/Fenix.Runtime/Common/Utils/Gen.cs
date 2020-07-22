@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
+using DotNetty.Codecs;
 using Fenix.Common;
 using Fenix.Common.Attributes;
 using Fenix.Common.Utils; 
@@ -33,7 +34,6 @@ namespace Fenix
              
             foreach(var type in actorTypes)
                 GenFromActorType(type, output);
-             
         }  
 
         static string[] SplitCamelCase(string source)
@@ -208,6 +208,14 @@ namespace Fenix
             return "";
         }
 
+        static string[] GetCallbackArgs(MethodInfo method)
+        {
+            var attr = method.GetCustomAttributes(typeof(CallbackArgsAttribute)).FirstOrDefault();
+            if (attr == null)
+                return new string[] { };
+            return (attr as CallbackArgsAttribute).Names;
+        }
+
         static void GenProtoCode(List<Type> types, string output)
         {
             var codes = new SortedDictionary<string, uint>();
@@ -254,6 +262,8 @@ namespace Fenix
             using (var sw = new StreamWriter(Path.Combine(output, "Protocol", "ProtocolCode.cs"), false, Encoding.UTF8))
             {
                 string lines = @"
+//AUTOGEN, do not modify it!
+
 using System;
 using System.Collections.Generic;
 using System.Text; 
@@ -299,6 +309,17 @@ namespace Shared
             return args;
         }
 
+        static string GetApiMessagePostfix(Api api)
+        {
+            if (api == Api.ClientApi)
+                return "Ntf";
+            if (api == Api.ServerApi)
+                return "Req";
+            if (api == Api.ServerOnly)
+                return "Req";
+            return "";
+        }
+
         static void GenFromActorType(Type type, string output)
         { 
             var rpcDefineDic = new SortedDictionary<string, string>();
@@ -308,33 +329,59 @@ namespace Shared
             for (int i = 0; i < methods.Length; ++i)
             {
                 MethodInfo method = methods[i];
-                var attrs = method.GetCustomAttributes(typeof(ServerApiAttribute));
-                if (attrs.Count() > 0)
+                var attr = method.GetCustomAttributes(typeof(ServerApiAttribute)).FirstOrDefault();
+                Api api = Api.NoneApi;
+                if (attr != null)
+                    api = Api.ServerApi;
+                else
+                {
+                    attr = method.GetCustomAttributes(typeof(ServerOnlyAttribute)).FirstOrDefault();
+                    if (attr != null)
+                        api = Api.ServerOnly;
+                    else
+                    {
+                        attr = method.GetCustomAttributes(typeof(ClientApiAttribute)).FirstOrDefault();
+                        if (attr != null)
+                            api = Api.ClientApi;
+                    }
+                }
+
+                if(api == Api.ClientApi)
+                {
+                    if(RpcUtil.IsHeritedType(type, "Service"))
+                    {
+                        Console.WriteLine("client_api not allowed in Service", type.Name);
+                        continue;
+                    }
+                }
+
+                if (api != Api.NoneApi)
                 {
                     uint code = Basic.GenID32FromName(method.Name);
-                     
+
                     //现在生成message
-                    string message_type = method.Name + "Req";
+                    string message_type = method.Name + GetApiMessagePostfix(api);
 
                     string message_fields = ParseMessageFields(method.GetParameters(), "        ");
 
-                    string callback_define = GenCallbackMsgDecl(method.GetParameters(), 
-                        (attrs.First() as ServerApiAttribute).CallbackArgs, 
+                    string callback_define = GenCallbackMsgDecl(method.GetParameters(),
+                        GetCallbackArgs(method),
                         "        ");
 
                     string itype = "IMessage";
                     if (callback_define != "")
-                        itype = "IMessageWithCallback"; 
+                        itype = "IMessageWithCallback";
 
-                    string proto_code = NameToProtoCode(method.Name) + "_REQ"; 
+                    string proto_code = NameToProtoCode(method.Name) + "_" + GetApiMessagePostfix(api).ToUpper();
 
                     var msgBuilder = new StringBuilder()
-                        .AppendLine($"//AUTOGEN, do not modify it!")
+                        .AppendLine($"//AUTOGEN, do not modify it!\n")
                         .AppendLine($"using Fenix.Common.Attributes;")
                         .AppendLine($"using Fenix.Common.Rpc;")
                         .AppendLine($"using MessagePack; ")
                         .AppendLine($"using Shared.Protocol;")
                         .AppendLine($"using System; ")
+                        .AppendLine($"using UModule;")
                         .AppendLine($"")
                         .AppendLine($"namespace Shared.Protocol.Message")
                         .AppendLine($"{{")
@@ -343,7 +390,7 @@ namespace Shared
                         .AppendLine($"    public class {message_type} : {itype}")
                         .AppendLine($"    {{")
                         .AppendLine($"{message_fields}");
-                    if(callback_define != "")
+                    if (callback_define != "")
                     {
                         msgBuilder.AppendLine(@"
         [Key(199)]
@@ -365,25 +412,28 @@ namespace Shared
                         sw.WriteLine(msgCode.Replace("\r", ""));
                     }
 
-                    //现在生成actor_ref定义
-
+                    //现在生成actor_ref定义 
                     var rpc_name = "rpc_" + NameToApi(method.Name);
-                     
+                    if (api == Api.ClientApi)
+                        rpc_name = "client_on_" + NameToApi(method.Name);
+                    else if(api == Api.ServerOnly)
+                        rpc_name = "rpc_" + NameToApi(method.Name);
+
                     string args_decl = ParseArgsDecl(method.GetParameters());
 
                     string typename = type.Name;
                     string args = ParseArgs(method.GetParameters());
 
                     string method_name = method.Name;
-                    string msg_type = method.Name + "Req";
+                    //string msg_type = method.Name + GetApiMessagePostfix(api);
                     string msg_assign = ParseArgsMsgAssign(method.GetParameters(), "                ");
-                     
+
                     StringBuilder builder;
 
-                    if(callback_define != "")
+                    if (callback_define != "")
                     {
                         var cbType = method.GetParameters().Where(m => m.Name == "callback").First().ParameterType;
-                        string cb_args = GenCbArgs(cbType.GetGenericArguments(), (attrs.First() as ServerApiAttribute).CallbackArgs, "cbMsg.");
+                        string cb_args = GenCbArgs(cbType.GetGenericArguments(), GetCallbackArgs(method), "cbMsg.");
 
                         builder = new StringBuilder()
                         .AppendLine($"        public void {rpc_name}({args_decl})")
@@ -394,12 +444,12 @@ namespace Shared
                         .AppendLine($"                (({typename})Container.Instance.GetActor(this.toActorId)).{method_name}({args});")
                         .AppendLine($"                return;")
                         .AppendLine($"            }}")
-                        .AppendLine($"            var msg = new {msg_type}()")
+                        .AppendLine($"            var msg = new {message_type}()")
                         .AppendLine($"            {{")
                         .AppendLine($"{msg_assign}")
                         .AppendLine($"            }};")
                         .AppendLine($"            var cb = new Action<byte[]>((cbData) => {{")
-                        .AppendLine($"                var cbMsg = RpcUtil.Deserialize<{msg_type}.Callback>(cbData);")
+                        .AppendLine($"                var cbMsg = RpcUtil.Deserialize<{message_type}.Callback>(cbData);")
                         .AppendLine($"                callback?.Invoke({cb_args});")
                         .AppendLine($"            }});")
                         .AppendLine($"            this.CallRemoteMethod(ProtocolCode.{proto_code}, msg, cb);")
@@ -416,7 +466,7 @@ namespace Shared
                         .AppendLine($"               (({typename})Container.Instance.GetActor(this.toActorId)).{method_name}({args});")
                         .AppendLine($"               return;")
                         .AppendLine($"           }}")
-                        .AppendLine($"           var msg = new {msg_type}()")
+                        .AppendLine($"           var msg = new {message_type}()")
                         .AppendLine($"           {{")
                         .AppendLine($"{msg_assign}")
                         .AppendLine($"           }};") 
@@ -432,24 +482,29 @@ namespace Shared
                     //string api_assign = ParseArgsMsgAssign(method.GetParameters(), "                ", "cbMsg.");
                     
                     string api_name = "_INTERNAL_SERVER_API_"+NameToApi(method.Name);
+                    if (api == Api.ClientApi)
+                        api_name = "_INTERNAL_CLIENT_API_" + NameToApi(method.Name);
+                    else if (api == Api.ServerOnly)
+                        api_name = "_INTERNAL_SERVER_ONLY_" + NameToApi(method.Name);
+
                     builder = new StringBuilder()
                         .AppendLine($"        [RpcMethod(ProtocolCode.{proto_code})]")
                         .AppendLine($"        [EditorBrowsable(EditorBrowsableState.Never)]")
                         .AppendLine($"        public void {api_name}(IMessage msg, Action<object> cb)")
                         .AppendLine($"        {{")
-                        .AppendLine($"            var _msg = ({msg_type})msg;");
+                        .AppendLine($"            var _msg = ({message_type})msg;");
                     
                     if (callback_define != "")
                     {
                         var cbType2 = method.GetParameters().Where(m => m.Name == "callback").First().ParameterType;
-                        string api_cb_args = GenCbArgs(cbType2.GetGenericArguments(), (attrs.First() as ServerApiAttribute).CallbackArgs, "");
+                        string api_cb_args = GenCbArgs(cbType2.GetGenericArguments(), GetCallbackArgs(method), "");
                         string api_cb_assign = ParseArgsMsgAssign(cbType2.GetGenericArguments(),
-                                                        (attrs.First() as ServerApiAttribute).CallbackArgs,
+                                                        GetCallbackArgs(method),
                                                         "                ",
                                                         "cbMsg.");
                         builder.AppendLine($"            this.{method.Name}({api_rpc_args}, ({api_cb_args}) =>")
                         .AppendLine($"            {{")
-                        .AppendLine($"                var cbMsg = new {msg_type}.Callback();")
+                        .AppendLine($"                var cbMsg = new {message_type}.Callback();")
                         .AppendLine($"{api_cb_assign}")
                         .AppendLine($"                cb.Invoke(cbMsg);")
                         .AppendLine($"            }});");
@@ -460,19 +515,7 @@ namespace Shared
                     var apiDefineCode = builder.ToString();
                     apiDefineDic[api_name] = apiDefineCode;
                 } 
-
-                attrs = method.GetCustomAttributes(typeof(ServerOnlyAttribute));
-                if (attrs.Count() > 0)
-                {
-                    uint code = Basic.GenID32FromName(method.Name);
-                     
-                }
-
-                attrs = method.GetCustomAttributes(typeof(ClientApiAttribute));
-                if (attrs.Count() > 0)
-                {
-                    uint code = Basic.GenID32FromName(method.Name); 
-                }
+                 
             }
 
             string refCode = string.Join("\n", rpcDefineDic.Values);
@@ -480,11 +523,14 @@ namespace Shared
             string ns = type.Namespace;
             var refBuilder = new StringBuilder()
                 .AppendLine(@"
+//AUTOGEN, do not modify it!
+
 using Fenix;
 using Fenix.Common;
 using Fenix.Common.Attributes;
 using Fenix.Common.Utils;
 using Shared.Protocol;
+using UModule;
 ").AppendLine($"using {ns};")
 .AppendLine(@"using MessagePack;
 using Shared.Protocol.Message;
@@ -520,6 +566,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
+using UModule;
 
 ")
                 .AppendLine($"namespace {ns}")

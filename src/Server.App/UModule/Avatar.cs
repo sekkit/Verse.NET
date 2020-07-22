@@ -1,16 +1,13 @@
 using Fenix;
 using Fenix.Common;
-using GModule.Match;
-using Shared;
+using Fenix.Common.Attributes;
+using Shared.Protocol;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace UModule
 {
-    [RuntimeData(typeof(User))]
-    public partial class Avatar : Actor
+    [RuntimeData(typeof(Account))]
+    public partial class Avatar : User
     {
         public Avatar(string uid): base(uid)
         {
@@ -32,6 +29,13 @@ namespace UModule
             //{
             //    Log.Info(code.ToString());
             //});
+        }
+
+        [ClientApi]
+        public void ClientApiTest(string uid, int match_type, Action<ErrCode> callback)
+        {
+            Log.Info("Call=>client_api:ClientApiTest");
+            callback(ErrCode.OK);
         }
     }
 }

@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
+using UModule;
 
 
 namespace GModule.Match
@@ -26,6 +27,20 @@ namespace GModule.Match
             {
                 var cbMsg = new JoinMatchReq.Callback();
                 cbMsg.code=code;
+                cb.Invoke(cbMsg);
+            });
+        }
+
+        [RpcMethod(ProtocolCode.FIND_MATCH_REQ)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void _INTERNAL_SERVER_ONLY_find_match(IMessage msg, Action<object> cb)
+        {
+            var _msg = (FindMatchReq)msg;
+            this.FindMatch(_msg.uid, (code, user) =>
+            {
+                var cbMsg = new FindMatchReq.Callback();
+                cbMsg.code=code;
+                cbMsg.user=user;
                 cb.Invoke(cbMsg);
             });
         }

@@ -40,12 +40,9 @@ namespace Fenix.Common.Attributes
     }
 
     public class ServerApiAttribute : Attribute
-    {
-        public string[] CallbackArgs;
-
-        public ServerApiAttribute(params string[] cbArgs)
-        {
-            CallbackArgs = cbArgs;
+    {  
+        public ServerApiAttribute()
+        { 
         } 
     }
 

@@ -1,9 +1,11 @@
 ﻿//AUTOGEN, do not modify it!
+
 using Fenix.Common.Attributes;
 using Fenix.Common.Rpc;
 using MessagePack; 
 using Shared.Protocol;
 using System; 
+using UModule;
 
 namespace Shared.Protocol.Message
 {

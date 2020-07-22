@@ -9,15 +9,15 @@ using UModule;
 
 namespace Shared.Protocol.Message
 {
-    [MessageType(ProtocolCode.LOGIN_REQ)]
+    [MessageType(ProtocolCode.CLIENT_API_TEST_NTF)]
     [MessagePackObject]
-    public class LoginReq : IMessageWithCallback
+    public class ClientApiTestNtf : IMessageWithCallback
     {
         [Key(0)]
-        public String username;
+        public String uid;
 
         [Key(1)]
-        public String password;
+        public Int32 match_type;
 
 
         [Key(199)]

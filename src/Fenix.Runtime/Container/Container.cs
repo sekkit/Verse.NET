@@ -34,8 +34,7 @@ namespace Fenix
         //    LocalAddress = localAddress;
         //    this.kcpServer = kcpServer;
         //    this.tcpServer = tcpServer; 
-        //}  
-        
+        //}
 
         public uint Id { get; set; }
 
@@ -285,9 +284,8 @@ namespace Fenix
         }
 
         public Actor GetActor(uint actorId)
-        {
-            Actor a;
-            if (this.actorDic.TryGetValue(actorId, out a))
+        { 
+            if (this.actorDic.TryGetValue(actorId, out Actor a))
                 return a;
             return null;
         }
@@ -315,7 +313,7 @@ namespace Fenix
             actorDic[newActor.Id] = newActor;
             return newActor;
         }
-
+        
         public Actor CreateActor(string typename, string name) 
         {
             var type = Global.TypeManager.Get(typename);

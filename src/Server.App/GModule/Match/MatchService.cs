@@ -6,12 +6,13 @@ using Shared;
 using Shared.Protocol;
 using System;
 using System.Collections.Generic;
-using System.Text; 
+using System.Text;
+using UModule;
 
 namespace GModule.Match
 {
     [RuntimeData(typeof(MatchData))]
-    public partial class MatchService : Actor
+    public partial class MatchService : Service
     {
         public MatchService(string name): base(name)
         {
@@ -20,15 +21,23 @@ namespace GModule.Match
 
         public void onLoad()
         {
+
         }
 
         //public new string UniqueName => nameof(MatchService);
 
-        [ServerApi]
+        [ServerApi] 
         public void JoinMatch(string uid, int match_type, Action<ErrCode> callback)
         {
             Log.Info("Call=>server_api:JoinMatch");
-            callback(0);
+            callback(ErrCode.OK);
         } 
+
+        [ServerOnly]
+        [CallbackArgs("code", "user")]
+        public void FindMatch(string uid, Action<ErrCode, Account> callback)
+        {
+            callback(ErrCode.OK, null);
+        }
     }
 }

@@ -9,15 +9,12 @@ using UModule;
 
 namespace Shared.Protocol.Message
 {
-    [MessageType(ProtocolCode.LOGIN_REQ)]
+    [MessageType(ProtocolCode.FIND_MATCH_REQ)]
     [MessagePackObject]
-    public class LoginReq : IMessageWithCallback
+    public class FindMatchReq : IMessageWithCallback
     {
         [Key(0)]
-        public String username;
-
-        [Key(1)]
-        public String password;
+        public String uid;
 
 
         [Key(199)]
@@ -32,6 +29,9 @@ namespace Shared.Protocol.Message
         {
             [Key(0)]
             public ErrCode code;
+
+            [Key(1)]
+            public Account user;
 
         }
 
