@@ -79,7 +79,7 @@ namespace DotNetty.KCP
                     kcp.notifyWriteEvent();
                 }
             } catch (Exception e) {
-                kcp.KcpListener.handleException(e,kcp);
+                kcp.KcpListener.handleException(kcp, e);
                 Console.WriteLine(e);
             } finally {
                 release();
@@ -98,7 +98,7 @@ namespace DotNetty.KCP
             }
             catch (Exception throwable)
             {
-                kcp.getKcpListener().handleException(throwable, kcp);
+                kcp.getKcpListener().handleException(kcp, throwable);
             }
             finally
             {

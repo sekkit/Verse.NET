@@ -33,7 +33,7 @@ namespace GModule.Login
         [ServerApi]
         public void Login(string username, string password, Action<ErrCode> callback)
         {
-
+            callback(ErrCode.OK);
         }
 
         [ServerApi]

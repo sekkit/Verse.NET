@@ -14,7 +14,7 @@ namespace Fenix.Host
             Global.Init(asmList);
             Container c = null;
             if (!isMultiProcess) 
-                c = Container.Create("App", 17777);
+                c = Container.Create("App", "0.0.0.0", 17777, false);
             
             if(cfgList != null)
             foreach(var cfg in cfgList)
@@ -31,7 +31,7 @@ namespace Fenix.Host
                     if (appName != cfg.AppName)
                         continue;
                     if (c == null)
-                        c = Container.Create(cfg.AppName, cfg.Port);
+                        c = Container.Create(cfg.AppName, "0.0.0.0", cfg.Port, false);
                     foreach (var aName in cfg.DefaultActorNames)
                         c.CreateActor(aName, aName);
                 }

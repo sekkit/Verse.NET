@@ -15,6 +15,12 @@ namespace Fenix
         public uint ProtoCode { get; set; }
 
         [Key(2)]
+        public uint FromContainerId { get; set; }
+        
+        [Key(3)]
+        public uint ToContainerId { get; set; }
+
+        [Key(2)]
         public uint FromActorId { get; set; }
 
         [Key(3)]
@@ -23,25 +29,27 @@ namespace Fenix
         [Key(100)]
         public byte[] Payload { get; set; }
 
-        public static Packet Create(ulong id, uint protoCode, uint fromActorId, uint toActorId, byte[] data)
+        public static Packet Create(ulong id, uint protoCode, uint fromContainerId, uint toContainerId, uint fromActorId, uint toActorId, byte[] data)
         {
             var obj = new Packet();
             obj.Id = id;
             obj.ProtoCode = protoCode;
+            obj.FromContainerId = fromContainerId;
+            obj.ToContainerId = toContainerId;
             obj.FromActorId = fromActorId;
             obj.ToActorId = toActorId;
             obj.Payload = data;
             return obj;
         }
 
-        public static Packet Create(ulong id, uint protoCode, byte[] data)
-        {
-            var obj = new Packet();
-            obj.Id = id;
-            obj.ProtoCode = protoCode;
-            obj.Payload = data;
-            return obj;
-        }
+        //public static Packet Create(ulong id, uint protoCode, byte[] data)
+        //{
+        //    var obj = new Packet();
+        //    obj.Id = id;
+        //    obj.ProtoCode = protoCode;
+        //    obj.Payload = data;
+        //    return obj;
+        //}
 
         public byte[] Pack()
         {

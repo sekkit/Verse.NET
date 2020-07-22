@@ -531,6 +531,12 @@ namespace DotNetty.KCP
         /**
          * 主动关闭连接调用
          */
+
+        public void notifyConnectEvent()
+        {
+            this._iMessageExecutor.execute(new ConnectTask(this));
+        }
+
         public void notifyCloseEvent()
         {
             this._iMessageExecutor.execute(new CloseTask(this));
@@ -580,6 +586,10 @@ namespace DotNetty.KCP
             return active;
         }
 
+        protected internal void connect()
+        {
+            _kcpListener.handleConnect(this); 
+        }
 
         protected internal void close()
         {

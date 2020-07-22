@@ -2,6 +2,7 @@
 using DotNetty.Buffers;
 using DotNetty.TCP;
 using DotNetty.Transport.Channels;
+using Fenix.Common;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -30,8 +31,8 @@ namespace Fenix
         }
 
         public void OnConnect(IChannel channel)
-        {
-            Connect?.Invoke(channel);
+        { 
+            Connect?.Invoke(channel); 
         }
 
         public void OnDisconnect(IChannel channel)

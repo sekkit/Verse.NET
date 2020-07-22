@@ -13,11 +13,11 @@ namespace Fenix
 {
     public class KcpContainerServer : KcpListener
     {
-        public event Action<byte[], Ukcp> OnReceive;
+        public event Action<Ukcp> OnConnect;
 
-        //public event Action<IByteBuffer, Ukcp, int> OnReceive;
+        public event Action<Ukcp, IByteBuffer> OnReceive; 
 
-        public event Action<Exception, Ukcp> OnException;
+        public event Action<Ukcp, Exception> OnException;
 
         public event Action<Ukcp> OnClose;
 
@@ -41,7 +41,7 @@ namespace Fenix
             channelConfig.TimeoutMillis = 10000;
             //channelConfig.Conv = 55;
             ////AutoSetConv = true;
-            channelConfig.UseConvChannel = true; 
+            channelConfig.UseConvChannel = false; 
             listener.server = new KcpServer();
             listener.server.init(Environment.ProcessorCount, listener, channelConfig, ep.Port);
             
@@ -53,8 +53,9 @@ namespace Fenix
             //OneThreadSynchronizationContext.Instance.Post((obj) =>
             //{ 
             //    OnReceive?.Invoke(byteBuf, ukcp, protocolType);
+           
+            OnReceive?.Invoke(ukcp, byteBuf); 
             
-            OnReceive?.Invoke(byteBuf.ToArray(), ukcp);
             //}, null);
 
             //short curCount = byteBuf.GetShort(byteBuf.ReaderIndex);
@@ -66,18 +67,23 @@ namespace Fenix
             //}
         }
 
-        public void handleException(Exception ex, Ukcp ukcp)
+        public void handleException(Ukcp ukcp, Exception ex)
         {
             Console.WriteLine(ex.StackTrace);
-            OnException?.Invoke(ex, ukcp);
+            OnException?.Invoke(ukcp, ex); 
         }
 
         public void handleClose(Ukcp ukcp)
-        {
-            OnClose?.Invoke(ukcp);
+        { 
+            OnClose?.Invoke(ukcp); 
 
             Console.WriteLine(Snmp.snmp.ToString());
             Snmp.snmp = new Snmp();
+        }
+
+        public void handleConnect(Ukcp ukcp)
+        { 
+            OnConnect?.Invoke(ukcp); 
         }
 
         //public void Send(byte[] bytes)

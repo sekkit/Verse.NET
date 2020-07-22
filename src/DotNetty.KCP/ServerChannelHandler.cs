@@ -64,6 +64,9 @@ namespace DotNetty.KCP
             ukcp.user(user);
 
             _channelManager.New(msg.Sender,ukcp,msg);
+
+            ukcp.connect();
+
             ukcp.read(content);
 
             var scheduleTask = new ScheduleTask(_channelManager, ukcp);

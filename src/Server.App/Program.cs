@@ -63,7 +63,7 @@ namespace Server.App
 
                 cfgList.Add(obj);
 
-                Environment.SetEnvironmentVariable("AppName", "Match.App");
+                Environment.SetEnvironmentVariable("AppName", "Account.App");
 
                 Bootstrap.Start(new Assembly[] { typeof(Program).Assembly }, cfgList, isMultiProcess:true); //单进程模式
             }

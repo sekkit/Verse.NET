@@ -112,7 +112,7 @@ namespace Fenix
                 (data) => cb?.Invoke(data),
                 this);
 
-            var packet = Packet.Create(cmd.Id, cmd.ProtoCode, cmd.FromActorId, cmd.ToActorId, RpcUtil.Serialize(msg));
+            var packet = Packet.Create(cmd.Id, cmd.ProtoCode, cmd.FromContainerId, cmd.ToContainerId, cmd.FromActorId, cmd.ToActorId, RpcUtil.Serialize(msg));
 
             //如果是同进程，则本地调用
             if (fromContainerId == toContainerId)
@@ -145,12 +145,12 @@ namespace Fenix
             peer.Send(packet);
         }
 
-        public void RpcCallback(ulong protoId, uint protoCode, uint fromActorId, uint toActorId, object cbMsg)
+        public void RpcCallback(ulong protoId, uint protoCode, uint fromContainerId, uint toContainerId, uint fromActorId, uint toActorId, object cbMsg)
         { 
-            var toContainerId = Global.IdManager.GetContainerIdByActorId(toActorId);
-            var fromContainerId = Global.IdManager.GetContainerIdByActorId(fromActorId);
+            //var toContainerId = Global.IdManager.GetContainerIdByActorId(toActorId);
+            //var fromContainerId = Global.IdManager.GetContainerIdByActorId(fromActorId);
 
-            var packet = Packet.Create(protoId, protoCode, fromActorId, toActorId, RpcUtil.Serialize(cbMsg));
+            var packet = Packet.Create(protoId, protoCode, fromContainerId, toContainerId, fromActorId, toActorId, RpcUtil.Serialize(cbMsg));
 
             //如果是同进程，则本地调用
             if (fromContainerId == toContainerId)

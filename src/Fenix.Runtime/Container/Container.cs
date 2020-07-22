@@ -6,16 +6,12 @@ using System.Net;
 using System.Net.NetworkInformation;
 using DotNetty.KCP;
 using DotNetty.Buffers; 
-using DotNetty.Common.Utilities;
-using System.Text;
-using System.Threading.Tasks;
+using DotNetty.Common.Utilities; 
 using DotNetty.Transport.Channels;
 using Fenix.Common;
-using Basic = Fenix.Common.Utils.Basic;
-using static Fenix.Common.RpcUtil;
+using Basic = Fenix.Common.Utils.Basic; 
 using System.Collections.Concurrent;
-using Fenix.Common.Utils;
-using System.Reflection;
+using Fenix.Common.Utils; 
 using Fenix.Common.Attributes;
 
 namespace Fenix
@@ -36,7 +32,7 @@ namespace Fenix
         //    this.tcpServer = tcpServer; 
         //}
 
-        public uint Id { get; set; }
+        public uint Id { get; set; } //实例ID，全局唯一 
 
         public string Tag { get; set; }
 
@@ -50,12 +46,13 @@ namespace Fenix
 
         protected ConcurrentDictionary<UInt32, Actor> actorDic = new ConcurrentDictionary<UInt32, Actor>();
          
-        protected Container(string name, int port=0): base()
+        protected Container(string name, string ip, int port=0, bool clientMode=false) : base()
         {
             if (name == null)
                 this.UniqueName = Basic.GenID64().ToString();
             else
                 this.UniqueName = name;
+
             this.Id = Basic.GenID32FromName(this.UniqueName);
 
             string addr = Basic.GetLocalIPv4(NetworkInterfaceType.Ethernet);
@@ -68,23 +65,21 @@ namespace Fenix
             
             this.RegisterGlobalManager(this);
 
-            this.SetupKcpServer();
-
-            this.InitTcp();
+            if (!clientMode)
+            {
+                this.SetupKcpServer();
+                this.SetupTcpServer();
+            }
 
             Log.Info(string.Format("{0} is running at {1}", this.UniqueName, LocalAddress.ToString()));
         }
-
-        protected void InitTcp()
-        {
-            this.SetupTcpServer(); 
-        }
-
-        public static Container Create(string name, int port)
+ 
+        public static Container Create(string name, string ip, int port, bool clientMode)
         { 
             if (Instance != null)
                 return Instance;
-            var c = new Container(name, port);
+
+            var c = new Container(name, ip, port, clientMode);
             Instance = c;
             return Instance;
         } 
@@ -94,6 +89,7 @@ namespace Fenix
         protected void SetupKcpServer()
         {
             kcpServer = KcpContainerServer.Create(this.LocalAddress);
+            kcpServer.OnConnect += KcpServer_OnConnect;
             kcpServer.OnReceive += KcpServer_OnReceive;
             kcpServer.OnClose += KcpServer_OnClose;
             kcpServer.OnException += KcpServer_OnException;
@@ -102,61 +98,121 @@ namespace Fenix
         //private long last_ts = DateTime.Now.Ticks;
         protected KcpContainerClient CreateKcpClient(IPEndPoint remoteAddreses)
         {
-            var kcpClient = KcpContainerClient.Create(remoteAddreses);
+            var kcpClient = KcpContainerClient.Create(remoteAddreses); 
             kcpClient.OnReceive += KcpClient_OnReceive;
             kcpClient.OnClose += KcpClient_OnClose;
             kcpClient.OnException += KcpClient_OnException;
             return kcpClient;
+        } 
+
+        protected void KcpServer_OnConnect(Ukcp ukcp)
+        {
+            //新连接
+            NetManager.Instance.RegisterKcp(ukcp);
+            //ulong containerId = Global.IdManager.GetContainerId(channel.RemoteAddress.ToString());
+            Console.WriteLine(string.Format("kcp_client_connected {0}", ukcp.user().RemoteAddress.ToString()));
         }
 
-        private void KcpServer_OnReceive(byte[] bytes, Ukcp ukcp)
+        private void KcpServer_OnReceive(Ukcp ukcp, IByteBuffer buffer)
         {
-            /*
-            short curCount = buffer.GetShort(buffer.ReaderIndex);
-            Console.WriteLine(Thread.CurrentThread.Name + " 收到消息 " + curCount); 
+            var peer = NetManager.Instance.GetPeer(ukcp);
+            //如果包是从客户端发过来的
+             
+            //如果是从服务端过来的
 
-            if (curCount == -1)
+            //var peer = NetManager.Instance.GetPeer(ukcp.);
+
+            //Ping/Pong msg process 
+            if (buffer.ReadableBytes == 1)
             {
-                ukcp.notifyCloseEvent();
+                byte protoCode = buffer.ReadByte();
+                if (protoCode == (byte)ProtoCode.PING)
+                {
+                    peer.Send(new byte[] { (byte)ProtoCode.PONG });
+                }
+                else if (protoCode == (byte)ProtoCode.GOODBYE)
+                {
+                    //删除这个连接
+                    NetManager.Instance.DeregisterKcp(ukcp);
+                    peer.Send(new byte[] { (byte)ProtoCode.GOODBYE });
+                }
+
+                return;
+            }
+            else
+            {
+                uint protoCode = buffer.ReadUnsignedIntLE();
+                if (protoCode >= (uint)ProtoCode.CALL_ACTOR_METHOD)
+                {
+                    ulong msgId = (ulong)buffer.ReadLongLE();
+                    uint fromActorId = buffer.ReadUnsignedIntLE();
+                    uint toActorId = buffer.ReadUnsignedIntLE();
+                    byte[] bytes = new byte[buffer.ReadableBytes];
+                    buffer.ReadBytes(bytes);
+
+                    //var msg = MessagePackSerializer.Deserialize<ActorMessage>(bytes);
+                    var packet = Packet.Create(msgId, protoCode, peer.ConnId, Container.Instance.Id, fromActorId, toActorId, bytes);
+                    HandleIncomingActorMessage(peer, packet);
+                }
+                else
+                {
+                    ulong msgId = (ulong)buffer.ReadLongLE();
+                    byte[] bytes = new byte[buffer.ReadableBytes];
+                    buffer.ReadBytes(bytes);
+                    var packet = Packet.Create(msgId, protoCode, peer.ConnId, Container.Instance.Id, 0, 0, bytes);
+
+                    this.CallMethod(peer.ConnId, this.Id, packet);
+                }
             }
 
-            var bytes = new byte[buffer.ReadableBytes];
-            buffer.GetBytes(0, bytes);*/
-            string data = StringUtil.ToHexString(bytes);
-            //string data2 = buffer.GetString(0, buffer.ReadableBytes, Encoding.UTF8);
+            ///*
+            //short curCount = buffer.GetShort(buffer.ReaderIndex);
+            //Console.WriteLine(Thread.CurrentThread.Name + " 收到消息 " + curCount); 
+
+            //if (curCount == -1)
+            //{
+            //    ukcp.notifyCloseEvent();
+            //}
+            //*/
+            //var bytes = new byte[buffer.ReadableBytes];
+            //buffer.ReadBytes(bytes);
+            //string data = StringUtil.ToHexString(bytes);
+            ////string data2 = buffer.GetString(0, buffer.ReadableBytes, Encoding.UTF8);
             
-            //count++; 
-            //var cur_ts = DateTime.Now.Ticks;
-            //Console.WriteLine("FROM_CLIENT:" + data + " => " + count.ToString() + ":" + ((cur_ts - last_ts)/10000.0).ToString()); //stopWatch.Elapsed.TotalMilliseconds.ToString());
-            //last_ts = cur_ts;  
-            ukcp.writeMessage(Unpooled.WrappedBuffer(bytes));
+            ////count++; 
+            ////var cur_ts = DateTime.Now.Ticks;
+            //Console.WriteLine("FROM_CLIENT:" + data); //stopWatch.Elapsed.TotalMilliseconds.ToString());
+            ////last_ts = cur_ts;  
+            //ukcp.writeMessage(Unpooled.WrappedBuffer(bytes));
         }
         
-        private void KcpServer_OnException(Exception ex, Ukcp ukcp)
+        private void KcpServer_OnException(Ukcp ukcp, Exception ex)
         {
-            
+            Log.Error(ex.StackTrace);
+            NetManager.Instance.DeregisterKcp(ukcp);
         }
 
         private void KcpServer_OnClose(Ukcp ukcp)
         {
-            
+            NetManager.Instance.DeregisterKcp(ukcp);
         }
 
         private void KcpClient_OnReceive(Ukcp ukcp, IByteBuffer buffer)
         {
             string data = StringUtil.ToHexString(buffer.ToArray()); 
             Console.WriteLine("FROM_SERVER:" + data);
-            ukcp.writeMessage(buffer);
+            //ukcp.writeMessage(buffer);
         }
         
-        private void KcpClient_OnException(Exception ex, Ukcp arg2)
+        private void KcpClient_OnException(Ukcp arg2, Exception ex)
         {
-            
+            Log.Error(ex.StackTrace);
+            NetManager.Instance.DeregisterKcp(arg2);
         }
 
         private void KcpClient_OnClose(Ukcp obj)
         {
-            
+            NetManager.Instance.DeregisterKcp(obj);
         }
 
         #endregion
@@ -180,7 +236,6 @@ namespace Fenix
             tcpClient.Exception  += OnTcpClientException;
             return tcpClient;
         }
-        
         
         void OnTcpIncomingConnect(IChannel channel)
         {
@@ -223,7 +278,7 @@ namespace Fenix
                     buffer.ReadBytes(bytes);
 
                     //var msg = MessagePackSerializer.Deserialize<ActorMessage>(bytes);
-                    var packet = Packet.Create(msgId, protoCode, fromActorId, toActorId, bytes);
+                    var packet = Packet.Create(msgId, protoCode, peer.ConnId, Container.Instance.Id, fromActorId, toActorId, bytes);
                     HandleIncomingActorMessage(peer, packet);
                 }
                 else
@@ -231,7 +286,7 @@ namespace Fenix
                     ulong msgId = (ulong)buffer.ReadLongLE();
                     byte[] bytes = new byte[buffer.ReadableBytes];
                     buffer.ReadBytes(bytes);
-                    var packet = Packet.Create(msgId, protoCode, bytes);
+                    var packet = Packet.Create(msgId, protoCode, peer.ConnId, Container.Instance.Id, 0, 0, bytes);
 
                     this.CallMethod(peer.ConnId, this.Id, packet);
                 }

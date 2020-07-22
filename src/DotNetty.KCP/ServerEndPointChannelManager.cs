@@ -27,12 +27,6 @@ namespace DotNetty.KCP
             {
                 Console.WriteLine("ukcp session is not exist RemoteAddress: " + ukcp.user().RemoteAddress);
             }
-            
-            // _ukcps.Remove(ukcp.user().RemoteAddress, out var temp);
-            // if (temp == null)
-            // {
-            //     Console.WriteLine("ukcp session is not exist RemoteAddress: " + ukcp.user().RemoteAddress);
-            // }
         }
 
         public ICollection<Ukcp> getAll()

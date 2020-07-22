@@ -16,7 +16,7 @@ namespace Fenix
     {
         public event Action<Ukcp, IByteBuffer> OnReceive;
 
-        public event Action<Exception, Ukcp> OnException;
+        public event Action<Ukcp, Exception> OnException;
 
         public event Action<Ukcp> OnClose;
 
@@ -69,15 +69,16 @@ namespace Fenix
             //}
         }
 
-        public void handleException(Exception ex, Ukcp ukcp)
+        public void handleException(Ukcp ukcp, Exception ex)
         {
             Console.WriteLine(ex.StackTrace);
-            OnException?.Invoke(ex, ukcp);
+           
+            OnException?.Invoke(ukcp, ex); 
         }
 
         public void handleClose(Ukcp ukcp)
-        {
-            OnClose?.Invoke(ukcp);
+        { 
+            OnClose?.Invoke(ukcp); 
 
             Console.WriteLine(Snmp.snmp.ToString());
             Snmp.snmp = new Snmp();
@@ -88,6 +89,16 @@ namespace Fenix
             IByteBuffer buf = Unpooled.WrappedBuffer(bytes);
             int dataLen = buf.ReadableBytes;
             _ukcp.writeMessage(buf);
+        }
+
+        public void handleConnect(Ukcp ukcp)
+        {
+            
+        }
+
+        public void Stop()
+        {
+            this.client?.stop();
         }
     }
 }

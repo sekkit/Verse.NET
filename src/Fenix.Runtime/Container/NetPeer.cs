@@ -27,6 +27,8 @@ namespace Fenix
 
         public event Action<NetPeer> OnClose;
 
+        public event Action<NetPeer, Exception> OnException;
+
         public event Action<NetPeer, IByteBuffer> OnSend;
 
         public enum NetworkType
@@ -92,15 +94,7 @@ namespace Fenix
                 return false;
             }
             var parts = addr.Split(':');
-            IPEndPoint ep = new IPEndPoint(IPAddress.Parse(parts[0]), int.Parse(parts[1]));
-
-            tcpClient = TcpContainerClient.Create(ep);
-
-            if (tcpClient == null)
-                return false;
-
-            tcpClient.Receive += TcpClient_OnReceive;
-            return true;
+            return InitTcpClient(parts[0], int.Parse(parts[1])); 
         }
 
         protected bool InitKcpClient(uint connId)
@@ -112,11 +106,33 @@ namespace Fenix
                 return false;
             }
 
-            var parts = addr.Split(':');
-            IPEndPoint ep = new IPEndPoint(IPAddress.Parse(parts[0]), int.Parse(parts[1]));
+            var parts = addr.Split(':');  
+            return InitKcpClient(parts[0], int.Parse(parts[1]));
+        }
+
+        protected bool InitTcpClient(string ip, int port)
+        {  
+            IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
+
+            tcpClient = TcpContainerClient.Create(ep);
+
+            if (tcpClient == null)
+                return false;
+
+            tcpClient.Receive += TcpClient_OnReceive;
+            tcpClient.Close += (ch) => { OnClose?.Invoke(this); };
+            tcpClient.Exception += (ch, ex) => { OnException?.Invoke(this, ex); };
+            return true;
+        }
+
+        protected bool InitKcpClient(string ip, int port)
+        {
+            IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
 
             kcpClient = KcpContainerClient.Create(ep);
-            kcpClient.OnReceive += KcpClient_OnReceive;
+            kcpClient.OnReceive += (kcp, buffer)=> { OnReceive?.Invoke(this, buffer); };
+            kcpClient.OnClose += (kcp) => { OnClose?.Invoke(this); };
+            kcpClient.OnException += (ch, ex) => { OnException?.Invoke(this, ex); };
             return true;
         }
 
@@ -150,6 +166,23 @@ namespace Fenix
                 if (!obj.InitKcpClient(connId))
                     return null;
             }
+            return obj;
+        }
+
+        public static NetPeer Create(string ip, int port, bool isTcp=false)
+        {
+            var obj = new NetPeer();
+            obj.ConnId = 0;
+            if(isTcp)
+            {
+                if (!obj.InitTcpClient(ip, port))
+                    return null;
+            }
+            else
+            {
+                if (!obj.InitKcpClient(ip, port))
+                    return null;
+            } 
             return obj;
         }
 
@@ -187,6 +220,14 @@ namespace Fenix
         public void Send(Packet packet)
         { 
             this.Send(packet.Pack());
+        }
+
+        public void Stop()
+        {
+            kcpClient?.Stop();
+            tcpClient?.Stop();
+            tcpChannel?.CloseAsync();
+            kcpChannel?.notifyCloseEvent();
         }
     }
 }

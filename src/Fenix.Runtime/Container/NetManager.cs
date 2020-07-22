@@ -4,9 +4,13 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using DotNetty.KCP;
 using DotNetty.Transport.Channels;
 using DotNetty.Transport.Channels.Groups;
-using Serilog.Sinks.File;
+using Fenix.Common;
+using Fenix.Common.Utils;
+
+
 
 namespace Fenix
 {
@@ -15,6 +19,8 @@ namespace Fenix
         protected ConcurrentDictionary<ulong, string> mChId2ChName = new ConcurrentDictionary<ulong, string>();
         
         protected ConcurrentDictionary<string, IChannel> mChName2Ch = new ConcurrentDictionary<string, IChannel>();
+
+        protected ConcurrentDictionary<string, Ukcp> mAddr2Ukcp = new ConcurrentDictionary<string, Ukcp>();
 
         protected ConcurrentDictionary<uint, NetPeer> mPeers = new ConcurrentDictionary<uint, NetPeer>();
         
@@ -47,6 +53,45 @@ namespace Fenix
             this.mChId2ChName.TryRemove(id, out var cn);
         }
 
+        //kcp目前不支持epoll/kqueue/IOCP，所以只在客户端上用用
+        public void RegisterKcp(Ukcp ukcp)
+        {
+            //如果进来的连接，没有id，则根据地址生成一个
+            //int conv = ukcp.getConv();
+            var ep = ukcp.user().RemoteAddress;
+            //var cid = ukcp.user().Channel.Id.AsLongText();
+
+            var addr = ep.ToString();
+
+            var id = Global.IdManager.GetContainerId(addr);
+            if(id == 0)
+            {
+                //生成一个
+                id = Basic.GenID32FromName(addr);
+            }
+
+            this.mAddr2Ukcp[addr] = ukcp;
+
+            var peer = NetPeer.Create(id, ukcp);
+            mPeers[peer.ConnId] = peer;
+
+            Log.Info(string.Format("Incoming KCP id: {0}", id));
+        }
+
+        public void DeregisterKcp(Ukcp ukcp)
+        {
+            var ep = ukcp.user().RemoteAddress;
+            var addr = ep.ToString();
+
+            this.mAddr2Ukcp.TryRemove(addr, out var _);
+            var id = Global.IdManager.GetContainerId(addr);
+            if(id == 0)
+            {
+                id = Basic.GenID32FromName(addr);
+            }
+            mPeers.TryRemove(id, out var _);
+        }
+
         public void RemovePeerId(uint connId)
         {
             mPeers.TryRemove(connId, out var peer);
@@ -56,6 +101,22 @@ namespace Fenix
         public NetPeer GetPeer(IChannel ch)
         {
             var id = Global.IdManager.GetContainerId(ch.RemoteAddress.ToString());
+            return mPeers[id];
+        }
+
+        public NetPeer GetPeer(Ukcp ukcp)
+        {
+            var ep = ukcp.user().RemoteAddress; 
+
+            var addr = ep.ToString();
+
+            var id = Global.IdManager.GetContainerId(addr);
+            if (id == 0)
+            {
+                //生成一个
+                id = Basic.GenID32FromName(addr);
+            }
+
             return mPeers[id];
         }
 
@@ -78,5 +139,22 @@ namespace Fenix
             mPeers[peer.ConnId] = peer; 
             return peer; 
         }
+
+//        peer connects two containers(processes)
+//        public NetPeer CreatePeer(string ip, int port)
+//        {
+//#if !CLIENT
+//            IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
+//            var addr = ep.ToString();
+
+//            var cid = Global.IdManager.GetContainerId(addr);
+//            if (cid != 0)
+//                return NetManager.Instance.GetPeerById(cid);
+//#endif
+
+//            var peer = NetPeer.Create(ip, port);
+            
+//            return peer;
+//        }
     }
 }

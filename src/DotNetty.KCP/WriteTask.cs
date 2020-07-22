@@ -54,7 +54,7 @@ namespace DotNetty.KCP
                     }
                     catch (IOException e)
                     {
-                        kcp.getKcpListener().handleException(e, kcp);
+                        kcp.getKcpListener().handleException(kcp, e);
                         return;
                     }
                 }

@@ -5,6 +5,7 @@ namespace DotNetty.KCP
 {
     public interface KcpListener
     {
+        void handleConnect(Ukcp ukcp);
 
         /**
          * kcp message
@@ -21,7 +22,7 @@ namespace DotNetty.KCP
          * @param ex 异常
          * @param ukcp 发生异常的kcp，null表示非kcp错误
          */
-        void handleException(Exception ex, Ukcp ukcp);
+        void handleException(Ukcp ukcp, Exception ex);
 
         /**
          * 关闭
