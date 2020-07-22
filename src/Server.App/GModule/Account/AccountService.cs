@@ -52,7 +52,7 @@ namespace GModule.Login
             //if (sent) return;
             //sent = true;
             var svc = GetService("MatchService");
-            svc?.rpc_join_match("", i++, new Action<uint>((code) =>
+            svc?.rpc_join_match("", i++, new Action<ErrCode>((code) =>
             {
                 Log.Info(code.ToString());
             }));
