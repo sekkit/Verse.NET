@@ -296,12 +296,14 @@ namespace Fenix
         {
             //ÐÂÁ¬½Ó
             NetManager.Instance.RegisterChannel(channel);
-            ulong hostId = Global.IdManager.GetHostId(channel.RemoteAddress.ToString());
-            Console.WriteLine(channel.RemoteAddress.ToString()); 
+            //ulong hostId = Global.IdManager.GetHostId(channel.RemoteAddress.ToString());
+            Console.WriteLine("TcpConnect: "+channel.RemoteAddress.ToString()); 
         }
         
         void OnTcpServerReceive(IChannel channel, IByteBuffer buffer)
         {
+            channel.WriteAndFlushAsync(BitConverter.GetBytes(OpCode.NONE));
+
             var peer = NetManager.Instance.GetPeer(channel);
 
             Console.WriteLine(peer.RemoteAddress + "|" + channel.RemoteAddress.ToString() +"=>" + StringUtil.ToHexString(buffer.ToArray()));
@@ -466,6 +468,8 @@ namespace Fenix
             {
                 this.actorDic[a].Update();
             }
+
+            NetManager.Instance.Update();
 
             //Log.Info(string.Format("C: {0}", rpcDic.Count));
         }

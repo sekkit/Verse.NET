@@ -35,8 +35,14 @@ namespace Fenix
             var addr = channel.RemoteAddress.ToString();
 
             var id = Global.IdManager.GetHostId(addr);
-
+            if (id == 0)
+            {
+                //生成一个
+                id = Basic.GenID32FromName(addr);
+            }
             //mChId2ChName[id] = channelName;
+
+            Global.IdManager.RegisterAddress(id, addr);
 
             var peer = NetPeer.Create(id, channel);
             mPeers[peer.ConnId] = peer;
@@ -110,7 +116,7 @@ namespace Fenix
             var id = Global.IdManager.GetHostId(addr);
             if (id == 0)
             {
-                id = Basic.GenID32FromName(addr);
+                id = Basic.GenID32FromName(addr); 
             }
             mPeers.TryRemove(id, out var _);
         }
@@ -124,6 +130,10 @@ namespace Fenix
         public NetPeer GetPeer(IChannel ch)
         {
             var id = Global.IdManager.GetHostId(ch.RemoteAddress.ToString());
+            if(id == 0)
+            {
+                id = Basic.GenID32FromName(ch.RemoteAddress.ToString());
+            }
             return mPeers[id];
         }
 
@@ -181,6 +191,14 @@ namespace Fenix
                 return null;
             mPeers[peer.ConnId] = peer;
             return peer;
+        }
+
+        public void Update()
+        {
+            foreach(var p in mPeers.Values)
+            {
+                Console.WriteLine(string.Format("{0} {1} {2}", p.ConnId, p.IsActive, p.RemoteAddress));
+            }
         }
     }
 }

@@ -235,11 +235,15 @@ namespace Fenix
 
         public void Send(byte[] bytes)
         {
-            kcpChannel?.send(bytes);
+            kcpChannel?.writeMessage(Unpooled.WrappedBuffer(bytes));
+            if (kcpChannel != null)
+                Console.WriteLine(string.Format("sento_sender({0}): {1} {2} => {3}", this.networkType, kcpChannel.user().RemoteAddress.ToString(), Host.Instance.Id, ConnId));
             tcpChannel?.WriteAndFlushAsync(Unpooled.WrappedBuffer(bytes));
             if (tcpChannel != null)
                 Console.WriteLine(string.Format("sento_sender({0}): {1} {2} => {3}", this.networkType, tcpChannel.RemoteAddress.ToString(), Host.Instance.Id, ConnId));
             kcpClient?.Send(bytes);
+            if (kcpClient != null)
+                Console.WriteLine(string.Format("sento_receiver({0}): {1} {2} => {3}", this.networkType, kcpClient.RemoteAddress.ToString(), Host.Instance.Id, ConnId));
             tcpClient?.Send(bytes);
             if (tcpClient != null)
                 Console.WriteLine(string.Format("sento_receiver({0}): {1} {2} => {3}", this.networkType, tcpClient.RemoteAddress.ToString(), Host.Instance.Id, ConnId));

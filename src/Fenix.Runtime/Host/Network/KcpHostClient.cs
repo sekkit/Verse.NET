@@ -93,7 +93,7 @@ namespace Fenix
         public void Send(byte[] bytes)
         {
             IByteBuffer buf = Unpooled.WrappedBuffer(bytes);
-            int dataLen = buf.ReadableBytes;
+            //int dataLen = buf.ReadableBytes;
             _ukcp.writeMessage(buf);
         }
 
