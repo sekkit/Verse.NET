@@ -16,8 +16,8 @@ using System;
 namespace Server
 {
 
-    [RefType("Service")]
-    public partial class ServiceRef : ActorRef
+    [RefType("ZoneService")]
+    public partial class ZoneServiceRef : ActorRef
     {
     }
 }
