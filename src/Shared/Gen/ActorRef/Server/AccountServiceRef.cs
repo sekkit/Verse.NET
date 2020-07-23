@@ -7,18 +7,16 @@ using Fenix.Common.Attributes;
 using Fenix.Common.Utils;
 using Shared;
 using Shared.DataModel;
-using Shared.Protocol;
-using Server.UModule;
+using Shared.Protocol; 
+using Shared.Message;
 
-using Server.GModule;
-using MessagePack;
-using Shared.Protocol.Message;
+using MessagePack; 
 using System;
 
 namespace Server
 {
 
-    [RefType(typeof(AccountService))]
+    [RefType("AccountService")]
     public partial class AccountServiceRef : ActorRef
     {
         public void rpc_create_account(String username, String password, String extra, Action<ErrCode> callback)
@@ -26,7 +24,7 @@ namespace Server
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);
             if (this.fromActor.HostId == toHostId)
             {
-                ((AccountService)Host.Instance.GetActor(this.toActorId)).CreateAccount(username, password, extra, callback);
+                Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.CREATE_ACCOUNT_REQ, new object[] { username, password, extra, callback });
                 return;
             }
             var msg = new CreateAccountReq()
@@ -47,7 +45,7 @@ namespace Server
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);
             if (this.fromActor.HostId == toHostId)
             {
-                ((AccountService)Host.Instance.GetActor(this.toActorId)).DeleteAccount(username, password, callback);
+                Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.DELETE_ACCOUNT_REQ, new object[] { username, password, callback });
                 return;
             }
             var msg = new DeleteAccountReq()
@@ -67,7 +65,7 @@ namespace Server
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);
             if (this.fromActor.HostId == toHostId)
             {
-                ((AccountService)Host.Instance.GetActor(this.toActorId)).Login(username, password, callback);
+                Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.LOGIN_REQ, new object[] { username, password, callback });
                 return;
             }
             var msg = new LoginReq()
@@ -87,7 +85,7 @@ namespace Server
            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);
            if (this.fromActor.HostId == toHostId)
            {
-               ((AccountService)Host.Instance.GetActor(this.toActorId)).ResetPassword(username, email);
+                Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.RESET_PASSWORD_REQ, new object[] { username, email });
                return;
            }
            var msg = new ResetPasswordReq()

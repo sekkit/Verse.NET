@@ -26,7 +26,7 @@ namespace Fenix
                     continue;
 
                 if (!RpcUtil.IsHeritedType(type, "Actor"))
-                    continue;
+                    continue; 
 
                 actorTypes.Add(type);
             }
@@ -219,9 +219,12 @@ namespace Fenix
 
         static void GenProtoCode(List<Type> types, string sharedPath, string clientPath, string serverPath)
         {
-            var codes = new SortedDictionary<string, uint>();
+            
             foreach (var type in types)
             {
+                if (type.GetCustomAttribute(typeof(ActorTypeAttribute), true) == null)
+                    continue;
+                var codes = new SortedDictionary<string, uint>();
                 var methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly); 
                 for (int i = 0; i < methods.Length; ++i)
                 {
@@ -257,12 +260,13 @@ namespace Fenix
                         string proto_code = NameToProtoCode(method.Name) + "_NTF";
                         codes[proto_code] = code;
                     }
-                } 
-            }
+                }
 
-            using (var sw = new StreamWriter(Path.Combine(sharedPath, "Protocol", "ProtocolCode.cs"), false, Encoding.UTF8))
-            {
-                string lines = @"
+                bool isServer = (type.GetCustomAttribute(typeof(ActorTypeAttribute), true) as ActorTypeAttribute).AType == AType.SERVER;
+
+                using (var sw = new StreamWriter(Path.Combine(sharedPath, "Protocol", string.Format("ProtocolCode.{0}.{1}.cs", type.Name, isServer?"s":"c")), false, Encoding.UTF8))
+                {
+                    string lines = @"
 //AUTOGEN, do not modify it!
 
 using System;
@@ -270,18 +274,19 @@ using System.Collections.Generic;
 using System.Text; 
 namespace Shared
 {
-    public class ProtocolCode
+    public partial class ProtocolCode
     {
 ";
-                foreach (var kv in codes)
-                {
-                    lines += string.Format("        public const uint {0} = {1};\n", kv.Key, kv.Value);
-                }
-                lines += @"    }
+                    foreach (var kv in codes)
+                    {
+                        lines += string.Format("        public const uint {0} = {1};\n", kv.Key, kv.Value);
+                    }
+                    lines += @"    }
 }
 ";
 
-                sw.WriteLine(lines.Replace("\r", ""));
+                    sw.WriteLine(lines.Replace("\r", ""));
+                }
             }
         }
 
@@ -325,6 +330,9 @@ namespace Shared
         { 
             var rpcDefineDic = new SortedDictionary<string, string>();
             var apiDefineDic = new SortedDictionary<string, string>();
+
+            if (type.GetCustomAttribute(typeof(ActorTypeAttribute), true) == null)
+                return;
 
             bool isServer = (type.GetCustomAttribute(typeof(ActorTypeAttribute), true) as ActorTypeAttribute).AType == AType.SERVER;
              
@@ -387,7 +395,7 @@ namespace Shared
                         .AppendLine($"using System; ")
                         .AppendLine($"using Shared.DataModel;")
                         .AppendLine($"")
-                        .AppendLine($"namespace Shared.Protocol.Message")
+                        .AppendLine($"namespace Shared.Message")
                         .AppendLine($"{{")
                         .AppendLine($"    [MessageType(ProtocolCode.{proto_code})]")
                         .AppendLine($"    [MessagePackObject]")
@@ -445,7 +453,8 @@ namespace Shared
                         .AppendLine($"            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);")
                         .AppendLine($"            if (this.fromActor.HostId == toHostId)")
                         .AppendLine($"            {{")
-                        .AppendLine($"                (({typename})Host.Instance.GetActor(this.toActorId)).{method_name}({args});")
+                        .AppendLine($"                Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.{proto_code}, new object[] {{ {args} }});")
+                        //.AppendLine($"                (({typename})Host.Instance.GetActor(this.toActorId)).{method_name}({args});")
                         .AppendLine($"                return;")
                         .AppendLine($"            }}")
                         .AppendLine($"            var msg = new {message_type}()")
@@ -467,7 +476,8 @@ namespace Shared
                         .AppendLine($"           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);")
                         .AppendLine($"           if (this.fromActor.HostId == toHostId)")
                         .AppendLine($"           {{")
-                        .AppendLine($"               (({typename})Host.Instance.GetActor(this.toActorId)).{method_name}({args});")
+                        .AppendLine($"                Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.{proto_code}, new object[] {{ {args} }});")
+                        //.AppendLine($"                (({typename})Host.Instance.GetActor(this.toActorId)).{method_name}({args});")
                         .AppendLine($"               return;")
                         .AppendLine($"           }}")
                         .AppendLine($"           var msg = new {message_type}()")
@@ -518,8 +528,7 @@ namespace Shared
 
                     var apiDefineCode = builder.ToString();
                     apiDefineDic[api_name] = apiDefineCode;
-                } 
-                 
+                }
             }
 
             string refCode = string.Join("\n", rpcDefineDic.Values);
@@ -548,17 +557,16 @@ using Fenix.Common.Attributes;
 using Fenix.Common.Utils;
 using Shared;
 using Shared.DataModel;
-using Shared.Protocol;
-using Server.UModule;
-").AppendLine($"using {ns};")
-.AppendLine(@"using MessagePack;
-using Shared.Protocol.Message;
+using Shared.Protocol; 
+using Shared.Message;
+")//.AppendLine($"using {ns};")
+.AppendLine(@"using MessagePack; 
 using System;
 ")
 .AppendLine($"namespace {root_ns}")
 .AppendLine(@"{
 ")
-.AppendLine($"    [RefType(typeof({tname}))]")
+.AppendLine($"    [RefType(\"{tname}\")]")
 .AppendLine($"    public partial class {tname}Ref : ActorRef")
 .AppendLine($"    {{")
 .AppendLine($"{refCode}    }}") 
@@ -582,8 +590,8 @@ using Fenix.Common.Rpc;
 using Fenix.Common.Utils;
 using Shared;
 using Shared.DataModel;
-using Shared.Protocol;
-using Shared.Protocol.Message;
+using Shared.Protocol; 
+using Shared.Message;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

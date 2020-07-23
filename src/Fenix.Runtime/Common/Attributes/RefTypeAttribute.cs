@@ -7,11 +7,11 @@ namespace Fenix.Common.Attributes
 
     public class RefTypeAttribute : Attribute
     {
-        public Type Type { get; set; }
+        public string TypeName { get; set; }
 
-        public RefTypeAttribute(Type type)
+        public RefTypeAttribute(string typeName)
         {
-            this.Type = type;
+            this.TypeName = typeName;
         }
     }
 }

@@ -8,7 +8,7 @@ using Shared.Protocol;
 using System; 
 using Shared.DataModel;
 
-namespace Shared.Protocol.Message
+namespace Shared.Message
 {
     [MessageType(ProtocolCode.FIND_MATCH_REQ)]
     [MessagePackObject]

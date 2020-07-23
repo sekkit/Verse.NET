@@ -22,12 +22,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Client\Stub\" />
+    <Folder Include="Gen\ActorRef\Client\" />
     <Folder Include="Gen\ActorRef\Server\" />
     <Folder Include="Gen\Message\" />
-    <Folder Include="Server\Stub\" />
-    <Folder Include="Server\UModule\Item\" />
-    <Folder Include="Server\UModule\Reward\" />
   </ItemGroup>
 
   <ItemGroup>

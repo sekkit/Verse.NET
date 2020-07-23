@@ -3,19 +3,28 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text; 
 namespace Shared
 {
-    public class ProtocolCode
+    public partial class ProtocolCode
     {
-        public const uint API_TEST_NTF = 1383176864;
-        public const uint API_TEST2_NTF = 4266374684;
-        public const uint CREATE_ACCOUNT_REQ = 234992065;
-        public const uint DELETE_ACCOUNT_REQ = 345718522;
-        public const uint FIND_MATCH_REQ = 4269254352;
-        public const uint JOIN_MATCH_REQ = 3350615592;
-        public const uint LOGIN_REQ = 1779258869;
-        public const uint RESET_PASSWORD_REQ = 843637103;
+        public void Validate()
+        {
+            Dictionary<uint, string> dic = new Dictionary<uint, string>();
+            foreach(var f in this.GetType().GetFields())
+            {
+                uint key = (uint)f.GetValue(this);
+                if(dic.ContainsKey(key))
+                {
+                    Console.WriteLine(string.Format("Duplicated protocol {0} and {1}", dic[key], f.Name));
+                }
+                dic[key] = f.Name;
+                Console.WriteLine(string.Format("    ProtocolCode({0} = {1})", f.Name, f.GetValue(this)));
+            }
+
+            Console.WriteLine(dic.Count() == this.GetType().GetFields().Count()?"Validation Passed": "Duplicated Protocol");
+        }
     }
 }
 

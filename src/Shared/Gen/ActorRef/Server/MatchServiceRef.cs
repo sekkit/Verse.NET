@@ -7,18 +7,16 @@ using Fenix.Common.Attributes;
 using Fenix.Common.Utils;
 using Shared;
 using Shared.DataModel;
-using Shared.Protocol;
-using Server.UModule;
+using Shared.Protocol; 
+using Shared.Message;
 
-using Server.GModule;
-using MessagePack;
-using Shared.Protocol.Message;
+using MessagePack; 
 using System;
 
 namespace Server
 {
 
-    [RefType(typeof(MatchService))]
+    [RefType("MatchService")]
     public partial class MatchServiceRef : ActorRef
     {
         public void rpc_find_match(String uid, Action<ErrCode, Account> callback)
@@ -26,7 +24,7 @@ namespace Server
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);
             if (this.fromActor.HostId == toHostId)
             {
-                ((MatchService)Host.Instance.GetActor(this.toActorId)).FindMatch(uid, callback);
+                Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.FIND_MATCH_REQ, new object[] { uid, callback });
                 return;
             }
             var msg = new FindMatchReq()
@@ -45,7 +43,7 @@ namespace Server
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);
             if (this.fromActor.HostId == toHostId)
             {
-                ((MatchService)Host.Instance.GetActor(this.toActorId)).JoinMatch(uid, match_type, callback);
+                Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.JOIN_MATCH_REQ, new object[] { uid, match_type, callback });
                 return;
             }
             var msg = new JoinMatchReq()

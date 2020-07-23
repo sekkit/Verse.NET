@@ -1,4 +1,5 @@
-﻿using Shared.Protocol;
+﻿
+using Shared;
 using System;
 using System.IO;
 using System.Reflection;
@@ -10,25 +11,28 @@ namespace Fenix
         static void Main(string[] args)
         {
             var rootFolder = Directory.GetCurrentDirectory();
-            //var runtimeDll = File.ReadAllBytes(Path.Combine(rootFolder, "Fenix.Runtime.dll"));
-            //var appDll = File.ReadAllBytes(Path.Combine(rootFolder, "Server.App.dll"));
-            //Assembly asmRuntime = Assembly.Load(runtimeDll);
-            //Assembly asmApp = Assembly.Load(appDll);
+            var clientDll = File.ReadAllBytes(Path.Combine(rootFolder, "../../../../../bin/netcoreapp3.1/Client.App.dll"));
+            //var serverDll = File.ReadAllBytes(Path.Combine(rootFolder, "../../../../../bin/netcoreapp3.1/Server.App.dll"));
+            Assembly asmClientApp = Assembly.Load(clientDll);
+            Assembly asmServerApp = typeof(Server.UModule.Avatar).Assembly;// Assembly.Load(serverDll);
 
             //Assembly asmRuntime = typeof(Host).Assembly;
             //Assembly asmServerApp = typeof(Server.UModule.Avatar).Assembly;
             //Assembly asmClientApp = typeof(Client.Avatar).Assembly;
 
-            Assembly asmApp = typeof(ErrCode).Assembly;
+            //Assembly asmApp = typeof(ErrCode).Assembly;
 
             string sharedPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../Shared/Gen");
-            string clientPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../Shared/Client");
-            string serverPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../Shared/Server");
+            string clientPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../Client.App");
+            string serverPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../Server.App");
 
-            //Gen.Autogen(asmServerApp, sharedPath, clientPath, serverPath);
-            //Gen.Autogen(asmClientApp, sharedPath, clientPath, serverPath);
+            Gen.Autogen(asmServerApp, sharedPath, clientPath, serverPath);
+            Gen.Autogen(asmClientApp, sharedPath, clientPath, serverPath);
 
-            Gen.Autogen(asmApp, sharedPath, clientPath, serverPath);
+            var p = new ProtocolCode();
+            p.Validate();
+
+            //Gen.Autogen(asmApp, sharedPath, clientPath, serverPath);
         }
     }
 }

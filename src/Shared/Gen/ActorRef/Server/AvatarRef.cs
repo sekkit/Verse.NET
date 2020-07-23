@@ -7,18 +7,16 @@ using Fenix.Common.Attributes;
 using Fenix.Common.Utils;
 using Shared;
 using Shared.DataModel;
-using Shared.Protocol;
-using Server.UModule;
+using Shared.Protocol; 
+using Shared.Message;
 
-using Server.UModule;
-using MessagePack;
-using Shared.Protocol.Message;
+using MessagePack; 
 using System;
 
 namespace Server
 {
 
-    [RefType(typeof(Avatar))]
+    [RefType("Avatar")]
     public partial class AvatarRef : ActorRef
     {
     }

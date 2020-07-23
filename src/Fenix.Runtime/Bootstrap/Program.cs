@@ -1,10 +1,11 @@
-﻿using System;
+﻿#if !CLIENT
+using System;
 using System.Reflection;
 
 namespace Fenix
 {
     class Program
-    {
+    { 
         static void Main(string[] args)
         {
             if (args.Length == 0)
@@ -21,3 +22,4 @@ namespace Fenix
         }
     }
 }
+#endif

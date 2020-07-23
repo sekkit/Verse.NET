@@ -3,14 +3,34 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>Client</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;NET_3_5_GREATER;SIGNED;CLIENT;</DefineConstants>
+    <OutputPath>..\..\bin</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Shared\Shared.csproj" />
+    <ProjectReference Include="..\DotNetty.Buffers\DotNetty.Buffers.csproj" />
+    <ProjectReference Include="..\DotNetty.Codecs\DotNetty.Codecs.csproj" />
+    <ProjectReference Include="..\DotNetty.Common\DotNetty.Common.csproj" />
+    <ProjectReference Include="..\DotNetty.Handlers\DotNetty.Handlers.csproj" />
+    <ProjectReference Include="..\DotNetty.KCP\DotNetty.KCP.csproj" />
+    <ProjectReference Include="..\DotNetty.TCP\DotNetty.TCP.csproj" />
+    <ProjectReference Include="..\DotNetty.Transport.Libuv\DotNetty.Transport.Libuv.csproj" />
+    <ProjectReference Include="..\DotNetty.Transport\DotNetty.Transport.csproj" />
+    <ProjectReference Include="..\MessagePack.Annotations\MessagePack.Annotations.csproj" />
+    <ProjectReference Include="..\MessagePack.UnityShims\MessagePack.UnityShims.csproj" />
+    <ProjectReference Include="..\MessagePack\MessagePack.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Stub\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 
 </Project>

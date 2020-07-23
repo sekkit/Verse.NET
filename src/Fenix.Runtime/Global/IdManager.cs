@@ -3,7 +3,9 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Fenix.Common;
+#if !CLIENT
 using Fenix.Redis;
+#endif
 
 namespace Fenix
 {
@@ -36,10 +38,11 @@ namespace Fenix
         public const string AID2ANAME = "AID2ANAME";
         public const string AID2TNAME = "AID2TNAME";
 
+#if !CLIENT
         protected ConcurrentDictionary<string, RedisDb> redisDic = new ConcurrentDictionary<string, RedisDb>();
-         
+ 
         protected IdManager()
-        {
+        { 
             redisDic[HID2ADDR]  = new RedisDb(HID2ADDR, "127.0.0.1", 7382);
             redisDic[ADDR2HID]  = new RedisDb(ADDR2HID, "127.0.0.1", 7382);
             redisDic[AID2HID]   = new RedisDb(AID2HID, "127.0.0.1", 7382);
@@ -48,7 +51,7 @@ namespace Fenix
             redisDic[HNAME2HID] = new RedisDb(HNAME2HID, "127.0.0.1", 7382);
             redisDic[AID2ANAME] = new RedisDb(AID2ANAME, "127.0.0.1", 7382);
             redisDic[AID2TNAME] = new RedisDb(AID2TNAME, "127.0.0.1", 7382);
-
+ 
             var assembly = typeof(Global).Assembly;
             Log.Info(assembly.FullName);
         }
@@ -70,7 +73,19 @@ namespace Fenix
         {
             return prefix + ":" + key;
         }
+#else
+        protected IdManager()
+        {
+            var assembly = typeof(Global).Assembly;
+            Log.Info(assembly.FullName);
+        }
 
+        ~IdManager()
+        {
+
+        }
+
+#endif
         public bool RegisterHost(Host host, string address)
         {
             mHID2ADDR[host.Id] = address;
@@ -78,25 +93,37 @@ namespace Fenix
 
             mHNAME2HID[host.UniqueName] = host.Id;
 
+#if !CLIENT
             var key = host.Id.ToString(); 
             bool ret = GetDb(ADDR2HID).Set(address, host.Id);
             ret = GetDb(HNAME2HID).Set(host.UniqueName, host.Id);
             return GetDb(HID2ADDR).Set(key, address) && ret; 
+#else
+            return true;
+#endif
         }
 
         public string GetHostAddr(uint hostId)
         {
             if (mHID2ADDR.ContainsKey(hostId))
                 return mHID2ADDR[hostId];
+#if !CLIENT
             var key = hostId.ToString();
             return GetDb(HID2ADDR).Get(key);
+#else
+            return null;
+#endif
         }
 
         public uint GetHostId(string addr)
         {
             if (mADDR2HID.ContainsKey(addr))
                 return mADDR2HID[addr];
+#if !CLIENT
             return GetDb(ADDR2HID).Get<uint>(addr);
+#else
+            return 0;
+#endif
         }
 
         public bool RegisterActor(Actor actor, Host host)
@@ -112,6 +139,7 @@ namespace Fenix
 
             mAID2TNAME[actor.Id] = actor.GetType().Name;
 
+#if !CLIENT
             var key = actor.Id.ToString();
 
             GetDb(ANAME2AID).Set(actor.UniqueName, actor.Id);
@@ -119,6 +147,9 @@ namespace Fenix
             GetDb(AID2TNAME).Set(actor.Id.ToString(), actor.GetType().Name);
             GetDb(HID2AID).Set(host.Id.ToString(), mHID2AID[host.Id]);
             return GetDb(AID2HID).Set(key, host.Id); 
+#else
+            return true;
+#endif
         } 
 
         public void RemoveActorId(uint actorId)
@@ -128,12 +159,15 @@ namespace Fenix
             this.mAID2TNAME.TryRemove(actorId, out var _);
             this.mAID2HID.TryRemove(actorId, out var hostId); 
             this.mHID2AID[hostId].Remove(actorId);
-
+#if !CLIENT
             GetDb(AID2ANAME).Delete(hostId.ToString());
             GetDb(ANAME2AID).Delete(hostId.ToString());
             GetDb(AID2TNAME).Delete(hostId.ToString());
             GetDb(AID2HID).Delete(hostId.ToString());
             GetDb(HID2AID).Set(hostId.ToString(), mHID2AID[hostId]);
+#else
+        
+#endif
         }
 
         public void RemoveHostId(uint hostId)
@@ -152,7 +186,7 @@ namespace Fenix
                         this.mANAME2AID.TryRemove(tname, out var _);
                 }
             }
-
+#if !CLIENT
             if (GetDb(HID2ADDR).Get(hostId.ToString()) != null)
             {
                 GetDb(HID2ADDR).Delete(hostId.ToString());
@@ -175,36 +209,55 @@ namespace Fenix
                     }
                 }
             } 
+#else
+
+#endif
         }
 
         public uint GetActorId(string name)
         {
             if (mANAME2AID.ContainsKey(name))
                 return mANAME2AID[name];
+#if !CLIENT
             var key = name;
             return GetDb(ANAME2AID).Get<uint>(key);
+#else
+            return 0;
+#endif
         }
 
         public string GetActorName(uint actorId)
         {
             if (mAID2ANAME.ContainsKey(actorId))
                 return mAID2ANAME[actorId];
+#if !CLIENT
             return GetDb(AID2ANAME).Get(actorId.ToString());
+#else
+            return null;
+#endif
         }
 
         public string GetActorTypename(uint actorId)
         {
             if (mAID2TNAME.ContainsKey(actorId))
                 return mAID2TNAME[actorId];
+#if !CLIENT
             return GetDb(AID2TNAME).Get(actorId.ToString());
+#else
+            return null;
+#endif
         }
 
         public uint GetHostIdByActorId(uint actorId)
         {
             if (mAID2HID.ContainsKey(actorId))
                 return mAID2HID[actorId];
+#if !CLIENT
             var key = actorId.ToString();
             return GetDb(AID2HID).Get<uint>(key);
+#else
+            return 0;
+#endif
         }
 
         public string GetHostAddrByActorId(uint actorId)

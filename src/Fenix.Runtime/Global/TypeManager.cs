@@ -38,23 +38,28 @@ namespace Fenix
             foreach(var asm in asmList)
             foreach (var t in asm.GetTypes())
             {
-                var refTypeAttrs = t.GetCustomAttributes(typeof(RefTypeAttribute));  
-                if (refTypeAttrs.Count() > 0)
-                {
-                    var rta = (RefTypeAttribute)refTypeAttrs.First();
-                    Global.TypeManager.RegisterRefType(t, rta.Type);
-                }
-
-                var msgTypeAttrs = t.GetCustomAttributes(typeof(MessageTypeAttribute));  
-                if (msgTypeAttrs.Count() > 0)
-                {
-                    var mta = (MessageTypeAttribute)msgTypeAttrs.First();
-                    Global.TypeManager.RegisterMessageType(mta.ProtoCode, t);
-                }
-
                 if(RpcUtil.IsHeritedType(t, "Actor"))
                     RegisterType(t.Name, t);
             } 
+
+            foreach(var asm in asmList)
+                foreach(var t in asm.GetTypes())
+                {
+                    var refTypeAttrs = t.GetCustomAttributes(typeof(RefTypeAttribute));
+                    if (refTypeAttrs.Count() > 0)
+                    {
+                        var rta = (RefTypeAttribute)refTypeAttrs.First();
+                        var rtaType = Global.TypeManager.Get(rta.TypeName);
+                        Global.TypeManager.RegisterRefType(t, rtaType);
+                    }
+
+                    var msgTypeAttrs = t.GetCustomAttributes(typeof(MessageTypeAttribute));
+                    if (msgTypeAttrs.Count() > 0)
+                    {
+                        var mta = (MessageTypeAttribute)msgTypeAttrs.First();
+                        Global.TypeManager.RegisterMessageType(mta.ProtoCode, t);
+                    }
+                }
         }  
 
         public void RegisterRefType(Type refType, Type targetType)
