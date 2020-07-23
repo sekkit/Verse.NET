@@ -28,6 +28,8 @@ namespace Fenix
 
         public IPEndPoint LocalAddress => (IPEndPoint)(_ukcp?.user().LocalAddress);
 
+        public string ChannelId => _ukcp?.user().Channel.Id.AsLongText();
+
         public static KcpHostClient Create(IPEndPoint remoteAddress)
         {
             KcpHostClient listener = new KcpHostClient();

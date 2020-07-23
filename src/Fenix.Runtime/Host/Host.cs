@@ -83,22 +83,29 @@ namespace Fenix
             }
             else
             {
-                clientPeer = NetManager.Instance.CreatePeer(ip, port, NetworkType.TCP); 
-                clientPeer.OnReceive += Server_OnReceive;
-                clientPeer.OnClose += Server_OnClose;
-                clientPeer.OnException += Server_OnException;
+                clientPeer = NetManager.Instance.CreatePeer(ip, port, NetworkType.KCP); 
+                if(clientPeer != null)
+                {
+                    clientPeer.OnReceive += Server_OnReceive;
+                    clientPeer.OnClose += Server_OnClose;
+                    clientPeer.OnException += Server_OnException;
 
-                if (name == null)
-                    this.UniqueName = Basic.GenID64().ToString();
+                    if (name == null)
+                        this.UniqueName = Basic.GenID64().ToString();
+                    else
+                        this.UniqueName = name;
+
+                    this.Id = Basic.GenID32FromName(clientPeer.LocalAddress.ToString());
+
+                    this.LocalAddress = clientPeer.LocalAddress;
+
+                    var thread = new Thread(new ThreadStart(Heartbeat));//创建线程 
+                    thread.Start();
+                }
                 else
-                    this.UniqueName = name;
-
-                this.Id = Basic.GenID32FromName(this.UniqueName);
-
-                this.LocalAddress = clientPeer.LocalAddress;
-
-                var thread = new Thread(new ThreadStart(Heartbeat));//创建线程 
-                thread.Start();
+                {
+                    throw new Exception("unable_to_connect_server"); 
+                }
             }
 
             if (!this.isClientMode)
@@ -112,13 +119,21 @@ namespace Fenix
         }
  
         public static Host Create(string name, string ip, int port, bool clientMode)
-        { 
+        {  
             if (Instance != null)
                 return Instance;
-
-            var c = new Host(name, ip, port, clientMode);
-            Instance = c;
-            return Instance;
+            try
+            {
+                var c = new Host(name, ip, port, clientMode);
+                Instance = c;
+                return Instance;
+            }
+            catch(Exception ex)
+            {
+                Log.Error(ex.Message);
+                Log.Error(ex.StackTrace); 
+            }
+            return null;
         } 
 
         public static Host CreateClient(string ip, int port)
@@ -296,6 +311,8 @@ namespace Fenix
         {
             var peer = NetManager.Instance.GetPeer(channel);
 
+            Console.WriteLine(peer.RemoteAddress + "|" + channel.RemoteAddress.ToString() +"=>" + StringUtil.ToHexString(buffer.ToArray()));
+
             //Ping/Pong msg process 
             if (buffer.ReadableBytes == 1)
             {
@@ -410,7 +427,7 @@ namespace Fenix
 
         private void Server_OnReceive(NetPeer peer, IByteBuffer buffer)
         {
-            Console.WriteLine(StringUtil.ToHexString(buffer.ToArray()));
+            Console.WriteLine(peer.RemoteAddress + "=>"+StringUtil.ToHexString(buffer.ToArray()));
 
             //Ping/Pong msg process 
             if (buffer.ReadableBytes == 1)
@@ -533,6 +550,11 @@ namespace Fenix
         //调用Actor身上的方法
         protected void CallActorMethod(uint fromHostId, Packet packet)  
         {
+            if(packet.ToActorId == 0)
+            {
+                this.CallMethod(fromHostId, packet.ToHostId, packet);
+                return;
+            }
             var actor = this.actorDic[packet.ToActorId]; 
             actor.CallMethod(fromHostId, this.Id, packet);
         }

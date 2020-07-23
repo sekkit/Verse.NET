@@ -72,7 +72,7 @@ namespace Fenix
 #endif
             var toHostId = Global.IdManager.GetHostIdByActorId(toActorId);
             if (toHostId == 0)
-                toHostId = Basic.GenID32FromName(toHostName);
+                toHostId = Basic.GenID32FromName(toPeerEP.ToString());
 
             return ActorRef.Create(toHostId, toActorId, refType, fromActor, fromHost, toPeerEP);
         }

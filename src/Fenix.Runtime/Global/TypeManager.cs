@@ -108,5 +108,11 @@ namespace Fenix
                 return t;
             return typeof(ActorRef);
         }
+
+        public Api GetApiType(uint protocolCode)
+        {
+            RpcModule.rpcTypeDic.TryGetValue(protocolCode, out Api api);
+            return api;
+        }
     }
 }

@@ -166,8 +166,10 @@ namespace Fenix
                 return NetManager.Instance.GetPeerById(cid);
 //#endif
 
-            var peer = NetPeer.Create(ip, port, netType);
-
+            var peer = NetPeer.Create(ep, netType);
+            if (peer == null)
+                return null;
+            mPeers[peer.ConnId] = peer;
             return peer;
         }
     }

@@ -67,10 +67,18 @@ namespace Fenix
 //#endif
         public void CallRemoteMethod(uint protocolCode, IMessage msg, Action<byte[]> cb)
         {
+            //如果protocode是client_api，则用kcp
+            //否则都是tcp
+            //暂定如此
+
+            var api = Global.TypeManager.GetApiType(protocolCode);
+            var netType = NetworkType.TCP;
+            if (api == Common.Attributes.Api.ClientApi)
+                netType = NetworkType.KCP;
             if (fromActor != null)
-                fromActor.Rpc(protocolCode, FromHostId, fromActor.Id, toHostId, this.toActorId, toAddr, NetworkType.TCP, msg, cb);
+                fromActor.Rpc(protocolCode, FromHostId, fromActor.Id, toHostId, this.toActorId, toAddr, netType, msg, cb);
             else
-                fromHost.Rpc(protocolCode, FromHostId, 0, toHostId, this.toActorId, toAddr, NetworkType.TCP, msg, cb);
+                fromHost.Rpc(protocolCode, FromHostId, 0, toHostId, this.toActorId, toAddr, netType, msg, cb);
         }
     }
 }

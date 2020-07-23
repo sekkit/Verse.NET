@@ -1,52 +1,54 @@
 @echo off
 
-cd /d %~dp0
-cd "src/Client.App"
-rd /s /Q Runtime
-mkdir Runtime
-cd Runtime
-mklink /J Actor "%~dp0src/Fenix.Runtime/Actor"
-mklink /J Bootstrap "%~dp0src/Fenix.Runtime/Bootstrap"
-mklink /J Common "%~dp0src/Fenix.Runtime/Common"
-mklink /J Config "%~dp0src/Fenix.Runtime/Config"
-mklink /J Global "%~dp0src/Fenix.Runtime/Global"
-mklink /J Host "%~dp0src/Fenix.Runtime/Host"
+set CWD=%~dp0
 
-cd /d %~dp0
+cd /d %CWD%
 cd "src/Client.App"
 rd /s /Q Shared
 mkdir Shared
 cd Shared
 
-mklink /J DataModel "%~dp0src/Shared/DataModel"
-mklink /J Gen "%~dp0src/Shared/Gen"
+mklink /J DataModel "%CWD%src/Shared/DataModel"
+mklink /J Gen "%CWD%src/Shared/Gen"
 
-cd /d %~dp0
+cd /d %CWD%
+cd "src/Client.App"
+rd /s /Q Runtime
+mkdir Runtime
+cd Runtime
+mklink /J Actor "%CWD%src/Fenix.Runtime/Actor"
+mklink /J Bootstrap "%CWD%src/Fenix.Runtime/Bootstrap"
+mklink /J Common "%CWD%src/Fenix.Runtime/Common"
+mklink /J Config "%CWD%src/Fenix.Runtime/Config"
+mklink /J Global "%CWD%src/Fenix.Runtime/Global"
+mklink /J Host "%CWD%src/Fenix.Runtime/Host"
+
+cd /d %CWD%
 cd "src/Server.App"
 rd /s /Q Runtime
 mkdir Runtime
 cd Runtime
-mklink /J Actor "%~dp0src/Fenix.Runtime/Actor"
-mklink /J Bootstrap "%~dp0src/Fenix.Runtime/Bootstrap"
-mklink /J Common "%~dp0src/Fenix.Runtime/Common"
-mklink /J Config "%~dp0src/Fenix.Runtime/Config"
-mklink /J Global "%~dp0src/Fenix.Runtime/Global"
-mklink /J Host "%~dp0src/Fenix.Runtime/Host"
-mklink /J Redis "%~dp0src/Fenix.Runtime/Redis"
+mklink /J Actor "%CWD%src/Fenix.Runtime/Actor"
+mklink /J Bootstrap "%CWD%src/Fenix.Runtime/Bootstrap"
+mklink /J Common "%CWD%src/Fenix.Runtime/Common"
+mklink /J Config "%CWD%src/Fenix.Runtime/Config"
+mklink /J Global "%CWD%src/Fenix.Runtime/Global"
+mklink /J Host "%CWD%src/Fenix.Runtime/Host"
+mklink /J Redis "%CWD%src/Fenix.Runtime/Redis"
 
-cd /d %~dp0
+cd /d %CWD%
 cd "src/Server.App"
 rd /s /Q Shared
 mkdir Shared
 cd Shared
-mklink /J DataModel "%~dp0src/Shared/DataModel"
-mklink /J Gen "%~dp0src/Shared/Gen"
+mklink /J DataModel "%CWD%src/Shared/DataModel"
+mklink /J Gen "%CWD%src/Shared/Gen"
 
-cd /d %~dp0
+cd /d %CWD%
 cd "src/Fenix.Gen"
 rd /s /Q Common
-mklink /J Common "%~dp0src/Fenix.Runtime/Common"
+mklink /J Common "%CWD%src/Fenix.Runtime/Common"
 rd /s /Q Protocol
-mklink /J Protocol "%~dp0src/Shared/Gen/Protocol"
+mklink /J Protocol "%CWD%src/Shared/Gen/Protocol"
 
-cd /d %~dp0
+cd /d %CWD%

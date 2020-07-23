@@ -3,7 +3,7 @@
     "AppName": "Account.App",
     "ExternalIp": "auto",
     "InternalIp": "auto",
-    "Port": 7777,
+    "Port": 17777,
     "DefaultActorNames": [
       "AccountService"
     ]
@@ -12,7 +12,7 @@
     "AppName": "Match.App",
     "ExternalIp": "auto",
     "InternalIp": "auto",
-    "Port": 7778,
+    "Port": 17778,
     "DefaultActorNames": [
       "MatchService"
     ]

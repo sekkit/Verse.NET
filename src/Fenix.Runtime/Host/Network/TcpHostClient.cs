@@ -29,7 +29,9 @@ namespace Fenix
 
         public IPEndPoint RemoteAddress => (IPEndPoint)client.ClientChannel.RemoteAddress; 
 
-        public IPEndPoint LocalAddress => (IPEndPoint)client.ClientChannel.LocalAddress; 
+        public IPEndPoint LocalAddress => (IPEndPoint)client.ClientChannel.LocalAddress;
+
+        public string ChannelId => client.ClientChannel.Id.AsLongText();
 
         public void OnConnect(IChannel channel)
         { 
@@ -63,8 +65,7 @@ namespace Fenix
             channelConfig.Port = addr.Port;
             channelConfig.UseLibuv = true;
 
-            var listener = new TcpHostClient();
-            //listener.RemoteAddress = addr;
+            var listener = new TcpHostClient(); 
             listener.client = new TcpSocketClient();
             if (!listener.client.Start(channelConfig, listener))
                 return null;

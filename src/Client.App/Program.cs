@@ -12,6 +12,11 @@ namespace Client.App
             Global.Init(new Assembly[] { typeof(Program).Assembly });
 
             var c = Host.CreateClient("127.0.0.1", 17777);
+            if(c == null)
+            {
+                Console.WriteLine("无法连接服务器");
+                return;
+            }
 
             c.GetService<AccountServiceRef>("Account.App", "127.0.0.1", 17777).rpc_login("username", "password", (code) =>
             {
