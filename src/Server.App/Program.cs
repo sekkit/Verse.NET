@@ -64,28 +64,21 @@ namespace Server.App
 
                 Environment.SetEnvironmentVariable("AppName", "Account.App");
 
-                Bootstrap.Start(new Assembly[] { typeof(Program).Assembly }, cfgList, isMultiProcess:true); //单进程模式
+                Bootstrap.Start(new Assembly[] { typeof(Program).Assembly, typeof(Server.UModule.Avatar).Assembly }, cfgList, isMultiProcess:true); //单进程模式
             }
             else
             { 
                 var builder = new ConfigurationBuilder().AddCommandLine(args);
                 var cmdLine = builder.Build();
-                
-                //if(cmdLine["autogen"] != null)
-                //{ 
-                    
-                //}
-                //else
-                //{
-                    //将命令行参数，设置到进程的环境变量
-                    Environment.SetEnvironmentVariable("AppName", cmdLine["AppName"]);
+                 
+                //将命令行参数，设置到进程的环境变量
+                Environment.SetEnvironmentVariable("AppName", cmdLine["AppName"]);
 
-                    using (var sr = new StreamReader(cmdLine["Config"]))
-                    {
-                        var cfgList = JsonConvert.DeserializeObject<List<RuntimeConfig>>(sr.ReadToEnd());
-                        Bootstrap.Start(new Assembly[] { typeof(Program).Assembly }, cfgList, isMultiProcess: true); //分布式
-                    }
-                //} 
+                using (var sr = new StreamReader(cmdLine["Config"]))
+                {
+                    var cfgList = JsonConvert.DeserializeObject<List<RuntimeConfig>>(sr.ReadToEnd());
+                    Bootstrap.Start(new Assembly[] { typeof(Program).Assembly, typeof(Server.UModule.Avatar).Assembly }, cfgList, isMultiProcess: true); //分布式
+                } 
             }
         }
     }

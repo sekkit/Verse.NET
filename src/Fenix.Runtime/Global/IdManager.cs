@@ -1,7 +1,7 @@
 ﻿//
-using CSRedis;
+
 using System.Collections.Concurrent;
-using System.Collections.Generic; 
+using System.Collections.Generic;
 using Fenix.Common;
 using Fenix.Redis;
 
@@ -41,9 +41,9 @@ namespace Fenix
         protected IdManager()
         {
             redisDic[HID2ADDR]  = new RedisDb(HID2ADDR, "127.0.0.1", 7382);
-            redisDic[ADDR2HID] = new RedisDb(ADDR2HID, "127.0.0.1", 7382);
-            redisDic[AID2HID] = new RedisDb(AID2HID, "127.0.0.1", 7382);
-            redisDic[HID2AID] = new RedisDb(HID2AID, "127.0.0.1", 7382);
+            redisDic[ADDR2HID]  = new RedisDb(ADDR2HID, "127.0.0.1", 7382);
+            redisDic[AID2HID]   = new RedisDb(AID2HID, "127.0.0.1", 7382);
+            redisDic[HID2AID]   = new RedisDb(HID2AID, "127.0.0.1", 7382);
             redisDic[ANAME2AID] = new RedisDb(ANAME2AID, "127.0.0.1", 7382);
             redisDic[HNAME2HID] = new RedisDb(HNAME2HID, "127.0.0.1", 7382);
             redisDic[AID2ANAME] = new RedisDb(AID2ANAME, "127.0.0.1", 7382);
@@ -65,25 +65,6 @@ namespace Fenix
             redisDic.TryGetValue(key, out db);
             return db;
         }
-
-        //public async Task<bool> RegisterHostAsync(uint hostId, string address)
-        //{
-        //    string key = hostId.ToString();
-        //    using (var lk = RedisHelper.Lock(key, 3))
-        //    {
-        //        return await redisClient.SetAsync(key, address);
-        //    }
-        //}
-
-        //public void RegisterActorType<T>()
-        //{
-        //    this.mActor2Type[nameof(T)] = typeof(T);
-        //}
-
-        //public void RegisterActorType(Type type)
-        //{
-        //    this.mActor2Type[type.GetType().Name] = type;
-        //}
 
         string GetKey(string prefix, string key)
         {
@@ -145,24 +126,24 @@ namespace Fenix
             this.mAID2ANAME.TryRemove(actorId, out var aname);
             this.mANAME2AID.TryRemove(aname, out var _);
             this.mAID2TNAME.TryRemove(actorId, out var _);
-            this.mAID2HID.TryRemove(actorId, out var cid); 
-            this.mHID2AID[cid].Remove(actorId);
+            this.mAID2HID.TryRemove(actorId, out var hostId); 
+            this.mHID2AID[hostId].Remove(actorId);
 
-            GetDb(AID2ANAME).Delete(cid.ToString());
-            GetDb(ANAME2AID).Delete(cid.ToString());
-            GetDb(AID2TNAME).Delete(cid.ToString());
-            GetDb(AID2HID).Delete(cid.ToString());
-            GetDb(HID2AID).Set(cid.ToString(), mHID2AID[cid]);
+            GetDb(AID2ANAME).Delete(hostId.ToString());
+            GetDb(ANAME2AID).Delete(hostId.ToString());
+            GetDb(AID2TNAME).Delete(hostId.ToString());
+            GetDb(AID2HID).Delete(hostId.ToString());
+            GetDb(HID2AID).Set(hostId.ToString(), mHID2AID[hostId]);
         }
 
-        public void RemoveHostId(uint cid)
+        public void RemoveHostId(uint hostId)
         {
-            if (this.mHID2ADDR.TryRemove(cid, out var addr)) 
+            if (this.mHID2ADDR.TryRemove(hostId, out var addr)) 
                 this.mADDR2HID.TryRemove(addr, out var _);
 
-            if (this.mHID2AID.TryGetValue(cid, out List<uint> aids))
+            if (this.mHID2AID.TryGetValue(hostId, out List<uint> aids))
             {
-                this.mHID2AID.TryRemove(cid, out var _); 
+                this.mHID2AID.TryRemove(hostId, out var _); 
                 foreach (var aid in aids)
                 {
                     this.mAID2ANAME.TryRemove(aid, out var _);
@@ -172,16 +153,16 @@ namespace Fenix
                 }
             }
 
-            if (GetDb(HID2ADDR).Get(cid.ToString()) != null)
+            if (GetDb(HID2ADDR).Get(hostId.ToString()) != null)
             {
-                GetDb(HID2ADDR).Delete(cid.ToString());
+                GetDb(HID2ADDR).Delete(hostId.ToString());
                 GetDb(ADDR2HID).Delete(addr);
             }
 
-            aids = GetDb(HID2AID).Get<List<uint>>(cid.ToString());
+            aids = GetDb(HID2AID).Get<List<uint>>(hostId.ToString());
             if (aids != null)
             {
-                GetDb(HID2AID).Delete(cid.ToString());
+                GetDb(HID2AID).Delete(hostId.ToString());
                 foreach (var aid in aids)
                 {
                     GetDb(AID2ANAME).Delete(aid.ToString());

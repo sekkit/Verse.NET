@@ -22,18 +22,9 @@ namespace Fenix
     
     public class Host : RpcModule
     {
-        public static Host Instance = null;
+        public static Host Instance = null; 
 
-        //public Host(uint instanceId, string tag, IPEndPoint localAddress, KcpHostServer kcpServer, TcpHostServer tcpServer)
-        //{
-        //    Id = instanceId;
-        //    Tag = tag;
-        //    LocalAddress = localAddress;
-        //    this.kcpServer = kcpServer;
-        //    this.tcpServer = tcpServer; 
-        //}
-
-        public uint Id { get; set; } //实例ID，全局唯一 
+        public uint Id { get; set; } // 实例ID，全局唯一
 
         public string Tag { get; set; }
 
@@ -46,6 +37,8 @@ namespace Fenix
         protected TcpHostServer tcpServer { get; set; }
 
         protected NetPeer clientPeer { get; set; } 
+
+        protected bool isClientMode { get; set; }
 
         protected ConcurrentDictionary<UInt32, Actor> actorDic = new ConcurrentDictionary<UInt32, Actor>();
          
@@ -65,7 +58,9 @@ namespace Fenix
                 port = Basic.GetAvailablePort(ipAddr);
             
             this.LocalAddress = new IPEndPoint(ipAddr, port);
-            
+
+            this.isClientMode = clientMode;
+
             this.RegisterGlobalManager(this);
 
             if (!clientMode)

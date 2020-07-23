@@ -28,6 +28,7 @@ namespace Fenix
          
         public void RegisterType(string name, Type type)
         {
+            Log.Info(string.Format("RegisterType: {0} {1}", name, type.FullName));
             this.mTypeDic[name] = type;
         }
 
@@ -37,14 +38,14 @@ namespace Fenix
             foreach(var asm in asmList)
             foreach (var t in asm.GetTypes())
             {
-                var refTypeAttrs = t.GetCustomAttributes(typeof(RefTypeAttribute)); //.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);//.GetCustomAttributes(typeof(ResponseAttribute));
+                var refTypeAttrs = t.GetCustomAttributes(typeof(RefTypeAttribute));  
                 if (refTypeAttrs.Count() > 0)
                 {
                     var rta = (RefTypeAttribute)refTypeAttrs.First();
                     Global.TypeManager.RegisterRefType(t, rta.Type);
                 }
 
-                var msgTypeAttrs = t.GetCustomAttributes(typeof(MessageTypeAttribute)); //.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);//.GetCustomAttributes(typeof(ResponseAttribute));
+                var msgTypeAttrs = t.GetCustomAttributes(typeof(MessageTypeAttribute));  
                 if (msgTypeAttrs.Count() > 0)
                 {
                     var mta = (MessageTypeAttribute)msgTypeAttrs.First();
@@ -53,13 +54,7 @@ namespace Fenix
 
                 if(RpcUtil.IsHeritedType(t, "Actor"))
                     RegisterType(t.Name, t);
-            }
-
-            //foreach (var t in typeof(Global).Assembly.GetTypes())
-            //    foreach (var attr in t.GetCustomAttributes(typeof(RefTypeAttribute))) //.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);//.GetCustomAttributes(typeof(ResponseAttribute));
-            //    {
-            //        Console.WriteLine(t);
-            //    }
+            } 
         }  
 
         public void RegisterRefType(Type refType, Type targetType)
@@ -77,11 +72,9 @@ namespace Fenix
         {
             uint actorId = actor.Id;
             string actorName = actor.UniqueName;
-            Type type = actor.GetType();
-            //mId2TypenameDic[actorId] = type.Name;
+            Type type = actor.GetType(); 
             if(!mTypeDic.ContainsKey(type.Name))
-                mTypeDic[type.Name] = type;
-            //mId2TypeDic[actorId] = type;
+                mTypeDic[type.Name] = type; 
         }
 
         public Type Get(string typeName)
@@ -97,9 +90,6 @@ namespace Fenix
             var tname = Global.IdManager.GetActorTypename(actorId);
 
             return this.Get(tname);
-            //Type t;
-            //mId2TypeDic.TryGetValue(actorId, out t);
-            //return t;
         }
 
         public Type GetMessageType(uint protocolId)
