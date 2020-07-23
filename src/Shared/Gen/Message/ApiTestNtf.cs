@@ -6,7 +6,7 @@ using MessagePack;
 using Shared;
 using Shared.Protocol;
 using System; 
-using Server.UModule;
+using Shared.DataModel;
 
 namespace Shared.Protocol.Message
 {

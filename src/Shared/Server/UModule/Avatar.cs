@@ -3,6 +3,7 @@ using Fenix.Common;
 using Fenix.Common.Attributes;
 using Shared.Protocol;
 using System;
+using Shared.DataModel;
 
 namespace Server.UModule
 {

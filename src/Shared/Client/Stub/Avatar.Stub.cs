@@ -5,6 +5,7 @@ using Fenix.Common.Attributes;
 using Fenix.Common.Rpc;
 using Fenix.Common.Utils;
 using Shared;
+using Shared.DataModel;
 using Shared.Protocol;
 using Shared.Protocol.Message;
 using System;

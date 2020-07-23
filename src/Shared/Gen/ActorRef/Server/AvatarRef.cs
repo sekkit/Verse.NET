@@ -6,6 +6,7 @@ using Fenix.Common;
 using Fenix.Common.Attributes;
 using Fenix.Common.Utils;
 using Shared;
+using Shared.DataModel;
 using Shared.Protocol;
 using Server.UModule;
 

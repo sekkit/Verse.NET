@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Server.UModule;
+using Shared.DataModel;
 
 namespace Server.GModule
 {
