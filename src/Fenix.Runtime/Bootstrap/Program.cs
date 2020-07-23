@@ -1,4 +1,4 @@
-﻿#if !CLIENT
+﻿#if RUNTIME
 using System;
 using System.Reflection;
 

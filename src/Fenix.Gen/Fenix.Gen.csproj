@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Fenix.Runtime\Fenix.Runtime.csproj" />
     <ProjectReference Include="..\Server.App\Server.App.csproj" />
   </ItemGroup>
 

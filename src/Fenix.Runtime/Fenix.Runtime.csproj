@@ -35,6 +35,10 @@
     <OutputPath>..\..\Libs</OutputPath>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;NET_3_5_GREATER;SIGNED;RUNTIME;</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="Common\Db\**" />
     <EmbeddedResource Remove="Common\Db\**" />
