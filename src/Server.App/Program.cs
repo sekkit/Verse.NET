@@ -8,8 +8,7 @@
 
 using DotNetty.Buffers;
 using Fenix;
-using Fenix.Config;
-using Fenix.Host;
+using Fenix.Config; 
 using MessagePack;
 using Newtonsoft.Json;
 using System;
