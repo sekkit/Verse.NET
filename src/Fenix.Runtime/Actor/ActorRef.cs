@@ -1,4 +1,5 @@
 using Fenix.Common;
+using Fenix.Common.Message;
 using Fenix.Common.Rpc;
 using Fenix.Common.Utils;
 using System;
@@ -20,19 +21,7 @@ namespace Fenix
 
         protected uint toActorId;
 
-        protected IPEndPoint toAddr;
-
-//#if !CLIENT 
-//        public static ActorRef Create(uint toActorId, Actor fromActor)
-//        {
-//            var toActorType = Global.TypeManager.GetActorType(toActorId);
-//            var refType = Global.TypeManager.GetRefType(toActorType.Name);
-//            var obj = (ActorRef)Activator.CreateInstance(refType);
-//            obj.toActorId = toActorId;
-//            obj.fromActor = fromActor;
-//            return obj;
-//        }
-//#else
+        protected IPEndPoint toAddr; 
 
         public static ActorRef Create(uint toHostId, uint toActorId, Type refType, Actor fromActor, Host fromHost, IPEndPoint toPeerEP=null)
         {
@@ -64,7 +53,7 @@ namespace Fenix
             obj.toAddr = toAddr;
             return obj;
         }
-//#endif
+
         public void CallRemoteMethod(uint protocolCode, IMessage msg, Action<byte[]> cb)
         {
             //如果protocode是client_api，则用kcp
@@ -79,6 +68,22 @@ namespace Fenix
                 fromActor.Rpc(protocolCode, FromHostId, fromActor.Id, toHostId, this.toActorId, toAddr, netType, msg, cb);
             else
                 fromHost.Rpc(protocolCode, FromHostId, 0, toHostId, this.toActorId, toAddr, netType, msg, cb);
+        }
+        
+        public void CreateActor(string actorTypeName, string uid, Action<DefaultErrCode> callback)
+        {
+            //必须由Host来创建actor
+            var hostAddr = Global.IdManager.GetHostAddr(toHostId);
+
+            var msg = new CreateActorReq();
+            msg.typeName = actorTypeName;
+            msg.name = uid;
+
+            this.CallRemoteMethod((uint)ProtoCode.CREATE_ACTOR, msg, (cbData) =>
+            {
+                var cbMsg = RpcUtil.Deserialize<CreateActorReq.Callback>(cbData);
+                callback?.Invoke(cbMsg.code);
+            });
         }
     }
 }

@@ -2,6 +2,7 @@
 using Fenix;
 using Fenix.Common;
 using Fenix.Common.Attributes;
+using Server.UModule;
 using Shared;
 using Shared.Protocol;
 using System;
@@ -12,9 +13,9 @@ using static Fenix.Common.RpcUtil;
 namespace Server.GModule
 {
     [AccessLevel(ALevel.CLIENT_AND_SERVER)]
-    public partial class AccountService : Service
+    public partial class LoginService : Service
     {
-        public AccountService(string name): base(name)
+        public LoginService(string name): base(name)
         {
             
         }
@@ -36,7 +37,22 @@ namespace Server.GModule
         public void Login(string username, string password, Action<ErrCode> callback)
         {
             Console.WriteLine(string.Format("login {0} {1}", username, password));
-            callback(ErrCode.OK);
+
+            //验证用户db，成功则登陆
+            //服务端生成玩家avatar
+            //通常是在MasterService上，生成玩家，注意玩家可以随意迁移
+
+            //分配玩家uid
+            //分配玩家游客名称
+
+            var uid = Global.DbManager.CreateUid();
+
+            //actor创建后，必须绑定到host中才能正常运作 
+            //var a = Actor.Create<Server.UModule.Avatar>(uid);
+
+            GetService<MasterServiceRef>().CreateActor(nameof(Avatar), uid, (code)=> {
+                callback(ErrCode.OK);
+            });
         }
 
         [ServerApi]
@@ -52,14 +68,6 @@ namespace Server.GModule
         public override void Update()
         {
             base.Update();
-
-            //var svc = GetActorRef<MatchServiceRef>("MatchService");
-            //svc?.rp
-            //var svc = GetService("MatchService");
-            //svc?.rpc_join_match("", i++, new Action<ErrCode>((code) =>
-            //{
-            //    Log.Info(code.ToString());
-            //}));
         }
     }
 }

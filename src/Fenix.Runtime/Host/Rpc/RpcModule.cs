@@ -13,7 +13,7 @@ namespace Fenix
 {
     public class RpcModule
     {
-        public static ConcurrentDictionary<UInt32, Api> rpcTypeDic = new ConcurrentDictionary<UInt32, Api>();
+        public static ConcurrentDictionary<UInt32, Api> RpcTypeDic = new ConcurrentDictionary<UInt32, Api>();
 
         public ConcurrentDictionary<UInt64, RpcCommand> rpcDic     = new ConcurrentDictionary<UInt64, RpcCommand>();
         public ConcurrentDictionary<UInt32, MethodInfo> rpcStubDic = new ConcurrentDictionary<UInt32, MethodInfo>(); 
@@ -28,21 +28,21 @@ namespace Fenix
                 if (attrs.Count() > 0)
                 {
                     uint code = Basic.GenID32FromName(method.Name); 
-                    rpcTypeDic[code] = Api.ServerApi;
+                    RpcTypeDic[code] = Api.ServerApi;
                 }
 
                 attrs = method.GetCustomAttributes(typeof(ServerOnlyAttribute));
                 if (attrs.Count() > 0)
                 {
                     uint code = Basic.GenID32FromName(method.Name); 
-                    rpcTypeDic[code] = Api.ServerOnly;
+                    RpcTypeDic[code] = Api.ServerOnly;
                 }
 
                 attrs = method.GetCustomAttributes(typeof(ClientApiAttribute));
                 if (attrs.Count() > 0)
                 {
                     uint code = Basic.GenID32FromName(method.Name); 
-                    rpcTypeDic[code] = Api.ClientApi;
+                    RpcTypeDic[code] = Api.ClientApi;
                 }
 
                 attrs = method.GetCustomAttributes(typeof(RpcMethodAttribute));
@@ -86,7 +86,7 @@ namespace Fenix
         public Api GetRpcType(uint protoCode)
         {
             Api api;
-            if (rpcTypeDic.TryGetValue(protoCode, out api))
+            if (RpcTypeDic.TryGetValue(protoCode, out api))
                 return api;
             return Api.NoneApi;
         }

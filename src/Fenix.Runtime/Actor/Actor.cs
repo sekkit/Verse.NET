@@ -43,6 +43,10 @@ namespace Fenix
             return (T)value;
         }
         
+        public Actor()
+        { 
+        }
+
         protected Actor(string name) : base()
         {
             this.UniqueName = name;

@@ -111,7 +111,7 @@ namespace Fenix
 
         public Api GetApiType(uint protocolCode)
         {
-            RpcModule.rpcTypeDic.TryGetValue(protocolCode, out Api api);
+            RpcModule.RpcTypeDic.TryGetValue(protocolCode, out Api api);
             return api;
         }
     }

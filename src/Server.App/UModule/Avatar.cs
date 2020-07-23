@@ -15,6 +15,10 @@ namespace Server.UModule
     {
         //public Client.AvatarRef Client;
 
+        public Avatar()
+        {
+        }
+
         public Avatar(string uid) : base(uid)
         {
             //Client.client_on_api_test("", 1, (code)=> { 

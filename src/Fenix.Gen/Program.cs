@@ -11,7 +11,7 @@ namespace Fenix
         static void Main(string[] args)
         {
             var rootFolder = Directory.GetCurrentDirectory();
-            var clientDll = File.ReadAllBytes(Path.Combine(rootFolder, "../../../../../bin/netcoreapp3.1/Client.App.dll"));
+            var clientDll = File.ReadAllBytes(Path.Combine(rootFolder, "../../../../../src/Client.App/bin/Debug/netcoreapp3.1/Client.App.dll"));
             var serverDll = File.ReadAllBytes(Path.Combine(rootFolder, "../../../../../bin/netcoreapp3.1/Server.App.dll"));
             Assembly asmClientApp = Assembly.Load(clientDll);
             Assembly asmServerApp = Assembly.Load(serverDll);

@@ -16,6 +16,8 @@ namespace Fenix
         public static TypeManager TypeManager => TypeManager.Instance;
 
         public static ActorManager ActorManager => ActorManager.Instance;
+
+        public static DbManager DbManager => DbManager.Instance;
           
         public static ActorRef GetActorRef(Type refType, string actorName, Actor fromActor, Host fromHost)
         {
