@@ -153,5 +153,11 @@ namespace Fenix.Common.Utils
             Log.Info($"Available port found: {port}");
             return port;
         } 
+
+        public static IPEndPoint ToAddress(string addr)
+        {
+            var parts = addr.Split(':');
+            return new IPEndPoint(IPAddress.Parse(parts[0]), int.Parse(parts[1]));
+        }
     }
 }

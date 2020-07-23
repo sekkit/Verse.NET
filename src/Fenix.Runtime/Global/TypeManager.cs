@@ -22,9 +22,9 @@ namespace Fenix
 
         protected ConcurrentDictionary<uint, Type> mMessageTypeDic = new ConcurrentDictionary<uint, Type>();
          
-        protected ConcurrentDictionary<Type, Type> mRef2ActorTypeDic = new ConcurrentDictionary<Type, Type>();
+        protected ConcurrentDictionary<Type, string> mRef2ATNameDic = new ConcurrentDictionary<Type, string>();
 
-        protected ConcurrentDictionary<Type, Type> mActor2RefTypeDic = new ConcurrentDictionary<Type, Type>();
+        protected ConcurrentDictionary<string, Type> mATName2RefTypeDic = new ConcurrentDictionary<string, Type>();
          
         public void RegisterType(string name, Type type)
         {
@@ -49,8 +49,8 @@ namespace Fenix
                     if (refTypeAttrs.Count() > 0)
                     {
                         var rta = (RefTypeAttribute)refTypeAttrs.First();
-                        var rtaType = Global.TypeManager.Get(rta.TypeName);
-                        Global.TypeManager.RegisterRefType(t, rtaType);
+                        //var rtaType = Global.TypeManager.Get(rta.TypeName);
+                        Global.TypeManager.RegisterRefType(t, rta.TypeName);
                     }
 
                     var msgTypeAttrs = t.GetCustomAttributes(typeof(MessageTypeAttribute));
@@ -62,10 +62,10 @@ namespace Fenix
                 }
         }  
 
-        public void RegisterRefType(Type refType, Type targetType)
+        public void RegisterRefType(Type refType, string targetTypeName)
         {
-            this.mRef2ActorTypeDic[refType] = targetType;
-            this.mActor2RefTypeDic[targetType] = refType;
+            this.mRef2ATNameDic[refType] = targetTypeName;
+            this.mATName2RefTypeDic[targetTypeName] = refType;
         }
 
         public void RegisterMessageType(uint protoCode, Type type)
@@ -102,9 +102,9 @@ namespace Fenix
             return mMessageTypeDic[protocolId];
         }
 
-        public Type GetRefType(Type type)
+        public Type GetRefType(string typename)
         { 
-            if (this.mActor2RefTypeDic.TryGetValue(type, out Type t))
+            if (this.mATName2RefTypeDic.TryGetValue(typename, out Type t))
                 return t;
             return typeof(ActorRef);
         }

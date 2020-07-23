@@ -22,7 +22,7 @@ namespace Server
         public void rpc_find_match(String uid, Action<ErrCode, Account> callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);
-            if (this.fromActor.HostId == toHostId)
+            if (this.FromHostId == toHostId)
             {
                 Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.FIND_MATCH_REQ, new object[] { uid, callback });
                 return;
@@ -41,7 +41,7 @@ namespace Server
         public void rpc_join_match(String uid, Int32 match_type, Action<ErrCode> callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);
-            if (this.fromActor.HostId == toHostId)
+            if (this.FromHostId == toHostId)
             {
                 Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.JOIN_MATCH_REQ, new object[] { uid, match_type, callback });
                 return;

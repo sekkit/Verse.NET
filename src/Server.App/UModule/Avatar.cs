@@ -26,7 +26,7 @@ namespace Server.UModule
         {
             base.Update();
 
-            var svc = GetService("MatchService");
+            //var svc = GetService("MatchService");
             //svc.rpc_join_match("", 1, new Action<uint>((code) =>
             //{
             //    Log.Info(code.ToString());

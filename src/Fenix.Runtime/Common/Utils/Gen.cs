@@ -473,7 +473,7 @@ namespace Shared
                         .AppendLine($"        public void {rpc_name}({args_decl})")
                         .AppendLine($"        {{")
                         .AppendLine($"            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);")
-                        .AppendLine($"            if (this.fromActor.HostId == toHostId)")
+                        .AppendLine($"            if (this.FromHostId == toHostId)")
                         .AppendLine($"            {{")
                         .AppendLine($"                Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.{proto_code}, new object[] {{ {args} }});")
                         //.AppendLine($"                (({typename})Host.Instance.GetActor(this.toActorId)).{method_name}({args});")
@@ -496,7 +496,7 @@ namespace Shared
                         .AppendLine($"        public void {rpc_name}({args_decl})")
                         .AppendLine($"        {{")
                         .AppendLine($"           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);")
-                        .AppendLine($"           if (this.fromActor.HostId == toHostId)")
+                        .AppendLine($"           if (this.FromHostId == toHostId)")
                         .AppendLine($"           {{")
                         .AppendLine($"                Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.{proto_code}, new object[] {{ {args} }});")
                         //.AppendLine($"                (({typename})Host.Instance.GetActor(this.toActorId)).{method_name}({args});")
@@ -517,11 +517,11 @@ namespace Shared
                     string api_rpc_args = ParseArgs(method.GetParameters(), "_msg.", "callback");
                     //string api_assign = ParseArgsMsgAssign(method.GetParameters(), "                ", "cbMsg.");
                     
-                    string api_name = "_INTERNAL_SERVER_API_"+NameToApi(method.Name);
+                    string api_name = "SERVER_API_"+NameToApi(method.Name);
                     if (api == Api.ClientApi)
-                        api_name = "_INTERNAL_CLIENT_API_" + NameToApi(method.Name);
+                        api_name = "CLIENT_API_" + NameToApi(method.Name);
                     else if (api == Api.ServerOnly)
-                        api_name = "_INTERNAL_SERVER_ONLY_" + NameToApi(method.Name);
+                        api_name = "SERVER_ONLY_" + NameToApi(method.Name);
 
                     builder = new StringBuilder()
                         .AppendLine($"        [RpcMethod(ProtocolCode.{proto_code})]")

@@ -12,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
-using Server.UModule;
 
 
 namespace Server.GModule
@@ -21,7 +20,7 @@ namespace Server.GModule
     {
         [RpcMethod(ProtocolCode.CREATE_ACCOUNT_REQ)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void _INTERNAL_SERVER_API_create_account(IMessage msg, Action<object> cb)
+        public void SERVER_API_create_account(IMessage msg, Action<object> cb)
         {
             var _msg = (CreateAccountReq)msg;
             this.CreateAccount(_msg.username, _msg.password, _msg.extra, (code) =>
@@ -34,7 +33,7 @@ namespace Server.GModule
 
         [RpcMethod(ProtocolCode.DELETE_ACCOUNT_REQ)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void _INTERNAL_SERVER_API_delete_account(IMessage msg, Action<object> cb)
+        public void SERVER_API_delete_account(IMessage msg, Action<object> cb)
         {
             var _msg = (DeleteAccountReq)msg;
             this.DeleteAccount(_msg.username, _msg.password, (code) =>
@@ -47,7 +46,7 @@ namespace Server.GModule
 
         [RpcMethod(ProtocolCode.LOGIN_REQ)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void _INTERNAL_SERVER_API_login(IMessage msg, Action<object> cb)
+        public void SERVER_API_login(IMessage msg, Action<object> cb)
         {
             var _msg = (LoginReq)msg;
             this.Login(_msg.username, _msg.password, (code) =>
@@ -60,7 +59,7 @@ namespace Server.GModule
 
         [RpcMethod(ProtocolCode.RESET_PASSWORD_REQ)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void _INTERNAL_SERVER_API_reset_password(IMessage msg, Action<object> cb)
+        public void SERVER_API_reset_password(IMessage msg, Action<object> cb)
         {
             var _msg = (ResetPasswordReq)msg;
         }

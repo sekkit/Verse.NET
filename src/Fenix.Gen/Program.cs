@@ -27,7 +27,7 @@ namespace Fenix
             string clientPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../Client.App");
             string serverPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../Server.App");
 
-            //Gen.Autogen(asmServerApp, true, sharedPath, clientPath, serverPath);
+            Gen.Autogen(asmServerApp, true, sharedPath, clientPath, serverPath); 
             Gen.Autogen(asmClientApp, false, sharedPath, clientPath, serverPath);
 
             var p = new ProtocolCode();

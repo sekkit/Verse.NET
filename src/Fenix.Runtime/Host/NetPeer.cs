@@ -31,13 +31,7 @@ namespace Fenix
 
         public event Action<NetPeer, IByteBuffer> OnSend;
 
-        public enum NetworkType
-        {
-            TCP = 0x0,
-            KCP = 0x1
-        }
-
-        public NetworkType networkType => tcpChannel != null ? NetworkType.TCP : NetworkType.KCP;
+        public NetworkType networkType;
 
         public bool IsActive
         {
@@ -100,34 +94,42 @@ namespace Fenix
             }
         }
 
-        protected bool InitTcpClient(uint connId)
+        protected bool InitTcpClient(uint connId, IPEndPoint ep)
         {
-            var addr = Global.IdManager.GetHostAddr(connId);
-            if(addr == null)
+            if (ep == null)
             {
-                //host 不存在
-                return false;
+                var addr = Global.IdManager.GetHostAddr(connId);
+                if (addr == null)
+                {
+                    //host 不存在
+                    return false;
+                }
+                var parts = addr.Split(':');
+                return InitTcpClient(new IPEndPoint(IPAddress.Parse(parts[0]), int.Parse(parts[1])));
             }
-            var parts = addr.Split(':');
-            return InitTcpClient(parts[0], int.Parse(parts[1])); 
+            return InitTcpClient(ep);
         }
 
-        protected bool InitKcpClient(uint connId)
+        protected bool InitKcpClient(uint connId, IPEndPoint ep)
         {
-            var addr = Global.IdManager.GetHostAddr(connId);
-            if (addr == null)
+            if(ep == null)
             {
-                //host 不存在
-                return false;
-            }
+                var addr = Global.IdManager.GetHostAddr(connId);
+                if (addr == null)
+                {
+                    //host 不存在
+                    return false;
+                }
 
-            var parts = addr.Split(':');  
-            return InitKcpClient(parts[0], int.Parse(parts[1]));
+                var parts = addr.Split(':');
+                return InitKcpClient(new IPEndPoint(IPAddress.Parse(parts[0]), int.Parse(parts[1])));
+            } 
+            return InitKcpClient(ep);
         }
 
-        protected bool InitTcpClient(string ip, int port)
+        protected bool InitTcpClient(IPEndPoint ep)
         {  
-            IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
+            //IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
 
             tcpClient = TcpHostClient.Create(ep);
 
@@ -140,9 +142,9 @@ namespace Fenix
             return true;
         }
 
-        protected bool InitKcpClient(string ip, int port)
+        protected bool InitKcpClient(IPEndPoint ep)
         {
-            IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
+            //IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
 
             kcpClient = KcpHostClient.Create(ep);
             kcpClient.OnReceive += (kcp, buffer)=> { OnReceive?.Invoke(this, buffer); };
@@ -156,6 +158,7 @@ namespace Fenix
             var obj = new NetPeer();
             obj.ConnId = connId;
             obj.kcpChannel = kcpCh;
+            obj.networkType = NetworkType.KCP;
             return obj;
         }
 
@@ -164,38 +167,41 @@ namespace Fenix
             var obj = new NetPeer();
             obj.ConnId = connId;
             obj.tcpChannel = tcpCh;
+            obj.networkType = NetworkType.TCP;
             return obj;
         }
 
-        public static NetPeer Create(uint connId, bool isTcp)
+        public static NetPeer Create(uint connId, IPEndPoint addr, NetworkType netType)
         {
             var obj = new NetPeer();
             obj.ConnId = connId;
-            if (isTcp)
+            obj.networkType = netType;
+            if (netType == NetworkType.TCP)
             {
-                if (!obj.InitTcpClient(connId))
+                if (!obj.InitTcpClient(connId, addr))
                     return null;
             }
             else
             {
-                if (!obj.InitKcpClient(connId))
+                if (!obj.InitKcpClient(connId, addr))
                     return null;
             }
             return obj;
         }
 
-        public static NetPeer Create(string ip, int port, bool isTcp=false)
+        public static NetPeer Create(string ip, int port, NetworkType netType)
         {
             var obj = new NetPeer();
             obj.ConnId = 0;
-            if(isTcp)
+            obj.networkType = netType;
+            if (netType == NetworkType.TCP)
             {
-                if (!obj.InitTcpClient(ip, port))
+                if (!obj.InitTcpClient(new IPEndPoint(IPAddress.Parse(ip), port)))
                     return null;
             }
             else
             {
-                if (!obj.InitKcpClient(ip, port))
+                if (!obj.InitKcpClient(new IPEndPoint(IPAddress.Parse(ip), port)))
                     return null;
             } 
             return obj;

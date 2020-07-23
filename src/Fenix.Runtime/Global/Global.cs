@@ -1,4 +1,6 @@
-﻿ 
+﻿
+using System;
+using System.Net;
 using System.Reflection; 
 
 namespace Fenix
@@ -15,22 +17,27 @@ namespace Fenix
 
         public static ActorManager ActorManager => ActorManager.Instance;
           
-        public static ActorRef GetActorRef(string actorName, Actor fromActor)
+        public static ActorRef GetActorRef(Type refType, string actorName, Actor fromActor, Host fromHost)
         {
-            return Global.ActorManager.GetActorRefByName(actorName, fromActor);
+            return Global.ActorManager.GetActorRefByName(refType, actorName, fromActor, fromHost);
         }
 
-        public static T Get<T>(string name, Actor fromActor) where T: ActorRef
+        public static ActorRef GetActorRefByAddr(Type refType, IPEndPoint toPeerEP, string toHostName, string toActorName, Actor fromActor, Host fromHost)
         {
-            var actorRef = ActorManager.Instance.GetActorRefByName(name, fromActor);
-            return (T)actorRef;
+            return Global.ActorManager.GetActorRefByAddress(refType, toPeerEP, toHostName, toActorName, fromActor, fromHost);
         }
 
-        public static ActorRef Get(string name, Actor fromActor)
-        {
-            var actorRef = ActorManager.Instance.GetActorRefByName(name, fromActor);
-            return actorRef;
-        }
+        //public static T Get<T>(string name, Actor fromActor, Host fromHost) where T: ActorRef
+        //{
+        //    var actorRef = ActorManager.Instance.GetActorRefByName(typeof(T).Name, name, fromActor, fromHost);
+        //    return (T)actorRef;
+        //}
+
+        //public static ActorRef Get(string name, Actor fromActor, Host fromHost)
+        //{
+        //    var actorRef = ActorManager.Instance.GetActorRefByName(name, fromActor);
+        //    return actorRef;
+        //}
 
         public static void Init(Assembly[] asmList)
         {

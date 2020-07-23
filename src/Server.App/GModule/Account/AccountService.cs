@@ -1,4 +1,5 @@
-﻿using Fenix;
+﻿using DotNetty.KCP;
+using Fenix;
 using Fenix.Common;
 using Fenix.Common.Attributes;
 using Shared;
@@ -34,6 +35,7 @@ namespace Server.GModule
         [ServerApi]
         public void Login(string username, string password, Action<ErrCode> callback)
         {
+            Console.WriteLine(string.Format("login {0} {1}", username, password));
             callback(ErrCode.OK);
         }
 

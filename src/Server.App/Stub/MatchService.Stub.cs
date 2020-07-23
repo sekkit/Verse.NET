@@ -12,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
-using Server.UModule;
 
 
 namespace Server.GModule
@@ -21,7 +20,7 @@ namespace Server.GModule
     {
         [RpcMethod(ProtocolCode.JOIN_MATCH_REQ)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void _INTERNAL_SERVER_API_join_match(IMessage msg, Action<object> cb)
+        public void SERVER_API_join_match(IMessage msg, Action<object> cb)
         {
             var _msg = (JoinMatchReq)msg;
             this.JoinMatch(_msg.uid, _msg.match_type, (code) =>
@@ -34,7 +33,7 @@ namespace Server.GModule
 
         [RpcMethod(ProtocolCode.FIND_MATCH_REQ)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void _INTERNAL_SERVER_ONLY_find_match(IMessage msg, Action<object> cb)
+        public void SERVER_ONLY_find_match(IMessage msg, Action<object> cb)
         {
             var _msg = (FindMatchReq)msg;
             this.FindMatch(_msg.uid, (code, user) =>

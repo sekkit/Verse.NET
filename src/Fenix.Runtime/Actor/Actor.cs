@@ -121,29 +121,36 @@ namespace Fenix
 
         }
 
-        public dynamic GetService(string name)
-        {
-            return Global.GetActorRef(name, this);
-        }
+        //public dynamic GetService(string name)
+        //{
+        //    return Global.GetActorRef(name, this);
+        //}
 
         public T GetService<T>(string name) where T : ActorRef
         {
-            return (T)Global.GetActorRef(name, this);
+            return (T)Global.GetActorRef(typeof(T), name, this, Host.Instance);
         }
 
         public T GetAvatar<T>(string uid) where T : ActorRef
         {
-            return (T)Global.GetActorRef(uid, this);
+            return (T)Global.GetActorRef(typeof(T), uid, this, Host.Instance);
         }
 
-        public ActorRef GetActorRef(string name)
+        //public ActorRef GetActorRef(string name)
+        //{
+        //    return Global.GetActorRef(typeof(T).Name, name, this);
+        //}
+
+        public T GetActorRef<T>(string actorName) where T: ActorRef
         {
-            return Global.GetActorRef(name, this);
+            return (T)Global.GetActorRef(typeof(T), actorName, this, Host.Instance);
         }
 
-        public T GetActorRef<T>(string name) where T: ActorRef
+        public T GetService<T>() where T : ActorRef
         {
-            return (T)Global.GetActorRef(name, this);
+            var tname = typeof(T).Name;
+            string actorName = tname.Substring(0, tname.Length - 3);
+            return (T)Global.GetActorRef(typeof(T), actorName, this, Host.Instance);
         }
     }
 }

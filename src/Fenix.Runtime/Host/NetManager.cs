@@ -142,12 +142,12 @@ namespace Fenix
             return null;
         }
 
-        public NetPeer CreatePeer(uint remoteHostId)
+        public NetPeer CreatePeer(uint remoteHostId, IPEndPoint addr, NetworkType netType)
         { 
             var peer = GetPeerById(remoteHostId);
             if (peer != null)
                 return peer;
-            peer = NetPeer.Create(remoteHostId, true);
+            peer = NetPeer.Create(remoteHostId, addr, netType);
             if (peer == null)
                 return null;
             mPeers[peer.ConnId] = peer; 
@@ -155,7 +155,7 @@ namespace Fenix
         }
 
         //        peer connects two hosts(processes)
-        public NetPeer CreatePeer(string ip, int port)
+        public NetPeer CreatePeer(string ip, int port, NetworkType netType)
         {
 //#if !CLIENT
             IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
@@ -166,7 +166,7 @@ namespace Fenix
                 return NetManager.Instance.GetPeerById(cid);
 //#endif
 
-            var peer = NetPeer.Create(ip, port);
+            var peer = NetPeer.Create(ip, port, netType);
 
             return peer;
         }
