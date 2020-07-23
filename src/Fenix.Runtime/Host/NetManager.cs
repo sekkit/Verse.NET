@@ -154,21 +154,21 @@ namespace Fenix
             return peer; 
         }
 
-//        peer connects two hosts(processes)
-//        public NetPeer CreatePeer(string ip, int port)
-//        {
+        //        peer connects two hosts(processes)
+        public NetPeer CreatePeer(string ip, int port)
+        {
 //#if !CLIENT
-//            IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
-//            var addr = ep.ToString();
+            IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
+            var addr = ep.ToString();
 
-//            var cid = Global.IdManager.GetHostId(addr);
-//            if (cid != 0)
-//                return NetManager.Instance.GetPeerById(cid);
+            var cid = Global.IdManager.GetHostId(addr);
+            if (cid != 0)
+                return NetManager.Instance.GetPeerById(cid);
 //#endif
 
-//            var peer = NetPeer.Create(ip, port);
-            
-//            return peer;
-//        }
+            var peer = NetPeer.Create(ip, port);
+
+            return peer;
+        }
     }
 }

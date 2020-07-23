@@ -36,7 +36,7 @@ namespace Fenix
         
         protected TcpHostServer tcpServer { get; set; }
 
-        protected NetPeer clientPeer { get; set; } 
+        protected NetPeer clientPeer { get; set; }
 
         protected bool isClientMode { get; set; }
 
@@ -70,6 +70,7 @@ namespace Fenix
             }
             else
             {
+                clientPeer = NetManager.Instance.CreatePeer(ip, port);
                 clientPeer = NetPeer.Create(ip, port);
                 clientPeer.OnReceive += Server_OnReceive;
                 clientPeer.OnClose += Server_OnClose;

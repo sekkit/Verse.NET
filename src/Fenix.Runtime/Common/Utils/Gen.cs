@@ -385,7 +385,7 @@ namespace Shared
                         .AppendLine($"using Shared;")
                         .AppendLine($"using Shared.Protocol;")
                         .AppendLine($"using System; ")
-                        .AppendLine($"using Server.UModule;")
+                        .AppendLine($"using Shared.DataModel;")
                         .AppendLine($"")
                         .AppendLine($"namespace Shared.Protocol.Message")
                         .AppendLine($"{{")
@@ -547,6 +547,7 @@ using Fenix.Common;
 using Fenix.Common.Attributes;
 using Fenix.Common.Utils;
 using Shared;
+using Shared.DataModel;
 using Shared.Protocol;
 using Server.UModule;
 ").AppendLine($"using {ns};")
@@ -580,6 +581,7 @@ using Fenix.Common.Attributes;
 using Fenix.Common.Rpc;
 using Fenix.Common.Utils;
 using Shared;
+using Shared.DataModel;
 using Shared.Protocol;
 using Shared.Protocol.Message;
 using System;
