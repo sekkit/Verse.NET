@@ -19,6 +19,18 @@ namespace Server.UModule
 {
     public partial class Avatar
     {
+        [RpcMethod(ProtocolCode.CHANGE_NAME_REQ)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void _INTERNAL_SERVER_API_change_name(IMessage msg, Action<object> cb)
+        {
+            var _msg = (ChangeNameReq)msg;
+            this.ChangeName(_msg.name, (code) =>
+            {
+                var cbMsg = new ChangeNameReq.Callback();
+                cbMsg.code=code;
+                cb.Invoke(cbMsg);
+            });
+        }
     }
 }
 

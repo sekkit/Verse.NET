@@ -43,3 +43,10 @@ mklink /J DataModel "%~dp0src/Shared/DataModel"
 mklink /J Gen "%~dp0src/Shared/Gen"
 
 cd /d %~dp0
+cd "src/Fenix.Gen"
+rd /s /Q Common
+mklink /J Common "%~dp0src/Fenix.Runtime/Common"
+rd /s /Q Protocol
+mklink /J Protocol "%~dp0src/Shared/Gen/Protocol"
+
+cd /d %~dp0

@@ -9,7 +9,7 @@ namespace Fenix
     //server only
     [ActorType(AType.SERVER)]
     [AccessLevel(ALevel.SERVER)]
-    public class Service : Actor
+    public partial class Service : Actor
     {
         public Service(string name) : base(name)
         {

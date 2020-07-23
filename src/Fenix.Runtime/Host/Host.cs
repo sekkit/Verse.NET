@@ -349,7 +349,7 @@ namespace Fenix
 
         protected void Ping()
         {
-            clientPeer.Send(new byte[] { (byte)ProtoCode.PING });
+            clientPeer?.Send(new byte[] { (byte)ProtoCode.PING });
         }
 
         private void Server_OnException(NetPeer peer, Exception ex)

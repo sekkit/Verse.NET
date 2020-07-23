@@ -8,7 +8,8 @@ namespace Shared
 {
     public partial class ProtocolCode
     {
-        public const uint CHANGE_NAME_REQ = 3740974912;
+        public const uint API_TEST_NTF = 1383176864;
+        public const uint API_TEST2_NTF = 4266374684;
     }
 }
 

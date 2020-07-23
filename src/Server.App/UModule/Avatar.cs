@@ -32,5 +32,11 @@ namespace Server.UModule
             //    Log.Info(code.ToString());
             //}));
         } 
+
+        [ServerApi]
+        public void ChangeName(string name, Action<ErrCode> callback)
+        {
+            callback(ErrCode.OK);
+        }
     }
 }

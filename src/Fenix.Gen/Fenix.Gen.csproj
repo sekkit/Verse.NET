@@ -6,8 +6,22 @@
     <RootNamespace>Fenix</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;NET_3_5_GREATER;SIGNED;CLIENT;</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\Server.App\Server.App.csproj" />
+    <ProjectReference Include="..\DotNetty.Buffers\DotNetty.Buffers.csproj" />
+    <ProjectReference Include="..\DotNetty.Codecs\DotNetty.Codecs.csproj" />
+    <ProjectReference Include="..\DotNetty.Common\DotNetty.Common.csproj" />
+    <ProjectReference Include="..\DotNetty.Handlers\DotNetty.Handlers.csproj" />
+    <ProjectReference Include="..\DotNetty.KCP\DotNetty.KCP.csproj" />
+    <ProjectReference Include="..\DotNetty.TCP\DotNetty.TCP.csproj" />
+    <ProjectReference Include="..\DotNetty.Transport.Libuv\DotNetty.Transport.Libuv.csproj" />
+    <ProjectReference Include="..\DotNetty.Transport\DotNetty.Transport.csproj" />
+    <ProjectReference Include="..\MessagePack.Annotations\MessagePack.Annotations.csproj" />
+    <ProjectReference Include="..\MessagePack.UnityShims\MessagePack.UnityShims.csproj" />
+    <ProjectReference Include="..\MessagePack\MessagePack.csproj" />
   </ItemGroup>
 
 </Project>

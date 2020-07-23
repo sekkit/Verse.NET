@@ -19,6 +19,24 @@ namespace Server
     [RefType("Avatar")]
     public partial class AvatarRef : ActorRef
     {
+        public void rpc_change_name(String name, Action<ErrCode> callback)
+        {
+            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);
+            if (this.fromActor.HostId == toHostId)
+            {
+                Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.CHANGE_NAME_REQ, new object[] { name, callback });
+                return;
+            }
+            var msg = new ChangeNameReq()
+            {
+                name=name
+            };
+            var cb = new Action<byte[]>((cbData) => {
+                var cbMsg = RpcUtil.Deserialize<ChangeNameReq.Callback>(cbData);
+                callback?.Invoke(cbMsg.code);
+            });
+            this.CallRemoteMethod(ProtocolCode.CHANGE_NAME_REQ, msg, cb);
+        }
     }
 }
 

@@ -16,8 +16,8 @@ using Fenix.Common.Utils;
 namespace Fenix
 {
     public class Gen
-    { 
-        public static void Autogen(Assembly asm, string sharedPath, string clientPath, string serverPath)
+    {
+        public static void Autogen(Assembly asm, bool isServer, string sharedPath, string clientPath, string serverPath)
         {
             List<Type> actorTypes = new List<Type>();
             foreach (Type type in asm.GetTypes())
@@ -26,16 +26,38 @@ namespace Fenix
                     continue;
 
                 if (!RpcUtil.IsHeritedType(type, "Actor"))
-                    continue; 
+                    continue;
+
+                var attr = GetAttribute<ActorTypeAttribute>(type); 
+                if (attr == null)
+                    continue;
+
+                var at = (int)attr.AType;
+                if (isServer && at != (int)AType.SERVER)
+                    continue;
+                if (!isServer && at != (int)AType.CLIENT)
+                    continue;
 
                 actorTypes.Add(type);
             }
-              
-            GenProtoCode(actorTypes, sharedPath, clientPath, serverPath); 
-             
-            foreach(var type in actorTypes)
+
+            GenProtoCode(actorTypes, sharedPath, clientPath, serverPath);
+
+            foreach (var type in actorTypes)
                 GenFromActorType(type, sharedPath, clientPath, serverPath);
-        }  
+        }
+
+        static dynamic GetAttribute<T>(Type type) where T: Attribute
+        {
+            var attrs = type.GetCustomAttributes(true);
+            return attrs.Where(m => (m.GetType().Name == typeof(T).Name)).FirstOrDefault();
+        }
+
+        static dynamic GetAttribute<T>(MethodInfo methodInfo) where T : Attribute
+        {
+            var attrs = methodInfo.GetCustomAttributes(true);
+            return attrs.Where(m => (m.GetType().Name == typeof(T).Name)).FirstOrDefault();
+        }
 
         static string[] SplitCamelCase(string source)
         {
@@ -140,10 +162,10 @@ namespace Fenix
                 var t = types[i];
                 int position = i; 
                 string pType = ParseTypeName(t);
-                var attr = t.GetCustomAttribute(typeof(RpcArgAttribute));
+                var attr = GetAttribute<RpcArgAttribute>(t);
                 string pName;
                 if (attr != null) 
-                     pName = ((RpcArgAttribute)attr).Name; 
+                     pName = attr.Name;
                 else
                     pName = names.Length > position ? names[position] : "arg"+position.ToString(); 
                 lines.Add(string.Format("{0}{1}{2}={3};", prefix, tarInstanceName, pName, pName));
@@ -177,11 +199,11 @@ namespace Fenix
                 var t = types[i];
                 int position = i;
                 string pType = ParseTypeName(t);
-                var attr = t.GetCustomAttributes(typeof(RpcArgAttribute)).FirstOrDefault();
+                var attr = GetAttribute<RpcArgAttribute>(t);  
                 string pName;
                 string ns = t.Namespace;
                 if (attr != null)
-                    pName = ((RpcArgAttribute)attr).Name;
+                    pName = attr.Name;
                 else
                     pName = names.Length > position ? names[position] : "arg" + position.ToString();
                 lines.Add($"{prefix}[Key({position})]\n{prefix}public {pType} {pName};\n");
@@ -211,10 +233,10 @@ namespace Fenix
 
         static string[] GetCallbackArgs(MethodInfo method)
         {
-            var attr = method.GetCustomAttributes(typeof(CallbackArgsAttribute)).FirstOrDefault();
+            var attr = GetAttribute<CallbackArgsAttribute>(method); 
             if (attr == null)
                 return new string[] { };
-            return (attr as CallbackArgsAttribute).Names;
+            return attr.Names;
         }
 
         static void GenProtoCode(List<Type> types, string sharedPath, string clientPath, string serverPath)
@@ -222,15 +244,15 @@ namespace Fenix
             
             foreach (var type in types)
             {
-                if (type.GetCustomAttribute(typeof(ActorTypeAttribute), true) == null)
+                if (GetAttribute<ActorTypeAttribute>(type) == null)
                     continue;
                 var codes = new SortedDictionary<string, uint>();
                 var methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly); 
                 for (int i = 0; i < methods.Length; ++i)
                 {
                     MethodInfo method = methods[i];
-                    var attrs = method.GetCustomAttributes(typeof(ServerApiAttribute));
-                    if (attrs.Count() > 0)
+                    var attr = GetAttribute<ServerApiAttribute>(method); 
+                    if (attr != null)
                     {
                         uint code = Basic.GenID32FromName(method.Name);
                         string proto_code = NameToProtoCode(method.Name) + "_REQ";
@@ -241,8 +263,8 @@ namespace Fenix
                 for (int i = 0; i < methods.Length; ++i)
                 {
                     MethodInfo method = methods[i];
-                    var attrs = method.GetCustomAttributes(typeof(ServerOnlyAttribute));
-                    if (attrs.Count() > 0)
+                    var attr = GetAttribute<ServerOnlyAttribute>(method); 
+                    if (attr != null)
                     {
                         uint code = Basic.GenID32FromName(method.Name);
                         string proto_code = NameToProtoCode(method.Name) + "_REQ";
@@ -253,8 +275,8 @@ namespace Fenix
                 for (int i = 0; i < methods.Length; ++i)
                 {
                     MethodInfo method = methods[i];
-                    var attrs = method.GetCustomAttributes(typeof(ClientApiAttribute));
-                    if (attrs.Count() > 0)
+                    var attr = GetAttribute<ClientApiAttribute>(method); 
+                    if (attr != null)
                     {
                         uint code = Basic.GenID32FromName(method.Name);
                         string proto_code = NameToProtoCode(method.Name) + "_NTF";
@@ -262,7 +284,7 @@ namespace Fenix
                     }
                 }
 
-                bool isServer = (type.GetCustomAttribute(typeof(ActorTypeAttribute), true) as ActorTypeAttribute).AType == AType.SERVER;
+                bool isServer = (int)GetAttribute<ActorTypeAttribute>(type).AType == (int)AType.SERVER; 
 
                 using (var sw = new StreamWriter(Path.Combine(sharedPath, "Protocol", string.Format("ProtocolCode.{0}.{1}.cs", type.Name, isServer?"s":"c")), false, Encoding.UTF8))
                 {
@@ -299,10 +321,10 @@ namespace Shared
                 var t = types[i];
                 int position = i;
                 string pType = ParseTypeName(t);
-                var attr = t.GetCustomAttribute(typeof(RpcArgAttribute));
+                var attr = GetAttribute<RpcArgAttribute>(t); 
                 string pName;
                 if (attr != null)
-                    pName = ((RpcArgAttribute)attr).Name;
+                    pName = attr.Name;
                 else
                     pName = names.Length > position ? names[position] : "arg" + position.ToString();
 
@@ -331,27 +353,27 @@ namespace Shared
             var rpcDefineDic = new SortedDictionary<string, string>();
             var apiDefineDic = new SortedDictionary<string, string>();
 
-            if (type.GetCustomAttribute(typeof(ActorTypeAttribute), true) == null)
+            if (GetAttribute<ActorTypeAttribute>(type) == null)
                 return;
 
-            bool isServer = (type.GetCustomAttribute(typeof(ActorTypeAttribute), true) as ActorTypeAttribute).AType == AType.SERVER;
-             
+            bool isServer = (int)GetAttribute<ActorTypeAttribute>(type).AType == (int)AType.SERVER;
+
             var methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
             for (int i = 0; i < methods.Length; ++i)
             {
                 MethodInfo method = methods[i];
-                var attr = method.GetCustomAttributes(typeof(ServerApiAttribute)).FirstOrDefault();
+                var attr = GetAttribute<ServerApiAttribute>(method);  
                 Api api = Api.NoneApi;
                 if (attr != null)
                     api = Api.ServerApi;
                 else
                 {
-                    attr = method.GetCustomAttributes(typeof(ServerOnlyAttribute)).FirstOrDefault();
+                    attr = GetAttribute<ServerOnlyAttribute>(method);  
                     if (attr != null)
                         api = Api.ServerOnly;
                     else
                     {
-                        attr = method.GetCustomAttributes(typeof(ClientApiAttribute)).FirstOrDefault();
+                        attr = GetAttribute<ClientApiAttribute>(method);  
                         if (attr != null)
                             api = Api.ClientApi;
                     }
@@ -535,14 +557,14 @@ namespace Shared
             string tname = type.Name;
             string ns = type.Namespace;
 
-            var alAttr = type.GetCustomAttribute(typeof(AccessLevelAttribute));
+            var alAttr = GetAttribute<AccessLevelAttribute>(type); 
             if (alAttr == null)
             {
                 Console.WriteLine(string.Format("ERROR: {0} has no AccessLevel", type.Name));
                 return;
             }
 
-            var al = (alAttr as AccessLevelAttribute).AccessLevel;
+            var al = alAttr.AccessLevel;
             Console.WriteLine(string.Format("AccessLevel {0} : {1}", type.Name, al));
 
             string root_ns = isServer ? "Server" : "Client";
@@ -596,7 +618,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
-using Server.UModule;
 
 ")
                 .AppendLine($"namespace {ns}")
