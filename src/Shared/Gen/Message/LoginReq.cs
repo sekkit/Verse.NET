@@ -1,12 +1,13 @@
 ﻿//AUTOGEN, do not modify it!
 
+using Fenix.Common;
 using Fenix.Common.Attributes;
 using Fenix.Common.Rpc;
 using MessagePack; 
 using Shared;
 using Shared.Protocol;
-using System; 
 using Shared.DataModel;
+using System; 
 
 namespace Shared.Message
 {

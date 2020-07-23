@@ -50,6 +50,8 @@ namespace Fenix
                 {
                     var attr = (RpcMethodAttribute)attrs.First();
                     uint code = attr.Code;
+                    Api api = attr.Api;
+                    RpcTypeDic[code] = api;
                     rpcStubDic[code] = method;
                 }
             }
@@ -88,6 +90,7 @@ namespace Fenix
             Api api;
             if (RpcTypeDic.TryGetValue(protoCode, out api))
                 return api;
+
             return Api.NoneApi;
         }
 
@@ -125,12 +128,15 @@ namespace Fenix
             //否则通过网络调用
             var peer = NetManager.Instance.GetPeerById(toHostId);
             //Console.WriteLine(string.Format("{0} {1} {2} {3} {4}", fromHostId, toHostId, fromActorId, toActorId, peer==null?"NULL":""));
-            if (peer == null) 
+            if (peer == null)
+            {
+                Log.Warning(string.Format("Rpc:cannot_find_peer_and_create {0} => {1}", fromHostId, toHostId));
                 peer = NetManager.Instance.CreatePeer(toHostId, toPeerAddr, netType);
+            }
   
             if (peer == null || !peer.IsActive)
             {
-                Log.Error(string.Format("Rpc>peer disconnected {0}", toHostId));
+                Log.Error(string.Format("Rpc:peer disconnected {0}", toHostId));
                 //这里可以尝试把global以及redis状态清空
                 NetManager.Instance.RemovePeerId(toHostId);
                 return;
@@ -159,13 +165,16 @@ namespace Fenix
 
             //否则通过网络调用
             var peer = NetManager.Instance.GetPeerById(toHostId);
-            
-            if (peer == null) 
-                peer = NetManager.Instance.CreatePeer(toHostId, null, netType); 
+
+            if (peer == null)
+            {
+                Log.Warning(string.Format("RpcCallback:cannot_find_peer_and_create {0} => {1}", fromHostId, toHostId));
+                peer = NetManager.Instance.CreatePeer(toHostId, null, netType);
+            }
 
             if (peer == null || !peer.IsActive)
             {
-                Log.Error(string.Format("RpcCallback>peer disconnected {0}", toHostId));
+                Log.Error(string.Format("RpcCallback:peer disconnected {0}", toHostId));
                 //这里可以尝试把global以及redis状态清空
                 NetManager.Instance.RemovePeerId(toHostId);
                 return;

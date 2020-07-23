@@ -1,6 +1,7 @@
 //
 
 using DotNetty.Buffers;
+using Fenix.Common;
 using Fenix.Common.Utils;
 using MessagePack;
 using System.Net;
@@ -60,13 +61,25 @@ namespace Fenix
 
         public byte[] Pack()
         {
-            var buf = Unpooled.DirectBuffer();
-            buf.WriteIntLE((int)this.ProtoCode);
-            buf.WriteLongLE((long)this.Id);
-            buf.WriteIntLE((int)this.FromActorId);
-            buf.WriteIntLE((int)this.ToActorId);
-            buf.WriteBytes(this.Payload);
-            return buf.ToArray();
+            if (this.ProtoCode >= OpCode.CALL_ACTOR_METHOD)
+            {
+                var buf = Unpooled.DirectBuffer();
+                buf.WriteIntLE((int)this.ProtoCode);
+                buf.WriteLongLE((long)this.Id);
+                buf.WriteIntLE((int)this.FromActorId);
+                buf.WriteIntLE((int)this.ToActorId);
+                buf.WriteBytes(this.Payload);
+                return buf.ToArray();
+            }
+            else
+            {
+                var buf = Unpooled.DirectBuffer();
+                buf.WriteIntLE((int)this.ProtoCode);
+                buf.WriteLongLE((long)this.Id);
+                buf.WriteIntLE((int)this.FromHostId);
+                buf.WriteBytes(this.Payload);
+                return buf.ToArray();
+            }
         }
 
         public void Unpack(byte[] bytes)

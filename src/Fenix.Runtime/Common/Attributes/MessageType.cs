@@ -11,6 +11,6 @@ namespace Fenix.Common.Attributes
         public MessageTypeAttribute(uint protoCode)
         {
             this.ProtoCode = protoCode;
-        }
+        } 
     }
 }

@@ -1,7 +1,9 @@
 ﻿
 //AUTOGEN, do not modify it!
 
+using Fenix.Common;
 using Fenix.Common.Attributes;
+using Fenix.Common.Message;
 using Fenix.Common.Rpc;
 using Fenix.Common.Utils;
 using Shared;
@@ -18,7 +20,7 @@ namespace Server.GModule
 {
     public partial class MatchService
     {
-        [RpcMethod(ProtocolCode.JOIN_MATCH_REQ)]
+        [RpcMethod(ProtocolCode.JOIN_MATCH_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API_join_match(IMessage msg, Action<object> cb)
         {
@@ -31,7 +33,7 @@ namespace Server.GModule
             });
         }
 
-        [RpcMethod(ProtocolCode.FIND_MATCH_REQ)]
+        [RpcMethod(ProtocolCode.FIND_MATCH_REQ, Api.ServerOnly)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_ONLY_find_match(IMessage msg, Action<object> cb)
         {

@@ -15,9 +15,9 @@ namespace Fenix
     { 
         public uint ConnId { get; set; }
 
-        protected Ukcp kcpChannel { get; set; }
+        public Ukcp kcpChannel { get; set; }
         
-        protected IChannel tcpChannel { get; set; }
+        public IChannel tcpChannel { get; set; }
 
         protected TcpHostClient tcpClient { get; set; }
 
@@ -96,7 +96,8 @@ namespace Fenix
 
         protected bool InitTcpClient(uint connId, IPEndPoint ep)
         {
-            Console.WriteLine(string.Format("init_tcp_client {0}", ep.ToString()));
+            if(ep != null)
+                Console.WriteLine(string.Format("init_tcp_client {0}", ep.ToString()));
             if (ep == null)
             {
                 var addr = Global.IdManager.GetHostAddr(connId);
@@ -113,7 +114,8 @@ namespace Fenix
 
         protected bool InitKcpClient(uint connId, IPEndPoint ep)
         {
-            Console.WriteLine(string.Format("init_kcp_client {0}", ep.ToString()));
+            if (ep != null)
+                Console.WriteLine(string.Format("init_kcp_client {0}", ep.ToString()));
             if (ep == null)
             {
                 var addr = Global.IdManager.GetHostAddr(connId);
@@ -140,6 +142,7 @@ namespace Fenix
             tcpClient.Receive += TcpClient_OnReceive;
             tcpClient.Close += (ch) => { OnClose?.Invoke(this); };
             tcpClient.Exception += (ch, ex) => { OnException?.Invoke(this, ex); };
+            Console.WriteLine(string.Format("init_tcp_client_localaddr@{0}", tcpClient.LocalAddress));
             return true;
         }
 
@@ -151,6 +154,7 @@ namespace Fenix
             kcpClient.OnReceive += (kcp, buffer)=> { OnReceive?.Invoke(this, buffer); };
             kcpClient.OnClose += (kcp) => { OnClose?.Invoke(this); };
             kcpClient.OnException += (ch, ex) => { OnException?.Invoke(this, ex); };
+            Console.WriteLine(string.Format("init_kcp_client_localaddr@{0}", kcpClient.LocalAddress));
             return true;
         }
 
@@ -234,11 +238,11 @@ namespace Fenix
             kcpChannel?.send(bytes);
             tcpChannel?.WriteAndFlushAsync(Unpooled.WrappedBuffer(bytes));
             if (tcpChannel != null)
-                Console.WriteLine("sento:"+tcpChannel.RemoteAddress.ToString());
+                Console.WriteLine(string.Format("sento_sender({0}): {1} {2} => {3}", this.networkType, tcpChannel.RemoteAddress.ToString(), Host.Instance.Id, ConnId));
             kcpClient?.Send(bytes);
             tcpClient?.Send(bytes);
             if (tcpClient != null)
-                Console.WriteLine("sento:" + tcpClient.RemoteAddress.ToString());
+                Console.WriteLine(string.Format("sento_receiver({0}): {1} {2} => {3}", this.networkType, tcpClient.RemoteAddress.ToString(), Host.Instance.Id, ConnId));
         }
 
         public async Task SendAsync(byte[] bytes)

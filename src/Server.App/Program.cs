@@ -19,6 +19,7 @@ using Microsoft.Extensions.Configuration;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using Server.Config.Db;
 
 namespace Server.App
 { 
@@ -34,7 +35,7 @@ namespace Server.App
                 obj.ExternalIp = "auto";
                 obj.InternalIp = "auto";
                 obj.Port = 17777; //auto
-                obj.AppName = "Account.App";
+                obj.AppName = "Login.App";
                 obj.DefaultActorNames = new List<string>()
                 {
                     "LoginService"
@@ -84,9 +85,9 @@ namespace Server.App
                     sw.Write(content);
                 } 
 
-                Environment.SetEnvironmentVariable("AppName", "Account.App");
+                Environment.SetEnvironmentVariable("AppName", "Master.App");
 
-                Bootstrap.Start(new Assembly[] { typeof(Server.UModule.Avatar).Assembly }, cfgList, isMultiProcess:true); //单进程模式
+                Bootstrap.Start(new Assembly[] { typeof(Server.UModule.Avatar).Assembly }, cfgList, OnInit, isMultiProcess:true); //单进程模式
             }
             else
             { 
@@ -99,9 +100,14 @@ namespace Server.App
                 using (var sr = new StreamReader(cmdLine["Config"]))
                 {
                     var cfgList = JsonConvert.DeserializeObject<List<RuntimeConfig>>(sr.ReadToEnd());
-                    Bootstrap.Start(new Assembly[] { typeof(Server.UModule.Avatar).Assembly }, cfgList, isMultiProcess: true); //分布式
+                    Bootstrap.Start(new Assembly[] { typeof(Server.UModule.Avatar).Assembly }, cfgList, OnInit, isMultiProcess: true); //分布式
                 } 
             }
+        }
+
+        static void OnInit()
+        {
+            Global.DbManager.LoadDb(DbConfig.account_db);
         }
     }
 }

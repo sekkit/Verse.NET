@@ -1,4 +1,5 @@
 ﻿using CSRedis;
+using Server.Config.Db;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,17 +8,29 @@ namespace Fenix.Redis
 {
     public class RedisDb : IDisposable
     {
-        public string Prefix;
+        //public string Prefix;
 
         private CSRedisClient client;
 
         private RedisHelper helper;
 
-        public RedisDb(string prefix, string addr, int port)
+        protected DbEntry conf;
+
+        //public RedisDb(string prefix, string addr, int port)
+        //{
+        //    //this.Prefix = prefix;
+        //    Console.WriteLine(string.Format("{0}:{1},password=,defaultDatabase=0,prefix={2}_", addr, port, Prefix));
+        //    client = new CSRedisClient(string.Format("{0}:{1},password=,defaultDatabase=0,prefix={2}_", addr, port, Prefix));
+        //    helper = new RedisHelper();
+        //    helper.Initialization(client);
+        //}
+
+        public RedisDb(DbEntry db)
         {
-            this.Prefix = prefix;
-            Console.WriteLine(string.Format("{0}:{1},password=,defaultDatabase=0,prefix={2}_", addr, port, Prefix));
-            client = new CSRedisClient(string.Format("{0}:{1},password=,defaultDatabase=0,prefix={2}_", addr, port, Prefix));
+            conf = db;
+            string connStr = string.Format("{0}:{1},password=,defaultDatabase=0,prefix={2}_", conf.Host, conf.Port, conf.Key);
+            Console.WriteLine(string.Format("{0}:{1},password=,defaultDatabase=0,prefix={2}", conf.Host, conf.Port, conf.Key));
+            client = new CSRedisClient(connStr);
             helper = new RedisHelper();
             helper.Initialization(client);
         }
@@ -26,7 +39,7 @@ namespace Fenix.Redis
         { 
             using (var lk = helper.Lock(key, 3))
             {
-                return this.client.Set(key, value);
+                return this.client.Set(key, value, expireSeconds:conf.ValidTime);
             }
         }
 

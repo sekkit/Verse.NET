@@ -6,7 +6,8 @@ using Fenix;
 using Fenix.Common.Attributes;
 using Fenix.Common.Rpc;
 using Fenix.Common.Utils; 
-using System; 
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Reflection; 
@@ -79,8 +80,8 @@ public class RpcCommand
     
     public void Call(Action callDone)
     {
-        var args = new object[2];
-        args[0] = this.Msg;
+        var args = new List<object>();
+        args.Add(this.Msg);
 
         if (!this.Msg.HasCallback())
         {
@@ -94,7 +95,7 @@ public class RpcCommand
                 this.mInvoker.RpcCallback(this.Id, this.ProtoCode, this.ToHostId, this.FromHostId, this.ToActorId, this.FromActorId, this.networkType, cbMsg);
             });
 
-            args[1] = cb;
+            args.Add(cb);
         }
 
         //if (Global.IsServer)

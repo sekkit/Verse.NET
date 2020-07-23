@@ -15,29 +15,29 @@ using Shared.Message;
 using MessagePack; 
 using System;
 
-namespace Server
+namespace Fenix
 {
 
-    [RefType("Avatar")]
-    public partial class AvatarRef : ActorRef
+    public partial class ActorRef
     {
-        public void rpc_change_name(String name, Action<ErrCode> callback)
+        public void rpc_create_actor(String typename, String name, Action<DefaultErrCode> callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);
             if (this.FromHostId == toHostId)
             {
-                Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.CHANGE_NAME_REQ, new object[] { name, callback });
+                Host.Instance.GetActor(this.toActorId).CallLocalMethod(OpCode.CREATE_ACTOR_REQ, new object[] { typename, name, callback });
                 return;
             }
-            var msg = new ChangeNameReq()
+            var msg = new CreateActorReq()
             {
+                typename=typename,
                 name=name
             };
             var cb = new Action<byte[]>((cbData) => {
-                var cbMsg = RpcUtil.Deserialize<ChangeNameReq.Callback>(cbData);
+                var cbMsg = RpcUtil.Deserialize<CreateActorReq.Callback>(cbData);
                 callback?.Invoke(cbMsg.code);
             });
-            this.CallRemoteMethod(ProtocolCode.CHANGE_NAME_REQ, msg, cb);
+            this.CallRemoteMethod(OpCode.CREATE_ACTOR_REQ, msg, cb);
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Fenix
     //一个内网IP，必须
     //一个外网IP
     
-    public class Host : RpcModule
+    public partial class Host : RpcModule
     {
         public static Host Instance = null; 
 
@@ -149,13 +149,16 @@ namespace Fenix
         
         #region KCP
 
-        protected void SetupKcpServer()
+        protected KcpHostServer SetupKcpServer()
         {
             kcpServer = KcpHostServer.Create(this.LocalAddress);
             kcpServer.OnConnect += KcpServer_OnConnect;
             kcpServer.OnReceive += KcpServer_OnReceive;
             kcpServer.OnClose += KcpServer_OnClose;
             kcpServer.OnException += KcpServer_OnException;
+
+            Log.Info(string.Format("KCP-Server@{0}", this.LocalAddress.ToString()));
+            return kcpServer;
         }
  
         //private long last_ts = DateTime.Now.Ticks;
@@ -178,19 +181,23 @@ namespace Fenix
 
         protected void OnReceiveBuffer(NetPeer peer, IByteBuffer buffer)
         {
+            if(peer.networkType == NetworkType.TCP)
+            {
+
+            }
             //Ping/Pong msg process 
             if (buffer.ReadableBytes == 1)
             {
                 byte protoCode = buffer.ReadByte();
-                if (protoCode == (byte)ProtoCode.PING)
+                if (protoCode == (byte)OpCode.PING)
                 {
-                    peer.Send(new byte[] { (byte)ProtoCode.PONG });
+                    peer.Send(new byte[] { (byte)OpCode.PONG });
                 }
-                else if (protoCode == (byte)ProtoCode.GOODBYE)
+                else if (protoCode == (byte)OpCode.GOODBYE)
                 {
                     //删除这个连接
                     NetManager.Instance.Deregister(peer);
-                    peer.Send(new byte[] { (byte)ProtoCode.GOODBYE });
+                    peer.Send(new byte[] { (byte)OpCode.GOODBYE });
                 }
 
                 return;
@@ -198,7 +205,7 @@ namespace Fenix
             else
             {
                 uint protoCode = buffer.ReadUnsignedIntLE();
-                if (protoCode >= (uint)ProtoCode.CALL_ACTOR_METHOD)
+                if (protoCode >= (uint)OpCode.CALL_ACTOR_METHOD)
                 {
                     ulong msgId = (ulong)buffer.ReadLongLE();
                     uint fromActorId = buffer.ReadUnsignedIntLE();
@@ -213,8 +220,14 @@ namespace Fenix
                 else
                 {
                     ulong msgId = (ulong)buffer.ReadLongLE();
+                    uint fromHostId = buffer.ReadUnsignedIntLE();
                     byte[] bytes = new byte[buffer.ReadableBytes];
                     buffer.ReadBytes(bytes);
+                    if(peer.ConnId != fromHostId)
+                    {
+                        //修正一下peer的id 
+                        NetManager.Instance.ChangePeerId(peer.ConnId, fromHostId);
+                    }
                     var packet = Packet.Create(msgId, protoCode, peer.ConnId, Host.Instance.Id, 0, 0, peer.networkType, bytes);
                     this.CallMethod(peer.ConnId, this.Id, packet);
                 }
@@ -224,69 +237,7 @@ namespace Fenix
         private void KcpServer_OnReceive(Ukcp ukcp, IByteBuffer buffer)
         {
             var peer = NetManager.Instance.GetPeer(ukcp);
-            OnReceiveBuffer(peer, buffer);
-            //Ping/Pong msg process 
-            //if (buffer.ReadableBytes == 1)
-            //{
-            //    byte protoCode = buffer.ReadByte();
-            //    if (protoCode == (byte)ProtoCode.PING)
-            //    {
-            //        peer.Send(new byte[] { (byte)ProtoCode.PONG });
-            //    }
-            //    else if (protoCode == (byte)ProtoCode.GOODBYE)
-            //    {
-            //        //删除这个连接
-            //        NetManager.Instance.DeregisterKcp(ukcp);
-            //        peer.Send(new byte[] { (byte)ProtoCode.GOODBYE });
-            //    }
-
-            //    return;
-            //}
-            //else
-            //{
-            //    uint protoCode = buffer.ReadUnsignedIntLE();
-            //    if (protoCode >= (uint)ProtoCode.CALL_ACTOR_METHOD)
-            //    {
-            //        ulong msgId = (ulong)buffer.ReadLongLE();
-            //        uint fromActorId = buffer.ReadUnsignedIntLE();
-            //        uint toActorId = buffer.ReadUnsignedIntLE();
-            //        byte[] bytes = new byte[buffer.ReadableBytes];
-            //        buffer.ReadBytes(bytes);
-
-            //        //var msg = MessagePackSerializer.Deserialize<ActorMessage>(bytes);
-            //        var packet = Packet.Create(msgId, protoCode, peer.ConnId, Host.Instance.Id, fromActorId, toActorId, NetworkType.KCP, bytes);
-            //        HandleIncomingActorMessage(peer, packet);
-            //    }
-            //    else
-            //    {
-            //        ulong msgId = (ulong)buffer.ReadLongLE();
-            //        byte[] bytes = new byte[buffer.ReadableBytes];
-            //        buffer.ReadBytes(bytes);
-            //        var packet = Packet.Create(msgId, protoCode, peer.ConnId, Host.Instance.Id, 0, 0, NetworkType.KCP, bytes);
-
-            //        this.CallMethod(peer.ConnId, this.Id, packet);
-            //    }
-            //}
-
-            ///*
-            //short curCount = buffer.GetShort(buffer.ReaderIndex);
-            //Console.WriteLine(Thread.CurrentThread.Name + " 收到消息 " + curCount); 
-
-            //if (curCount == -1)
-            //{
-            //    ukcp.notifyCloseEvent();
-            //}
-            //*/
-            //var bytes = new byte[buffer.ReadableBytes];
-            //buffer.ReadBytes(bytes);
-            //string data = StringUtil.ToHexString(bytes);
-            ////string data2 = buffer.GetString(0, buffer.ReadableBytes, Encoding.UTF8);
-            
-            ////count++; 
-            ////var cur_ts = DateTime.Now.Ticks;
-            //Console.WriteLine("FROM_CLIENT:" + data); //stopWatch.Elapsed.TotalMilliseconds.ToString());
-            ////last_ts = cur_ts;  
-            //ukcp.writeMessage(Unpooled.WrappedBuffer(bytes));
+            OnReceiveBuffer(peer, buffer);  
         }
         
         private void KcpServer_OnException(Ukcp ukcp, Exception ex)
@@ -328,6 +279,7 @@ namespace Fenix
             tcpServer.Receive   += OnTcpServerReceive;
             tcpServer.Close     += OnTcpServerClose;
             tcpServer.Exception += OnTcpServerException;
+            Log.Info(string.Format("TCP-Server@{0}", this.LocalAddress.ToString()));
             return tcpServer;
         }
 
@@ -345,7 +297,7 @@ namespace Fenix
             //新连接
             NetManager.Instance.RegisterChannel(channel);
             ulong hostId = Global.IdManager.GetHostId(channel.RemoteAddress.ToString());
-            Console.WriteLine(channel.RemoteAddress.ToString());
+            Console.WriteLine(channel.RemoteAddress.ToString()); 
         }
         
         void OnTcpServerReceive(IChannel channel, IByteBuffer buffer)
@@ -355,55 +307,6 @@ namespace Fenix
             Console.WriteLine(peer.RemoteAddress + "|" + channel.RemoteAddress.ToString() +"=>" + StringUtil.ToHexString(buffer.ToArray()));
 
             OnReceiveBuffer(peer, buffer);
-
-
-            //Ping/Pong msg process 
-            /*if (buffer.ReadableBytes == 1)
-            {
-                byte protoCode = buffer.ReadByte();
-                if (protoCode == (byte)ProtoCode.PING)
-                {
-                    peer.Send(new byte[] { (byte)ProtoCode.PONG });
-                }
-                else if(protoCode == (byte)ProtoCode.GOODBYE)
-                {
-                    //删除这个连接
-                    NetManager.Instance.DeregisterChannel(channel);
-                    peer.Send(new byte[] { (byte)ProtoCode.GOODBYE });
-                }
-                
-                return;
-            }
-            else
-            {
-                uint protoCode = buffer.ReadUnsignedIntLE();
-                if (protoCode >= (uint)ProtoCode.CALL_ACTOR_METHOD)
-                {
-                    ulong msgId = (ulong)buffer.ReadLongLE(); 
-                    uint fromActorId = buffer.ReadUnsignedIntLE();
-                    uint toActorId = buffer.ReadUnsignedIntLE(); 
-                    byte[] bytes = new byte[buffer.ReadableBytes];
-                    buffer.ReadBytes(bytes);
-
-                    //var msg = MessagePackSerializer.Deserialize<ActorMessage>(bytes);
-                    var packet = Packet.Create(msgId, protoCode, peer.ConnId, Host.Instance.Id, fromActorId, toActorId, NetworkType.TCP, bytes);
-                    HandleIncomingActorMessage(peer, packet);
-                }
-                else
-                {
-                    ulong msgId = (ulong)buffer.ReadLongLE();
-                    byte[] bytes = new byte[buffer.ReadableBytes];
-                    buffer.ReadBytes(bytes);
-                    var packet = Packet.Create(msgId, protoCode, peer.ConnId, Host.Instance.Id, 0, 0, NetworkType.TCP, bytes);
-
-                    this.CallMethod(peer.ConnId, this.Id, packet);
-                }
-            }*/
-            
-            //解析包
-            //var msg = MessagePackSerializer.Deserialize<Message>(bytes);
-            //Console.WriteLine(MessagePackSerializer.SerializeToJson(msg)); 
-            //
         }
         
         void OnTcpServerClose(IChannel channel)
@@ -446,7 +349,7 @@ namespace Fenix
 
         protected void Ping()
         {
-            clientPeer?.Send(new byte[] { (byte)ProtoCode.PING });
+            clientPeer?.Send(new byte[] { (byte)OpCode.PING });
         }
 
         protected void Register()
@@ -456,15 +359,17 @@ namespace Fenix
 
         private void Server_OnException(NetPeer peer, Exception ex)
         {
+            NetManager.Instance.Deregister(peer);
             Console.WriteLine(ex.StackTrace);
-            clientPeer.Stop();
+            peer.Stop();
             clientPeer = null;
             this.LocalAddress = null;
         }
 
-        private void Server_OnClose(NetPeer obj)
+        private void Server_OnClose(NetPeer peer)
         {
-            clientPeer.Stop();
+            NetManager.Instance.Deregister(peer);
+            peer.Stop();
             clientPeer = null;
             this.LocalAddress = null;
         }
@@ -472,56 +377,7 @@ namespace Fenix
         private void Server_OnReceive(NetPeer peer, IByteBuffer buffer)
         {
             Console.WriteLine(peer.RemoteAddress + "=>"+StringUtil.ToHexString(buffer.ToArray()));
-            OnReceiveBuffer(peer, buffer);
-            //Ping/Pong msg process 
-            //if (buffer.ReadableBytes == 1)
-            //{
-            //    byte protoCode = buffer.ReadByte();
-            //    if (protoCode == (byte)ProtoCode.PING)
-            //    {
-            //        peer.Send(new byte[] { (byte)ProtoCode.PONG });
-            //    }
-            //    else if (protoCode == (byte)ProtoCode.PONG)
-            //    {
-            //        //心跳包
-            //        //TODO 超时不心跳断开
-
-            //    }
-            //    else if (protoCode == (byte)ProtoCode.GOODBYE)
-            //    {
-            //        //删除这个连接
-            //        NetManager.Instance.Deregister(peer);
-            //        peer.Send(new byte[] { (byte)ProtoCode.GOODBYE });
-            //    }
-
-            //    return;
-            //}
-            //else
-            //{
-            //    uint protoCode = buffer.ReadUnsignedIntLE();
-            //    if (protoCode >= (uint)ProtoCode.CALL_ACTOR_METHOD)
-            //    {
-            //        ulong msgId = (ulong)buffer.ReadLongLE();
-            //        uint fromActorId = buffer.ReadUnsignedIntLE();
-            //        uint toActorId = buffer.ReadUnsignedIntLE();
-            //        byte[] bytes = new byte[buffer.ReadableBytes];
-            //        buffer.ReadBytes(bytes);
-
-            //        //var msg = MessagePackSerializer.Deserialize<ActorMessage>(bytes);
-            //        var packet = Packet.Create(msgId, protoCode, peer.ConnId, Host.Instance.Id, fromActorId, toActorId, peer.networkType, bytes);
-
-            //        HandleIncomingActorMessage(peer, packet);
-            //    }
-            //    else
-            //    {
-            //        ulong msgId = (ulong)buffer.ReadLongLE();
-            //        byte[] bytes = new byte[buffer.ReadableBytes];
-            //        buffer.ReadBytes(bytes);
-            //        var packet = Packet.Create(msgId, protoCode, peer.ConnId, Host.Instance.Id, 0, 0, peer.networkType, bytes);
-
-            //        this.CallMethod(peer.ConnId, this.Id, packet);
-            //    }
-            //} 
+            OnReceiveBuffer(peer, buffer); 
         }
 
 
@@ -543,16 +399,11 @@ namespace Fenix
             return null;
         }
 
-        //protected void HandleIncomingActorMessage(NetPeer fromPeer, Packet packet)
-        //{
-        //    var remoteHostId = fromPeer.ConnId;
-        //    CallActorMethod(remoteHostId, packet);
-        //}
-
         [ServerOnly]
         public void CreateActor(string typename, string name, Action<DefaultErrCode> callback)
         {
             var a = CreateActor(typename, name);
+
             if (a != null)
                 callback(DefaultErrCode.OK);
             else
@@ -564,6 +415,7 @@ namespace Fenix
             var newActor = Actor.Create(typeof(T), name);
             this.RegisterGlobalManager(newActor);
             actorDic[newActor.Id] = newActor;
+            Log.Info(string.Format("CreateActor:success {0} {1}", name, newActor.Id));
             return newActor;
         }
         
@@ -571,6 +423,7 @@ namespace Fenix
         {
             var type = Global.TypeManager.Get(typename);
             var newActor = Actor.Create(type, name);
+            Log.Info(string.Format("CreateActor:success {0} {1}", name, newActor.Id));
             return CreateActor(newActor);
         }
 

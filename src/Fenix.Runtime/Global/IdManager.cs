@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Fenix.Common;
 #if !CLIENT
 using Fenix.Redis;
+using Server.Config.Db;
 #endif
 
 namespace Fenix
@@ -27,30 +28,21 @@ namespace Fenix
 
         protected ConcurrentDictionary<uint, string> mAID2ANAME = new ConcurrentDictionary<uint, string>();
 
-        protected ConcurrentDictionary<uint, string> mAID2TNAME = new ConcurrentDictionary<uint, string>();
-
-        public const string HID2ADDR  = "HID2ADDR";
-        public const string ADDR2HID  = "ADDR2HID";
-        public const string AID2HID   = "AID2HID";
-        public const string HID2AID   = "HID2AID";
-        public const string ANAME2AID = "ANAME2AID";
-        public const string HNAME2HID = "HNAME2HID";
-        public const string AID2ANAME = "AID2ANAME";
-        public const string AID2TNAME = "AID2TNAME";
+        protected ConcurrentDictionary<uint, string> mAID2TNAME = new ConcurrentDictionary<uint, string>(); 
 
 #if !CLIENT
-        protected ConcurrentDictionary<string, RedisDb> redisDic = new ConcurrentDictionary<string, RedisDb>();
+        //protected ConcurrentDictionary<string, RedisDb> redisDic = new ConcurrentDictionary<string, RedisDb>();
  
         protected IdManager()
-        { 
-            redisDic[HID2ADDR]  = new RedisDb(HID2ADDR, "127.0.0.1", 7382);
-            redisDic[ADDR2HID]  = new RedisDb(ADDR2HID, "127.0.0.1", 7382);
-            redisDic[AID2HID]   = new RedisDb(AID2HID, "127.0.0.1", 7382);
-            redisDic[HID2AID]   = new RedisDb(HID2AID, "127.0.0.1", 7382);
-            redisDic[ANAME2AID] = new RedisDb(ANAME2AID, "127.0.0.1", 7382);
-            redisDic[HNAME2HID] = new RedisDb(HNAME2HID, "127.0.0.1", 7382);
-            redisDic[AID2ANAME] = new RedisDb(AID2ANAME, "127.0.0.1", 7382);
-            redisDic[AID2TNAME] = new RedisDb(AID2TNAME, "127.0.0.1", 7382);
+        {
+            Global.DbManager.LoadDb(CacheConfig.HID2ADDR_cache);
+            Global.DbManager.LoadDb(CacheConfig.ADDR2HID_cache);
+            Global.DbManager.LoadDb(CacheConfig.AID2HID_cache);
+            Global.DbManager.LoadDb(CacheConfig.HID2AID_cache);
+            Global.DbManager.LoadDb(CacheConfig.ANAME2AID_cache);
+            Global.DbManager.LoadDb(CacheConfig.HNAME2HID_cache);
+            Global.DbManager.LoadDb(CacheConfig.AID2ANAME_cache);
+            Global.DbManager.LoadDb(CacheConfig.AID2TNAME_cache);
  
             var assembly = typeof(Global).Assembly;
             Log.Info(assembly.FullName.Replace("Server.App", "Fenix.Runtime").Replace("Client.App", "Fenix.Runtime"));
@@ -58,16 +50,16 @@ namespace Fenix
 
         ~IdManager()
         { 
-            foreach (var kv in redisDic)
-                kv.Value.Dispose();
+            //foreach (var kv in redisDic)
+            //    kv.Value.Dispose();
         }
 
-        RedisDb GetDb(string key)
-        {
-            RedisDb db;
-            redisDic.TryGetValue(key, out db);
-            return db;
-        }
+        //RedisDb GetDb(string key)
+        //{
+        //    RedisDb db;
+        //    redisDic.TryGetValue(key, out db);
+        //    return db;
+        //}
 
         string GetKey(string prefix, string key)
         {
@@ -95,9 +87,20 @@ namespace Fenix
 
 #if !CLIENT
             var key = host.Id.ToString(); 
-            bool ret = GetDb(ADDR2HID).Set(address, host.Id);
-            ret = GetDb(HNAME2HID).Set(host.UniqueName, host.Id);
-            return GetDb(HID2ADDR).Set(key, address) && ret; 
+            bool ret = Global.DbManager.GetDb(CacheConfig.ADDR2HID).Set(address, host.Id);
+            ret = Global.DbManager.GetDb(CacheConfig.HNAME2HID).Set(host.UniqueName, host.Id);
+            return Global.DbManager.GetDb(CacheConfig.HID2ADDR).Set(key, address) && ret; 
+#else
+            return true;
+#endif
+        }
+
+        public bool RegisterAddress(uint hostId, string address)
+        {
+            mADDR2HID[address] = hostId;
+#if !CLIENT
+            var key = hostId.ToString();
+            return Global.DbManager.GetDb(CacheConfig.ADDR2HID).Set(address, hostId);
 #else
             return true;
 #endif
@@ -109,7 +112,7 @@ namespace Fenix
                 return mHID2ADDR[hostId];
 #if !CLIENT
             var key = hostId.ToString();
-            return GetDb(HID2ADDR).Get(key);
+            return Global.DbManager.GetDb(CacheConfig.HID2ADDR).Get(key);
 #else
             return null;
 #endif
@@ -120,7 +123,7 @@ namespace Fenix
             if (mADDR2HID.ContainsKey(addr))
                 return mADDR2HID[addr];
 #if !CLIENT
-            return GetDb(ADDR2HID).Get<uint>(addr);
+            return Global.DbManager.GetDb(CacheConfig.ADDR2HID).Get<uint>(addr);
 #else
             return 0;
 #endif
@@ -142,11 +145,11 @@ namespace Fenix
 #if !CLIENT
             var key = actor.Id.ToString();
 
-            GetDb(ANAME2AID).Set(actor.UniqueName, actor.Id);
-            GetDb(AID2ANAME).Set(actor.Id.ToString(), actor.UniqueName);
-            GetDb(AID2TNAME).Set(actor.Id.ToString(), actor.GetType().Name);
-            GetDb(HID2AID).Set(host.Id.ToString(), mHID2AID[host.Id]);
-            return GetDb(AID2HID).Set(key, host.Id); 
+            Global.DbManager.GetDb(CacheConfig.ANAME2AID).Set(actor.UniqueName, actor.Id);
+            Global.DbManager.GetDb(CacheConfig.AID2ANAME).Set(actor.Id.ToString(), actor.UniqueName);
+            Global.DbManager.GetDb(CacheConfig.AID2TNAME).Set(actor.Id.ToString(), actor.GetType().Name);
+            Global.DbManager.GetDb(CacheConfig.HID2AID).Set(host.Id.ToString(), mHID2AID[host.Id]);
+            return Global.DbManager.GetDb(CacheConfig.AID2HID).Set(key, host.Id); 
 #else
             return true;
 #endif
@@ -160,11 +163,11 @@ namespace Fenix
             this.mAID2HID.TryRemove(actorId, out var hostId); 
             this.mHID2AID[hostId].Remove(actorId);
 #if !CLIENT
-            GetDb(AID2ANAME).Delete(hostId.ToString());
-            GetDb(ANAME2AID).Delete(hostId.ToString());
-            GetDb(AID2TNAME).Delete(hostId.ToString());
-            GetDb(AID2HID).Delete(hostId.ToString());
-            GetDb(HID2AID).Set(hostId.ToString(), mHID2AID[hostId]);
+            Global.DbManager.GetDb(CacheConfig.AID2ANAME).Delete(hostId.ToString());
+            Global.DbManager.GetDb(CacheConfig.ANAME2AID).Delete(hostId.ToString());
+            Global.DbManager.GetDb(CacheConfig.AID2TNAME).Delete(hostId.ToString());
+            Global.DbManager.GetDb(CacheConfig.AID2HID).Delete(hostId.ToString());
+            Global.DbManager.GetDb(CacheConfig.HID2AID).Set(hostId.ToString(), mHID2AID[hostId]);
 #else
         
 #endif
@@ -187,25 +190,25 @@ namespace Fenix
                 }
             }
 #if !CLIENT
-            if (GetDb(HID2ADDR).Get(hostId.ToString()) != null)
+            if (Global.DbManager.GetDb(CacheConfig.HID2ADDR).Get(hostId.ToString()) != null)
             {
-                GetDb(HID2ADDR).Delete(hostId.ToString());
-                GetDb(ADDR2HID).Delete(addr);
+                Global.DbManager.GetDb(CacheConfig.HID2ADDR).Delete(hostId.ToString());
+                Global.DbManager.GetDb(CacheConfig.ADDR2HID).Delete(addr);
             }
 
-            aids = GetDb(HID2AID).Get<List<uint>>(hostId.ToString());
+            aids = Global.DbManager.GetDb(CacheConfig.HID2AID).Get<List<uint>>(hostId.ToString());
             if (aids != null)
             {
-                GetDb(HID2AID).Delete(hostId.ToString());
+                Global.DbManager.GetDb(CacheConfig.HID2AID).Delete(hostId.ToString());
                 foreach (var aid in aids)
                 {
-                    GetDb(AID2ANAME).Delete(aid.ToString());
-                    GetDb(AID2HID).Delete(aid.ToString());
-                    string tname = GetDb(AID2TNAME).Get(aid.ToString());
+                    Global.DbManager.GetDb(CacheConfig.AID2ANAME).Delete(aid.ToString());
+                    Global.DbManager.GetDb(CacheConfig.AID2HID).Delete(aid.ToString());
+                    string tname = Global.DbManager.GetDb(CacheConfig.AID2TNAME).Get(aid.ToString());
                     if (tname != null)
                     {
-                        GetDb(AID2TNAME).Delete(aid.ToString());
-                        GetDb(ANAME2AID).Delete(tname);
+                        Global.DbManager.GetDb(CacheConfig.AID2TNAME).Delete(aid.ToString());
+                        Global.DbManager.GetDb(CacheConfig.ANAME2AID).Delete(tname);
                     }
                 }
             } 
@@ -220,7 +223,7 @@ namespace Fenix
                 return mANAME2AID[name];
 #if !CLIENT
             var key = name;
-            return GetDb(ANAME2AID).Get<uint>(key);
+            return Global.DbManager.GetDb(CacheConfig.ANAME2AID).Get<uint>(key);
 #else
             return 0;
 #endif
@@ -231,7 +234,7 @@ namespace Fenix
             if (mAID2ANAME.ContainsKey(actorId))
                 return mAID2ANAME[actorId];
 #if !CLIENT
-            return GetDb(AID2ANAME).Get(actorId.ToString());
+            return Global.DbManager.GetDb(CacheConfig.AID2ANAME).Get(actorId.ToString());
 #else
             return null;
 #endif
@@ -242,7 +245,7 @@ namespace Fenix
             if (mAID2TNAME.ContainsKey(actorId))
                 return mAID2TNAME[actorId];
 #if !CLIENT
-            return GetDb(AID2TNAME).Get(actorId.ToString());
+            return Global.DbManager.GetDb(CacheConfig.AID2TNAME).Get(actorId.ToString());
 #else
             return null;
 #endif
@@ -254,7 +257,7 @@ namespace Fenix
                 return mAID2HID[actorId];
 #if !CLIENT
             var key = actorId.ToString();
-            return GetDb(AID2HID).Get<uint>(key);
+            return Global.DbManager.GetDb(CacheConfig.AID2HID).Get<uint>(key);
 #else
             return 0;
 #endif

@@ -68,22 +68,6 @@ namespace Fenix
                 fromActor.Rpc(protocolCode, FromHostId, fromActor.Id, toHostId, this.toActorId, toAddr, netType, msg, cb);
             else
                 fromHost.Rpc(protocolCode, FromHostId, 0, toHostId, this.toActorId, toAddr, netType, msg, cb);
-        }
-        
-        public void CreateActor(string actorTypeName, string uid, Action<DefaultErrCode> callback)
-        {
-            //必须由Host来创建actor
-            var hostAddr = Global.IdManager.GetHostAddr(toHostId);
-
-            var msg = new CreateActorReq();
-            msg.typeName = actorTypeName;
-            msg.name = uid;
-
-            this.CallRemoteMethod((uint)ProtoCode.CREATE_ACTOR, msg, (cbData) =>
-            {
-                var cbMsg = RpcUtil.Deserialize<CreateActorReq.Callback>(cbData);
-                callback?.Invoke(cbMsg.code);
-            });
-        }
+        } 
     }
 }

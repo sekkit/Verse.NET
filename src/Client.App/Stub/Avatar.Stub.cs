@@ -1,7 +1,9 @@
 ﻿
 //AUTOGEN, do not modify it!
 
+using Fenix.Common;
 using Fenix.Common.Attributes;
+using Fenix.Common.Message;
 using Fenix.Common.Rpc;
 using Fenix.Common.Utils;
 using Shared;
@@ -18,7 +20,7 @@ namespace Client
 {
     public partial class Avatar
     {
-        [RpcMethod(ProtocolCode.API_TEST_NTF)]
+        [RpcMethod(ProtocolCode.API_TEST_NTF, Api.ClientApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void CLIENT_API_api_test(IMessage msg, Action<object> cb)
         {
@@ -31,11 +33,12 @@ namespace Client
             });
         }
 
-        [RpcMethod(ProtocolCode.API_TEST2_NTF)]
+        [RpcMethod(ProtocolCode.API_TEST2_NTF, Api.ClientApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void CLIENT_API_api_test2(IMessage msg, Action<object> cb)
+        public void CLIENT_API_api_test2(IMessage msg)
         {
             var _msg = (ApiTest2Ntf)msg;
+            this.ApiTest2(_msg.uid, _msg.match_type);
         }
     }
 }

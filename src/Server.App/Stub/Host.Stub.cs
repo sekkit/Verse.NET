@@ -16,18 +16,18 @@ using System.ComponentModel;
 using System.Text;
 
 
-namespace Server.UModule
+namespace Fenix
 {
-    public partial class Avatar
+    public partial class Host
     {
-        [RpcMethod(ProtocolCode.CHANGE_NAME_REQ, Api.ServerApi)]
+        [RpcMethod(OpCode.CREATE_ACTOR_REQ, Api.ServerOnly)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_API_change_name(IMessage msg, Action<object> cb)
+        public void SERVER_ONLY_create_actor(IMessage msg, Action<object> cb)
         {
-            var _msg = (ChangeNameReq)msg;
-            this.ChangeName(_msg.name, (code) =>
+            var _msg = (CreateActorReq)msg;
+            this.CreateActor(_msg.typename, _msg.name, (code) =>
             {
-                var cbMsg = new ChangeNameReq.Callback();
+                var cbMsg = new CreateActorReq.Callback();
                 cbMsg.code=code;
                 cb.Invoke(cbMsg);
             });

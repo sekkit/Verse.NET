@@ -32,6 +32,11 @@ namespace Fenix
             this.mTypeDic[name] = type;
         }
 
+        public void RegisterApi(uint code, Api api)
+        {
+            RpcModule.RpcTypeDic[code] = api;
+        }
+
         public void ScanAssemblies(Assembly[] asmList)
         {
             //扫描一下

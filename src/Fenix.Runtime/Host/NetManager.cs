@@ -16,11 +16,11 @@ namespace Fenix
 {
     public class NetManager
     {
-        protected ConcurrentDictionary<ulong, string> mChId2ChName = new ConcurrentDictionary<ulong, string>();
+        //protected ConcurrentDictionary<ulong, string> mChId2ChName = new ConcurrentDictionary<ulong, string>();
         
-        protected ConcurrentDictionary<string, IChannel> mChName2Ch = new ConcurrentDictionary<string, IChannel>();
+        //protected ConcurrentDictionary<string, IChannel> mChName2Ch = new ConcurrentDictionary<string, IChannel>();
 
-        protected ConcurrentDictionary<string, Ukcp> mAddr2Ukcp = new ConcurrentDictionary<string, Ukcp>();
+        //protected ConcurrentDictionary<string, Ukcp> mAddr2Ukcp = new ConcurrentDictionary<string, Ukcp>();
 
         protected ConcurrentDictionary<uint, NetPeer> mPeers = new ConcurrentDictionary<uint, NetPeer>();
         
@@ -28,15 +28,15 @@ namespace Fenix
 
         public void RegisterChannel(IChannel channel)
         {
-            var channelId = channel.Id;
-            var channelName = channelId.AsLongText(); 
-            mChName2Ch[channelName] = channel;
+            //var channelId = channel.Id;
+            //var channelName = channelId.AsLongText(); 
+            //mChName2Ch[channelName] = channel;
 
             var addr = channel.RemoteAddress.ToString();
 
             var id = Global.IdManager.GetHostId(addr);
 
-            mChId2ChName[id] = channelName;
+            //mChId2ChName[id] = channelName;
 
             var peer = NetPeer.Create(id, channel);
             mPeers[peer.ConnId] = peer;
@@ -49,8 +49,17 @@ namespace Fenix
             if(id != 0 && peer != null)
                 Global.IdManager.RemoveHostId(peer.ConnId);
 
-            this.mChName2Ch.TryRemove(ch.Id.AsLongText(), out var c);
-            this.mChId2ChName.TryRemove(id, out var cn);
+            //this.mChName2Ch.TryRemove(ch.Id.AsLongText(), out var c);
+            //this.mChId2ChName.TryRemove(id, out var cn);
+        }
+
+        public void ChangePeerId(uint oldId, uint newId)
+        { 
+            var peer = mPeers[oldId]; 
+            peer.ConnId = newId;
+            mPeers.TryRemove(oldId, out var _);
+            mPeers[newId] = peer;
+            Global.IdManager.RegisterAddress(newId, peer.RemoteAddress.ToString());
         }
 
         //kcp目前不支持epoll/kqueue/IOCP，所以只在客户端上用用
@@ -70,7 +79,7 @@ namespace Fenix
                 id = Basic.GenID32FromName(addr);
             }
 
-            this.mAddr2Ukcp[addr] = ukcp;
+            //this.mAddr2Ukcp[addr] = ukcp;
 
             var peer = NetPeer.Create(id, ukcp);
             mPeers[peer.ConnId] = peer;
@@ -83,7 +92,7 @@ namespace Fenix
             var ep = ukcp.user().RemoteAddress;
             var addr = ep.ToString();
 
-            this.mAddr2Ukcp.TryRemove(addr, out var _);
+            //this.mAddr2Ukcp.TryRemove(addr, out var _);
             var id = Global.IdManager.GetHostId(addr);
             if(id == 0)
             {
@@ -97,7 +106,7 @@ namespace Fenix
             var ep = peer.RemoteAddress;// ukcp.user().RemoteAddress;
             var addr = ep.ToString();
 
-            this.mAddr2Ukcp.TryRemove(addr, out var _);
+            //this.mAddr2Ukcp.TryRemove(addr, out var _);
             var id = Global.IdManager.GetHostId(addr);
             if (id == 0)
             {
@@ -150,11 +159,12 @@ namespace Fenix
             peer = NetPeer.Create(remoteHostId, addr, netType);
             if (peer == null)
                 return null;
-            mPeers[peer.ConnId] = peer; 
+            mPeers[peer.ConnId] = peer;
+            //Global.IdManager.RegisterAddress()
             return peer; 
         }
 
-        //        peer connects two hosts(processes)
+        //peer connects two hosts(processes)
         public NetPeer CreatePeer(string ip, int port, NetworkType netType)
         {
 //#if !CLIENT

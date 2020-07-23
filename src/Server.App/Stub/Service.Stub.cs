@@ -1,7 +1,9 @@
 ﻿
 //AUTOGEN, do not modify it!
 
+using Fenix.Common;
 using Fenix.Common.Attributes;
+using Fenix.Common.Message;
 using Fenix.Common.Rpc;
 using Fenix.Common.Utils;
 using Shared;
