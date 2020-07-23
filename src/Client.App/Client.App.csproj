@@ -26,6 +26,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Shared\Gen\ActorRef\Server\" />
+    <Folder Include="Shared\Gen\Message\" />
     <Folder Include="Stub\" />
   </ItemGroup>
 
