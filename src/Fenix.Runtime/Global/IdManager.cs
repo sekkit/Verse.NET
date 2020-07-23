@@ -53,7 +53,7 @@ namespace Fenix
             redisDic[AID2TNAME] = new RedisDb(AID2TNAME, "127.0.0.1", 7382);
  
             var assembly = typeof(Global).Assembly;
-            Log.Info(assembly.FullName);
+            Log.Info(assembly.FullName.Replace("Server.App", "Fenix.Runtime").Replace("Client.App", "Fenix.Runtime"));
         }
 
         ~IdManager()
@@ -77,7 +77,7 @@ namespace Fenix
         protected IdManager()
         {
             var assembly = typeof(Global).Assembly;
-            Log.Info(assembly.FullName);
+            Log.Info(assembly.FullName.Replace("Server.App", "Fenix.Runtime").Replace("Client.App", "Fenix.Runtime"));
         }
 
         ~IdManager()

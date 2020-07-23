@@ -19,7 +19,7 @@ namespace Client.App
                 return;
             }
 
-            c.GetService<LoginServiceRef>("Account.App", "127.0.0.1", 17777).rpc_login("username", "password", (code) =>
+            c.GetService<LoginServiceRef>("Login.App", "127.0.0.1", 17777).rpc_login("username", "password", (code) =>
             {
                 Console.WriteLine("hello");
             });

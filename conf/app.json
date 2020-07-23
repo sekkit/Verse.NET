@@ -1,11 +1,11 @@
 ﻿[
   {
-    "AppName": "Account.App",
+    "AppName": "Login.App",
     "ExternalIp": "auto",
     "InternalIp": "auto",
     "Port": 17777,
     "DefaultActorNames": [
-      "AccountService"
+      "LoginService"
     ]
   },
   {
@@ -15,6 +15,24 @@
     "Port": 17778,
     "DefaultActorNames": [
       "MatchService"
+    ]
+  },
+  {
+    "AppName": "Master.App",
+    "ExternalIp": "auto",
+    "InternalIp": "auto",
+    "Port": 17779,
+    "DefaultActorNames": [
+      "MasterService"
+    ]
+  },
+  {
+    "AppName": "Zone.App",
+    "ExternalIp": "auto",
+    "InternalIp": "auto",
+    "Port": 17780,
+    "DefaultActorNames": [
+      "ZoneService"
     ]
   }
 ]

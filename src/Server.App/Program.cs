@@ -25,15 +25,7 @@ namespace Server.App
     class Program
     { 
         static void Main(string[] args)
-        {
-            /*
-            using (StreamWriter sw = new StreamWriter("app.json", false, Encoding.UTF8))
-            {
-                var content = JsonConvert.SerializeObject(conf, Formatting.Indented);
-                sw.Write(content);
-            }
-            */
-             
+        { 
             if (args.Length == 0)
             {
                 var cfgList = new List<RuntimeConfig>();
@@ -45,7 +37,7 @@ namespace Server.App
                 obj.AppName = "Account.App";
                 obj.DefaultActorNames = new List<string>()
                 {
-                    "AccountService"
+                    "LoginService"
                 };
 
                 cfgList.Add(obj);
@@ -62,9 +54,39 @@ namespace Server.App
 
                 cfgList.Add(obj);
 
+                obj = new RuntimeConfig();
+                obj.ExternalIp = "auto";
+                obj.InternalIp = "auto";
+                obj.Port = 17779; //auto
+                obj.AppName = "Master.App";
+                obj.DefaultActorNames = new List<string>()
+                {
+                    "MasterService"
+                };
+
+                cfgList.Add(obj);
+
+                obj = new RuntimeConfig();
+                obj.ExternalIp = "auto";
+                obj.InternalIp = "auto";
+                obj.Port = 17780; //auto
+                obj.AppName = "Zone.App";
+                obj.DefaultActorNames = new List<string>()
+                {
+                    "ZoneService"
+                };
+
+                cfgList.Add(obj);
+                 
+                using (StreamWriter sw = new StreamWriter("app.json", false, Encoding.UTF8))
+                {
+                    var content = JsonConvert.SerializeObject(cfgList, Formatting.Indented);
+                    sw.Write(content);
+                } 
+
                 Environment.SetEnvironmentVariable("AppName", "Account.App");
 
-                Bootstrap.Start(new Assembly[] { typeof(Program).Assembly, typeof(Server.UModule.Avatar).Assembly }, cfgList, isMultiProcess:true); //单进程模式
+                Bootstrap.Start(new Assembly[] { typeof(Server.UModule.Avatar).Assembly }, cfgList, isMultiProcess:true); //单进程模式
             }
             else
             { 
@@ -77,7 +99,7 @@ namespace Server.App
                 using (var sr = new StreamReader(cmdLine["Config"]))
                 {
                     var cfgList = JsonConvert.DeserializeObject<List<RuntimeConfig>>(sr.ReadToEnd());
-                    Bootstrap.Start(new Assembly[] { typeof(Program).Assembly, typeof(Server.UModule.Avatar).Assembly }, cfgList, isMultiProcess: true); //分布式
+                    Bootstrap.Start(new Assembly[] { typeof(Server.UModule.Avatar).Assembly }, cfgList, isMultiProcess: true); //分布式
                 } 
             }
         }
