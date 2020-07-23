@@ -50,7 +50,8 @@ namespace Server.GModule
             //actor创建后，必须绑定到host中才能正常运作 
             //var a = Actor.Create<Server.UModule.Avatar>(uid);
 
-            GetService<MasterServiceRef>().CreateActor(nameof(Avatar), uid, (code)=> {
+            GetService<MasterServiceRef>().CreateActor(nameof(Avatar), uid, (code) =>
+            {
                 callback(ErrCode.OK);
             });
         }
