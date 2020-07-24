@@ -107,11 +107,22 @@ namespace Fenix
             return mMessageTypeDic[protocolId];
         }
 
-        public Type GetRefType(string typename)
+        public Type GetActorRefType(string typename)
         { 
             if (this.mATName2RefTypeDic.TryGetValue(typename, out Type t))
                 return t;
             return typeof(ActorRef);
+        }
+
+        public RefType GetRefType(Type refType)
+        {
+            if(this.mRef2ATNameDic.TryGetValue(refType, out var refTypeName))
+            {
+                if (refTypeName.StartsWith("Client."))
+                    return RefType.CLIENT;
+                return RefType.SERVER;
+            }
+            return RefType.NONE;
         }
 
         public Api GetApiType(uint protocolCode)

@@ -92,12 +92,10 @@ namespace Fenix
                 Console.WriteLine(string.Format("init_tcp_client {0}", ep.ToString()));
             if (ep == null)
             {
-                var addr = Global.IdManager.GetHostAddr(connId);
-                if (addr == null)
-                {
-                    //host 不存在
-                    return false;
-                }
+                var addr = Global.IdManager.GetHostAddr(connId, false);
+                if (addr == null) 
+                    return false; 
+
                 var parts = addr.Split(':');
                 return InitTcpClient(new IPEndPoint(IPAddress.Parse(parts[0]), int.Parse(parts[1])));
             }
@@ -110,12 +108,9 @@ namespace Fenix
                 Console.WriteLine(string.Format("init_kcp_client {0}", ep.ToString()));
             if (ep == null)
             {
-                var addr = Global.IdManager.GetHostAddr(connId);
-                if (addr == null)
-                {
-                    //host 不存在
+                var addr = Global.IdManager.GetHostAddr(connId, false);
+                if (addr == null) 
                     return false;
-                }
 
                 var parts = addr.Split(':');
                 return InitKcpClient(new IPEndPoint(IPAddress.Parse(parts[0]), int.Parse(parts[1])));
@@ -125,9 +120,7 @@ namespace Fenix
 
         protected bool InitTcpClient(IPEndPoint ep)
         {
-            //IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port); 
-            tcpClient = TcpHostClient.Create(ep);
-            //this.ConnId = Basic.GenID32FromName(tcpClient.ChannelId);
+            tcpClient = TcpHostClient.Create(ep); 
             if (tcpClient == null)
                 return false;
 

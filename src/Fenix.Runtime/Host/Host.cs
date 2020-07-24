@@ -17,6 +17,7 @@ using Fenix.Common.Attributes;
 using System.Threading;
 using System.Reflection.PortableExecutable;
 using Shared.Protocol;
+using TimeUtil = Fenix.Common.Utils.TimeUtil;
 
 namespace Fenix
 {
@@ -41,13 +42,16 @@ namespace Fenix
 
         //protected NetPeer clientPeer { get; set; }
 
-        protected bool isClientMode { get; set; }
+        public bool IsClientMode { get; set; }
 
         protected ConcurrentDictionary<UInt32, Actor> actorDic = new ConcurrentDictionary<UInt32, Actor>();
+      
+        private ConcurrentDictionary<ulong, Timer> mTimerDic = new ConcurrentDictionary<ulong, Timer>();
+
 
         protected Host(string name, string ip, int port = 0, bool clientMode = false) : base()
         {
-            this.isClientMode = clientMode;
+            this.IsClientMode = clientMode;
 
             //NetManager.Instance.OnConnect += (peer) => 
             NetManager.Instance.OnReceive += (peer, buffer) => OnReceiveBuffer(peer, buffer);
@@ -113,12 +117,10 @@ namespace Fenix
                     this.UniqueName = Basic.GenID64().ToString();
                 else
                     this.UniqueName = name;
-                this.Id = Basic.GenID32FromName(this.UniqueName);
-                var thread = new Thread(new ThreadStart(Heartbeat));
-                thread.Start();
+                this.Id = Basic.GenID32FromName(this.UniqueName); 
             }
 
-            if (!this.isClientMode)
+            if (!this.IsClientMode)
             {
                 Log.Info(string.Format("{0} is running at {1} as ServerMode", this.UniqueName, LocalAddress.ToString()));
             }
@@ -127,6 +129,9 @@ namespace Fenix
                 Log.Info(string.Format("{0} is running as ClientMode", this.UniqueName));
                 //Log.Info(string.Format("{0} is running at {1} as ClientMode", this.UniqueName, LocalAddress.ToString()));
             }
+
+            var thread = new Thread(new ThreadStart(Heartbeat));
+            thread.Start();
         }
 
         public static Host Create(string name, string ip, int port, bool clientMode)
@@ -325,7 +330,7 @@ namespace Fenix
         {
             while (true)
             { 
-                if(isClientMode)
+                if(IsClientMode)
                     NetManager.Instance.Ping();
                 Thread.Sleep(5000);
             }
@@ -364,7 +369,6 @@ namespace Fenix
         //    OnReceiveBuffer(peer, buffer);
         //}
 
-
         protected void RegisterGlobalManager(Host host)
         {
             Global.IdManager.RegisterHost(host, this.LocalAddress.ToString());
@@ -397,8 +401,7 @@ namespace Fenix
         public T CreateActor<T>(string name) where T : Actor
         {
             var newActor = Actor.Create(typeof(T), name);
-            this.RegisterGlobalManager(newActor);
-            actorDic[newActor.Id] = newActor;
+            this.ActivateActor(newActor);
             Log.Info(string.Format("CreateActor:success {0} {1}", name, newActor.Id));
             return (T)newActor;
         }
@@ -408,12 +411,14 @@ namespace Fenix
             var type = Global.TypeManager.Get(typename);
             var newActor = Actor.Create(type, name);
             Log.Info(string.Format("CreateActor:success {0} {1}", name, newActor.Id));
-            return CreateActor(newActor);
+            ActivateActor(newActor);
+            return newActor;
         }
 
-        public Actor CreateActor(Actor actor)
+        public Actor ActivateActor(Actor actor)
         {
             this.RegisterGlobalManager(actor);
+            actor.onLoad();
             actorDic[actor.Id] = actor;
             return actor;
         }
@@ -435,25 +440,32 @@ namespace Fenix
 #if !CLIENT
 
         [ServerApi]
-        public void RegisterClient(uint hostId, string uniqueName, Action<int> callback, RpcContext __context)
+        public void RegisterClient(uint hostId, string uniqueName, Action<int, HostInfo> callback, RpcContext __context)
         {
             NetManager.Instance.RegisterClient(hostId, uniqueName, __context.Peer);
-            callback((int)DefaultErrCode.OK);
+
+            var hostInfo = Global.IdManager.GetHostInfo(this.Id);
+
+            callback((int)DefaultErrCode.OK, hostInfo);
         }
 
         [ServerApi]
-        public void BindClientActor(string name, Action<ErrCode> callback, RpcContext __context)
+        public void BindClientActor(string actorName, Action<DefaultErrCode> callback, RpcContext __context)
         {
+            //首先这个actor一定是本地的
+            //如果actor不在本地，则把请求转到目标host上去
+
             //find actor.server
-            var aid = Global.IdManager.GetActorId(name);
-            var addr = Global.IdManager.GetHostAddrByActorId(aid);
+            var actorId = Global.IdManager.GetActorId(actorName);
+            //var hostAddr = Global.IdManager.GetHostAddrByActorId(actorId, false);
+            Global.IdManager.RegisterClientActor(actorId, actorName, __context.Packet.FromHostId, __context.Peer.RemoteAddress.ToString());
 
-            //set actor.server's client property
-
+            //Set actor.server's client property
+            var a = Host.Instance.GetActor(actorId);
+            a.OnClientEnable(actorName); 
 
             //give actor.server hostId, ipaddr to client
-
-            //done
+            callback(DefaultErrCode.OK);
         }
 #endif
         //调用Actor身上的方法
@@ -469,9 +481,26 @@ namespace Fenix
             actor.CallMethod(packet);
         }
 
-        public virtual void Update()
+        public sealed override void Update()
         {
-            foreach(var a in this.actorDic.Keys)
+            //Log.Info(string.Format("{0}:{1}", this.GetType().Name, rpcDic.Count));
+            var curTime = TimeUtil.GetTimeStampMS();
+
+            var keys = this.mTimerDic.Keys;
+
+            foreach (var key in keys)
+            {
+                if (this.mTimerDic.TryGetValue(key, out var t))
+                {
+                    if (!t.CheckTimeout(curTime))
+                    {
+                        this.mTimerDic.TryRemove(key, out var _);
+                        t.Dispose();
+                    }
+                }
+            }
+
+            foreach (var a in this.actorDic.Keys)
             {
                 this.actorDic[a].Update();
             }
@@ -479,7 +508,7 @@ namespace Fenix
             NetManager.Instance.Update();
 
             //Log.Info(string.Format("C: {0}", rpcDic.Count));
-        } 
+        }
 
         public T GetService<T>(string name) where T : ActorRef
         {
@@ -514,6 +543,21 @@ namespace Fenix
         { 
             IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
             return Global.GetActorRefByAddr(typeof(ActorRef), ep, hostName, "", null, Host.Instance);
+        }
+
+        public void AddTimer(long delay, long interval, Action tickCallback)
+        {
+            //实现timer
+            var timer = Timer.Create(delay, interval, false, tickCallback);
+            this.mTimerDic.TryAdd(timer.Tid, timer);
+        }
+
+        public void AddRepeatedTimer(long delay, long interval, Action tickCallback)
+        {
+            //实现timer
+            var timer = Timer.Create(delay, interval, true, tickCallback);
+            //this.mTimerDic[timer.Tid] = timer;
+            this.mTimerDic.TryAdd(timer.Tid, timer);
         }
     }
 }

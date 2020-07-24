@@ -144,7 +144,7 @@ namespace Fenix
             var addr = peer.RemoteAddress.ToString();
             clientPeers[clientId] = peer;
             clientPeers[Basic.GenID32FromName(addr)] = peer;
-            Global.IdManager.RegisterClient(clientId, uniqueName, peer.RemoteAddress.ToString()); 
+            Global.IdManager.RegisterClientHost(clientId, uniqueName, peer.RemoteAddress.ToString()); 
         }
 #endif
 
@@ -225,6 +225,7 @@ namespace Fenix
             var peer = NetPeer.Create(ep, netType);
             if (peer == null)
                 return null;
+
             peer.OnClose += this.OnClose;
             peer.OnReceive += OnReceive;
             peer.OnException += OnException;
@@ -239,6 +240,9 @@ namespace Fenix
         public void Ping()
         {
             foreach(var p in tcpPeers.Values)
+                p?.Send(new byte[] { (byte)OpCode.PING });
+
+            foreach (var p in kcpPeers.Values)
                 p?.Send(new byte[] { (byte)OpCode.PING });
         }
 

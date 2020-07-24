@@ -515,7 +515,7 @@ namespace Shared
                         builder = new StringBuilder()
                         .AppendLine($"        public void {rpc_name}({args_decl})")
                         .AppendLine($"        {{")
-                        .AppendLine($"            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);")
+                        .AppendLine($"            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);")
                         .AppendLine($"            if (this.FromHostId == toHostId)")
                         .AppendLine($"            {{")
                         .AppendLine($"                Host.Instance.GetActor(this.toActorId).CallLocalMethod({pc_cls}.{proto_code}, new object[] {{ {args} }});")
@@ -538,7 +538,7 @@ namespace Shared
                         builder = new StringBuilder()
                         .AppendLine($"        public void {rpc_name}({args_decl})")
                         .AppendLine($"        {{")
-                        .AppendLine($"           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);")
+                        .AppendLine($"           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);")
                         .AppendLine($"           if (this.FromHostId == toHostId)")
                         .AppendLine($"           {{")
                         .AppendLine($"                Host.Instance.GetActor(this.toActorId).CallLocalMethod({pc_cls}.{proto_code}, new object[] {{ {args} }});")
@@ -646,6 +646,8 @@ namespace Shared
 
             string root_ns = type.Name == "Host" ? "Fenix":(isServer ? "Server" : "Client");
 
+            string refTypeName = tname == "Avatar" ? type.FullName : tname;
+
             var refBuilder = new StringBuilder()
                 .AppendLine(@"
 //AUTOGEN, do not modify it!
@@ -669,7 +671,7 @@ using System;
 ");
             if (type.Name != "Host")
             {
-                refBuilder.AppendLine($"    [RefType(\"{tname}\")]")
+                refBuilder.AppendLine($"    [RefType(\"{refTypeName}\")]")
                     .AppendLine($"    public partial class {tname}Ref : ActorRef");
             }
             else

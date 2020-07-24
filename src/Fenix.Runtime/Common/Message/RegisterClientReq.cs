@@ -32,6 +32,9 @@ namespace Fenix.Common.Message
             [Key(0)]
             public Int32 arg0;
 
+            [Key(1)]
+            public HostInfo arg1;
+
         }
 
     }

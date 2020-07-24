@@ -10,10 +10,26 @@ namespace Fenix.Common.Message
 {
     [MessageType(OpCode.BIND_CLIENT_ACTOR_REQ)]
     [MessagePackObject]
-    public class BindClientActorReq : IMessage
+    public class BindClientActorReq : IMessageWithCallback
     {
         [Key(0)]
-        public String name;
+        public String actorName;
+
+
+        [Key(199)]
+        public Callback callback
+        {
+            get => _callback as Callback;
+            set => _callback = value;
+        } 
+
+        [MessagePackObject]
+        public class Callback
+        {
+            [Key(0)]
+            public DefaultErrCode code;
+
+        }
 
     }
 }

@@ -4,7 +4,9 @@ using Fenix.Common.Attributes;
 using Fenix.Common.Utils;
 using MessagePack;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -14,7 +16,7 @@ namespace Fenix
 {
     [MessagePackObject]
     [Serializable]
-    public class Actor: RpcModule //, IActor
+    public class Actor: RpcModule
     {
         [Key(0)]
         [DataMember]
@@ -33,12 +35,18 @@ namespace Fenix
         public bool CanTransfer { get; set; }
 
 #if !CLIENT
+        [EditorBrowsable(EditorBrowsableState.Never)]
         protected ActorRef client;
 #endif
 
         [IgnoreMember]
         [IgnoreDataMember]
-        protected Dictionary<Type, object> mPersistentDic = new Dictionary<Type, object>(); 
+        protected Dictionary<Type, object> mPersistentDic = new Dictionary<Type, object>();
+
+        [IgnoreMember]
+        [IgnoreDataMember]
+        //private List<Timer> mTimerList = new List<Timer>();
+        private ConcurrentDictionary<ulong, Timer> mTimerDic = new ConcurrentDictionary<ulong, Timer>();
 
         public T Get<T>()
         {
@@ -48,7 +56,7 @@ namespace Fenix
         }
         
         public Actor()
-        { 
+        {
         }
 
         protected Actor(string name) : base()
@@ -91,24 +99,26 @@ namespace Fenix
             return (Actor)Activator.CreateInstance(type, new object[] { name }); 
         }
 
-        public virtual void Update()
+        public sealed override void Update()
         {
             //Log.Info(string.Format("{0}:{1}", this.GetType().Name, rpcDic.Count));
-        }
+            var curTime = TimeUtil.GetTimeStampMS();
 
-        public virtual void onActive()
-        {
-             
-        }
+            var keys = this.mTimerDic.Keys;
 
-        public virtual void onDeactive()
-        {
-             
-        }
+            foreach (var key in keys)
+            {
+                if(this.mTimerDic.TryGetValue(key, out var t))
+                {
+                    if (!t.CheckTimeout(curTime))
+                    {
+                        this.mTimerDic.TryRemove(key, out var _);
+                        t.Dispose();
+                    }
+                } 
+            }
 
-        public virtual void onDestroy()
-        {
-             
+            this.onUpdate();
         }
 
         public virtual void Pack()
@@ -165,13 +175,71 @@ namespace Fenix
         }
 #if !CLIENT
         [ServerOnly]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public void OnClientEnable(string actorName)
         {
             //actorName == this.UniqueName
-            var refType = Global.TypeManager.GetRefType(this.GetType().Name);
+            var refType = Global.TypeManager.GetActorRefType("Client.Avatar");
+            if(refType == null)
+                refType = Global.TypeManager.GetActorRefType(this.GetType().FullName);
+
             this.client = GetActorRef(refType, this.UniqueName);
             Log.Info(string.Format("on_client_enable", actorName, this.UniqueName));
+
+            this.onClientEnable();
         }
+
+        [ServerOnly]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void OnClientDisable(string actorName)
+        {
+            //actorName == this.UniqueName 
+            this.client = null;
+            Log.Info(string.Format("on_client_disable", actorName, this.UniqueName));
+
+            this.onClientDisable();
+        }
+
 #endif
+
+        public virtual void onLoad()
+        {
+
+        }
+
+        public virtual void onClientEnable()
+        {
+
+        }
+
+        public virtual void onClientDisable()
+        {
+
+        }
+
+        public virtual void onRestore()
+        {
+
+        }
+
+        public virtual void onUpdate()
+        {
+
+        }
+
+        public void AddTimer(long delay, long interval, Action tickCallback)
+        {
+            //实现timer
+            var timer = Timer.Create(delay, interval, false, tickCallback);
+            this.mTimerDic.TryAdd(timer.Tid, timer); 
+        }
+
+        public void AddRepeatedTimer(long delay, long interval, Action tickCallback)
+        {
+            //实现timer
+            var timer = Timer.Create(delay, interval, true, tickCallback);
+            //this.mTimerDic[timer.Tid] = timer;
+            this.mTimerDic.TryAdd(timer.Tid, timer);
+        }
     }
 }

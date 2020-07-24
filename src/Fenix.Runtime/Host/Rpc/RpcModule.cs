@@ -11,10 +11,9 @@ using System.Reflection;
 
 namespace Fenix
 {
-    public class RpcModule
+    public abstract class RpcModule
     {
         public static ConcurrentDictionary<UInt32, Api> RpcTypeDic = new ConcurrentDictionary<UInt32, Api>();
-
         public static ConcurrentDictionary<UInt64, RpcCommand> rpcDic     = new ConcurrentDictionary<UInt64, RpcCommand>();
         public static ConcurrentDictionary<UInt32, MethodInfo> rpcStubDic = new ConcurrentDictionary<UInt32, MethodInfo>(); 
 
@@ -173,5 +172,7 @@ namespace Fenix
 
             peer.Send(packet);
         }
+
+        public abstract void Update(); 
     }
 }

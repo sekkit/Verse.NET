@@ -10,7 +10,7 @@ namespace Fenix
     public class ActorManager
     {
         public static ActorManager Instance = new ActorManager();
-         
+
         //客户端与服务端，其实就是Avatar之间的单点通信
         //如果是客户端，则取不到名字和类型信息
         //所以需要特殊处理
@@ -19,9 +19,9 @@ namespace Fenix
         //所以客户端是单点连接，不需要额外的信息
 
         public ActorRef GetActorRefByName(Type refType, string toActorName, Actor fromActor, Host fromHost)
-        {
+        { 
             uint toActorId = Global.IdManager.GetActorId(toActorName);
-            
+
             //if (toActorId == 0)
             //    return null;
 
@@ -33,9 +33,11 @@ namespace Fenix
                 toActorId = Basic.GenID32FromName(toActorName);
             }
 #endif
-            var toHostId = Global.IdManager.GetHostIdByActorId(toActorId);
-
-            return ActorRef.Create(toHostId, toActorId, refType, fromActor, fromHost); 
+            var rt = Global.TypeManager.GetRefType(refType);
+            bool isClient = rt == RefType.CLIENT;
+            
+            var toHostId = Global.IdManager.GetHostIdByActorId(toActorId, isClient);  
+            return ActorRef.Create(toHostId, toActorId, refType, fromActor, fromHost, isClient);
         }
 
         public ActorRef GetActorRefByName(Type refType, string toHostName, string toActorName, Actor fromActor, Host fromHost)
@@ -49,13 +51,18 @@ namespace Fenix
             // 
 #if CLIENT
             if (toActorId == 0) 
-                toActorId = Basic.GenID32FromName(toActorName); 
+                toActorId = Basic.GenID32FromName(toActorName);
 #endif
-            var toHostId = Global.IdManager.GetHostIdByActorId(toActorId);
+            var rt = Global.TypeManager.GetRefType(refType);
+            bool isClient = rt == RefType.CLIENT;
+            var toHostId = Global.IdManager.GetHostIdByActorId(toActorId, isClient);
+
+#if CLIENT
             if (toHostId == 0)
                 toHostId = Basic.GenID32FromName(toHostName);
+#endif
 
-            return ActorRef.Create(toHostId, toActorId, refType, fromActor, fromHost);
+            return ActorRef.Create(toHostId, toActorId, refType, fromActor, fromHost, isClient);
         }
 
         public ActorRef GetActorRefByAddress(Type refType, IPEndPoint toPeerEP, string toHostName, string toActorName, Actor fromActor, Host fromHost)
@@ -70,11 +77,15 @@ namespace Fenix
             if (toActorId == 0 && toActorName != "")
                 toActorId = Basic.GenID32FromName(toActorName);
 #endif
-            var toHostId = Global.IdManager.GetHostIdByActorId(toActorId);
+
+            var rt = Global.TypeManager.GetRefType(refType);
+            bool isClient = rt == RefType.CLIENT;
+
+            var toHostId = Global.IdManager.GetHostIdByActorId(toActorId, isClient);
             if (toHostId == 0)
                 toHostId = Basic.GenID32FromName(toPeerEP.ToString());
 
-            return ActorRef.Create(toHostId, toActorId, refType, fromActor, fromHost, toPeerEP);
+            return ActorRef.Create(toHostId, toActorId, refType, fromActor, fromHost, isClient, toPeerEP);
         }
 
         /*远程创建actor*/

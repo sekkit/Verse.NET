@@ -20,24 +20,28 @@ namespace Fenix
 
     public partial class ActorRef
     {
-        public void BindClientActor(String name)
+        public void BindClientActor(String actorName, Action<DefaultErrCode> callback)
         {
-           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);
-           if (this.FromHostId == toHostId)
-           {
-                Host.Instance.GetActor(this.toActorId).CallLocalMethod(OpCode.BIND_CLIENT_ACTOR_REQ, new object[] { name });
-               return;
-           }
-           var msg = new BindClientActorReq()
-           {
-                name=name
-           };
-           this.CallRemoteMethod(OpCode.BIND_CLIENT_ACTOR_REQ, msg, null);
+            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
+            if (this.FromHostId == toHostId)
+            {
+                Host.Instance.GetActor(this.toActorId).CallLocalMethod(OpCode.BIND_CLIENT_ACTOR_REQ, new object[] { actorName, callback });
+                return;
+            }
+            var msg = new BindClientActorReq()
+            {
+                actorName=actorName
+            };
+            var cb = new Action<byte[]>((cbData) => {
+                var cbMsg = RpcUtil.Deserialize<BindClientActorReq.Callback>(cbData);
+                callback?.Invoke(cbMsg.code);
+            });
+            this.CallRemoteMethod(OpCode.BIND_CLIENT_ACTOR_REQ, msg, cb);
         }
 
         public void CreateActor(String typename, String name, Action<DefaultErrCode, String, UInt32> callback)
         {
-            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);
+            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
                 Host.Instance.GetActor(this.toActorId).CallLocalMethod(OpCode.CREATE_ACTOR_REQ, new object[] { typename, name, callback });
@@ -57,7 +61,7 @@ namespace Fenix
 
         public void MigrateActor(UInt32 actorId)
         {
-           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);
+           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
            if (this.FromHostId == toHostId)
            {
                 Host.Instance.GetActor(this.toActorId).CallLocalMethod(OpCode.MIGRATE_ACTOR_REQ, new object[] { actorId });
@@ -70,9 +74,9 @@ namespace Fenix
            this.CallRemoteMethod(OpCode.MIGRATE_ACTOR_REQ, msg, null);
         }
 
-        public void RegisterClient(UInt32 hostId, String uniqueName, Action<Int32> callback)
+        public void RegisterClient(UInt32 hostId, String uniqueName, Action<Int32, HostInfo> callback)
         {
-            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);
+            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
                 Host.Instance.GetActor(this.toActorId).CallLocalMethod(OpCode.REGISTER_CLIENT_REQ, new object[] { hostId, uniqueName, callback });
@@ -85,14 +89,14 @@ namespace Fenix
             };
             var cb = new Action<byte[]>((cbData) => {
                 var cbMsg = RpcUtil.Deserialize<RegisterClientReq.Callback>(cbData);
-                callback?.Invoke(cbMsg.arg0);
+                callback?.Invoke(cbMsg.arg0, cbMsg.arg1);
             });
             this.CallRemoteMethod(OpCode.REGISTER_CLIENT_REQ, msg, cb);
         }
 
         public void RemoveActor(UInt32 actorId)
         {
-           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);
+           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
            if (this.FromHostId == toHostId)
            {
                 Host.Instance.GetActor(this.toActorId).CallLocalMethod(OpCode.REMOVE_ACTOR_REQ, new object[] { actorId });

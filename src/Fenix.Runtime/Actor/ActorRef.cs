@@ -1,3 +1,4 @@
+ 
 using Fenix.Common;
 using Fenix.Common.Message;
 using Fenix.Common.Rpc;
@@ -21,10 +22,13 @@ namespace Fenix
 
         protected uint toActorId;
 
-        protected IPEndPoint toAddr; 
+        protected IPEndPoint toAddr;
 
-        public static ActorRef Create(uint toHostId, uint toActorId, Type refType, Actor fromActor, Host fromHost, IPEndPoint toPeerEP=null)
+        public bool isClient;
+
+        public static ActorRef Create(uint toHostId, uint toActorId, Type refType, Actor fromActor, Host fromHost, bool isClient, IPEndPoint toPeerEP=null)
         {
+
             //要检测一下fromActor.HostId和fromHost.Id是不是相等
             if(fromActor!=null && fromActor.HostId != fromHost.Id)
             {
@@ -40,9 +44,9 @@ namespace Fenix
             else
             {
                 if(toHostId != 0)
-                    toAddr = Basic.ToAddress(Global.IdManager.GetHostAddr(toHostId));
+                    toAddr = Basic.ToAddress(Global.IdManager.GetHostAddr(toHostId, isClient));
                 else if(toActorId != 0)
-                    toAddr = Basic.ToAddress(Global.IdManager.GetHostAddrByActorId(toActorId));
+                    toAddr = Basic.ToAddress(Global.IdManager.GetHostAddrByActorId(toActorId, isClient));
             }
 
             var obj = (ActorRef)Activator.CreateInstance(refType);
@@ -51,6 +55,7 @@ namespace Fenix
             obj.fromActor = fromActor;
             obj.fromHost = fromHost;
             obj.toAddr = toAddr;
+            obj.isClient = isClient;
             return obj;
         }
 
@@ -64,6 +69,10 @@ namespace Fenix
             var netType = NetworkType.TCP;
             if (api == Common.Attributes.Api.ClientApi)
                 netType = NetworkType.KCP;
+
+            if (Host.Instance.IsClientMode)
+                netType = NetworkType.KCP;
+
             if (fromActor != null)
                 fromActor.Rpc(protocolCode, FromHostId, fromActor.Id, toHostId, this.toActorId, toAddr, netType, msg, cb);
             else

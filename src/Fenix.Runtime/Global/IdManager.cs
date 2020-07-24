@@ -2,6 +2,7 @@
 
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using Fenix.Common;
 #if !CLIENT
 using Fenix.Redis;
@@ -37,11 +38,27 @@ namespace Fenix
 
         protected ConcurrentDictionary<uint, string> mAID2TNAME = new ConcurrentDictionary<uint, string>();
 
-        protected ConcurrentDictionary<string, string> mCLIENT2ADDR = new ConcurrentDictionary<string, string>();
+//#if !CLIENT
+        //客户端的路由表   
 
+        protected ConcurrentDictionary<uint, uint> mC_AID2HID = new ConcurrentDictionary<uint, uint>();
+
+        protected ConcurrentDictionary<uint, List<uint>> mC_HID2AID = new ConcurrentDictionary<uint, List<uint>>();
+
+        protected ConcurrentDictionary<uint, string> mC_AID2ANAME = new ConcurrentDictionary<uint, string>();
+
+        protected ConcurrentDictionary<string, uint> mC_ADDR2HID = new ConcurrentDictionary<string, uint>();
+
+        protected ConcurrentDictionary<uint, string> mC_HID2ADDR = new ConcurrentDictionary<uint, string>();
+
+        protected ConcurrentDictionary<string, uint> mC_HNAME2HID = new ConcurrentDictionary<string, uint>();
+
+        protected ConcurrentDictionary<uint, string> mC_HID2HNAME = new ConcurrentDictionary<uint, string>();
+//#endif
+        //protected ConcurrentDictionary<string, string> mINET2EXTADDR = new ConcurrentDictionary<string, string>();
 
 #if !CLIENT
-         
+
         protected IdManager()
         {
             Global.DbManager.LoadDb(CacheConfig.HID2ADDR_cache);
@@ -53,14 +70,21 @@ namespace Fenix
             Global.DbManager.LoadDb(CacheConfig.AID2TNAME_cache);
             Global.DbManager.LoadDb(CacheConfig.HNAME2HID_cache);
             Global.DbManager.LoadDb(CacheConfig.HID2HNAME_cache);
- 
+            Global.DbManager.LoadDb(CacheConfig.C_AID2HID_cache);
+            Global.DbManager.LoadDb(CacheConfig.C_HID2AID_cache);
+            Global.DbManager.LoadDb(CacheConfig.C_AID2ANAME_cache);
+            Global.DbManager.LoadDb(CacheConfig.C_ADDR2HID_cache); 
+            Global.DbManager.LoadDb(CacheConfig.C_HID2ADDR_cache);
+            Global.DbManager.LoadDb(CacheConfig.C_HNAME2HID_cache);
+            Global.DbManager.LoadDb(CacheConfig.C_HID2HNAME_cache); 
+
             var assembly = typeof(Global).Assembly;
             Log.Info(assembly.FullName.Replace("Server.App", "Fenix.Runtime").Replace("Client.App", "Fenix.Runtime"));
         }
 
         ~IdManager()
         { 
-             
+            
         } 
 
         string GetKey(string prefix, string key)
@@ -76,7 +100,7 @@ namespace Fenix
 
         ~IdManager()
         {
-
+            
         }
 
 #endif
@@ -111,35 +135,103 @@ namespace Fenix
         }
 
 #if !CLIENT
-        public void RegisterClient(uint clientId, string clientName, string addr)
+        public void RegisterClientHost(uint clientId, string clientName, string addr)
         {
-            Global.DbManager.GetDb(CacheConfig.HID2ADDR).Set(clientId.ToString(), addr);
-            Global.DbManager.GetDb(CacheConfig.ADDR2HID).Set(addr, clientId);
-            Global.DbManager.GetDb(CacheConfig.HNAME2HID).Set(clientName, clientId);
+            mC_HID2ADDR[clientId] = addr;
+            mC_ADDR2HID[addr] = clientId;
+
+            mC_HNAME2HID[clientName] = clientId;
+            mC_HID2HNAME[clientId] = clientName;
+
+            Global.DbManager.GetDb(CacheConfig.C_HID2ADDR).Set(clientId.ToString(), addr);
+            Global.DbManager.GetDb(CacheConfig.C_HID2ADDR).Set(addr, clientId);
+
+            Global.DbManager.GetDb(CacheConfig.C_HNAME2HID).Set(clientName, clientId);
+            Global.DbManager.GetDb(CacheConfig.C_HID2HNAME).Set(clientId.ToString(), clientName);
         }
+
+        public void RegisterClientActor(uint actorId, string actorName, uint clientId, string addr)
+        { 
+            mC_AID2HID[actorId] = clientId; 
+            //mC_HID2AID[clientId] = actorId;
+            mC_HID2ADDR[clientId] = addr; 
+            mC_ADDR2HID[addr] = clientId;
+            mC_AID2ANAME[actorId] = actorName;
+            
+            Global.DbManager.GetDb(CacheConfig.C_AID2HID).Set(actorId.ToString(), clientId);
+            Global.DbManager.GetDb(CacheConfig.C_HID2ADDR).Set(clientId.ToString(), addr);
+            Global.DbManager.GetDb(CacheConfig.C_HID2AID).Set(addr, clientId);
+            Global.DbManager.GetDb(CacheConfig.C_AID2ANAME).Set(actorId.ToString(), actorName); 
+        }
+
+        //public string GetClientActorAddr(string actorName)
+        //{
+        //    if (mCNAME2ADDR.ContainsKey(actorName))
+        //        return mCNAME2ADDR[actorName];
+        //    return Global.DbManager.GetDb(CacheConfig.CNAME2ADDR).Get(actorName);
+        //}
+
 #endif
 
-        public string GetHostAddr(uint hostId)
+        public string GetHostAddr(uint hostId, bool isClient)
         {
-            if (mHID2ADDR.ContainsKey(hostId))
-                return mHID2ADDR[hostId];
+            if (isClient)
+            {
+                if (mC_HID2ADDR.ContainsKey(hostId))
+                    return mC_HID2ADDR[hostId];
 #if !CLIENT
-            var key = hostId.ToString();
-            return Global.DbManager.GetDb(CacheConfig.HID2ADDR).Get(key);
+                var key = hostId.ToString();
+                return Global.DbManager.GetDb(CacheConfig.C_HID2ADDR).Get(key);
 #else
             return null;
 #endif
+            }
+            else
+            {
+                if (mHID2ADDR.ContainsKey(hostId))
+                    return mHID2ADDR[hostId];
+#if !CLIENT
+                var key = hostId.ToString();
+                return Global.DbManager.GetDb(CacheConfig.HID2ADDR).Get(key);
+#else
+            return null;
+#endif
+
+            }
+
         }
 
         public uint GetHostId(string addr)
         {
-            if (mADDR2HID.ContainsKey(addr))
-                return mADDR2HID[addr];
+            var hId = GetHostId(addr, false);
+            if (hId == 0)
+                hId = GetHostId(addr, true);
+            return hId;
+        }
+
+        public uint GetHostId(string addr, bool isClient)
+        {
+            if(isClient)
+            {
+                if (mC_ADDR2HID.ContainsKey(addr))
+                    return mC_ADDR2HID[addr];
 #if !CLIENT
-            return Global.DbManager.GetDb(CacheConfig.ADDR2HID).Get<uint>(addr);
+                return Global.DbManager.GetDb(CacheConfig.C_ADDR2HID).Get<uint>(addr);
 #else
-            return 0;
+                return 0;
 #endif
+            }
+            else
+            {
+                if (mADDR2HID.ContainsKey(addr))
+                    return mADDR2HID[addr];
+#if !CLIENT
+                return Global.DbManager.GetDb(CacheConfig.ADDR2HID).Get<uint>(addr);
+#else
+                return 0;
+#endif
+            } 
+
         }
 
         public string GetHostName(uint hostId)
@@ -275,28 +367,86 @@ namespace Fenix
 #endif
         }
 
-        public uint GetHostIdByActorId(uint actorId)
+        public uint GetHostIdByActorId(uint actorId, bool isClient)
         {
-            if (mAID2HID.ContainsKey(actorId))
-                return mAID2HID[actorId];
+            if(isClient)
+            {
+                if (mC_AID2HID.ContainsKey(actorId))
+                    return mC_AID2HID[actorId];
 #if !CLIENT
-            var key = actorId.ToString();
-            return Global.DbManager.GetDb(CacheConfig.AID2HID).Get<uint>(key);
+                var key = actorId.ToString();
+                return Global.DbManager.GetDb(CacheConfig.C_AID2HID).Get<uint>(key);
 #else
-            return 0;
+                    return 0;
 #endif
+            }
+            else
+            {
+                if (mAID2HID.ContainsKey(actorId))
+                    return mAID2HID[actorId];
+#if !CLIENT
+                    var key = actorId.ToString();
+                    return Global.DbManager.GetDb(CacheConfig.AID2HID).Get<uint>(key);
+#else
+                    return 0;
+#endif
+            }
+            
         }
 
-        public string GetHostAddrByActorId(uint actorId)
+        public string GetHostAddrByActorId(uint actorId, bool isClient)
         {
-            uint hostId = 0;
-            if (mAID2HID.ContainsKey(actorId))
+            //uint hostId = 0;
+            //if (mAID2HID.ContainsKey(actorId))
+            //{
+            //    hostId = mAID2HID[actorId];
+            //    return GetHostAddr(hostId, isClient);
+            //}
+
+            var hostId = GetHostIdByActorId(actorId, isClient);
+            return GetHostAddr(hostId, isClient);
+        }
+
+        public HostInfo GetHostInfo(uint hostId)
+        {
+            var hostInfo = new HostInfo();
+            //该host包含的所有service的id
+            //该host所有service的address
+            //该host所有service的名称
+
+            this.mHID2AID.TryGetValue(hostId, out var actorList);
+            var serviceIdList = actorList.Where(m => this.GetActorName(m).EndsWith("Service")).ToList();
+
+            hostInfo.HostId = hostId;
+            hostInfo.HostName = Global.IdManager.GetHostName(hostId);
+            hostInfo.HostAddr = Global.IdManager.GetHostAddr(hostId, false);
+            hostInfo.ServiceId2Name = serviceIdList.ToDictionary(m => m, m => this.GetActorName(m));
+            hostInfo.ServiceId2TName = serviceIdList.ToDictionary(m => m, m => this.GetActorTypename(m));
+
+            return hostInfo;
+        }
+
+        public void RegisterHostInfo(HostInfo hostInfo)
+        {
+            this.mADDR2HID[hostInfo.HostAddr] = hostInfo.HostId;
+            this.mHID2ADDR[hostInfo.HostId] = hostInfo.HostAddr;
+            this.mHNAME2HID[hostInfo.HostName] = hostInfo.HostId;
+            this.mHID2HNAME[hostInfo.HostId] = hostInfo.HostName; 
+
+            foreach (var kv in hostInfo.ServiceId2Name)
             {
-                hostId = mAID2HID[actorId];
-                return GetHostAddr(hostId);
+                this.mAID2ANAME[kv.Key] = kv.Value;
+                this.mANAME2AID[kv.Value] = kv.Key;
+                this.mAID2HID[kv.Key] = hostInfo.HostId;
+                if (!mHID2AID.ContainsKey(hostInfo.HostId))
+                    mHID2AID[hostInfo.HostId] = new List<uint>();
+                this.mHID2AID[hostInfo.HostId].Add(kv.Key);
             }
-            hostId = GetHostIdByActorId(actorId);
-            return GetHostAddr(hostId);
+
+            foreach (var kv in hostInfo.ServiceId2TName)
+            {
+                this.mAID2TNAME[kv.Key] = kv.Value;
+            } 
         }
     }
 }
