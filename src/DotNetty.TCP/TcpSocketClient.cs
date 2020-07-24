@@ -54,8 +54,8 @@ namespace DotNetty.TCP
                         }
 
                         pipeline.AddLast(new LoggingHandler());
-                        pipeline.AddLast("framing-enc", new LengthFieldPrepender2(2));
-                        pipeline.AddLast("framing-dec", new LengthFieldBasedFrameDecoder2(ushort.MaxValue, 0, 2, 0, 2));
+                        pipeline.AddLast("framing-enc", new LengthFieldPrepender(2));
+                        pipeline.AddLast("framing-dec", new LengthFieldBasedFrameDecoder(ushort.MaxValue, 0, 2, 0, 2));
 
                         pipeline.AddLast("tcp-handler", new TcpChannelHandler(listener));
                     }));
@@ -65,7 +65,8 @@ namespace DotNetty.TCP
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.StackTrace);
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace); 
                 return false;
             }
 

@@ -42,20 +42,12 @@ namespace Fenix
                 if (this.kcpChannel != null)
                     return kcpChannel.isActive();
                 if (this.kcpClient != null)
-                    return true;
+                    return kcpClient.IsActive;
                 if (this.tcpClient != null)
                     return this.tcpClient.IsActive;
                 return false;
             }
-        }
-
-        // public static NetPeer Create(IChannel channel)
-        // {
-        //     var obj = new NetPeer(); 
-        //     obj.ConnId = 0;
-        //     obj.tcpChannel = channel;
-        //     return obj;
-        // }
+        } 
         
         protected NetPeer()
         {
@@ -139,7 +131,7 @@ namespace Fenix
             if (tcpClient == null)
                 return false;
 
-            tcpClient.Receive += TcpClient_OnReceive;
+            tcpClient.Receive += (ch, buffer) =>  OnReceive?.Invoke(this, buffer);
             tcpClient.Close += (ch) => { OnClose?.Invoke(this); };
             tcpClient.Exception += (ch, ex) => { OnException?.Invoke(this, ex); };
             Console.WriteLine(string.Format("init_tcp_client_localaddr@{0}", tcpClient.LocalAddress));
@@ -147,10 +139,8 @@ namespace Fenix
         }
 
         protected bool InitKcpClient(IPEndPoint ep)
-        {
-            //IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port); 
-            kcpClient = KcpHostClient.Create(ep);
-            //this.ConnId = Basic.GenID32FromName(tcpClient.ChannelId);
+        { 
+            kcpClient = KcpHostClient.Create(ep); 
             kcpClient.OnReceive += (kcp, buffer)=> { OnReceive?.Invoke(this, buffer); };
             kcpClient.OnClose += (kcp) => { OnClose?.Invoke(this); };
             kcpClient.OnException += (ch, ex) => { OnException?.Invoke(this, ex); };
@@ -194,11 +184,6 @@ namespace Fenix
             return obj;
         }
 
-        //public static NetPeer Create(string ip, int port, NetworkType netType)
-        //{
-        //    return Create(new IPEndPoint())
-        //}
-
         public static NetPeer Create(IPEndPoint ep, NetworkType netType)
         { 
             var obj = new NetPeer();
@@ -216,21 +201,10 @@ namespace Fenix
             }
             return obj;
         }
-
-        private void TcpClient_OnReceive(IChannel channel, IByteBuffer buffer)
-        {
-            OnReceive?.Invoke(this, buffer);
-        }
-
-        private void KcpClient_OnReceive(Ukcp ukcp, IByteBuffer buffer)
-        {
-            OnReceive?.Invoke(this, buffer);
-        }
-
+ 
         ~NetPeer()
         {
-            if (tcpClient != null)
-                tcpClient.Receive -= TcpClient_OnReceive;
+             
         }
 
         public void Send(byte[] bytes)
@@ -246,7 +220,7 @@ namespace Fenix
                 Console.WriteLine(string.Format("sento_receiver({0}): {1} {2} => {3}", this.networkType, kcpClient.RemoteAddress.ToString(), Host.Instance.Id, ConnId));
             tcpClient?.Send(bytes);
             if (tcpClient != null)
-                Console.WriteLine(string.Format("sento_receiver({0}): {1} {2} => {3}", this.networkType, tcpClient.RemoteAddress.ToString(), Host.Instance.Id, ConnId));
+                Console.WriteLine(string.Format("sento_receiver({0}): {1} {2} => {3}", this.networkType, tcpClient.RemoteAddress.ToString(), Host.Instance?.Id, ConnId));
         }
 
         public async Task SendAsync(byte[] bytes)

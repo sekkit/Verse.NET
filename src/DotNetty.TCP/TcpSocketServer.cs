@@ -7,6 +7,7 @@ using DotNetty.Transport.Channels;
 using DotNetty.Transport.Channels.Sockets;
 using DotNetty.Transport.Libuv;
 using System;
+using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
@@ -56,6 +57,10 @@ namespace DotNetty.TCP
 
                 bootstrap
                   .Option(ChannelOption.SoBacklog, 8192)
+                  .Option(ChannelOption.SoReuseaddr, true)
+                  .Option(ChannelOption.SoReuseport, true)
+                  .Option(ChannelOption.SoBroadcast, true)
+                  .Option(ChannelOption.SoKeepalive, true)
                   .Handler(new LoggingHandler())
                   .ChildHandler(new ActionChannelInitializer<ISocketChannel>(channel =>
                   {
@@ -69,15 +74,15 @@ namespace DotNetty.TCP
                       pipeline.AddLast("framing-enc", new LengthFieldPrepender(2));
                       pipeline.AddLast("framing-dec", new LengthFieldBasedFrameDecoder(ushort.MaxValue, 0, 2, 0, 2));
                       pipeline.AddLast("tcp-handler", new TcpChannelHandler(listener));
-
                   }));
  
-                var task = Task<IChannel>.Run(() => bootstrap.BindAsync(channelConfig.Port));
+                var task = Task<IChannel>.Run(() => bootstrap.BindAsync(IPAddress.Parse(channelConfig.Address), channelConfig.Port));
                 task.Wait();
                 boundChannel = task.Result;
             }
             catch(Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 Console.WriteLine(ex.StackTrace);
                 return false;
             }

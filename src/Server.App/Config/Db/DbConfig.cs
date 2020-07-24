@@ -31,7 +31,7 @@ namespace Server.Config.Db
         {
             Name = "account",
             Host = "127.0.0.1",
-            Port = 7381,
+            Port = 7380,
             Key = "ACC",
             Retry = 1,
             RetryDelay = 0.1f,

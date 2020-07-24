@@ -30,6 +30,8 @@ namespace Fenix
 
         public string ChannelId => _ukcp?.user().Channel.Id.AsLongText();
 
+        public bool IsActive => _ukcp.user().Channel.Active;
+
         public static KcpHostClient Create(IPEndPoint remoteAddress)
         {
             KcpHostClient listener = new KcpHostClient();

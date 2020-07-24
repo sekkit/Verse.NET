@@ -1,5 +1,6 @@
 ﻿using Fenix;
 using Fenix.Common.Attributes;
+using Server;
 using Shared.Protocol;
 using System;
 
@@ -28,6 +29,11 @@ namespace Client
         public void ApiTest2(string uid, int match_type)
         {
             Console.WriteLine("Call=>client_api:ClientApiTest2");
+        }
+
+        public override void Update()
+        {
+            base.Update();
         }
     }
 }

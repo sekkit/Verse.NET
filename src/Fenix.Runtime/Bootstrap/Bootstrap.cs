@@ -16,6 +16,8 @@ namespace Fenix
         {
             Global.Init(asmList);
 
+            init();
+
             var localAddrV4 = Basic.GetLocalIPv4(NetworkInterfaceType.Ethernet);
 
             Host c = null;

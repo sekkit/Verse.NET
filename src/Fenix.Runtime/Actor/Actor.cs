@@ -5,6 +5,7 @@ using MessagePack;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Runtime.Serialization;
 
@@ -155,6 +156,14 @@ namespace Fenix
             var tname = typeof(T).Name;
             string actorName = tname.Substring(0, tname.Length - 3);
             return (T)Global.GetActorRef(typeof(T), actorName, this, Host.Instance);
+        }
+
+        public T GetService<T>(string hostName, string ip, int port) where T : ActorRef
+        {
+            var refTypeName = typeof(T).Name;
+            string name = refTypeName.Substring(0, refTypeName.Length - 3);
+            IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
+            return (T)Global.GetActorRefByAddr(typeof(T), ep, hostName, name, null, Host.Instance);
         }
     }
 }

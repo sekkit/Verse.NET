@@ -20,7 +20,7 @@ namespace Server.Config.Db
         {
             Name = "HID2ADDR",
             Host = "127.0.0.1",
-            Port = 7380,
+            Port = 7381,
             Key = HID2ADDR,
             Retry = 1,
             RetryDelay = 0.1f,
@@ -32,7 +32,7 @@ namespace Server.Config.Db
         {
             Name = "ADDR2HID",
             Host = "127.0.0.1",
-            Port = 7380,
+            Port = 7381,
             Key = ADDR2HID,
             Retry = 1,
             RetryDelay = 0.1f,
@@ -44,7 +44,7 @@ namespace Server.Config.Db
         {
             Name = "AID2HID",
             Host = "127.0.0.1",
-            Port = 7380,
+            Port = 7381,
             Key = AID2HID,
             Retry = 1,
             RetryDelay = 0.1f,
@@ -56,7 +56,7 @@ namespace Server.Config.Db
         {
             Name = "HID2AID",
             Host = "127.0.0.1",
-            Port = 7380,
+            Port = 7381,
             Key = HID2AID,
             Retry = 1,
             RetryDelay = 0.1f,
@@ -68,7 +68,7 @@ namespace Server.Config.Db
         {
             Name = "ANAME2AID",
             Host = "127.0.0.1",
-            Port = 7380,
+            Port = 7381,
             Key = ANAME2AID,
             Retry = 1,
             RetryDelay = 0.1f,
@@ -80,7 +80,7 @@ namespace Server.Config.Db
         {
             Name = "HNAME2HID",
             Host = "127.0.0.1",
-            Port = 7380,
+            Port = 7381,
             Key = HNAME2HID,
             Retry = 1,
             RetryDelay = 0.1f,
@@ -92,7 +92,7 @@ namespace Server.Config.Db
         {
             Name = "AID2ANAME",
             Host = "127.0.0.1",
-            Port = 7380,
+            Port = 7381,
             Key = AID2ANAME,
             Retry = 1,
             RetryDelay = 0.1f,
@@ -104,7 +104,7 @@ namespace Server.Config.Db
         {
             Name = "AID2TNAME",
             Host = "127.0.0.1",
-            Port = 7380,
+            Port = 7381,
             Key = AID2TNAME,
             Retry = 1,
             RetryDelay = 0.1f,

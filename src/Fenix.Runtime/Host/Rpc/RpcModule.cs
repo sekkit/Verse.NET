@@ -15,8 +15,8 @@ namespace Fenix
     {
         public static ConcurrentDictionary<UInt32, Api> RpcTypeDic = new ConcurrentDictionary<UInt32, Api>();
 
-        public ConcurrentDictionary<UInt64, RpcCommand> rpcDic     = new ConcurrentDictionary<UInt64, RpcCommand>();
-        public ConcurrentDictionary<UInt32, MethodInfo> rpcStubDic = new ConcurrentDictionary<UInt32, MethodInfo>(); 
+        public static ConcurrentDictionary<UInt64, RpcCommand> rpcDic     = new ConcurrentDictionary<UInt64, RpcCommand>();
+        public static ConcurrentDictionary<UInt32, MethodInfo> rpcStubDic = new ConcurrentDictionary<UInt32, MethodInfo>(); 
 
         public RpcModule()
         {
@@ -59,12 +59,12 @@ namespace Fenix
 
         public virtual void CallMethod(uint fromHostId, uint toHostId, Packet packet)
         {
-            bool isCallback = this.rpcDic.ContainsKey(packet.Id);
+            bool isCallback = rpcDic.ContainsKey(packet.Id);
             
             if (isCallback)
             {
-                var cmd = this.rpcDic[packet.Id];
-                this.rpcDic.TryRemove(packet.Id, out var _);
+                var cmd = rpcDic[packet.Id];
+                rpcDic.TryRemove(packet.Id, out var _);
                 cmd.Callback(packet.Payload);
             }
             else
@@ -75,14 +75,14 @@ namespace Fenix
                     null,
                     this) ; 
                 cmd.Call(()=> {
-                    this.rpcDic.TryRemove(cmd.Id, out var _);
+                    rpcDic.TryRemove(cmd.Id, out var _);
                 });
             }
         }
 
         public virtual void CallLocalMethod(uint protoCode, object[] args)
         {
-            this.rpcStubDic[protoCode].Invoke(this, args);
+            rpcStubDic[protoCode].Invoke(this, args);
         }
 
         public Api GetRpcType(uint protoCode)
@@ -120,13 +120,13 @@ namespace Fenix
                 var toActor = Host.Instance.GetActor(toActorId);
 
                 if (msg.HasCallback())
-                    this.rpcDic[cmd.Id] = cmd; 
+                    rpcDic[cmd.Id] = cmd; 
                 toActor.CallMethod(fromHostId, toHostId, packet);
                 return;
             }
 
             //否则通过网络调用
-            var peer = NetManager.Instance.GetPeerById(toHostId);
+            var peer = NetManager.Instance.GetPeerById(toHostId, netType);
             //Console.WriteLine(string.Format("{0} {1} {2} {3} {4}", fromHostId, toHostId, fromActorId, toActorId, peer==null?"NULL":""));
             if (peer == null)
             {
@@ -139,11 +139,13 @@ namespace Fenix
                 Log.Error(string.Format("Rpc:peer disconnected {0}", toHostId));
                 //这里可以尝试把global以及redis状态清空
                 NetManager.Instance.RemovePeerId(toHostId);
+                if (peer != null)
+                    NetManager.Instance.Deregister(peer);
                 return;
             }
 
             if(msg.HasCallback())
-                this.rpcDic[cmd.Id] = cmd; 
+                rpcDic[cmd.Id] = cmd; 
             
             peer.Send(packet);
         }
@@ -164,7 +166,7 @@ namespace Fenix
             }
 
             //否则通过网络调用
-            var peer = NetManager.Instance.GetPeerById(toHostId);
+            var peer = NetManager.Instance.GetPeerById(toHostId, netType);
 
             if (peer == null)
             {

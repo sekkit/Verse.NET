@@ -30,22 +30,22 @@ namespace Fenix
             Close?.Invoke(channel);
         }
 
-        public void OnConnect(IChannel channel)
+        void ITcpListener.OnConnect(IChannel channel)
         { 
             Connect?.Invoke(channel); 
         }
 
-        public void OnDisconnect(IChannel channel)
+        void ITcpListener.OnDisconnect(IChannel channel)
         {
             Disconnect?.Invoke(channel);
         }
 
-        public void OnException(IChannel channel, Exception ex)
+        void ITcpListener.OnException(IChannel channel, Exception ex)
         {
             Exception?.Invoke(channel, ex);
         }
 
-        public void OnReceive(IChannel channel, IByteBuffer buffer)
+        void ITcpListener.OnReceive(IChannel channel, IByteBuffer buffer)
         {
             Receive?.Invoke(channel, buffer); 
         }
@@ -58,7 +58,7 @@ namespace Fenix
         public static TcpHostServer Create(string ip, int port)
         {
             var channelConfig = new TcpChannelConfig();
-            channelConfig.Address = "0.0.0.0";
+            channelConfig.Address = ip;// "0.0.0.0";
             channelConfig.Port = port;
             channelConfig.UseLibuv = true;
             var listener = new TcpHostServer();
@@ -68,9 +68,9 @@ namespace Fenix
             return listener;
         }
 
-        public void Send(NetPeer peer, byte[] bytes)
-        {
-            
-        }
+        //public void Send(NetPeer peer, byte[] bytes)
+        //{
+        //    peer.Send(bytes);
+        //}
     }
 }
