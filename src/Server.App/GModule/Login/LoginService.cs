@@ -1,4 +1,6 @@
-﻿using DotNetty.KCP;
+﻿ 
+using DotNetty.KCP;
+using DotNetty.Transport.Libuv.Native;
 using Fenix;
 using Fenix.Common;
 using Fenix.Common.Attributes;
@@ -33,8 +35,9 @@ namespace Server.GModule
 
         }
 
+        //callback: code, actorName, actorHostId, actorHostName, actorHostAddress, 
         [ServerApi]
-        public void Login(string username, string password, Action<ErrCode> callback)
+        public void Login(string username, string password, Action<ErrCode, string, uint, string, string> callback)
         {
             Console.WriteLine(string.Format("login {0} {1}", username, password));
 
@@ -43,22 +46,33 @@ namespace Server.GModule
             //通常是在MasterService上，生成玩家，注意玩家可以随意迁移
 
             //分配玩家uid
-            //分配玩家游客名称
-
+            //分配玩家游客名称 
             var uid = Global.DbManager.CreateUid();
 
-            //actor创建后，必须绑定到host中才能正常运作 
-            //var a = Actor.Create<Server.UModule.Avatar>(uid);
-
-            GetService<MatchServiceRef>().rpc_join_match(uid, 1, (code) =>
+            var svc = GetService<MasterServiceRef>();
+            svc.CreateActor(nameof(Avatar), uid, (code, actorName, actorId) =>
             {
-                Log.Info("call_match_service.join_match_succ");
-            });
-
-            GetService<MasterServiceRef>().rpc_create_actor(nameof(Avatar), uid, (code) =>
-            {
+                //创建成功后，把客户端的avatar注册到服务端
                 Log.Info(string.Format("login.create_actor@Master.App {0}", code));
-                callback(ErrCode.OK);
+
+                //if(code == DefaultErrCode.OK)
+                //{
+                //    GetAvatar<Client.AvatarRef>(uid).client_on_api_test("", 1, (c)=> {
+                //        Log.Info(string.Format("login->create_actor {0}", c));
+                //    });
+                //    callback(ErrCode.OK, uid);
+                //}
+                //Global.IdManager.GetHostIdByActorId();
+
+                var hostId = Global.IdManager.GetHostIdByActorId(actorId);
+                ErrCode retCode = (code == DefaultErrCode.OK ? ErrCode.OK : ErrCode.ERROR);
+                callback(
+                    retCode,
+                    actorName,
+                    hostId,
+                    Global.IdManager.GetHostName(hostId),
+                    Global.IdManager.GetHostAddrByActorId(actorId)
+                );
             });
         }
 

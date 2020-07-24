@@ -10,6 +10,11 @@ using Server.Config.Db;
 
 namespace Fenix
 {
+    /*
+     * ID分两种，一种是固定ID，如Avatar的ID，Service的ID, 
+     * 其它如Host的ID，一般是固定的，但是也可以变化
+     * GlobalManager里面的Redis全局缓存，只存固定的ID
+     */
     public class IdManager
     {
         public static IdManager Instance = new IdManager();
@@ -24,15 +29,19 @@ namespace Fenix
         
         protected ConcurrentDictionary<string, uint> mHNAME2HID = new ConcurrentDictionary<string, uint>();
 
+        protected ConcurrentDictionary<uint, string> mHID2HNAME = new ConcurrentDictionary<uint, string>();
+
         protected ConcurrentDictionary<string, uint> mANAME2AID = new ConcurrentDictionary<string, uint>();
 
         protected ConcurrentDictionary<uint, string> mAID2ANAME = new ConcurrentDictionary<uint, string>();
 
-        protected ConcurrentDictionary<uint, string> mAID2TNAME = new ConcurrentDictionary<uint, string>(); 
+        protected ConcurrentDictionary<uint, string> mAID2TNAME = new ConcurrentDictionary<uint, string>();
+
+        protected ConcurrentDictionary<string, string> mCLIENT2ADDR = new ConcurrentDictionary<string, string>();
+
 
 #if !CLIENT
-        //protected ConcurrentDictionary<string, RedisDb> redisDic = new ConcurrentDictionary<string, RedisDb>();
- 
+         
         protected IdManager()
         {
             Global.DbManager.LoadDb(CacheConfig.HID2ADDR_cache);
@@ -40,9 +49,10 @@ namespace Fenix
             Global.DbManager.LoadDb(CacheConfig.AID2HID_cache);
             Global.DbManager.LoadDb(CacheConfig.HID2AID_cache);
             Global.DbManager.LoadDb(CacheConfig.ANAME2AID_cache);
-            Global.DbManager.LoadDb(CacheConfig.HNAME2HID_cache);
             Global.DbManager.LoadDb(CacheConfig.AID2ANAME_cache);
             Global.DbManager.LoadDb(CacheConfig.AID2TNAME_cache);
+            Global.DbManager.LoadDb(CacheConfig.HNAME2HID_cache);
+            Global.DbManager.LoadDb(CacheConfig.HID2HNAME_cache);
  
             var assembly = typeof(Global).Assembly;
             Log.Info(assembly.FullName.Replace("Server.App", "Fenix.Runtime").Replace("Client.App", "Fenix.Runtime"));
@@ -50,16 +60,8 @@ namespace Fenix
 
         ~IdManager()
         { 
-            //foreach (var kv in redisDic)
-            //    kv.Value.Dispose();
-        }
-
-        //RedisDb GetDb(string key)
-        //{
-        //    RedisDb db;
-        //    redisDic.TryGetValue(key, out db);
-        //    return db;
-        //}
+             
+        } 
 
         string GetKey(string prefix, string key)
         {
@@ -84,11 +86,13 @@ namespace Fenix
             mADDR2HID[address] = host.Id;
 
             mHNAME2HID[host.UniqueName] = host.Id;
-
+            mHID2HNAME[host.Id] = host.UniqueName;
+            
 #if !CLIENT
             var key = host.Id.ToString(); 
             bool ret = Global.DbManager.GetDb(CacheConfig.ADDR2HID).Set(address, host.Id);
             ret = Global.DbManager.GetDb(CacheConfig.HNAME2HID).Set(host.UniqueName, host.Id);
+            ret = Global.DbManager.GetDb(CacheConfig.HID2HNAME).Set(host.Id.ToString(), host.UniqueName);
             return Global.DbManager.GetDb(CacheConfig.HID2ADDR).Set(key, address) && ret; 
 #else
             return true;
@@ -105,6 +109,15 @@ namespace Fenix
             return true;
 #endif
         }
+
+#if !CLIENT
+        public void RegisterClient(uint clientId, string clientName, string addr)
+        {
+            Global.DbManager.GetDb(CacheConfig.HID2ADDR).Set(clientId.ToString(), addr);
+            Global.DbManager.GetDb(CacheConfig.ADDR2HID).Set(addr, clientId);
+            Global.DbManager.GetDb(CacheConfig.HNAME2HID).Set(clientName, clientId);
+        }
+#endif
 
         public string GetHostAddr(uint hostId)
         {
@@ -126,6 +139,17 @@ namespace Fenix
             return Global.DbManager.GetDb(CacheConfig.ADDR2HID).Get<uint>(addr);
 #else
             return 0;
+#endif
+        }
+
+        public string GetHostName(uint hostId)
+        {
+            if (mHID2HNAME.ContainsKey(hostId))
+                return mHID2HNAME[hostId];
+#if !CLIENT
+            return Global.DbManager.GetDb(CacheConfig.HID2HNAME).Get<string>(hostId.ToString());
+#else
+            return "";
 #endif
         }
 

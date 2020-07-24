@@ -51,10 +51,14 @@ namespace Server.GModule
         public void SERVER_API_login(IMessage msg, Action<object> cb)
         {
             var _msg = (LoginReq)msg;
-            this.Login(_msg.username, _msg.password, (code) =>
+            this.Login(_msg.username, _msg.password, (code, arg1, arg2, arg3, arg4) =>
             {
                 var cbMsg = new LoginReq.Callback();
                 cbMsg.code=code;
+                cbMsg.arg1=arg1;
+                cbMsg.arg2=arg2;
+                cbMsg.arg3=arg3;
+                cbMsg.arg4=arg4;
                 cb.Invoke(cbMsg);
             });
         }

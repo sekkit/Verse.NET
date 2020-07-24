@@ -14,6 +14,9 @@ namespace Fenix.Common
         public const uint REGISTER_REQ = 0x5;
         public const uint CREATE_ACTOR_REQ = 0x10;
         public const uint MIGRATE_ACTOR_REQ = 0x11;
+        public const uint REMOVE_ACTOR_REQ = 0x12;
+        public const uint REGISTER_CLIENT_REQ = 0x13;
+        public const uint BIND_CLIENT_ACTOR_REQ = 0x14;
         public const uint CALL_ACTOR_METHOD = 0xff;
 
         //NONE = 0x0,

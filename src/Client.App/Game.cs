@@ -6,6 +6,6 @@ namespace Client.App
 {
     public class Game
     {
-        public Client.Avatar Avatar { get; set; }
+        public static Client.Avatar Avatar { get; set; }
     }
 }

@@ -85,7 +85,7 @@ namespace Server.App
                     sw.Write(content);
                 } 
 
-                Environment.SetEnvironmentVariable("AppName", "Login.App");
+                Environment.SetEnvironmentVariable("AppName", "Master.App");
 
                 Bootstrap.Start(new Assembly[] { typeof(Server.UModule.Avatar).Assembly }, cfgList, OnInit, isMultiProcess:true); //单进程模式
             }

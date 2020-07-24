@@ -62,7 +62,7 @@ namespace Server
             this.CallRemoteMethod(ProtocolCode.DELETE_ACCOUNT_REQ, msg, cb);
         }
 
-        public void rpc_login(String username, String password, Action<ErrCode> callback)
+        public void rpc_login(String username, String password, Action<ErrCode, String, UInt32, String, String> callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);
             if (this.FromHostId == toHostId)
@@ -77,7 +77,7 @@ namespace Server
             };
             var cb = new Action<byte[]>((cbData) => {
                 var cbMsg = RpcUtil.Deserialize<LoginReq.Callback>(cbData);
-                callback?.Invoke(cbMsg.code);
+                callback?.Invoke(cbMsg.code, cbMsg.arg1, cbMsg.arg2, cbMsg.arg3, cbMsg.arg4);
             });
             this.CallRemoteMethod(ProtocolCode.LOGIN_REQ, msg, cb);
         }

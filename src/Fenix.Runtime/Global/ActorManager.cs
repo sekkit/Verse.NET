@@ -67,7 +67,7 @@ namespace Fenix
             //即使找不到目标Actor，仍然创建
             // 
 #if CLIENT
-            if (toActorId == 0)
+            if (toActorId == 0 && toActorName != "")
                 toActorId = Basic.GenID32FromName(toActorName);
 #endif
             var toHostId = Global.IdManager.GetHostIdByActorId(toActorId);

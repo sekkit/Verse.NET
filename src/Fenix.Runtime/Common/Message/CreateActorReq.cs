@@ -32,6 +32,12 @@ namespace Fenix.Common.Message
             [Key(0)]
             public DefaultErrCode code;
 
+            [Key(1)]
+            public String arg1;
+
+            [Key(2)]
+            public UInt32 arg2;
+
         }
 
     }

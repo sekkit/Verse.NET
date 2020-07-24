@@ -13,20 +13,21 @@ namespace Server.UModule
     [RuntimeData(typeof(Account))]
     public partial class Avatar : Actor
     {
-        //public Client.AvatarRef Client;
+        public Client.AvatarRef Client => (Client.AvatarRef)this.client;
 
         public Avatar()
         {
+            
         }
 
         public Avatar(string uid) : base(uid)
         {
             //Client.client_on_api_test("", 1, (code)=> { 
-                
+                 
             //});
         }
 
-        public override  void Update()
+        public override void Update()
         {
             base.Update();
 
@@ -35,7 +36,7 @@ namespace Server.UModule
             //{
             //    Log.Info(code.ToString());
             //}));
-        } 
+        }
 
         [ServerApi]
         public void ChangeName(string name, Action<ErrCode> callback)

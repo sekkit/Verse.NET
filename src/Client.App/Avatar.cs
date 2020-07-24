@@ -11,6 +11,8 @@ namespace Client
     [AccessLevel(ALevel.CLIENT_AND_SERVER)]
     public partial class Avatar : Actor
     {
+        public string Uid => this.UniqueName;
+
         public Avatar(string uid) : base(uid)
         {
 

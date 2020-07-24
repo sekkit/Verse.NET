@@ -68,6 +68,6 @@ namespace Fenix
                 fromActor.Rpc(protocolCode, FromHostId, fromActor.Id, toHostId, this.toActorId, toAddr, netType, msg, cb);
             else
                 fromHost.Rpc(protocolCode, FromHostId, 0, toHostId, this.toActorId, toAddr, netType, msg, cb);
-        } 
+        }
     }
 }

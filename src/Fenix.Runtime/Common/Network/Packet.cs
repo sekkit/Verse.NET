@@ -2,8 +2,10 @@
 
 using DotNetty.Buffers;
 using Fenix.Common;
+using Fenix.Common.Rpc;
 using Fenix.Common.Utils;
 using MessagePack;
+using System;
 using System.Net;
 
 namespace Fenix
@@ -30,13 +32,34 @@ namespace Fenix
         public uint ToActorId { get; set; }
  
         [IgnoreMember]
-        public NetworkType networkType { get; set; }
+        public NetworkType NetType { get; set; }
 
+        [IgnoreMember]
+        IMessage _msg;
+
+        [IgnoreMember]
+        public IMessage Msg
+        {
+            get
+            {
+                if (_msg != null)
+                    return _msg; 
+                _msg = (IMessage)RpcUtil.Deserialize(MsgType, this.Payload);
+                return _msg;
+            }
+        }
+
+        [IgnoreMember]
+        public Type MsgType { get; set; }
 
         [Key(100)]
         public byte[] Payload { get; set; }
 
-        public static Packet Create(ulong id, uint protoCode, uint fromHostId, uint toHostId, uint fromActorId, uint toActorId, NetworkType netType, byte[] data)
+        protected Packet()
+        { 
+        }
+
+        public static Packet Create(ulong id, uint protoCode, uint fromHostId, uint toHostId, uint fromActorId, uint toActorId, NetworkType netType, Type msgType, byte[] data)
         {
             var obj = new Packet();
             obj.Id = id;
@@ -45,15 +68,14 @@ namespace Fenix
             obj.ToHostId = toHostId;
             obj.FromActorId = fromActorId;
             obj.ToActorId = toActorId;
-            obj.networkType = netType;
+            obj.NetType = netType;
+            obj.MsgType = msgType;
             obj.Payload = data;
             return obj;
         }
 
         public byte[] Pack()
         {
-            //if (this.ProtoCode >= OpCode.CALL_ACTOR_METHOD)
-            //{
             var buf = Unpooled.DirectBuffer();
             buf.WriteIntLE((int)this.ProtoCode);
             buf.WriteLongLE((long)this.Id);
@@ -61,17 +83,7 @@ namespace Fenix
             buf.WriteIntLE((int)this.FromActorId);
             buf.WriteIntLE((int)this.ToActorId);
             buf.WriteBytes(this.Payload);
-            return buf.ToArray();
-            //}
-            //else
-            //{
-            //    var buf = Unpooled.DirectBuffer();
-            //    buf.WriteIntLE((int)this.ProtoCode);
-            //    buf.WriteLongLE((long)this.Id);
-            //    //buf.WriteIntLE((int)this.FromHostId);
-            //    buf.WriteBytes(this.Payload);
-            //    return buf.ToArray();
-            //}
+            return buf.ToArray(); 
         }
 
         public void Unpack(byte[] bytes)

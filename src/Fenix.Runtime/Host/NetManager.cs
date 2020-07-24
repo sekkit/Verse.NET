@@ -20,8 +20,11 @@ namespace Fenix
     public class NetManager
     { 
         protected ConcurrentDictionary<uint, NetPeer> tcpPeers = new ConcurrentDictionary<uint, NetPeer>();
+
         protected ConcurrentDictionary<uint, NetPeer> kcpPeers = new ConcurrentDictionary<uint, NetPeer>();
-        
+
+        protected ConcurrentDictionary<uint, NetPeer> clientPeers = new ConcurrentDictionary<uint, NetPeer>();
+
         public static NetManager Instance = new NetManager();
 
         public event Action<NetPeer> OnConnect;
@@ -135,6 +138,16 @@ namespace Fenix
             tcpPeers.TryRemove(peer.ConnId, out var _);
         }
 
+#if !CLIENT
+        public void RegisterClient(uint clientId, string uniqueName, NetPeer peer)
+        {
+            var addr = peer.RemoteAddress.ToString();
+            clientPeers[clientId] = peer;
+            clientPeers[Basic.GenID32FromName(addr)] = peer;
+            Global.IdManager.RegisterClient(clientId, uniqueName, peer.RemoteAddress.ToString()); 
+        }
+#endif
+
         public void RemovePeerId(uint connId)
         {
             tcpPeers.TryRemove(connId, out var _);
@@ -221,6 +234,12 @@ namespace Fenix
             else
                 kcpPeers[peer.ConnId] = peer;
             return peer;
+        }
+
+        public void Ping()
+        {
+            foreach(var p in tcpPeers.Values)
+                p?.Send(new byte[] { (byte)OpCode.PING });
         }
 
         public void Update()

@@ -1,5 +1,6 @@
 
 using Fenix.Common;
+using Fenix.Common.Attributes;
 using Fenix.Common.Utils;
 using MessagePack;
 using System;
@@ -31,7 +32,9 @@ namespace Fenix
         [DataMember]
         public bool CanTransfer { get; set; }
 
-        public ActorRef Client;
+#if !CLIENT
+        protected ActorRef client;
+#endif
 
         [IgnoreMember]
         [IgnoreDataMember]
@@ -124,12 +127,7 @@ namespace Fenix
         protected void Restore()
         {
 
-        }
-
-        //public dynamic GetService(string name)
-        //{
-        //    return Global.GetActorRef(name, this);
-        //}
+        } 
 
         public T GetService<T>(string name) where T : ActorRef
         {
@@ -141,14 +139,14 @@ namespace Fenix
             return (T)Global.GetActorRef(typeof(T), uid, this, Host.Instance);
         }
 
-        //public ActorRef GetActorRef(string name)
-        //{
-        //    return Global.GetActorRef(typeof(T).Name, name, this);
-        //}
-
         public T GetActorRef<T>(string actorName) where T: ActorRef
         {
             return (T)Global.GetActorRef(typeof(T), actorName, this, Host.Instance);
+        } 
+
+        public ActorRef GetActorRef(Type refType, string actorName)
+        {
+            return Global.GetActorRef(refType, actorName, this, Host.Instance);
         }
 
         public T GetService<T>() where T : ActorRef
@@ -165,5 +163,15 @@ namespace Fenix
             IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
             return (T)Global.GetActorRefByAddr(typeof(T), ep, hostName, name, null, Host.Instance);
         }
+#if !CLIENT
+        [ServerOnly]
+        public void OnClientEnable(string actorName)
+        {
+            //actorName == this.UniqueName
+            var refType = Global.TypeManager.GetRefType(this.GetType().Name);
+            this.client = GetActorRef(refType, this.UniqueName);
+            Log.Info(string.Format("on_client_enable", actorName, this.UniqueName));
+        }
+#endif
     }
 }

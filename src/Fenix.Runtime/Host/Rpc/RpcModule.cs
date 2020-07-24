@@ -7,7 +7,7 @@ using System;
 using System.Collections.Concurrent; 
 using System.Linq;
 using System.Net;
-using System.Reflection;  
+using System.Reflection;
 
 namespace Fenix
 {
@@ -57,7 +57,7 @@ namespace Fenix
             }
         }
 
-        public virtual void CallMethod(uint fromHostId, uint toHostId, Packet packet)
+        public virtual void CallMethod(Packet packet)
         {
             bool isCallback = rpcDic.ContainsKey(packet.Id);
             
@@ -69,11 +69,8 @@ namespace Fenix
             }
             else
             {
-                Type type = Global.TypeManager.GetMessageType(packet.ProtoCode);
-                IMessage msg = (IMessage)RpcUtil.Deserialize(type, packet.Payload);
-                var cmd = RpcCommand.Create(packet.Id, fromHostId, toHostId, packet.FromActorId, packet.ToActorId, packet.ProtoCode, packet.networkType, msg,
-                    null,
-                    this) ; 
+                //IMessage msg = packet.Msg;
+                var cmd = RpcCommand.Create(packet, null, this) ; 
                 cmd.Call(()=> {
                     rpcDic.TryRemove(cmd.Id, out var _);
                 });
@@ -97,22 +94,13 @@ namespace Fenix
         public void Rpc(uint protoCode, uint fromHostId, uint fromActorId, uint toHostId, uint toActorId, 
             IPEndPoint toPeerAddr, NetworkType netType, IMessage msg, Action<byte[]> cb)
         { 
-            //var toHostId = Global.IdManager.GetHostIdByActorId(toActorId); 
+            var packet = Packet.Create(Basic.GenID64(), protoCode, fromHostId, toHostId, fromActorId, toActorId, netType, msg.GetType(), RpcUtil.Serialize(msg));
 
             /*创建一个等待回调的rpc_command*/
             var cmd = RpcCommand.Create(
-                Basic.GenID64(),
-                fromHostId,
-                toHostId,
-                fromActorId,
-                toActorId,
-                protoCode,
-                netType,
-                msg,
+                packet,
                 (data) => cb?.Invoke(data),
-                this);
-
-            var packet = Packet.Create(cmd.Id, cmd.ProtoCode, cmd.FromHostId, cmd.ToHostId, cmd.FromActorId, cmd.ToActorId, netType, RpcUtil.Serialize(msg));
+                this); 
 
             //如果是同进程，则本地调用
             if (fromHostId == toHostId)
@@ -121,7 +109,7 @@ namespace Fenix
 
                 if (msg.HasCallback())
                     rpcDic[cmd.Id] = cmd; 
-                toActor.CallMethod(fromHostId, toHostId, packet);
+                toActor.CallMethod(packet);
                 return;
             }
 
@@ -151,17 +139,14 @@ namespace Fenix
         }
 
         public void RpcCallback(ulong protoId, uint protoCode, uint fromHostId, uint toHostId, uint fromActorId, uint toActorId, NetworkType netType, object cbMsg)
-        { 
-            //var toHostId = Global.IdManager.GetHostIdByActorId(toActorId);
-            //var fromHostId = Global.IdManager.GetHostIdByActorId(fromActorId);
-
-            var packet = Packet.Create(protoId, protoCode, fromHostId, toHostId, fromActorId, toActorId, netType, RpcUtil.Serialize(cbMsg));
+        {  
+            var packet = Packet.Create(protoId, protoCode, fromHostId, toHostId, fromActorId, toActorId, netType, cbMsg.GetType(), RpcUtil.Serialize(cbMsg));
 
             //如果是同进程，则本地调用
             if (fromHostId == toHostId)
             {
                 var toActor = Host.Instance.GetActor(toActorId);
-                toActor.CallMethod(fromHostId, toHostId, packet);
+                toActor.CallMethod(packet);
                 return;
             }
 

@@ -11,10 +11,10 @@ namespace Server.Config.Db
         public const string AID2HID = "AID2HID";
         public const string HID2AID = "HID2AID";
         public const string ANAME2AID = "ANAME2AID";
-        public const string HNAME2HID = "HNAME2HID";
         public const string AID2ANAME = "AID2ANAME";
         public const string AID2TNAME = "AID2TNAME";
-
+        public const string HID2HNAME = "HID2HNAME";
+        public const string HNAME2HID = "HNAME2HID";
 
         public static DbEntry HID2ADDR_cache = new DbEntry()
         {
@@ -70,6 +70,18 @@ namespace Server.Config.Db
             Host = "127.0.0.1",
             Port = 7381,
             Key = ANAME2AID,
+            Retry = 1,
+            RetryDelay = 0.1f,
+            ValidTime = -1,
+            Type = "Redis"
+        };
+         
+        public static DbEntry HID2HNAME_cache = new DbEntry()
+        {
+            Name = "HID2HNAME",
+            Host = "127.0.0.1",
+            Port = 7381,
+            Key = HID2HNAME,
             Retry = 1,
             RetryDelay = 0.1f,
             ValidTime = -1,

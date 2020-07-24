@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 using DotNetty.Codecs;
+using DotNetty.Common.Utilities;
 using Fenix.Common;
 using Fenix.Common.Attributes;
 using Fenix.Common.Utils; 
@@ -118,6 +119,8 @@ namespace Fenix
             List<string> paramList = new List<string>();
             foreach (var p in paramInfos)
             {
+                if (p.Name.StartsWith("__"))
+                    continue;
                 if (p.HasDefaultValue)
                     paramList.Add(string.Format("{0} {1}={2}", ParseTypeName(p.ParameterType), p.Name, p.DefaultValue));
                 else 
@@ -144,6 +147,8 @@ namespace Fenix
             {
                 if (p.Name == exclude)
                     continue;
+                if (p.Name.StartsWith("__"))
+                    continue;
                 if (p.HasDefaultValue)
                     paramList.Add(string.Format("{0}{1}", tarInstanceName, p.Name));
                 else 
@@ -159,7 +164,9 @@ namespace Fenix
             foreach (var p in paramInfos)
             {
                 if (p.Name == "callback")
-                    continue; 
+                    continue;
+                if (p.Name.StartsWith("__"))
+                    continue;
                 if (p.HasDefaultValue)
                     paramList.Add(string.Format("{0}{1}{2}={3}", prefix, tarInstanceName, p.Name, p.Name));
                 else 
@@ -195,6 +202,8 @@ namespace Fenix
             foreach(var p in paramInfos)
             {
                 if (p.Name == "callback")
+                    continue;
+                if (p.Name.StartsWith("__"))
                     continue;
                 int position = p.Position;
                 string pType = ParseTypeName(p.ParameterType);
@@ -232,6 +241,8 @@ namespace Fenix
             foreach (var p in paramInfos)
             {
                 if (p.Name != "callback")
+                    continue;
+                if (p.Name.StartsWith("__"))
                     continue;
                 string code = ParseMessageFields(p.ParameterType.GetGenericArguments(), names, prefix + "    ");
                 var builder = new StringBuilder()
@@ -401,18 +412,23 @@ namespace Shared
                         Console.WriteLine("client_api not allowed in Service", type.Name);
                         continue;
                     }
-                }
+                }  
 
                 if (api != Api.NoneApi)
                 {
+                    var methodParameterList = method.GetParameters();
+
+                    if (type.Name == "Host")
+                        methodParameterList = methodParameterList.Slice(0, methodParameterList.Length - 1);
+
                     uint code = Basic.GenID32FromName(method.Name);
 
                     //现在生成message
                     string message_type = method.Name + GetApiMessagePostfix(api);
 
-                    string message_fields = ParseMessageFields(method.GetParameters(), "        ");
+                    string message_fields = ParseMessageFields(methodParameterList, "        ");
 
-                    string callback_define = GenCallbackMsgDecl(method.GetParameters(),
+                    string callback_define = GenCallbackMsgDecl(methodParameterList,
                         GetCallbackArgs(method),
                         "        ");
 
@@ -477,20 +493,23 @@ namespace Shared
                     else if(api == Api.ServerOnly)
                         rpc_name = "rpc_" + NameToApi(method.Name);
 
-                    string args_decl = ParseArgsDecl(method.GetParameters());
+                    if (type.Name == "Host")
+                        rpc_name = method.Name;
+
+                    string args_decl = ParseArgsDecl(methodParameterList);
 
                     string typename = type.Name;
-                    string args = ParseArgs(method.GetParameters());
+                    string args = ParseArgs(methodParameterList);
 
                     string method_name = method.Name;
                     //string msg_type = method.Name + GetApiMessagePostfix(api);
-                    string msg_assign = ParseArgsMsgAssign(method.GetParameters(), "                ");
+                    string msg_assign = ParseArgsMsgAssign(methodParameterList, "                ");
 
                     StringBuilder builder;
 
                     if (callback_define != "")
                     {
-                        var cbType = method.GetParameters().Where(m => m.Name == "callback").First().ParameterType;
+                        var cbType = methodParameterList.Where(m => m.Name == "callback").First().ParameterType;
                         string cb_args = GenCbArgs(cbType.GetGenericArguments(), GetCallbackArgs(method), "cbMsg.");
 
                         builder = new StringBuilder()
@@ -538,8 +557,7 @@ namespace Shared
                     rpcDefineDic[rpc_name] = rpcDefineCode;
 
                     
-                    string api_rpc_args = ParseArgs(method.GetParameters(), "_msg.", "callback");
-                    //string api_assign = ParseArgsMsgAssign(method.GetParameters(), "                ", "cbMsg.");
+                    string api_rpc_args = ParseArgs(methodParameterList, "_msg.", "callback"); 
                     string api_type = "ServerApi";
                     string api_name = "SERVER_API_"+NameToApi(method.Name);
                     if (api == Api.ClientApi)
@@ -555,17 +573,29 @@ namespace Shared
                     builder = new StringBuilder()
                         .AppendLine($"        [RpcMethod({pc_cls}.{proto_code}, Api.{api_type})]")
                         .AppendLine($"        [EditorBrowsable(EditorBrowsableState.Never)]");
-                    if (callback_define != "")
-                        builder.AppendLine($"        public void {api_name}(IMessage msg, Action<object> cb)");
+                    if(type.Name == "Host")
+                    {
+                        if (callback_define != "")
+                            builder.AppendLine($"        public void {api_name}(IMessage msg, Action<object> cb, RpcContext context)");
+                        else
+                            builder.AppendLine($"        public void {api_name}(IMessage msg, RpcContext context)");
+                    }
                     else
-                        builder.AppendLine($"        public void {api_name}(IMessage msg)");
+                    {
+                        if (callback_define != "")
+                            builder.AppendLine($"        public void {api_name}(IMessage msg, Action<object> cb)");
+                        else
+                            builder.AppendLine($"        public void {api_name}(IMessage msg)");
+                    }
+                    
 
                     builder.AppendLine($"        {{")
                         .AppendLine($"            var _msg = ({message_type})msg;");
-                    
+                  
+
                     if (callback_define != "")
                     {
-                        var cbType2 = method.GetParameters().Where(m => m.Name == "callback").First().ParameterType;
+                        var cbType2 = methodParameterList.Where(m => m.Name == "callback").First().ParameterType;
                         string api_cb_args = GenCbArgs(cbType2.GetGenericArguments(), GetCallbackArgs(method), "");
                         string api_cb_assign = ParseArgsMsgAssign(cbType2.GetGenericArguments(),
                                                         GetCallbackArgs(method),
@@ -575,12 +605,19 @@ namespace Shared
                         .AppendLine($"            {{")
                         .AppendLine($"                var cbMsg = new {message_type}.Callback();")
                         .AppendLine($"{api_cb_assign}")
-                        .AppendLine($"                cb.Invoke(cbMsg);")
-                        .AppendLine($"            }});");
+                        .AppendLine($"                cb.Invoke(cbMsg);");
+                        if(type.Name == "Host")
+                            builder.AppendLine($"            }}, context);");
+                        else
+                            builder.AppendLine($"            }});");
                     }
                     else
                     {
-                        builder.AppendLine($"            this.{method.Name}({api_rpc_args});");
+                        
+                        if (type.Name == "Host")
+                            builder.AppendLine($"            this.{method.Name}({api_rpc_args}, context);");
+                        else
+                            builder.AppendLine($"            this.{method.Name}({api_rpc_args});");
                     }
 
                     builder.AppendLine($"        }}");

@@ -35,6 +35,18 @@ namespace Shared.Message
             [Key(0)]
             public ErrCode code;
 
+            [Key(1)]
+            public String arg1;
+
+            [Key(2)]
+            public UInt32 arg2;
+
+            [Key(3)]
+            public String arg3;
+
+            [Key(4)]
+            public String arg4;
+
         }
 
     }
