@@ -18,12 +18,12 @@ using System;
 namespace Client
 {
 
-    [RefType("Avatar")]
+    [RefType("Client.Avatar")]
     public partial class AvatarRef : ActorRef
     {
         public void client_on_api_test(String uid, Int32 match_type, Action<ErrCode> callback)
         {
-            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);
+            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
                 Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.API_TEST_NTF, new object[] { uid, match_type, callback });
@@ -43,7 +43,7 @@ namespace Client
 
         public void client_on_api_test2(String uid, Int32 match_type)
         {
-           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);
+           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
            if (this.FromHostId == toHostId)
            {
                 Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.API_TEST2_NTF, new object[] { uid, match_type });

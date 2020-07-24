@@ -21,27 +21,38 @@ namespace Server.UModule
         }
 
         public Avatar(string uid) : base(uid)
-        {
-            //Client.client_on_api_test("", 1, (code)=> { 
-                 
-            //});
+        { 
         }
 
-        public override void Update()
+        public override void onLoad()
         {
-            base.Update();
-
-            //var svc = GetService("MatchService");
-            //svc.rpc_join_match("", 1, new Action<uint>((code) =>
-            //{
-            //    Log.Info(code.ToString());
-            //}));
+            
         }
+
+        public override void onClientEnable()
+        {
+            this.Client.client_on_api_test("", 1, (code) =>
+            {
+                Log.Info("client_on_api_test " + code.ToString());
+            });
+        }
+
+        //public override void Update()
+        //{
+        //    base.Update();
+
+        //    //var svc = GetService("MatchService");
+        //    //svc.rpc_join_match("", 1, new Action<uint>((code) =>
+        //    //{
+        //    //    Log.Info(code.ToString());
+        //    //}));
+        //}
 
         [ServerApi]
         public void ChangeName(string name, Action<ErrCode> callback)
         {
             callback(ErrCode.OK);
         }
+
     }
 }

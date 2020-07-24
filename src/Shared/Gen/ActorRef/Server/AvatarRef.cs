@@ -18,12 +18,12 @@ using System;
 namespace Server
 {
 
-    [RefType("Avatar")]
+    [RefType("Server.UModule.Avatar")]
     public partial class AvatarRef : ActorRef
     {
         public void rpc_change_name(String name, Action<ErrCode> callback)
         {
-            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);
+            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
                 Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.CHANGE_NAME_REQ, new object[] { name, callback });

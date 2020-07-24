@@ -64,14 +64,14 @@ namespace Server.GModule
                 //}
                 //Global.IdManager.GetHostIdByActorId();
 
-                var hostId = Global.IdManager.GetHostIdByActorId(actorId);
+                var hostId = Global.IdManager.GetHostIdByActorId(actorId, false);
                 ErrCode retCode = (code == DefaultErrCode.OK ? ErrCode.OK : ErrCode.ERROR);
                 callback(
                     retCode,
                     actorName,
                     hostId,
                     Global.IdManager.GetHostName(hostId),
-                    Global.IdManager.GetHostAddrByActorId(actorId)
+                    Global.IdManager.GetHostAddrByActorId(actorId, false)
                 );
             });
         }
@@ -85,10 +85,5 @@ namespace Server.GModule
         //bool sent = false;
 
         int i = 0;
-
-        public override void Update()
-        {
-            base.Update();
-        }
     }
 }

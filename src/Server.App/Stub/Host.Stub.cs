@@ -22,10 +22,15 @@ namespace Fenix
     {
         [RpcMethod(OpCode.BIND_CLIENT_ACTOR_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_API_bind_client_actor(IMessage msg, RpcContext context)
+        public void SERVER_API_bind_client_actor(IMessage msg, Action<object> cb, RpcContext context)
         {
             var _msg = (BindClientActorReq)msg;
-            this.BindClientActor(_msg.name, context);
+            this.BindClientActor(_msg.actorName, (code) =>
+            {
+                var cbMsg = new BindClientActorReq.Callback();
+                cbMsg.code=code;
+                cb.Invoke(cbMsg);
+            }, context);
         }
 
         [RpcMethod(OpCode.REGISTER_CLIENT_REQ, Api.ServerApi)]
@@ -33,10 +38,11 @@ namespace Fenix
         public void SERVER_API_register_client(IMessage msg, Action<object> cb, RpcContext context)
         {
             var _msg = (RegisterClientReq)msg;
-            this.RegisterClient(_msg.hostId, _msg.uniqueName, (arg0) =>
+            this.RegisterClient(_msg.hostId, _msg.uniqueName, (arg0, arg1) =>
             {
                 var cbMsg = new RegisterClientReq.Callback();
                 cbMsg.arg0=arg0;
+                cbMsg.arg1=arg1;
                 cb.Invoke(cbMsg);
             }, context);
         }

@@ -23,7 +23,7 @@ namespace Server
     {
         public void rpc_create_account(String username, String password, String extra, Action<ErrCode> callback)
         {
-            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);
+            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
                 Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.CREATE_ACCOUNT_REQ, new object[] { username, password, extra, callback });
@@ -44,7 +44,7 @@ namespace Server
 
         public void rpc_delete_account(String username, String password, Action<ErrCode> callback)
         {
-            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);
+            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
                 Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.DELETE_ACCOUNT_REQ, new object[] { username, password, callback });
@@ -64,7 +64,7 @@ namespace Server
 
         public void rpc_login(String username, String password, Action<ErrCode, String, UInt32, String, String> callback)
         {
-            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);
+            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
                 Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.LOGIN_REQ, new object[] { username, password, callback });
@@ -84,7 +84,7 @@ namespace Server
 
         public void rpc_reset_password(String username, String email)
         {
-           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);
+           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
            if (this.FromHostId == toHostId)
            {
                 Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.RESET_PASSWORD_REQ, new object[] { username, email });
