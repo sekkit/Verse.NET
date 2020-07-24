@@ -20,7 +20,7 @@ namespace Fenix
 
     public partial class ActorRef
     {
-        public void BindClientActor(String name, Action<int> callback)
+        public void BindClientActor(String name)
         {
            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);
            if (this.FromHostId == toHostId)

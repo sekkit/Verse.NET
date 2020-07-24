@@ -16,6 +16,7 @@ using Fenix.Common.Utils;
 using Fenix.Common.Attributes;
 using System.Threading;
 using System.Reflection.PortableExecutable;
+using Shared.Protocol;
 
 namespace Fenix
 {
@@ -440,16 +441,15 @@ namespace Fenix
             callback((int)DefaultErrCode.OK);
         }
 
-
-
         [ServerApi]
-        public void BindClientActor(string name, RpcContext __context)
+        public void BindClientActor(string name, Action<ErrCode> callback, RpcContext __context)
         {
             //find actor.server
             var aid = Global.IdManager.GetActorId(name);
             var addr = Global.IdManager.GetHostAddrByActorId(aid);
 
             //set actor.server's client property
+
 
             //give actor.server hostId, ipaddr to client
 
