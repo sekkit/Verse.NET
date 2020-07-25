@@ -17,6 +17,7 @@ using System.Threading;
 using Basic = Fenix.Common.Utils.Basic; 
 using TimeUtil = Fenix.Common.Utils.TimeUtil;
 using System.Text;
+using System.Linq;
 
 namespace Fenix
 {
@@ -45,6 +46,9 @@ namespace Fenix
       
         private ConcurrentDictionary<ulong, Timer> mTimerDic = new ConcurrentDictionary<ulong, Timer>();
 
+        public bool IsAlive = true;
+
+        private Thread heartbeatTh;
 
         protected Host(string name, string ip, int port = 0, bool clientMode = false) : base()
         {
@@ -57,7 +61,18 @@ namespace Fenix
             {
                 Log.Error(ex.ToString()); 
                 NetManager.Instance.Deregister(peer);
-            }; 
+            };
+
+            NetManager.Instance.OnPeerLost += (peer) =>
+            {
+                if(this.actorDic.Any(m=>m.Key == peer.ConnId && m.Value.GetType().Name == "Avatar"))
+                {
+                    //客户端没了，就先删除actor吧（玩家avatar)
+
+                    this.actorDic[peer.ConnId].Destroy();
+                    this.actorDic.TryRemove(peer.ConnId, out var _);
+                }
+            };
 
             //如果是客户端，则用本地连接做为id
             //如果是服务端，则从名称计算一个id, 方便路由查找
@@ -107,8 +122,8 @@ namespace Fenix
                 //Log.Info(string.Format("{0} is running at {1} as ClientMode", this.UniqueName, LocalAddress.ToString()));
             }
 
-            var thread = new Thread(new ThreadStart(Heartbeat));
-            thread.Start();
+            heartbeatTh = new Thread(new ThreadStart(Heartbeat));
+            heartbeatTh.Start();
         }
 
         public static Host Create(string name, string ip, int port, bool clientMode)
@@ -295,6 +310,9 @@ namespace Fenix
         {
             while (true)
             {
+                if (!IsAlive)
+                    return;
+
                 if (IsClientMode)
                 {
                     NetManager.Instance.Ping();
@@ -449,6 +467,9 @@ namespace Fenix
 
         public sealed override void Update()
         {
+            if (IsAlive == false)
+                return;
+
             //Log.Info(string.Format("{0}:{1}", this.GetType().Name, rpcDic.Count));
             var curTime = TimeUtil.GetTimeStampMS();
 
@@ -471,7 +492,7 @@ namespace Fenix
                 this.actorDic[a].Update();
             }
 
-            NetManager.Instance.Update();
+            NetManager.Instance?.Update();
 
             //Log.Info(string.Format("C: {0}", rpcDic.Count));
         }
@@ -524,6 +545,25 @@ namespace Fenix
             var timer = Timer.Create(delay, interval, true, tickCallback);
             //this.mTimerDic[timer.Tid] = timer;
             this.mTimerDic.TryAdd(timer.Tid, timer);
+        }
+
+        public void Shutdown()
+        {
+            //先销毁所有的actor, netpeer
+            //再销毁自己
+
+            foreach(var a in this.actorDic.Values)
+            {
+                a.Destroy();
+            }
+
+            this.actorDic.Clear();
+
+            NetManager.Instance.Destroy();
+
+            IsAlive = false;
+
+            heartbeatTh = null;
         }
     }
 }

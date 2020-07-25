@@ -19,7 +19,7 @@ Fenix is in a early stage of development, but is also being used in commercial G
 
 4. Now build and run Client.App to see what happens.
 
-5. Unity3D support will be released soon
+5. Unity3D support
 
 6. Any stars or contributions are welcomed.
 

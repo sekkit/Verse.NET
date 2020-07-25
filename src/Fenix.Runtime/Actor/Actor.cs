@@ -134,10 +134,19 @@ namespace Fenix
             
         }
 
-        protected void Restore()
+        public void Restore()
         {
 
         } 
+
+        public void Destroy()
+        {
+            foreach (var t in mTimerDic.Values)
+                t.Dispose();
+            this.mTimerDic.Clear();
+
+            this.onDestroy();
+        }
 
         public T GetService<T>(string name) where T : ActorRef
         {
@@ -224,6 +233,11 @@ namespace Fenix
         public virtual void onUpdate()
         {
 
+        }
+
+        public virtual void onDestroy()
+        {
+            
         }
 
         public void AddTimer(long delay, long interval, Action tickCallback)
