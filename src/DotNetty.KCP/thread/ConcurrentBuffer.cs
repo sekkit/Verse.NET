@@ -68,7 +68,7 @@ namespace DotNetty.KCP.thread
                     buffer[index].Element = item;
 
 #if NET_4_6 || NET_STANDARD_2_0
-						Volatile.Write(ref buffer[index].Sequence, position + 1);
+                    System.Threading.Volatile.Write(ref buffer[index].Sequence, position + 1);
 #else
                     Thread.MemoryBarrier();
                     buffer[index].Sequence = position + 1;
@@ -109,7 +109,7 @@ namespace DotNetty.KCP.thread
                     buffer[index].Element = default(T);
 
 #if NET_4_6 || NET_STANDARD_2_0
-						Volatile.Write(ref buffer[index].Sequence, position + bufferMask + 1);
+						System.Threading.Volatile.Write(ref buffer[index].Sequence, position + bufferMask + 1);
 #else
                     Thread.MemoryBarrier();
                     buffer[index].Sequence = position + bufferMask + 1;

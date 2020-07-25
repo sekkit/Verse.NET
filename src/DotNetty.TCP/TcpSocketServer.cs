@@ -5,7 +5,9 @@ using DotNetty.Handlers.Tls;
 using DotNetty.Transport.Bootstrapping;
 using DotNetty.Transport.Channels;
 using DotNetty.Transport.Channels.Sockets;
+#if !UNITY_5_3_OR_NEWER 
 using DotNetty.Transport.Libuv;
+#endif
 using System;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
@@ -22,6 +24,7 @@ namespace DotNetty.TCP
 
         public bool Start(TcpChannelConfig channelConfig, ITcpListener listener)
         {
+#if !UNITY_5_3_OR_NEWER
             if (channelConfig.UseLibuv)
             {
                 ResourceLeakDetector.Level = ResourceLeakDetector.DetectionLevel.Disabled;
@@ -34,7 +37,10 @@ namespace DotNetty.TCP
                 bossGroup = new MultithreadEventLoopGroup(1);
                 workerGroup = new MultithreadEventLoopGroup();
             }
-
+#else
+            bossGroup = new MultithreadEventLoopGroup(1);
+            workerGroup = new MultithreadEventLoopGroup();
+#endif
             X509Certificate tlsCertificate = null;
             if (channelConfig.UseSSL)
             {
@@ -45,7 +51,7 @@ namespace DotNetty.TCP
             {
                 var bootstrap = new ServerBootstrap();
                 bootstrap.Group(bossGroup, workerGroup);
-
+#if !UNITY_5_3_OR_NEWER
                 if (channelConfig.UseLibuv)
                 {
                     bootstrap.Channel<TcpServerChannel>();
@@ -54,7 +60,9 @@ namespace DotNetty.TCP
                 {
                     bootstrap.Channel<TcpServerSocketChannel>();
                 }
-
+#else
+                bootstrap.Channel<TcpServerSocketChannel>();
+#endif
                 bootstrap
                   .Option(ChannelOption.SoBacklog, 8192)
                   .Option(ChannelOption.SoReuseaddr, true)

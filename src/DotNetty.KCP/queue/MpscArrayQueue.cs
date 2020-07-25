@@ -220,8 +220,9 @@ namespace DotNetty.KCP.Base
                 return this.ConsumerIndex == this.ProducerIndex;
             }
         }
-
+#if !UNITY_5_3_OR_NEWER
         public override bool NonEmpty => !IsEmpty;
+#endif
     }
 
     public abstract class MpscArrayQueueL1Pad<T> : ConcurrentCircularArrayQueue<T>

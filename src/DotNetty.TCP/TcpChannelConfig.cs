@@ -6,7 +6,9 @@ namespace DotNetty.TCP
 { 
     public class TcpChannelConfig
     {
+#if !UNITY_5_3_OR_NEWER
         public bool UseLibuv = false;
+#endif
 
         public bool UseSSL = false;
 
