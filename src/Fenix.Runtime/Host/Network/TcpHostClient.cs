@@ -72,8 +72,9 @@ namespace Fenix
             var channelConfig = new TcpChannelConfig();
             channelConfig.Address = ep.Address.ToString();
             channelConfig.Port = ep.Port;
+#if !UNITY_5_3_OR_NEWER
             channelConfig.UseLibuv = false;
-
+#endif
             if (client==null)
             {
                 client = TcpSocketClient.Instance;

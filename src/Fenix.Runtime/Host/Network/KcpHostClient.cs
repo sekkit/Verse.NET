@@ -86,8 +86,8 @@ namespace Fenix
         public void handleClose(Ukcp ukcp)
         { 
             OnClose?.Invoke(ukcp);
-            
-            Console.WriteLine(Snmp.snmp.ToString());
+
+            Log.Info(Snmp.snmp.ToString());
             Snmp.snmp = new Snmp();
         }
 

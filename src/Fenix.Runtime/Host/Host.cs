@@ -8,15 +8,13 @@ using DotNetty.KCP;
 using DotNetty.Buffers; 
 using DotNetty.Common.Utilities; 
 using DotNetty.Transport.Channels;
-using Fenix.Common;
-using Basic = Fenix.Common.Utils.Basic; 
 using System.Collections.Concurrent;
 using Fenix;
+using Fenix.Common;
 using Fenix.Common.Utils; 
 using Fenix.Common.Attributes;
-using System.Threading;
-using System.Reflection.PortableExecutable;
-using Shared.Protocol;
+using System.Threading;  
+using Basic = Fenix.Common.Utils.Basic; 
 using TimeUtil = Fenix.Common.Utils.TimeUtil;
 using System.Text;
 
@@ -142,7 +140,7 @@ namespace Fenix
 
         protected void OnReceiveBuffer(NetPeer peer, IByteBuffer buffer)
         {
-            Console.WriteLine(string.Format("RECV({0}) {1} {2} {3}", peer.networkType, peer.ConnId, peer.RemoteAddress, StringUtil.ToHexString(buffer.ToArray())));
+            Log.Info(string.Format("RECV({0}) {1} {2} {3}", peer.networkType, peer.ConnId, peer.RemoteAddress, StringUtil.ToHexString(buffer.ToArray())));
           
             if (buffer.ReadableBytes == 1)
             {
@@ -198,7 +196,7 @@ namespace Fenix
                     Global.TypeManager.GetMessageType(protoCode), 
                     bytes);
 
-                Console.WriteLine(string.Format("RECV2({0}): {1} {2} => {3} {4} >= {5} {6} => {7}", peer.networkType, protoCode, packet.FromHostId, packet.ToHostId,
+                Log.Info(string.Format("RECV2({0}): {1} {2} => {3} {4} >= {5} {6} => {7}", peer.networkType, protoCode, packet.FromHostId, packet.ToHostId,
                     packet.FromActorId, packet.ToActorId, peer.RemoteAddress.ToString(), peer.LocalAddress.ToString()));
                  
                 if (protoCode >= OpCode.CALL_ACTOR_METHOD && toActorId != 0)
@@ -231,7 +229,7 @@ namespace Fenix
             //新连接
             NetManager.Instance.RegisterKcp(ukcp);
             //ulong hostId = Global.IdManager.GetHostId(channel.RemoteAddress.ToString());
-            Console.WriteLine(string.Format("kcp_client_connected {0} {1}", 
+            Log.Info(string.Format("kcp_client_connected {0} {1}", 
                 Basic.GenID32FromName(ukcp.user().Channel.Id.AsLongText()), ukcp.user().RemoteAddress.ToString()));
         }
 
@@ -271,7 +269,7 @@ namespace Fenix
             //新连接
             NetManager.Instance.RegisterChannel(channel);
             //ulong hostId = Global.IdManager.GetHostId(channel.RemoteAddress.ToString());
-            Console.WriteLine("TcpConnect: " + channel.RemoteAddress.ToString());
+            Log.Info("TcpConnect: " + channel.RemoteAddress.ToString());
         }
 
         void OnTcpServerReceive(IChannel channel, IByteBuffer buffer)

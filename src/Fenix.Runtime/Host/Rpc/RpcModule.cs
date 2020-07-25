@@ -121,7 +121,7 @@ namespace Fenix
 
             //否则通过网络调用
             var peer = NetManager.Instance.GetPeerById(toHostId, netType);
-            //Console.WriteLine(string.Format("{0} {1} {2} {3} {4}", fromHostId, toHostId, fromActorId, toActorId, peer==null?"NULL":""));
+            //Log.Info(string.Format("{0} {1} {2} {3} {4}", fromHostId, toHostId, fromActorId, toActorId, peer==null?"NULL":""));
             if (peer == null)
             {
                 Log.Warning(string.Format("Rpc:cannot_find_peer_and_create {0} => {1} ({2})", fromHostId, toHostId, netType));
@@ -177,7 +177,7 @@ namespace Fenix
                 return;
             }
 
-            //Console.WriteLine(string.Format("{0} {1} {2} {3} {4}", Host.Instance.Id, toHostId,
+            //Log.Info(string.Format("{0} {1} {2} {3} {4}", Host.Instance.Id, toHostId,
             //    Global.TypeManager.GetActorType(fromActorId).Name, Global.TypeManager.GetActorType(toActorId).Name,
             //    peer == null ? "NULL" : ""));
 

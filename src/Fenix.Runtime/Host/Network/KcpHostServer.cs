@@ -48,27 +48,13 @@ namespace Fenix
         }
 
         public void handleReceive(IByteBuffer byteBuf, Ukcp ukcp)
-        {
-            //OneThreadSynchronizationContext.Instance.Post((obj) =>
-            //{ 
-            //    OnReceive?.Invoke(byteBuf, ukcp, protocolType);
-           
-            OnReceive?.Invoke(ukcp, byteBuf); 
-            
-            //}, null);
-
-            //short curCount = byteBuf.GetShort(byteBuf.ReaderIndex);
-            //Console.WriteLine(Thread.CurrentThread.Name + " 收到消息 " + curCount);
-            //ukcp.writeKcpMessage(byteBuf);
-            //if (curCount == -1)
-            //{
-            //    ukcp.notifyCloseEvent();
-            //}
+        { 
+            OnReceive?.Invoke(ukcp, byteBuf);
         }
-
+         
         public void handleException(Ukcp ukcp, Exception ex)
         {
-            //Console.WriteLine(ex.ToString());
+            //Log.Info(ex.ToString());
             OnException?.Invoke(ukcp, ex); 
         }
 
@@ -76,7 +62,7 @@ namespace Fenix
         {
             OnClose?.Invoke(ukcp); 
 
-            Console.WriteLine(Snmp.snmp.ToString());
+            Log.Info(Snmp.snmp.ToString());
             Snmp.snmp = new Snmp();
         }
 

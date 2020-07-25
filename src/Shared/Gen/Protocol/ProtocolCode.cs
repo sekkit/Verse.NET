@@ -1,6 +1,7 @@
 ﻿
 //AUTOGEN, do not modify it!
 
+using Fenix.Common;
 using Fenix.Common.Attributes;
 using System;
 using System.Collections.Generic;
@@ -18,13 +19,13 @@ namespace Shared
                 uint key = (uint)f.GetValue(this);
                 if(dic.ContainsKey(key))
                 {
-                    Console.WriteLine(string.Format("Duplicated protocol {0} and {1}", dic[key], f.Name));
+                    Log.Info(string.Format("Duplicated protocol {0} and {1}", dic[key], f.Name));
                 }
                 dic[key] = f.Name;
-                Console.WriteLine(string.Format("    ProtocolCode({0} = {1})", f.Name, f.GetValue(this)));
+                Log.Info(string.Format("    ProtocolCode({0} = {1})", f.Name, f.GetValue(this)));
             }
 
-            Console.WriteLine(dic.Count() == this.GetType().GetFields().Count()?"Validation Passed": "Duplicated Protocol");
+            Log.Info(dic.Count() == this.GetType().GetFields().Count()?"Validation Passed": "Duplicated Protocol");
         }
     }
 }

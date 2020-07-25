@@ -409,7 +409,7 @@ namespace Shared
                 {
                     if(RpcUtil.IsHeritedType(type, "Service"))
                     {
-                        Console.WriteLine("client_api not allowed in Service", type.Name);
+                        Log.Info(string.Format("client_api not allowed in Service {0}", type.Name));
                         continue;
                     }
                 }  
@@ -634,14 +634,14 @@ namespace Shared
             var alAttr = GetAttribute<AccessLevelAttribute>(type); 
             if (alAttr == null && type.Name != "Host")
             {
-                Console.WriteLine(string.Format("ERROR: {0} has no AccessLevel", type.Name));
+                Log.Info(string.Format("ERROR: {0} has no AccessLevel", type.Name));
                 return;
             }
 
             if (type.Name != "Host")
             {
                 var al = alAttr.AccessLevel;
-                Console.WriteLine(string.Format("AccessLevel {0} : {1}", type.Name, al));
+                Log.Info(string.Format("AccessLevel {0} : {1}", type.Name, al));
             }
 
             string root_ns = type.Name == "Host" ? "Fenix":(isServer ? "Server" : "Client");

@@ -96,7 +96,7 @@ namespace Fenix
         protected bool InitTcpClient(uint connId, IPEndPoint ep)
         {
             if(ep != null)
-                Console.WriteLine(string.Format("init_tcp_client {0} {1}", connId, ep.ToString()));
+                Log.Info(string.Format("init_tcp_client {0} {1}", connId, ep.ToString()));
             if (ep == null)
             {
                 var addr = Global.IdManager.GetHostAddr(connId);//, false);
@@ -112,7 +112,7 @@ namespace Fenix
         protected bool InitKcpClient(uint connId, IPEndPoint ep)
         {
             if (ep != null)
-                Console.WriteLine(string.Format("init_kcp_client {0} {1}", connId, ep.ToString()));
+                Log.Info(string.Format("init_kcp_client {0} {1}", connId, ep.ToString()));
             if (ep == null)
             {
                 var addr = Global.IdManager.GetHostAddr(connId);//, false);
@@ -134,7 +134,7 @@ namespace Fenix
             tcpClient.OnReceive += (ch, buffer) =>  OnReceive?.Invoke(this, buffer);
             tcpClient.OnClose += (ch) => { OnClose?.Invoke(this); };
             tcpClient.OnException += (ch, ex) => { OnException?.Invoke(this, ex); };
-            Console.WriteLine(string.Format("init_tcp_client_localaddr@{0}", tcpClient.LocalAddress));
+            Log.Info(string.Format("init_tcp_client_localaddr@{0}", tcpClient.LocalAddress));
             return true;
         }
 
@@ -144,7 +144,7 @@ namespace Fenix
             kcpClient.OnReceive += (kcp, buffer)=> { OnReceive?.Invoke(this, buffer); };
             kcpClient.OnClose += (kcp) => { OnClose?.Invoke(this); };
             kcpClient.OnException += (ch, ex) => { OnException?.Invoke(this, ex); };
-            Console.WriteLine(string.Format("init_kcp_client_localaddr@{0}", kcpClient.LocalAddress));
+            Log.Info(string.Format("init_kcp_client_localaddr@{0}", kcpClient.LocalAddress));
             return true;
         }
 
@@ -211,16 +211,16 @@ namespace Fenix
         {
             kcpChannel?.writeMessage(Unpooled.WrappedBuffer(bytes));
             if (kcpChannel != null)
-                Console.WriteLine(string.Format("sento_sender({0}): {1} {2} => {3} Channel:{4}", this.networkType, kcpChannel.user().RemoteAddress.ToString(), Host.Instance.Id, ConnId, this.kcpChannel.user().Channel.Id.AsLongText()));
+                Log.Info(string.Format("sento_sender({0}): {1} {2} => {3} Channel:{4}", this.networkType, kcpChannel.user().RemoteAddress.ToString(), Host.Instance.Id, ConnId, this.kcpChannel.user().Channel.Id.AsLongText()));
             tcpChannel?.WriteAndFlushAsync(Unpooled.WrappedBuffer(bytes));
             if (tcpChannel != null)
-                Console.WriteLine(string.Format("sento_sender({0}): {1} {2} => {3} Channel:{4}", this.networkType, tcpChannel.RemoteAddress.ToString(), Host.Instance.Id, ConnId, tcpChannel.Id.AsLongText()));
+                Log.Info(string.Format("sento_sender({0}): {1} {2} => {3} Channel:{4}", this.networkType, tcpChannel.RemoteAddress.ToString(), Host.Instance.Id, ConnId, tcpChannel.Id.AsLongText()));
             kcpClient?.Send(bytes);
             if (kcpClient != null)
-                Console.WriteLine(string.Format("sento_receiver({0}): {1} {2} => {3} Channel:{4}", this.networkType, kcpClient.RemoteAddress.ToString(), Host.Instance.Id, ConnId, kcpClient.ChannelId));
+                Log.Info(string.Format("sento_receiver({0}): {1} {2} => {3} Channel:{4}", this.networkType, kcpClient.RemoteAddress.ToString(), Host.Instance.Id, ConnId, kcpClient.ChannelId));
             tcpClient?.Send(bytes);
             if (tcpClient != null)
-                Console.WriteLine(string.Format("sento_receiver({0}): {1} {2} => {3} Channel:{4}", this.networkType, tcpClient.RemoteAddress.ToString(), Host.Instance?.Id, ConnId, tcpClient.ChannelId));
+                Log.Info(string.Format("sento_receiver({0}): {1} {2} => {3} Channel:{4}", this.networkType, tcpClient.RemoteAddress.ToString(), Host.Instance?.Id, ConnId, tcpClient.ChannelId));
         }
 
         public async Task SendAsync(byte[] bytes)

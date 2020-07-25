@@ -5,25 +5,21 @@
  * server端通信都是走tcp
  * server/client之间可以走tcp/kcp/websockets
  */
-
-using DotNetty.Buffers;
+ 
 using Fenix;
-using Fenix.Config; 
-using MessagePack;
+using Fenix.Config;  
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using Microsoft.Extensions.Configuration;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
+using Microsoft.Extensions.Configuration; 
 using System.Text;
 using Server.Config.Db;
 
-namespace Server.App
+namespace Server
 { 
-    class Program
+    class App
     { 
         static void Main(string[] args)
         { 

@@ -29,7 +29,11 @@ namespace Fenix.Common
 
 		public static void Verbose(string message)
 		{
+#if !UNITY_5_3_OR_NEWER
 			Console.WriteLine(message);
+#else
+			UnityEngine.Debug.Log(message);
+#endif
 #if !CLIENT
 			globalLog.Verbose(message); 
 #endif
@@ -37,7 +41,11 @@ namespace Fenix.Common
 
 		public static void Warning(string message)
 		{
+#if !UNITY_5_3_OR_NEWER
 			Console.WriteLine(message);
+#else
+			UnityEngine.Debug.LogWarning(message);
+#endif
 #if !CLIENT
 			globalLog.Warning(message);
 #endif
@@ -45,7 +53,11 @@ namespace Fenix.Common
 
 		public static void Info(string message)
 		{
+#if !UNITY_5_3_OR_NEWER
 			Console.WriteLine(message);
+#else
+			UnityEngine.Debug.Log(message);
+#endif
 #if !CLIENT
 			globalLog.Information(message);
 #endif
@@ -53,7 +65,11 @@ namespace Fenix.Common
 
 		public static void Debug(string message)
 		{
+#if !UNITY_5_3_OR_NEWER
 			Console.WriteLine(message);
+#else
+			UnityEngine.Debug.Log(message);
+#endif
 #if !CLIENT
 			globalLog.Debug(message);
 #endif
@@ -61,7 +77,11 @@ namespace Fenix.Common
 
 		public static void Error(Exception e)
 		{
+#if !UNITY_5_3_OR_NEWER
 			Console.WriteLine(e.ToString());
+#else
+			UnityEngine.Debug.LogError(e.ToString());
+#endif
 #if !CLIENT
 			globalLog.Error(e.ToString());
 #endif
@@ -69,7 +89,11 @@ namespace Fenix.Common
 
 		public static void Error(string message)
 		{
+#if !UNITY_5_3_OR_NEWER
 			Console.WriteLine(message);
+#else
+			UnityEngine.Debug.LogError(message);
+#endif
 #if !CLIENT
 			globalLog.Error(message);
 #endif
@@ -77,7 +101,11 @@ namespace Fenix.Common
 
 		public static void Fatal(Exception e)
 		{
+#if !UNITY_5_3_OR_NEWER
 			Console.WriteLine(e.ToString());
+#else
+			UnityEngine.Debug.LogError(e.ToString());
+#endif
 #if !CLIENT
 			globalLog.Fatal(e.ToString());
 #endif
@@ -85,7 +113,11 @@ namespace Fenix.Common
 
 		public static void Fatal(string message)
 		{
+#if !UNITY_5_3_OR_NEWER
 			Console.WriteLine(message);
+#else
+			UnityEngine.Debug.LogError(message);
+#endif
 #if !CLIENT
 			globalLog.Fatal(message);
 #endif

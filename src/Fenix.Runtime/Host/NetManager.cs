@@ -125,7 +125,7 @@ namespace Fenix
             if (channelPeers.ContainsKey(peer.ConnId))
                 channelPeers.TryRemove(peer.ConnId, out var _);
 
-            Console.WriteLine(string.Format("DeregisterPeer: {0} {1} {2}", peer.ConnId, peer.RemoteAddress, peer.networkType));
+            Log.Info(string.Format("DeregisterPeer: {0} {1} {2}", peer.ConnId, peer.RemoteAddress, peer.networkType));
         }
 
 #if !CLIENT
@@ -242,7 +242,7 @@ namespace Fenix
         public void OnPong(NetPeer peer)
         {
             peer.lastTickTime = TimeUtil.GetTimeStampMS();
-            Console.WriteLine(string.Format("PONG({0}) {1} from {2}", peer.networkType, peer.ConnId, peer.RemoteAddress.ToString()));
+            Log.Info(string.Format("PONG({0}) {1} from {2}", peer.networkType, peer.ConnId, peer.RemoteAddress.ToString()));
         }
 
         public void Update()
@@ -258,7 +258,7 @@ namespace Fenix
             {
                 if (p.IsActive == false)
                 {
-                    Console.WriteLine(string.Format("Remove: {0} {1} {2}", p.ConnId, p.RemoteAddress, p.networkType));
+                    Log.Info(string.Format("Remove: {0} {1} {2}", p.ConnId, p.RemoteAddress, p.networkType));
                     this.Deregister(p);
                     continue;
                 }
@@ -266,7 +266,7 @@ namespace Fenix
                 if (curTS - p.lastTickTime >= RuntimeConfig.HeartbeatIntervalMS * 3)
                 {
                     this.PrintPeerInfo("SEKKIT");
-                    Console.WriteLine(string.Format("Timeout: {0} {1} {2}", p.ConnId, p.RemoteAddress, p.networkType));
+                    Log.Info(string.Format("Timeout: {0} {1} {2}", p.ConnId, p.RemoteAddress, p.networkType));
                     this.Deregister(p);
                 }
             }
@@ -275,16 +275,16 @@ namespace Fenix
         public void PrintPeerInfo(string header="")
         {
             if (header != "")
-                Console.WriteLine(header);
+                Log.Info(header);
 
             foreach (var p in tcpPeers.Values)
             {
-                Console.WriteLine(string.Format("========Peer({0}): {1} {2} {3} active:{4}", p.networkType, p.ConnId, p.RemoteAddress, p.LocalAddress, p.IsActive)); 
+                Log.Info(string.Format("========Peer({0}): {1} {2} {3} active:{4}", p.networkType, p.ConnId, p.RemoteAddress, p.LocalAddress, p.IsActive)); 
             }
 
             foreach (var p in kcpPeers.Values)
             {
-                Console.WriteLine(string.Format("========Peer({0}): {1} {2} {3} active:{4}", p.networkType, p.ConnId, p.RemoteAddress, p.LocalAddress, p.IsActive));
+                Log.Info(string.Format("========Peer({0}): {1} {2} {3} active:{4}", p.networkType, p.ConnId, p.RemoteAddress, p.LocalAddress, p.IsActive));
             }
         }
     }
