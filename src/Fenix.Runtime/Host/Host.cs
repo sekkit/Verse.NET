@@ -161,7 +161,6 @@ namespace Fenix
                 {
                     //删除这个连接
                     NetManager.Instance.Deregister(peer);
-                    peer.Send(new byte[] { (byte)OpCode.GOODBYE });
                 }
 
                 return;

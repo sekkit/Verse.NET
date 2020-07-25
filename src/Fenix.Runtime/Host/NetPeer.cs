@@ -242,6 +242,8 @@ namespace Fenix
 
             IsAlive = false;
 
+            this.GoodBye();
+
             kcpClient?.Stop();
             tcpClient?.Stop();
             tcpChannel?.CloseAsync();
@@ -256,6 +258,11 @@ namespace Fenix
         public void Ping()
         {
             this.Send(new byte[] { (byte)OpCode.PING });
+        }
+
+        public void GoodBye()
+        {
+            this.Send(new byte[] { (byte)OpCode.GOODBYE });
         }
 
         public void Register()

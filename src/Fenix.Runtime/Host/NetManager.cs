@@ -114,7 +114,7 @@ namespace Fenix
             peer.OnClose -= this.OnClose;
             peer.OnReceive -= OnReceive;
             peer.OnException -= OnException;
-
+            
             peer.Stop();
 
             if (peer.networkType == NetworkType.KCP) 
@@ -148,7 +148,7 @@ namespace Fenix
         public void RemovePeerId(uint connId)
         {
             tcpPeers.TryRemove(connId, out var _);
-            kcpPeers.TryRemove(connId, out var _); 
+            kcpPeers.TryRemove(connId, out var _);
             Global.IdManager.RemoveHostId(connId);
         }
 
@@ -156,13 +156,13 @@ namespace Fenix
         {
             var cid = ch.Id.AsLongText();
             var id = Basic.GenID32FromName(cid);
-            return channelPeers[id]; 
+            return channelPeers[id];
         }
 
         public NetPeer GetPeer(Ukcp ukcp)
         {  
             var cid = ukcp.user().Channel.Id.AsLongText();
-             
+            
             var id = Basic.GenID32FromName(cid);
             return channelPeers[id];
         }
@@ -173,9 +173,9 @@ namespace Fenix
             if (netType == NetworkType.TCP)
             {
                 if (tcpPeers.TryGetValue(peerId, out peer))
-                    return peer; 
+                    return peer;
             }
-            else 
+            else
             {
                 if (kcpPeers.TryGetValue(peerId, out peer))
                     return peer;
