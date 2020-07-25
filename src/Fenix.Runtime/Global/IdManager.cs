@@ -70,13 +70,13 @@ namespace Fenix
             Global.DbManager.LoadDb(CacheConfig.AID2TNAME_cache);
             Global.DbManager.LoadDb(CacheConfig.HNAME2HID_cache);
             Global.DbManager.LoadDb(CacheConfig.HID2HNAME_cache);
-            Global.DbManager.LoadDb(CacheConfig.C_AID2HID_cache);
-            Global.DbManager.LoadDb(CacheConfig.C_HID2AID_cache);
-            Global.DbManager.LoadDb(CacheConfig.C_AID2ANAME_cache);
-            Global.DbManager.LoadDb(CacheConfig.C_ADDR2HID_cache); 
-            Global.DbManager.LoadDb(CacheConfig.C_HID2ADDR_cache);
-            Global.DbManager.LoadDb(CacheConfig.C_HNAME2HID_cache);
-            Global.DbManager.LoadDb(CacheConfig.C_HID2HNAME_cache); 
+            //Global.DbManager.LoadDb(CacheConfig.C_AID2HID_cache);
+            //Global.DbManager.LoadDb(CacheConfig.C_HID2AID_cache);
+            //Global.DbManager.LoadDb(CacheConfig.C_AID2ANAME_cache);
+            //Global.DbManager.LoadDb(CacheConfig.C_ADDR2HID_cache); 
+            //Global.DbManager.LoadDb(CacheConfig.C_HID2ADDR_cache);
+            //Global.DbManager.LoadDb(CacheConfig.C_HNAME2HID_cache);
+            //Global.DbManager.LoadDb(CacheConfig.C_HID2HNAME_cache); 
 
             var assembly = typeof(Global).Assembly;
             Log.Info(assembly.FullName.Replace("Server.App", "Fenix.Runtime").Replace("Client.App", "Fenix.Runtime"));
