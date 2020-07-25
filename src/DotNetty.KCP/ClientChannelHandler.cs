@@ -27,7 +27,7 @@ namespace DotNetty.KCP
         {
             var msg = (DatagramPacket) message;
             var ukcp = _channelManager.get(msg);
-            ukcp.read(msg.Content);
+            ukcp?.read(msg.Content);
         }
     }
 }
