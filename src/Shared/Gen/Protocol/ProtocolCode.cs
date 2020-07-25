@@ -1,6 +1,7 @@
 ﻿
 //AUTOGEN, do not modify it!
 
+using Fenix.Common.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;

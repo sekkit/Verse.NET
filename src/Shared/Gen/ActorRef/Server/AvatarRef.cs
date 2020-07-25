@@ -23,7 +23,7 @@ namespace Server
     {
         public void rpc_change_name(String name, Action<ErrCode> callback)
         {
-            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
+            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);//, this.isClient);
             if (this.FromHostId == toHostId)
             {
                 Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.CHANGE_NAME_REQ, new object[] { name, callback });

@@ -33,12 +33,20 @@ namespace Fenix
             }, context);
         }
 
+        [RpcMethod(OpCode.REGISTER_REQ, Api.ServerApi)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SERVER_API_register(IMessage msg, RpcContext context)
+        {
+            var _msg = (RegisterReq)msg;
+            this.Register(_msg.hostId, _msg.hostName, context);
+        }
+
         [RpcMethod(OpCode.REGISTER_CLIENT_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API_register_client(IMessage msg, Action<object> cb, RpcContext context)
         {
             var _msg = (RegisterClientReq)msg;
-            this.RegisterClient(_msg.hostId, _msg.uniqueName, (arg0, arg1) =>
+            this.RegisterClient(_msg.hostId, _msg.hostName, (arg0, arg1) =>
             {
                 var cbMsg = new RegisterClientReq.Callback();
                 cbMsg.arg0=arg0;
