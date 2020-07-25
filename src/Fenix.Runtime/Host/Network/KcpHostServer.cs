@@ -22,7 +22,6 @@ namespace Fenix
         public event Action<Ukcp> OnClose;
 
         protected KcpServer server; 
-        
 
         public static KcpHostServer Create(IPEndPoint ep)
         {
@@ -69,12 +68,12 @@ namespace Fenix
 
         public void handleException(Ukcp ukcp, Exception ex)
         {
-            Console.WriteLine(ex.StackTrace);
+            //Console.WriteLine(ex.ToString());
             OnException?.Invoke(ukcp, ex); 
         }
 
         public void handleClose(Ukcp ukcp)
-        { 
+        {
             OnClose?.Invoke(ukcp); 
 
             Console.WriteLine(Snmp.snmp.ToString());

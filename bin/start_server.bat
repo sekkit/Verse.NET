@@ -10,7 +10,7 @@ set BIN_PATH=%cwdpath%/netcoreapp3.1
 
 echo %BIN_PATH%/Server.App.dll
 
-start dotnet %BIN_PATH%/Server.App.dll --Config=%APP_CONF% --AppName="Login.App"
+rem start dotnet %BIN_PATH%/Server.App.dll --Config=%APP_CONF% --AppName="Login.App"
 start dotnet %BIN_PATH%/Server.App.dll --Config=%APP_CONF% --AppName="Match.App"
 start dotnet %BIN_PATH%/Server.App.dll --Config=%APP_CONF% --AppName="Master.App"
 rem start dotnet %BIN_PATH%/Server.App.dll --Config=%APP_CONF% --AppName="Zone.App"

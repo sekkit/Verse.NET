@@ -12,8 +12,7 @@ using DotNetty.Transport.Channels;
 using DotNetty.Transport.Channels.Groups;
 using Fenix.Common;
 using Fenix.Common.Utils;
-
-
+using Fenix.Config;
 
 namespace Fenix
 {
@@ -23,7 +22,9 @@ namespace Fenix
 
         protected static ConcurrentDictionary<uint, NetPeer> kcpPeers = new ConcurrentDictionary<uint, NetPeer>();
 
-        protected static ConcurrentDictionary<uint, NetPeer> clientPeers = new ConcurrentDictionary<uint, NetPeer>();
+        protected static ConcurrentDictionary<uint, NetPeer> channelPeers = new ConcurrentDictionary<uint, NetPeer>();
+
+        //protected static ConcurrentDictionary<uint, NetPeer> clientPeers = new ConcurrentDictionary<uint, NetPeer>();
 
         public static NetManager Instance = new NetManager();
 
@@ -34,31 +35,37 @@ namespace Fenix
         public event Action<NetPeer, IByteBuffer> OnSend;
 
         public void RegisterChannel(IChannel channel)
-        { 
-            var addr = channel.RemoteAddress.ToString();
-
-            var id = Global.IdManager.GetHostId(addr);
-            if (id == 0) 
-                id = Basic.GenID32FromName(addr);
-
-            //Global.IdManager.RegisterAddress(id, addr);
-
+        {
+            //var addr = channel.RemoteAddress.ToString();
+            
+            var cid = channel.Id.AsLongText();
+            var id = Basic.GenID32FromName(cid);
             var peer = NetPeer.Create(id, channel);
-            //peer.OnClose += this.OnClose;
-            //peer.OnReceive += OnReceive;
-            //peer.OnException += OnException;
-            tcpPeers[peer.ConnId] = peer;
+            channelPeers[id] = peer;
+
+            //var id = Global.IdManager.GetHostId(addr);
+            //if (id == 0) 
+            //    id = Basic.GenID32FromName(addr);
+
+            ////Global.IdManager.RegisterAddress(id, addr);
+
+            //var peer = NetPeer.Create(id, channel);
+            ////peer.OnClose += this.OnClose;
+            ////peer.OnReceive += OnReceive;
+            ////peer.OnException += OnException;
+            //tcpPeers[peer.ConnId] = peer;
         }
 
         public void DeregisterChannel(IChannel ch)
         {
-            var id = Global.IdManager.GetHostId(ch.RemoteAddress.ToString()); 
-            tcpPeers.TryRemove(id, out NetPeer peer);
-            if (id != 0 && peer != null)
-            {
-                this.Deregister(peer);
-                Global.IdManager.RemoveHostId(peer.ConnId);
-            }
+            //var id = Global.IdManager.GetHostId(ch.RemoteAddress.ToString());
+            var peer = GetPeer(ch);  
+            //tcpPeers.TryRemove(peer.ConnId, out NetPeer _);
+            //if (id != 0 && peer != null)
+            //{
+            this.Deregister(peer);
+            //Global.IdManager.RemoveHostId(peer.ConnId);
+            //}
         }
 
         public void ChangePeerId(uint oldHostId, uint newHostId, string hostName, string address)
@@ -91,40 +98,90 @@ namespace Fenix
                 hostInfo.HostId = newHostId;
                 hostInfo.HostName = hostName;
                 hostInfo.HostAddr = address;
-                Global.IdManager.RegisterHostInfo(hostInfo);
-                //Global.IdManager.RegisterAddress(newId, peer.RemoteAddress.ToString());
+                Global.IdManager.RegisterHostInfo(hostInfo); 
+            } 
+            if (channelPeers.ContainsKey(oldHostId))
+            {
+                var peer = channelPeers[oldHostId];
+                peer.ConnId = newHostId;
+                //channelPeers.TryRemove(oldHostId, out var _);
+                if (peer.networkType == NetworkType.KCP)
+                    kcpPeers[newHostId] = peer;
+                else
+                    tcpPeers[newHostId] = peer;
+
+                //var hostInfo = Global.IdManager.GetHostInfo(newHostId); 
+                //Global.IdManager.RemoveHostId(oldHostId);
+                Global.IdManager.RegisterHost(newHostId, hostName, address);
+
+                //hostInfo.HostId = newHostId;
+                //hostInfo.HostName = hostName;
+                //hostInfo.HostAddr = address;
+                //Global.IdManager.RegisterHostInfo(hostInfo); 
             }
         }
 
+        //public void ChangePeerId(string channelId, uint newHostId, string hostName, string address)
+        //{
+        //    Log.Info(string.Format("ChangePeer: {0}=>{1} {2} {3}", channelId, newHostId, hostName, address));
+        //    if (channelPeers.ContainsKey(channelId))
+        //    {
+        //        var peer = channelPeers[channelId];
+        //        peer.ConnId = newHostId;
+        //        channelPeers.TryRemove(channelId, out var _);
+        //        if (peer.networkType == NetworkType.KCP)
+        //            kcpPeers[newHostId] = peer;
+        //        else
+        //            tcpPeers[newHostId] = peer;
+
+        //        //var hostInfo = Global.IdManager.GetHostInfo(newHostId); 
+        //        //Global.IdManager.RemoveHostId(oldHostId);
+        //        Global.IdManager.RegisterHost(newHostId, hostName, address);
+
+        //        //hostInfo.HostId = newHostId;
+        //        //hostInfo.HostName = hostName;
+        //        //hostInfo.HostAddr = address;
+        //        //Global.IdManager.RegisterHostInfo(hostInfo); 
+        //    } 
+        //}
+
         //kcp目前不支持epoll/kqueue/IOCP，所以只在客户端上用用
         public void RegisterKcp(Ukcp ukcp)
-        { 
-            //int conv = ukcp.getConv();
-            var ep = ukcp.user().RemoteAddress;
-            //var cid = ukcp.user().Channel.Id.AsLongText();
+        {
+            ////int conv = ukcp.getConv();
+            //var ep = ukcp.user().RemoteAddress;
+            ////var cid = ukcp.user().Channel.Id.AsLongText();
 
-            var addr = ep.ToString();
+            //var addr = ep.ToString();
 
-            var id = Global.IdManager.GetHostId(addr);
-            if(id == 0) 
-                id = Basic.GenID32FromName(addr); 
+            //var id = Global.IdManager.GetHostId(addr);
+            //if(id == 0) 
+            //    id = Basic.GenID32FromName(addr); 
 
-            var peer = NetPeer.Create(id, ukcp); 
-            kcpPeers[peer.ConnId] = peer;
+            //var peer = NetPeer.Create(id, ukcp); 
+            //kcpPeers[peer.ConnId] = peer;
 
+            var cid = ukcp.user().Channel.Id.AsLongText();
+            var id = Basic.GenID32FromName(cid);
+            var peer = NetPeer.Create(id, ukcp);
+            channelPeers[peer.ConnId] = peer;
             Log.Info(string.Format("Incoming KCP id: {0}", id));
         }  
 
         public void DeregisterKcp(Ukcp ukcp)
         {
-            var ep = ukcp.user().RemoteAddress;
-            var addr = ep.ToString();
+            //var ep = ukcp.user().RemoteAddress;
+            //var addr = ep.ToString();
 
-            //this.mAddr2Ukcp.TryRemove(addr, out var _);
-            var id = Global.IdManager.GetHostId(addr);
-            if(id == 0) 
-                id = Basic.GenID32FromName(addr); 
-            kcpPeers.TryRemove(id, out var peer);
+            ////this.mAddr2Ukcp.TryRemove(addr, out var _);
+            //var id = Global.IdManager.GetHostId(addr);
+            //if(id == 0) 
+            //    id = Basic.GenID32FromName(addr); 
+            //kcpPeers.TryRemove(id, out var peer);
+            ////clientPeers.TryRemove(id, out var _); 
+            //var cid = ukcp.user().Channel.Id.AsLongText();
+            //var id = Basic.GenID32FromName(cid);
+            var peer = GetPeer(ukcp);
             this.Deregister(peer);
         }
 
@@ -133,12 +190,12 @@ namespace Fenix
             if (peer == null)
                 return;
 
-            var ep = peer.RemoteAddress; 
-            var addr = ep.ToString();
+            //var ep = peer.RemoteAddress; 
+            //var addr = ep.ToString();
              
-            var id = Global.IdManager.GetHostId(addr);
-            if (id == 0) 
-                id = Basic.GenID32FromName(addr);
+            //var id = Global.IdManager.GetHostId(addr);
+            //if (id == 0) 
+            //    id = Basic.GenID32FromName(addr);
 
             peer.OnClose -= this.OnClose;
             peer.OnReceive -= OnReceive;
@@ -148,23 +205,34 @@ namespace Fenix
 
             if (peer.networkType == NetworkType.KCP) 
             {
-                kcpPeers.TryRemove(id, out var _);
+                //kcpPeers.TryRemove(id, out var _);
                 kcpPeers.TryRemove(peer.ConnId, out var _);
+                //clientPeers.TryRemove(id, out var _);
+                //clientPeers.TryRemove(peer.ConnId, out var _);
             }
 
             if (peer.networkType == NetworkType.TCP)
             {
-                tcpPeers.TryRemove(id, out var _);
+                //tcpPeers.TryRemove(id, out var _);
                 tcpPeers.TryRemove(peer.ConnId, out var _);
             }
+
+            if (channelPeers.ContainsKey(peer.ConnId))
+                channelPeers.TryRemove(peer.ConnId, out var _);
+
+            Console.WriteLine(string.Format("DeregisterPeer: {0} {1} {2}", peer.ConnId, peer.RemoteAddress, peer.networkType));
         }
 
 #if !CLIENT
         public void RegisterClient(uint clientId, string uniqueName, NetPeer peer)
         {
             var addr = peer.RemoteAddress.ToString();
-            clientPeers[clientId] = peer;
-            clientPeers[Basic.GenID32FromName(addr)] = peer;
+            if (peer.networkType == NetworkType.KCP)
+                kcpPeers[clientId] = peer;
+            else if (peer.networkType == NetworkType.TCP)
+                tcpPeers[clientId] = peer;
+            //clientPeers[clientId] = peer;
+            //clientPeers[Basic.GenID32FromName(addr)] = peer;
             Global.IdManager.RegisterClientHost(clientId, uniqueName, peer.RemoteAddress.ToString()); 
         }
 #endif
@@ -173,44 +241,55 @@ namespace Fenix
         {
             tcpPeers.TryRemove(connId, out var _);
             kcpPeers.TryRemove(connId, out var _);
+            //clientPeers.TryRemove(connId, out var _);
             Global.IdManager.RemoveHostId(connId);
         }
 
         public NetPeer GetPeer(IChannel ch)
         {
-            var id = Global.IdManager.GetHostId(ch.RemoteAddress.ToString());
-            if(id == 0) 
-                id = Basic.GenID32FromName(ch.RemoteAddress.ToString()); 
-            return tcpPeers[id];
+            var cid = ch.Id.AsLongText();
+            var id = Basic.GenID32FromName(cid);
+            return channelPeers[id];
+
+            //var id = Global.IdManager.GetHostId(ch.RemoteAddress.ToString());
+            //if(id == 0) 
+            //    id = Basic.GenID32FromName(ch.RemoteAddress.ToString()); 
+            //return tcpPeers[id];
         }
 
         public NetPeer GetPeer(Ukcp ukcp)
         {
-            var ep = ukcp.user().RemoteAddress; 
+            //var ep = ukcp.user().RemoteAddress;  
+            //var addr = ep.ToString();
 
-            var addr = ep.ToString();
+            var cid = ukcp.user().Channel.Id.AsLongText();
 
-            var id = Global.IdManager.GetHostId(addr);
-            if (id == 0) 
-                id = Basic.GenID32FromName(addr); 
-
-            return kcpPeers[id];
+            //var id = Global.IdManager.GetHostId(addr);
+            //if (id == 0) 
+            //    id = Basic.GenID32FromName(addr); 
+            //var id = Basic.GenID32FromName(cid); 
+            var id = Basic.GenID32FromName(cid);
+            return channelPeers[id];
         }
 
         public NetPeer GetPeerById(uint peerId, NetworkType netType)
         {
+            NetPeer peer;
             if (netType == NetworkType.TCP)
             {
-                if (tcpPeers.TryGetValue(peerId, out var peer))
-                    return peer;
-                return null;
+                if (tcpPeers.TryGetValue(peerId, out peer))
+                    return peer; 
             }
             else 
             {
-                if (kcpPeers.TryGetValue(peerId, out var peer2))
-                    return peer2;
-                return null;
+                if (kcpPeers.TryGetValue(peerId, out peer))
+                    return peer;
             }
+
+            if (channelPeers.ContainsKey(peerId))
+                channelPeers.TryGetValue(peerId, out peer);
+
+            return peer;
         }
 
         public NetPeer CreatePeer(uint remoteHostId, IPEndPoint addr, NetworkType netType)
@@ -260,6 +339,7 @@ namespace Fenix
             return peer;
         }
 
+        //服务端都是tcp，所以不需要心跳？暂时都是发ping/pong包，5s一次，5次没收到就断开 
         public void Ping()
         {
             foreach (var p in tcpPeers.Values)
@@ -269,18 +349,36 @@ namespace Fenix
                 p?.Ping();
         }
 
+        public void OnPong(NetPeer peer)
+        {
+            peer.lastTickTime = TimeUtil.GetTimeStampMS();
+            Console.WriteLine(string.Format("PONG({0}) {1} from {2}", peer.networkType, peer.ConnId, peer.RemoteAddress.ToString()));
+        }
+
         public void Update()
         {
-            foreach(var p in tcpPeers.Where(m => m.Value.IsActive == false).Select(m => m.Value))
-            { 
-                Console.WriteLine(string.Format("Remove: {0} {1} {2}", p.ConnId,p.RemoteAddress, p.networkType));
-                this.Deregister(p); 
-            }
+            CheckPeers(tcpPeers.Values);
+            CheckPeers(kcpPeers.Values); 
+        }
 
-            foreach (var p in kcpPeers.Where(m=>m.Value.IsActive == false).Select(m=>m.Value))
-            { 
-                Console.WriteLine(string.Format("Remove: {0} {1} {2}", p.ConnId, p.RemoteAddress, p.networkType));
-                this.Deregister(p); 
+        void CheckPeers(ICollection<NetPeer> peers)
+        {
+            var curTS = TimeUtil.GetTimeStampMS(); 
+            foreach (var p in peers)
+            {
+                if (p.IsActive == false)
+                {
+                    Console.WriteLine(string.Format("Remove: {0} {1} {2}", p.ConnId, p.RemoteAddress, p.networkType));
+                    this.Deregister(p);
+                    continue;
+                }
+
+                if (curTS - p.lastTickTime >= RuntimeConfig.HeartbeatIntervalMS * 3)
+                {
+                    this.PrintPeerInfo("SEKKIT");
+                    Console.WriteLine(string.Format("Timeout: {0} {1} {2}", p.ConnId, p.RemoteAddress, p.networkType));
+                    this.Deregister(p);
+                }
             }
         }
 

@@ -30,6 +30,12 @@ namespace DotNetty.KCP
 
         private IEventLoopGroup _eventLoopGroup;
 
+        private KcpClient()
+        {
+
+        }
+
+        public static KcpClient Instance = new KcpClient();
 
         public IChannel bindLocal(EndPoint localAddress = null)
         {
@@ -74,8 +80,6 @@ namespace DotNetty.KCP
             }));
         }
 
-
-
         public void init(ChannelConfig channelConfig)
         {
             var executorPool = new ExecutorPool();
@@ -86,7 +90,6 @@ namespace DotNetty.KCP
 
         public Ukcp connect(IChannel localChannel,EndPoint remoteAddress, ChannelConfig channelConfig, KcpListener kcpListener)
         {
-
             KcpOutput kcpOutput = new KcpOutPutImp();
             ReedSolomon reedSolomon = null;
             if (channelConfig.FecDataShardCount != 0 && channelConfig.FecParityShardCount != 0)

@@ -2,6 +2,7 @@
 using DotNetty.TCP;
 using DotNetty.Transport.Channels;
 using Fenix.Common;
+using MessagePack;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -12,78 +13,101 @@ namespace Fenix
 {
     public class TcpHostClient: ITcpListener
     {
-        public event Action<IChannel> Close;
+        public event Action<IChannel> OnClose;
 
-        public event Action<IChannel> Connect;
+        public event Action<IChannel> OnConnect;
 
-        public event Action<IChannel> Disconnect;
+        public event Action<IChannel> OnDisconnect;
 
-        public event Action<IChannel, Exception> Exception;
+        public event Action<IChannel, Exception> OnException;
 
-        public event Action<IChannel, IByteBuffer> Receive;
+        public event Action<IChannel, IByteBuffer> OnReceive;
 
-        public TcpSocketClient client;
+        public static TcpSocketClient client;
 
-        public bool IsActive => this.client.IsActive;
+        protected IChannel clientChannel;
 
+        public bool IsActive => clientChannel.Active;
 
-        public IPEndPoint RemoteAddress => (IPEndPoint)client.ClientChannel.RemoteAddress; 
+        private bool IsAlive = true;
 
-        public IPEndPoint LocalAddress => (IPEndPoint)client.ClientChannel.LocalAddress;
+        public IPEndPoint RemoteAddress => (IPEndPoint)clientChannel.RemoteAddress; 
 
-        public string ChannelId => client.ClientChannel.Id.AsLongText();
+        public IPEndPoint LocalAddress => (IPEndPoint)clientChannel.LocalAddress;
 
-        public void OnConnect(IChannel channel)
+        public string ChannelId => clientChannel.Id.AsLongText();
+
+        public void handleConnect(IChannel channel)
         { 
-            Connect?.Invoke(channel); 
+            OnConnect?.Invoke(channel); 
         }
 
-        public void OnDisconnect(IChannel channel)
+        public void handleDisconnect(IChannel channel)
         {
-            Disconnect?.Invoke(channel);
+            OnDisconnect?.Invoke(channel);
         }
 
-        void ITcpListener.OnReceive(IChannel channel, IByteBuffer buffer)
-        { 
-            Receive?.Invoke(channel, buffer); 
+        void ITcpListener.handleReceive(IChannel channel, IByteBuffer buffer)
+        {
+            OnReceive?.Invoke(channel, buffer); 
         }
 
-        void ITcpListener.OnClose(IChannel channel)
-        { 
-            Close?.Invoke(channel); 
+        void ITcpListener.handleClose(IChannel channel)
+        {
+            if (IsAlive == false)
+                return;
+
+            IsAlive = false;
+
+            OnClose?.Invoke(channel); 
         }
 
-        void ITcpListener.OnException(IChannel channel, Exception ex)
-        { 
-            Exception?.Invoke(channel, ex); 
+        void ITcpListener.handleException(IChannel channel, Exception ex)
+        {
+            OnException?.Invoke(channel, ex);  
         }
 
-        public static TcpHostClient Create(IPEndPoint addr)
+        public static TcpHostClient Create(IPEndPoint ep)
         {
             var channelConfig = new TcpChannelConfig();
-            channelConfig.Address = addr.Address.ToString();
-            channelConfig.Port = addr.Port;
-            channelConfig.UseLibuv = true;
+            channelConfig.Address = ep.Address.ToString();
+            channelConfig.Port = ep.Port;
+            channelConfig.UseLibuv = false;
 
-            var listener = new TcpHostClient(); 
-            listener.client = new TcpSocketClient();
-            if (!listener.client.Start(channelConfig, listener))
+            if (client==null)
+            {
+                client = TcpSocketClient.Instance;
+                if (!client.init(channelConfig))
+                {
+                    client = null;
+                    return null;
+                }
+            }
+
+            var listener = new TcpHostClient();
+            listener.clientChannel = client.Connect(ep, listener);
+            if (listener.clientChannel == null)
                 return null;
             return listener;
         }
 
+        public async Task SendAsync(byte[] bytes)
+        {
+            await clientChannel?.WriteAndFlushAsync(Unpooled.WrappedBuffer(bytes));
+        }
+
         public void Send(byte[] bytes)
         {
-            this.client.SendAsync(bytes);
-                /*
-            var task = Task.Run(()=>this.client.SendAsync(bytes));
+            //SendAsync(bytes);
+            //    /*
+            var task = Task.Run(()=> SendAsync(bytes));
             task.Wait();
-                */
+            //    */
         }
 
         public void Stop()
         {
-            this.client?.Shutdown();
+            client.StopChannel(clientChannel); 
         }
     }
 }

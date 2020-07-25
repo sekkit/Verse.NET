@@ -1,5 +1,6 @@
 ﻿
-using DotNetty.Buffers; 
+using DotNetty.Buffers;
+using DotNetty.Common.Utilities;
 using DotNetty.KCP;
 using DotNetty.Transport.Channels;
 using Fenix.Common;
@@ -35,6 +36,8 @@ namespace Fenix
 
         public NetworkType networkType;
 
+        public long lastTickTime = 0;
+
         public bool IsActive
         {
             get
@@ -49,11 +52,13 @@ namespace Fenix
                     return this.tcpClient.IsActive;
                 return false;
             }
-        } 
+        }
+
+        public bool IsAlive = true;
         
         protected NetPeer()
         {
-
+            lastTickTime = Common.Utils.TimeUtil.GetTimeStampMS();
         }
 
         public IPEndPoint RemoteAddress
@@ -126,9 +131,9 @@ namespace Fenix
             if (tcpClient == null)
                 return false;
 
-            tcpClient.Receive += (ch, buffer) =>  OnReceive?.Invoke(this, buffer);
-            tcpClient.Close += (ch) => { OnClose?.Invoke(this); };
-            tcpClient.Exception += (ch, ex) => { OnException?.Invoke(this, ex); };
+            tcpClient.OnReceive += (ch, buffer) =>  OnReceive?.Invoke(this, buffer);
+            tcpClient.OnClose += (ch) => { OnClose?.Invoke(this); };
+            tcpClient.OnException += (ch, ex) => { OnException?.Invoke(this, ex); };
             Console.WriteLine(string.Format("init_tcp_client_localaddr@{0}", tcpClient.LocalAddress));
             return true;
         }
@@ -232,10 +237,20 @@ namespace Fenix
 
         public void Stop()
         {
+            if (!IsAlive)
+                return;
+
+            IsAlive = false;
+
             kcpClient?.Stop();
             tcpClient?.Stop();
             tcpChannel?.CloseAsync();
             kcpChannel?.notifyCloseEvent();
+
+            kcpClient = null;
+            tcpClient = null;
+            tcpChannel = null;
+            kcpChannel = null;
         }
 
         public void Ping()

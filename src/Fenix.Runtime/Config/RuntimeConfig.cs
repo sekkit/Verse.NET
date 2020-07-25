@@ -22,5 +22,8 @@ namespace Fenix.Config
 
         [JsonProperty]
         public List<string> DefaultActorNames { get; set; }
+
+        [JsonIgnore]
+        public static long HeartbeatIntervalMS = 5000;
     }
 }

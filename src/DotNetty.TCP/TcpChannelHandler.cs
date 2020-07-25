@@ -20,14 +20,15 @@ namespace DotNetty.TCP
         public override void ChannelActive(IChannelHandlerContext context)
         {
             base.ChannelActive(context);
-            this.listener?.OnConnect(context.Channel);
+            this.listener?.handleConnect(context.Channel);
             
         }
 
         public override void ChannelInactive(IChannelHandlerContext context)
         {
             base.ChannelInactive(context); 
-            this.listener?.OnDisconnect(context.Channel);
+            this.listener?.handleDisconnect(context.Channel);
+            this.listener?.handleClose(context.Channel);
         }
 
         public override void ChannelRead(IChannelHandlerContext context, object message)
@@ -39,7 +40,7 @@ namespace DotNetty.TCP
             //}
             //context.WriteAsync(message);
             //long last_ts = DateTime.Now.Ticks;
-            this.listener?.OnReceive(context.Channel, message as IByteBuffer);
+            this.listener?.handleReceive(context.Channel, message as IByteBuffer);
             //Console.WriteLine("LAG3:"+(DateTime.Now.Ticks-last_ts)/10000.0);
         }
 
@@ -51,7 +52,7 @@ namespace DotNetty.TCP
         public override void ExceptionCaught(IChannelHandlerContext context, Exception exception)
         {
             Console.WriteLine("Exception: " + exception.Message); 
-            this.listener?.OnException(context.Channel, exception);
+            this.listener?.handleException(context.Channel, exception);
             context.CloseAsync();
         }
     }

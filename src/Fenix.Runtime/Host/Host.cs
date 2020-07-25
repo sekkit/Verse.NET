@@ -56,12 +56,12 @@ namespace Fenix
 
             //NetManager.Instance.OnConnect += (peer) => 
             NetManager.Instance.OnReceive += (peer, buffer) => OnReceiveBuffer(peer, buffer);
-            NetManager.Instance.OnClose += (peer) => { };
+            NetManager.Instance.OnClose += (peer) => NetManager.Instance.Deregister(peer);
             NetManager.Instance.OnException += (peer, ex) =>
             {
-                Log.Error(ex.Message);
-                Log.Error(ex.StackTrace);
-            };
+                Log.Error(ex.ToString()); 
+                NetManager.Instance.Deregister(peer);
+            }; 
 
             //如果是客户端，则用本地连接做为id
             //如果是服务端，则从名称计算一个id, 方便路由查找
@@ -93,27 +93,7 @@ namespace Fenix
                 this.SetupTcpServer();
             }
             else
-            {
-                //clientPeer = NetManager.Instance.CreatePeer(ip, port, NetworkType.KCP);
-                //if (clientPeer != null)
-                //{
-                //    if (name == null)
-                //        this.UniqueName = Basic.GenID64().ToString();
-                //    else
-                //        this.UniqueName = name;
-
-                //    this.Id = Basic.GenID32FromName(clientPeer.LocalAddress.ToString());
-
-                //    this.LocalAddress = clientPeer.LocalAddress;
-
-                //    var thread = new Thread(new ThreadStart(Heartbeat));//创建线程 
-                //    thread.Start();
-                //}
-                //else
-                //{
-                //    throw new Exception("unable_to_connect_server");
-                //}
-
+            {  
                 if (name == null)
                     this.UniqueName = Basic.GenID64().ToString();
                 else
@@ -147,8 +127,7 @@ namespace Fenix
             }
             catch (Exception ex)
             {
-                Log.Error(ex.Message);
-                Log.Error(ex.StackTrace);
+                Log.Error(ex.ToString()); 
             }
             return null;
         }
@@ -162,18 +141,24 @@ namespace Fenix
         public static Host CreateServer(string name, string ip, int port)
         {
             return Create(name, ip, port, false);
-        }
+        } 
 
         protected void OnReceiveBuffer(NetPeer peer, IByteBuffer buffer)
         {
-            
+            Console.WriteLine(string.Format("RECV({0}) {1} {2} {3}", peer.networkType, peer.ConnId, peer.RemoteAddress, StringUtil.ToHexString(buffer.ToArray())));
             //Ping/Pong msg process 
             if (buffer.ReadableBytes == 1)
             {
                 byte protoCode = buffer.ReadByte();
                 if (protoCode == (byte)OpCode.PING)
                 {
+                    Log.Info(string.Format("Ping({0}) {1} from {2}", peer.networkType, peer.ConnId, peer.RemoteAddress));
                     peer.Send(new byte[] { (byte)OpCode.PONG });
+                    NetManager.Instance.OnPong(peer);
+                }
+                else if(protoCode == (byte)OpCode.PONG)
+                {
+                    NetManager.Instance.OnPong(peer);
                 }
                 else if (protoCode == (byte)OpCode.GOODBYE)
                 {
@@ -226,7 +211,7 @@ namespace Fenix
                     Global.TypeManager.GetMessageType(protoCode), 
                     bytes);
 
-                Console.WriteLine(string.Format("RECV({0}): {1} {2} => {3} {4} >= {5} {6} => {7}", peer.networkType, protoCode, packet.FromHostId, packet.ToHostId,
+                Console.WriteLine(string.Format("RECV2({0}): {1} {2} => {3} {4} >= {5} {6} => {7}", peer.networkType, protoCode, packet.FromHostId, packet.ToHostId,
                     packet.FromActorId, packet.ToActorId, peer.RemoteAddress.ToString(), peer.LocalAddress.ToString()));
                 
                 //Console.WriteLine(string.Format("RECV{0} {1}", packet.ToString()));
@@ -262,7 +247,8 @@ namespace Fenix
             //新连接
             NetManager.Instance.RegisterKcp(ukcp);
             //ulong hostId = Global.IdManager.GetHostId(channel.RemoteAddress.ToString());
-            Console.WriteLine(string.Format("kcp_client_connected {0}", ukcp.user().RemoteAddress.ToString()));
+            Console.WriteLine(string.Format("kcp_client_connected {0} {1}", 
+                Basic.GenID32FromName(ukcp.user().Channel.Id.AsLongText()), ukcp.user().RemoteAddress.ToString()));
         }
 
         private void KcpServer_OnReceive(Ukcp ukcp, IByteBuffer buffer)
@@ -273,7 +259,8 @@ namespace Fenix
 
         private void KcpServer_OnException(Ukcp ukcp, Exception ex)
         {
-            Log.Error(ex.StackTrace);
+            Log.Error(ex.ToString());
+
             NetManager.Instance.DeregisterKcp(ukcp);
         }
 
@@ -287,10 +274,10 @@ namespace Fenix
         protected TcpHostServer SetupTcpServer()
         {
             tcpServer = TcpHostServer.Create(this.LocalAddress);
-            tcpServer.Connect += OnTcpConnect;
-            tcpServer.Receive += OnTcpServerReceive;
-            tcpServer.Close += OnTcpServerClose;
-            tcpServer.Exception += OnTcpServerException;
+            tcpServer.OnConnect += OnTcpConnect;
+            tcpServer.OnReceive += OnTcpServerReceive;
+            tcpServer.OnClose += OnTcpServerClose;
+            tcpServer.OnException += OnTcpServerException;
             Log.Info(string.Format("TCP-Server@{0}", this.LocalAddress.ToString()));
             return tcpServer;
         }
@@ -316,25 +303,9 @@ namespace Fenix
 
         void OnTcpServerException(IChannel channel, Exception ex)
         {
-            Log.Error(ex.StackTrace);
+            Log.Error(ex.ToString());
             NetManager.Instance.DeregisterChannel(channel);
-        }
-
-        void OnTcpClientReceive(IChannel channel, IByteBuffer buffer)
-        {
-            Console.Write("clientRecv");
-        }
-
-        void OnTcpClientClose(IChannel channel)
-        {
-            NetManager.Instance.DeregisterChannel(channel);
-        }
-
-        void OnTcpClientException(IChannel channel, Exception ex)
-        {
-            Log.Error(ex.StackTrace);
-            NetManager.Instance.DeregisterChannel(channel);
-        }
+        } 
 
         #endregion
 
@@ -348,6 +319,7 @@ namespace Fenix
                 }
                 else
                 {
+                    NetManager.Instance.Ping();
                     this.RegisterGlobalManager(this);
                     foreach (var kv in this.actorDic)
                         this.RegisterGlobalManager(kv.Value);

@@ -15,39 +15,39 @@ namespace Fenix
     {
         public TcpSocketServer server;
         
-        public event Action<IChannel> Close;
+        public event Action<IChannel> OnClose;
 
-        public event Action<IChannel> Connect;
+        public event Action<IChannel> OnConnect;
 
-        public event Action<IChannel> Disconnect;
+        public event Action<IChannel> OnDisconnect;
 
-        public event Action<IChannel, Exception> Exception;
+        public event Action<IChannel, Exception> OnException;
 
-        public event Action<IChannel, IByteBuffer> Receive;
+        public event Action<IChannel, IByteBuffer> OnReceive; 
         
-        public void OnClose(IChannel channel)
+        public void handleClose(IChannel channel)
         {
-            Close?.Invoke(channel);
+            OnClose?.Invoke(channel);
         }
 
-        void ITcpListener.OnConnect(IChannel channel)
-        { 
-            Connect?.Invoke(channel); 
+        void ITcpListener.handleConnect(IChannel channel)
+        {
+            OnConnect?.Invoke(channel); 
         }
 
-        void ITcpListener.OnDisconnect(IChannel channel)
+        void ITcpListener.handleDisconnect(IChannel channel)
         {
-            Disconnect?.Invoke(channel);
+            OnDisconnect?.Invoke(channel);
         }
 
-        void ITcpListener.OnException(IChannel channel, Exception ex)
+        void ITcpListener.handleException(IChannel channel, Exception ex)
         {
-            Exception?.Invoke(channel, ex);
+            OnException?.Invoke(channel, ex);
         }
 
-        void ITcpListener.OnReceive(IChannel channel, IByteBuffer buffer)
+        void ITcpListener.handleReceive(IChannel channel, IByteBuffer buffer)
         {
-            Receive?.Invoke(channel, buffer); 
+            OnReceive?.Invoke(channel, buffer); 
         }
 
         public static TcpHostServer Create(IPEndPoint ep)
@@ -66,7 +66,7 @@ namespace Fenix
             if (!server.Start(channelConfig, listener))
                 return null;
             return listener;
-        }
+        } 
 
         //public void Send(NetPeer peer, byte[] bytes)
         //{

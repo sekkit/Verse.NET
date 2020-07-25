@@ -12,18 +12,30 @@ using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using DotNetty.Buffers;
-
+using System.Net.Sockets;
+using System.Collections.Concurrent;
 
 namespace DotNetty.TCP
-{
-    public class TcpSocketClient
+{ 
+    public class TcpSocketClient : ITcpListener
     {
         private Bootstrap bootstrap;
-        private IChannel clientChannel;
+        protected TcpChannelConfig channelConfig;
+
+        //private IChannel clientChannel;
         private MultithreadEventLoopGroup group;
-        
-        public bool Start(TcpChannelConfig channelConfig, ITcpListener listener)
-        {  
+
+        private TcpSocketClient()
+        {
+
+        }
+
+        public static TcpSocketClient Instance = new TcpSocketClient();
+
+        public bool init(TcpChannelConfig channelConfig)
+        {
+            this.channelConfig = channelConfig;
+
             group = new MultithreadEventLoopGroup();
 
             X509Certificate2 cert = null;
@@ -38,57 +50,96 @@ namespace DotNetty.TCP
             {
                 bootstrap = new Bootstrap();
                 bootstrap
-                    .Group(group)
-                    .Channel<TcpSocketChannel>()
-                    .Option(ChannelOption.TcpNodelay, true)
-                    .Handler(new ActionChannelInitializer<ISocketChannel>(channel =>
+                .Group(group)
+                .Channel<TcpSocketChannel>()
+                .Option(ChannelOption.TcpNodelay, true)
+                .Handler(new ActionChannelInitializer<ISocketChannel>(channel =>
+                {
+                    IChannelPipeline pipeline = channel.Pipeline;
+
+                    if (cert != null)
                     {
-                        IChannelPipeline pipeline = channel.Pipeline;
+                        pipeline.AddLast("tls",
+                            new TlsHandler(
+                                stream => new SslStream(stream, true, (sender, certificate, chain, errors) => true),
+                                new ClientTlsSettings(targetHost)));
+                    }
 
-                        if (cert != null)
-                        {
-                            pipeline.AddLast("tls",
-                                new TlsHandler(
-                                    stream => new SslStream(stream, true, (sender, certificate, chain, errors) => true),
-                                    new ClientTlsSettings(targetHost)));
-                        }
+                    pipeline.AddLast(new LoggingHandler());
+                    pipeline.AddLast("framing-enc", new LengthFieldPrepender(2));
+                    pipeline.AddLast("framing-dec", new LengthFieldBasedFrameDecoder(ushort.MaxValue, 0, 2, 0, 2));
+                    pipeline.AddLast("tcp-handler", new TcpChannelHandler(this));
+                }));
 
-                        pipeline.AddLast(new LoggingHandler());
-                        pipeline.AddLast("framing-enc", new LengthFieldPrepender(2));
-                        pipeline.AddLast("framing-dec", new LengthFieldBasedFrameDecoder(ushort.MaxValue, 0, 2, 0, 2));
-
-                        pipeline.AddLast("tcp-handler", new TcpChannelHandler(listener));
-                    }));
-                var task = Task<IChannel>.Run(() => bootstrap.ConnectAsync(new IPEndPoint(IPAddress.Parse(channelConfig.Address), channelConfig.Port)));
-                task.Wait();
-                clientChannel = task.Result;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.StackTrace); 
+                Console.WriteLine(ex.StackTrace);
                 return false;
             }
 
-            if (clientChannel == null)
-                return false;
-
             return true;
-        }
+        } 
 
-        public async Task SendAsync(byte[] bytes)
+        public IChannel Connect(IPEndPoint ep, ITcpListener listener)
         {
-            await clientChannel?.WriteAndFlushAsync(Unpooled.WrappedBuffer(bytes));
-        }
+            var task = Task<IChannel>.Run(() => bootstrap.ConnectAsync(new IPEndPoint(IPAddress.Parse(channelConfig.Address), channelConfig.Port)));
+            task.Wait();
+            var ch = task.Result;
+            var chId = ch.Id.AsLongText(); 
+            clientListenerDic[chId] = listener;
+            return ch;
+        } 
         
         public async void Shutdown()
-        { 
-            await clientChannel.CloseAsync();
+        {
             await group.ShutdownGracefullyAsync(TimeSpan.FromMilliseconds(100), TimeSpan.FromSeconds(1));
         }
 
-        public bool IsActive => this.clientChannel==null?false:clientChannel.Active;
+        public void handleConnect(IChannel channel)
+        {
+            var chId = channel.Id.AsLongText(); 
+            if(clientListenerDic.TryGetValue(chId, out var listener))
+                listener?.handleConnect(channel);
+        }
 
-        public IChannel ClientChannel => this.clientChannel;
+        public void handleDisconnect(IChannel channel)
+        {
+            var chId = channel.Id.AsLongText(); 
+            clientListenerDic.TryGetValue(chId, out var listener);
+            listener?.handleDisconnect(channel);
+        }
+
+        public void handleReceive(IChannel channel, IByteBuffer buffer)
+        {
+            var chId = channel.Id.AsLongText(); 
+            if(clientListenerDic.TryGetValue(chId, out var listener))
+                listener?.handleReceive(channel, buffer);
+        }
+
+        public void handleClose(IChannel channel)
+        {
+            var chId = channel.Id.AsLongText();
+            if (clientListenerDic.TryGetValue(chId, out var listener))
+                listener?.handleClose(channel);
+        }
+
+        public void handleException(IChannel channel, Exception ex)
+        {
+            var chId = channel.Id.AsLongText();
+            if (clientListenerDic.TryGetValue(chId, out var listener))
+                listener?.handleException(channel, ex);
+        }
+
+        public void StopChannel(IChannel channel)
+        {
+            var chId = channel.Id.AsLongText();
+            if (clientListenerDic.TryGetValue(chId, out var listener))
+                listener?.handleClose(channel);
+            channel.CloseAsync();
+        }
+
+        protected ConcurrentDictionary<string, ITcpListener> clientListenerDic = new ConcurrentDictionary<string, ITcpListener>();
     }
 }

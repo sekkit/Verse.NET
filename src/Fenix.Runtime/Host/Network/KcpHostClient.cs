@@ -36,7 +36,7 @@ namespace Fenix
         {
             if(client == null)
             {
-                client = new KcpClient();
+                client = KcpClient.Instance;
                 client.init(channelConfig);
             }
 
@@ -59,12 +59,7 @@ namespace Fenix
             channelConfig.UseConvChannel = false;
 
             var listener = new KcpHostClient(channelConfig, remoteAddress);
-              
-            //listener.client = new KcpClient();
-            //listener.client.init(channelConfig);
-            
-            //listener._ukcp = listener.client.connect(remoteAddress, channelConfig, listener);
-
+               
             return listener;
         } 
        
@@ -78,28 +73,20 @@ namespace Fenix
             //OnReceive?.Invoke(bytes, ukcp, protocolType);
             OnReceive?.Invoke(ukcp, byteBuf);
                 //OnReceive?.Invoke(byteBuf, ukcp, protocolType);
-            //}, null);
-
-            //short curCount = byteBuf.GetShort(byteBuf.ReaderIndex);
-            //Console.WriteLine(Thread.CurrentThread.Name + " 收到消息 " + curCount);
-            //ukcp.writeKcpMessage(byteBuf);
-            //if (curCount == -1)
-            //{
-            //    ukcp.notifyCloseEvent();
-            //}
+            //}, null); 
         }
 
         public void handleException(Ukcp ukcp, Exception ex)
         {
-            Console.WriteLine(ex.StackTrace);
+            //Console.WriteLine(ex.ToString());
            
             OnException?.Invoke(ukcp, ex); 
         }
 
         public void handleClose(Ukcp ukcp)
         { 
-            OnClose?.Invoke(ukcp); 
-
+            OnClose?.Invoke(ukcp);
+            
             Console.WriteLine(Snmp.snmp.ToString());
             Snmp.snmp = new Snmp();
         }

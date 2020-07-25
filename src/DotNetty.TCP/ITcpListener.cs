@@ -8,14 +8,14 @@ namespace DotNetty.TCP
 {
     public interface ITcpListener
     {
-        void OnConnect(IChannel channel);
+        void handleConnect(IChannel channel);
 
-        void OnDisconnect(IChannel channel);
+        void handleDisconnect(IChannel channel);
 
-        void OnReceive(IChannel channel, IByteBuffer buffer);
+        void handleReceive(IChannel channel, IByteBuffer buffer);
 
-        void OnClose(IChannel channel);
+        void handleClose(IChannel channel);
 
-        void OnException(IChannel channel, Exception ex);
+        void handleException(IChannel channel, Exception ex);
     }
 }
