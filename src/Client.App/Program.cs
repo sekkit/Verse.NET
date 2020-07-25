@@ -24,8 +24,7 @@ namespace Client.App
                 return;
             } 
 
-            var loginapp = host.GetHost("Login.App", localAddr, 17777);
-            //NetManager.Instance.PrintPeerInfo("#Login.App: hostref created");
+            var loginapp = host.GetHost("Login.App", localAddr, 17777); 
             //注册客户端，初始化路由表信息
             loginapp.RegisterClient(host.Id, host.UniqueName, (code, hostInfo) =>
             {
@@ -35,13 +34,11 @@ namespace Client.App
                     NetManager.Instance.ChangePeerId(loginapp.toHostId, hostInfo.HostId, hostInfo.HostName, hostInfo.HostAddr);
  
                 Global.IdManager.RegisterHostInfo(hostInfo);
-                //loginapp.Disconnect();
-                //NetManager.Instance.PrintPeerInfo("# Login.App: RegisterClient called");
+                //loginapp.Disconnect(); 
                 if (code == 0)
                 {
                     //发起登陆请求，得到玩家entity所在host信息
-                    var svc = host.GetService<LoginServiceRef>();
-                    //NetManager.Instance.PrintPeerInfo("#Login.App: get LoginServiceRef");
+                    var svc = host.GetService<LoginServiceRef>(); 
                     svc.rpc_login("username", "password", (code, uid, hostId, hostName, hostAddress) =>
                     {
                         
