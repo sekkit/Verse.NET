@@ -25,7 +25,7 @@ namespace DotNetty.TCP
         private TcpSocketClient()
         {
 
-        }
+        } 
 
         public static TcpSocketClient Instance = new TcpSocketClient();
 
@@ -81,7 +81,7 @@ namespace DotNetty.TCP
 
         public IChannel Connect(IPEndPoint ep, ITcpListener listener)
         {
-            var task = Task<IChannel>.Run(() => bootstrap.ConnectAsync(new IPEndPoint(IPAddress.Parse(channelConfig.Address), channelConfig.Port)));
+            var task = Task<IChannel>.Run(() => bootstrap.ConnectAsync(ep));
             task.Wait();
             var ch = task.Result;
             var chId = ch.Id.AsLongText(); 
@@ -135,7 +135,8 @@ namespace DotNetty.TCP
             clientListenerDic.TryRemove(chId, out var listener);
             //if (clientListenerDic.TryGetValue(chId, out var listener))
             //    listener?.handleClose(channel);
-            Task.Run(()=>channel.CloseAsync());
+            //Task.Run(()=>channel.CloseAsync());
+            channel.CloseAsync();
         }
 
         protected ConcurrentDictionary<string, ITcpListener> clientListenerDic = new ConcurrentDictionary<string, ITcpListener>();
