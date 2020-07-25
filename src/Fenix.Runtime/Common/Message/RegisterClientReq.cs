@@ -16,7 +16,7 @@ namespace Fenix.Common.Message
         public UInt32 hostId;
 
         [Key(1)]
-        public String uniqueName;
+        public String hostName;
 
 
         [Key(199)]

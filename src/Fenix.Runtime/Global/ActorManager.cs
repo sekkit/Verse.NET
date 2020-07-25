@@ -35,8 +35,8 @@ namespace Fenix
 #endif
             var rt = Global.TypeManager.GetRefType(refType);
             bool isClient = rt == RefType.CLIENT;
-            
-            var toHostId = Global.IdManager.GetHostIdByActorId(toActorId, isClient);  
+
+            var toHostId = Global.IdManager.GetHostIdByActorId(toActorId);//, isClient);  
             return ActorRef.Create(toHostId, toActorId, refType, fromActor, fromHost, isClient);
         }
 
@@ -55,7 +55,7 @@ namespace Fenix
 #endif
             var rt = Global.TypeManager.GetRefType(refType);
             bool isClient = rt == RefType.CLIENT;
-            var toHostId = Global.IdManager.GetHostIdByActorId(toActorId, isClient);
+            var toHostId = Global.IdManager.GetHostIdByActorId(toActorId);//, isClient);
 
 #if CLIENT
             if (toHostId == 0)
@@ -81,9 +81,9 @@ namespace Fenix
             var rt = Global.TypeManager.GetRefType(refType);
             bool isClient = rt == RefType.CLIENT;
 
-            var toHostId = Global.IdManager.GetHostIdByActorId(toActorId, isClient);
+            var toHostId = Global.IdManager.GetHostIdByActorId(toActorId);//, isClient);
             if (toHostId == 0)
-                toHostId = Basic.GenID32FromName(toPeerEP.ToString());
+                toHostId = Basic.GenID32FromName(toHostName);// toPeerEP.ToString());
 
             return ActorRef.Create(toHostId, toActorId, refType, fromActor, fromHost, isClient, toPeerEP);
         }

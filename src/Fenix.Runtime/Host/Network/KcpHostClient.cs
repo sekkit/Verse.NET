@@ -20,9 +20,9 @@ namespace Fenix
 
         public event Action<Ukcp> OnClose;
 
-        protected KcpClient client;
+        protected static KcpClient client;
 
-        private static Ukcp _ukcp;
+        protected Ukcp _ukcp;
 
         public IPEndPoint RemoteAddress => (IPEndPoint)(_ukcp?.user().RemoteAddress);
 
@@ -30,12 +30,21 @@ namespace Fenix
 
         public string ChannelId => _ukcp?.user().Channel.Id.AsLongText();
 
-        public bool IsActive => _ukcp.user().Channel.Active;
+        public bool IsActive => _ukcp.isActive(); 
+
+        public KcpHostClient(ChannelConfig channelConfig, IPEndPoint remoteAddress)
+        {
+            if(client == null)
+            {
+                client = new KcpClient();
+                client.init(channelConfig);
+            }
+
+            this._ukcp = client.connect(remoteAddress, channelConfig, this);
+        }
 
         public static KcpHostClient Create(IPEndPoint remoteAddress)
         {
-            KcpHostClient listener = new KcpHostClient();
-
             ChannelConfig channelConfig = new ChannelConfig();
             channelConfig.KcpTag = false;
             channelConfig.Crc32Check = true;
@@ -47,11 +56,14 @@ namespace Fenix
             channelConfig.FecParityShardCount = 1;
             channelConfig.AckNoDelay = true;
             //channelConfig.Conv = 10;//.AutoSetConv = true;
-            channelConfig.UseConvChannel = false; 
-            listener.client = new KcpClient();
-            listener.client.init(channelConfig);
- 
-            _ukcp = listener.client.connect(remoteAddress, channelConfig, listener);
+            channelConfig.UseConvChannel = false;
+
+            var listener = new KcpHostClient(channelConfig, remoteAddress);
+              
+            //listener.client = new KcpClient();
+            //listener.client.init(channelConfig);
+            
+            //listener._ukcp = listener.client.connect(remoteAddress, channelConfig, listener);
 
             return listener;
         } 
@@ -106,7 +118,7 @@ namespace Fenix
 
         public void Stop()
         {
-            this.client?.stop();
+            this._ukcp.notifyCloseEvent();
         }
     }
 }

@@ -14,17 +14,19 @@ namespace Fenix
     {
         public uint FromHostId => fromHost.Id;
 
-        protected Host fromHost;
+        public Host fromHost;
 
-        protected Actor fromActor;
+        public Actor fromActor;
 
-        protected uint toHostId;
+        public uint toHostId;
 
-        protected uint toActorId;
+        public uint toActorId;
 
-        protected IPEndPoint toAddr;
+        public IPEndPoint toAddr;
 
         public bool isClient;
+
+        public NetworkType NetType => ((isClient || Host.Instance.IsClientMode)?NetworkType.KCP : NetworkType.TCP);
 
         public static ActorRef Create(uint toHostId, uint toActorId, Type refType, Actor fromActor, Host fromHost, bool isClient, IPEndPoint toPeerEP=null)
         {
@@ -43,10 +45,10 @@ namespace Fenix
                 toAddr = toPeerEP;
             else
             {
-                if(toHostId != 0)
-                    toAddr = Basic.ToAddress(Global.IdManager.GetHostAddr(toHostId, isClient));
-                else if(toActorId != 0)
-                    toAddr = Basic.ToAddress(Global.IdManager.GetHostAddrByActorId(toActorId, isClient));
+                if (toHostId != 0)
+                    toAddr = Basic.ToAddress(Global.IdManager.GetHostAddr(toHostId));//, isClient));
+                else if (toActorId != 0)
+                    toAddr = Basic.ToAddress(Global.IdManager.GetHostAddrByActorId(toActorId));//, isClient) ;//);
             }
 
             var obj = (ActorRef)Activator.CreateInstance(refType);
@@ -65,18 +67,27 @@ namespace Fenix
             //否则都是tcp
             //暂定如此
 
-            var api = Global.TypeManager.GetApiType(protocolCode);
-            var netType = NetworkType.TCP;
-            if (api == Common.Attributes.Api.ClientApi)
-                netType = NetworkType.KCP;
+            //var netType = NetworkType.TCP;
+            //if (isClient)
+            //    netType = NetworkType.KCP;
 
-            if (Host.Instance.IsClientMode)
-                netType = NetworkType.KCP;
+            //var api = Global.TypeManager.GetApiType(protocolCode); 
+            //if (api == Common.Attributes.Api.ClientApi)
+            //    netType = NetworkType.KCP;
+
+            //if (Host.Instance.IsClientMode)
+            //    netType = NetworkType.KCP;
 
             if (fromActor != null)
-                fromActor.Rpc(protocolCode, FromHostId, fromActor.Id, toHostId, this.toActorId, toAddr, netType, msg, cb);
+                fromActor.Rpc(protocolCode, FromHostId, fromActor.Id, toHostId, this.toActorId, toAddr, this.NetType, msg, cb);
             else
-                fromHost.Rpc(protocolCode, FromHostId, 0, toHostId, this.toActorId, toAddr, netType, msg, cb);
+                fromHost.Rpc(protocolCode, FromHostId, 0, toHostId, this.toActorId, toAddr, this.NetType, msg, cb);
+        }
+
+        public void Disconnect()
+        {
+            var peer = NetManager.Instance.GetPeerById(this.toHostId, this.NetType);
+            NetManager.Instance.Deregister(peer);
         }
     }
 }

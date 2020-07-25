@@ -2,11 +2,13 @@
 using DotNetty.Buffers; 
 using DotNetty.KCP;
 using DotNetty.Transport.Channels;
+using Fenix.Common;
 using Fenix.Common.Rpc;
 using Fenix.Common.Utils;
 using MessagePack;
 using System;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Fenix
@@ -89,10 +91,10 @@ namespace Fenix
         protected bool InitTcpClient(uint connId, IPEndPoint ep)
         {
             if(ep != null)
-                Console.WriteLine(string.Format("init_tcp_client {0}", ep.ToString()));
+                Console.WriteLine(string.Format("init_tcp_client {0} {1}", connId, ep.ToString()));
             if (ep == null)
             {
-                var addr = Global.IdManager.GetHostAddr(connId, false);
+                var addr = Global.IdManager.GetHostAddr(connId);//, false);
                 if (addr == null) 
                     return false; 
 
@@ -105,10 +107,10 @@ namespace Fenix
         protected bool InitKcpClient(uint connId, IPEndPoint ep)
         {
             if (ep != null)
-                Console.WriteLine(string.Format("init_kcp_client {0}", ep.ToString()));
+                Console.WriteLine(string.Format("init_kcp_client {0} {1}", connId, ep.ToString()));
             if (ep == null)
             {
-                var addr = Global.IdManager.GetHostAddr(connId, false);
+                var addr = Global.IdManager.GetHostAddr(connId);//, false);
                 if (addr == null) 
                     return false;
 
@@ -133,7 +135,7 @@ namespace Fenix
 
         protected bool InitKcpClient(IPEndPoint ep)
         { 
-            kcpClient = KcpHostClient.Create(ep); 
+            kcpClient = KcpHostClient.Create(ep);  
             kcpClient.OnReceive += (kcp, buffer)=> { OnReceive?.Invoke(this, buffer); };
             kcpClient.OnClose += (kcp) => { OnClose?.Invoke(this); };
             kcpClient.OnException += (ch, ex) => { OnException?.Invoke(this, ex); };
@@ -204,16 +206,16 @@ namespace Fenix
         {
             kcpChannel?.writeMessage(Unpooled.WrappedBuffer(bytes));
             if (kcpChannel != null)
-                Console.WriteLine(string.Format("sento_sender({0}): {1} {2} => {3}", this.networkType, kcpChannel.user().RemoteAddress.ToString(), Host.Instance.Id, ConnId));
+                Console.WriteLine(string.Format("sento_sender({0}): {1} {2} => {3} Channel:{4}", this.networkType, kcpChannel.user().RemoteAddress.ToString(), Host.Instance.Id, ConnId, this.kcpChannel.user().Channel.Id.AsLongText()));
             tcpChannel?.WriteAndFlushAsync(Unpooled.WrappedBuffer(bytes));
             if (tcpChannel != null)
-                Console.WriteLine(string.Format("sento_sender({0}): {1} {2} => {3}", this.networkType, tcpChannel.RemoteAddress.ToString(), Host.Instance.Id, ConnId));
+                Console.WriteLine(string.Format("sento_sender({0}): {1} {2} => {3} Channel:{4}", this.networkType, tcpChannel.RemoteAddress.ToString(), Host.Instance.Id, ConnId, tcpChannel.Id.AsLongText()));
             kcpClient?.Send(bytes);
             if (kcpClient != null)
-                Console.WriteLine(string.Format("sento_receiver({0}): {1} {2} => {3}", this.networkType, kcpClient.RemoteAddress.ToString(), Host.Instance.Id, ConnId));
+                Console.WriteLine(string.Format("sento_receiver({0}): {1} {2} => {3} Channel:{4}", this.networkType, kcpClient.RemoteAddress.ToString(), Host.Instance.Id, ConnId, kcpClient.ChannelId));
             tcpClient?.Send(bytes);
             if (tcpClient != null)
-                Console.WriteLine(string.Format("sento_receiver({0}): {1} {2} => {3}", this.networkType, tcpClient.RemoteAddress.ToString(), Host.Instance?.Id, ConnId));
+                Console.WriteLine(string.Format("sento_receiver({0}): {1} {2} => {3} Channel:{4}", this.networkType, tcpClient.RemoteAddress.ToString(), Host.Instance?.Id, ConnId, tcpClient.ChannelId));
         }
 
         public async Task SendAsync(byte[] bytes)
@@ -234,6 +236,20 @@ namespace Fenix
             tcpClient?.Stop();
             tcpChannel?.CloseAsync();
             kcpChannel?.notifyCloseEvent();
+        }
+
+        public void Ping()
+        {
+            this.Send(new byte[] { (byte)OpCode.PING });
+        }
+
+        public void Register()
+        {
+            var buffer = Unpooled.DirectBuffer();
+            buffer.WriteIntLE((int)OpCode.REGISTER_REQ);
+            buffer.WriteIntLE((int)Host.Instance.Id);
+            buffer.WriteBytes(Encoding.UTF8.GetBytes(Host.Instance.UniqueName)); 
+            this.Send(buffer.ToArray());
         }
     }
 }
