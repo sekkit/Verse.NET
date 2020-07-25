@@ -177,8 +177,7 @@ namespace Fenix
         [ServerOnly]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void OnClientEnable(string actorName)
-        {
-            //actorName == this.UniqueName
+        { 
             var refType = Global.TypeManager.GetActorRefType("Client.Avatar");
             if(refType == null)
                 refType = Global.TypeManager.GetActorRefType(this.GetType().FullName);

@@ -22,9 +22,7 @@ namespace Fenix
 
         protected static ConcurrentDictionary<uint, NetPeer> kcpPeers = new ConcurrentDictionary<uint, NetPeer>();
 
-        protected static ConcurrentDictionary<uint, NetPeer> channelPeers = new ConcurrentDictionary<uint, NetPeer>();
-
-        //protected static ConcurrentDictionary<uint, NetPeer> clientPeers = new ConcurrentDictionary<uint, NetPeer>();
+        protected static ConcurrentDictionary<uint, NetPeer> channelPeers = new ConcurrentDictionary<uint, NetPeer>(); 
 
         public static NetManager Instance = new NetManager();
 
@@ -35,37 +33,17 @@ namespace Fenix
         public event Action<NetPeer, IByteBuffer> OnSend;
 
         public void RegisterChannel(IChannel channel)
-        {
-            //var addr = channel.RemoteAddress.ToString();
-            
+        { 
             var cid = channel.Id.AsLongText();
             var id = Basic.GenID32FromName(cid);
             var peer = NetPeer.Create(id, channel);
-            channelPeers[id] = peer;
-
-            //var id = Global.IdManager.GetHostId(addr);
-            //if (id == 0) 
-            //    id = Basic.GenID32FromName(addr);
-
-            ////Global.IdManager.RegisterAddress(id, addr);
-
-            //var peer = NetPeer.Create(id, channel);
-            ////peer.OnClose += this.OnClose;
-            ////peer.OnReceive += OnReceive;
-            ////peer.OnException += OnException;
-            //tcpPeers[peer.ConnId] = peer;
+            channelPeers[id] = peer; 
         }
 
         public void DeregisterChannel(IChannel ch)
-        {
-            //var id = Global.IdManager.GetHostId(ch.RemoteAddress.ToString());
-            var peer = GetPeer(ch);  
-            //tcpPeers.TryRemove(peer.ConnId, out NetPeer _);
-            //if (id != 0 && peer != null)
-            //{
-            this.Deregister(peer);
-            //Global.IdManager.RemoveHostId(peer.ConnId);
-            //}
+        { 
+            var peer = GetPeer(ch);   
+            this.Deregister(peer); 
         }
 
         public void ChangePeerId(uint oldHostId, uint newHostId, string hostName, string address)
@@ -83,8 +61,7 @@ namespace Fenix
                 hostInfo.HostId = newHostId;
                 hostInfo.HostName = hostName;
                 hostInfo.HostAddr = address;
-                Global.IdManager.RegisterHostInfo(hostInfo);
-                //Global.IdManager.RegisterAddress(newId, peer.RemoteAddress.ToString());
+                Global.IdManager.RegisterHostInfo(hostInfo); 
             }
             if (kcpPeers.ContainsKey(oldHostId))
             {
@@ -103,64 +80,19 @@ namespace Fenix
             if (channelPeers.ContainsKey(oldHostId))
             {
                 var peer = channelPeers[oldHostId];
-                peer.ConnId = newHostId;
-                //channelPeers.TryRemove(oldHostId, out var _);
+                peer.ConnId = newHostId; 
                 if (peer.networkType == NetworkType.KCP)
                     kcpPeers[newHostId] = peer;
                 else
                     tcpPeers[newHostId] = peer;
-
-                //var hostInfo = Global.IdManager.GetHostInfo(newHostId); 
-                //Global.IdManager.RemoveHostId(oldHostId);
-                Global.IdManager.RegisterHost(newHostId, hostName, address);
-
-                //hostInfo.HostId = newHostId;
-                //hostInfo.HostName = hostName;
-                //hostInfo.HostAddr = address;
-                //Global.IdManager.RegisterHostInfo(hostInfo); 
+                 
+                Global.IdManager.RegisterHost(newHostId, hostName, address); 
             }
-        }
-
-        //public void ChangePeerId(string channelId, uint newHostId, string hostName, string address)
-        //{
-        //    Log.Info(string.Format("ChangePeer: {0}=>{1} {2} {3}", channelId, newHostId, hostName, address));
-        //    if (channelPeers.ContainsKey(channelId))
-        //    {
-        //        var peer = channelPeers[channelId];
-        //        peer.ConnId = newHostId;
-        //        channelPeers.TryRemove(channelId, out var _);
-        //        if (peer.networkType == NetworkType.KCP)
-        //            kcpPeers[newHostId] = peer;
-        //        else
-        //            tcpPeers[newHostId] = peer;
-
-        //        //var hostInfo = Global.IdManager.GetHostInfo(newHostId); 
-        //        //Global.IdManager.RemoveHostId(oldHostId);
-        //        Global.IdManager.RegisterHost(newHostId, hostName, address);
-
-        //        //hostInfo.HostId = newHostId;
-        //        //hostInfo.HostName = hostName;
-        //        //hostInfo.HostAddr = address;
-        //        //Global.IdManager.RegisterHostInfo(hostInfo); 
-        //    } 
-        //}
+        } 
 
         //kcp目前不支持epoll/kqueue/IOCP，所以只在客户端上用用
         public void RegisterKcp(Ukcp ukcp)
-        {
-            ////int conv = ukcp.getConv();
-            //var ep = ukcp.user().RemoteAddress;
-            ////var cid = ukcp.user().Channel.Id.AsLongText();
-
-            //var addr = ep.ToString();
-
-            //var id = Global.IdManager.GetHostId(addr);
-            //if(id == 0) 
-            //    id = Basic.GenID32FromName(addr); 
-
-            //var peer = NetPeer.Create(id, ukcp); 
-            //kcpPeers[peer.ConnId] = peer;
-
+        { 
             var cid = ukcp.user().Channel.Id.AsLongText();
             var id = Basic.GenID32FromName(cid);
             var peer = NetPeer.Create(id, ukcp);
@@ -169,18 +101,7 @@ namespace Fenix
         }  
 
         public void DeregisterKcp(Ukcp ukcp)
-        {
-            //var ep = ukcp.user().RemoteAddress;
-            //var addr = ep.ToString();
-
-            ////this.mAddr2Ukcp.TryRemove(addr, out var _);
-            //var id = Global.IdManager.GetHostId(addr);
-            //if(id == 0) 
-            //    id = Basic.GenID32FromName(addr); 
-            //kcpPeers.TryRemove(id, out var peer);
-            ////clientPeers.TryRemove(id, out var _); 
-            //var cid = ukcp.user().Channel.Id.AsLongText();
-            //var id = Basic.GenID32FromName(cid);
+        { 
             var peer = GetPeer(ukcp);
             this.Deregister(peer);
         }
@@ -188,14 +109,7 @@ namespace Fenix
         public void Deregister(NetPeer peer)
         {
             if (peer == null)
-                return;
-
-            //var ep = peer.RemoteAddress; 
-            //var addr = ep.ToString();
-             
-            //var id = Global.IdManager.GetHostId(addr);
-            //if (id == 0) 
-            //    id = Basic.GenID32FromName(addr);
+                return; 
 
             peer.OnClose -= this.OnClose;
             peer.OnReceive -= OnReceive;
@@ -204,16 +118,12 @@ namespace Fenix
             peer.Stop();
 
             if (peer.networkType == NetworkType.KCP) 
-            {
-                //kcpPeers.TryRemove(id, out var _);
-                kcpPeers.TryRemove(peer.ConnId, out var _);
-                //clientPeers.TryRemove(id, out var _);
-                //clientPeers.TryRemove(peer.ConnId, out var _);
+            { 
+                kcpPeers.TryRemove(peer.ConnId, out var _); 
             }
 
             if (peer.networkType == NetworkType.TCP)
-            {
-                //tcpPeers.TryRemove(id, out var _);
+            { 
                 tcpPeers.TryRemove(peer.ConnId, out var _);
             }
 
@@ -230,9 +140,7 @@ namespace Fenix
             if (peer.networkType == NetworkType.KCP)
                 kcpPeers[clientId] = peer;
             else if (peer.networkType == NetworkType.TCP)
-                tcpPeers[clientId] = peer;
-            //clientPeers[clientId] = peer;
-            //clientPeers[Basic.GenID32FromName(addr)] = peer;
+                tcpPeers[clientId] = peer; 
             Global.IdManager.RegisterClientHost(clientId, uniqueName, peer.RemoteAddress.ToString()); 
         }
 #endif
@@ -240,8 +148,7 @@ namespace Fenix
         public void RemovePeerId(uint connId)
         {
             tcpPeers.TryRemove(connId, out var _);
-            kcpPeers.TryRemove(connId, out var _);
-            //clientPeers.TryRemove(connId, out var _);
+            kcpPeers.TryRemove(connId, out var _); 
             Global.IdManager.RemoveHostId(connId);
         }
 
@@ -249,25 +156,13 @@ namespace Fenix
         {
             var cid = ch.Id.AsLongText();
             var id = Basic.GenID32FromName(cid);
-            return channelPeers[id];
-
-            //var id = Global.IdManager.GetHostId(ch.RemoteAddress.ToString());
-            //if(id == 0) 
-            //    id = Basic.GenID32FromName(ch.RemoteAddress.ToString()); 
-            //return tcpPeers[id];
+            return channelPeers[id]; 
         }
 
         public NetPeer GetPeer(Ukcp ukcp)
-        {
-            //var ep = ukcp.user().RemoteAddress;  
-            //var addr = ep.ToString();
-
+        {  
             var cid = ukcp.user().Channel.Id.AsLongText();
-
-            //var id = Global.IdManager.GetHostId(addr);
-            //if (id == 0) 
-            //    id = Basic.GenID32FromName(addr); 
-            //var id = Basic.GenID32FromName(cid); 
+             
             var id = Basic.GenID32FromName(cid);
             return channelPeers[id];
         }

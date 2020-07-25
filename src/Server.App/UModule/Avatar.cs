@@ -37,17 +37,6 @@ namespace Server.UModule
             });
         }
 
-        //public override void Update()
-        //{
-        //    base.Update();
-
-        //    //var svc = GetService("MatchService");
-        //    //svc.rpc_join_match("", 1, new Action<uint>((code) =>
-        //    //{
-        //    //    Log.Info(code.ToString());
-        //    //}));
-        //}
-
         [ServerApi]
         public void ChangeName(string name, Action<ErrCode> callback)
         {

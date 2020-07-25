@@ -14,15 +14,7 @@ namespace Server.Config.Db
         public const string AID2ANAME = "AID2ANAME";
         public const string AID2TNAME = "AID2TNAME";
         public const string HID2HNAME = "HID2HNAME";
-        public const string HNAME2HID = "HNAME2HID";
-
-        //public const string C_AID2HID = "C_AID2HID";
-        //public const string C_ADDR2HID = "C_ADDR2HID";
-        //public const string C_HID2ADDR = "C_HID2ADDR";
-        //public const string C_HID2AID = "C_HID2AID";
-        //public const string C_AID2ANAME = "C_AID2ANAME";
-        //public const string C_HID2HNAME = "C_HID2HNAME";
-        //public const string C_HNAME2HID = "C_HNAME2HID";
+        public const string HNAME2HID = "HNAME2HID"; 
 
         public static DbEntry HID2ADDR_cache = new DbEntry()
         {
@@ -130,91 +122,6 @@ namespace Server.Config.Db
             RetryDelay = 0.1f,
             ValidTime = -1,
             Type = "Redis"
-        };
-
-        //public static DbEntry C_AID2HID_cache = new DbEntry()
-        //{
-        //    Name = "C_AID2HID",
-        //    Host = "127.0.0.1",
-        //    Port = 7381,
-        //    Key = C_AID2HID,
-        //    Retry = 1,
-        //    RetryDelay = 0.1f,
-        //    ValidTime = -1,
-        //    Type = "Redis"
-        //}; 
-
-        //public static DbEntry C_HID2AID_cache = new DbEntry()
-        //{
-        //    Name = "C_HID2AID",
-        //    Host = "127.0.0.1",
-        //    Port = 7381,
-        //    Key = C_HID2AID,
-        //    Retry = 1,
-        //    RetryDelay = 0.1f,
-        //    ValidTime = -1,
-        //    Type = "Redis"
-        //};
-        
-        //public static DbEntry C_ADDR2HID_cache = new DbEntry()
-        //{
-        //    Name = "C_ADDR2HID",
-        //    Host = "127.0.0.1",
-        //    Port = 7381,
-        //    Key = C_ADDR2HID,
-        //    Retry = 1,
-        //    RetryDelay = 0.1f,
-        //    ValidTime = -1,
-        //    Type = "Redis"
-        //};
-
-        
-        //public static DbEntry C_HID2ADDR_cache = new DbEntry()
-        //{
-        //    Name = "C_HID2ADDR",
-        //    Host = "127.0.0.1",
-        //    Port = 7381,
-        //    Key = C_HID2ADDR,
-        //    Retry = 1,
-        //    RetryDelay = 0.1f,
-        //    ValidTime = -1,
-        //    Type = "Redis"
-        //};
-
-        //public static DbEntry C_AID2ANAME_cache = new DbEntry()
-        //{
-        //    Name = "C_AID2ANAME",
-        //    Host = "127.0.0.1",
-        //    Port = 7381,
-        //    Key = C_AID2ANAME,
-        //    Retry = 1,
-        //    RetryDelay = 0.1f,
-        //    ValidTime = -1,
-        //    Type = "Redis"
-        //};
-
-        //public static DbEntry C_HID2HNAME_cache = new DbEntry()
-        //{
-        //    Name = "C_HID2HNAME",
-        //    Host = "127.0.0.1",
-        //    Port = 7381,
-        //    Key = C_HID2HNAME,
-        //    Retry = 1,
-        //    RetryDelay = 0.1f,
-        //    ValidTime = -1,
-        //    Type = "Redis"
-        //};
-
-        //public static DbEntry C_HNAME2HID_cache = new DbEntry()
-        //{
-        //    Name = "C_HNAME2HID",
-        //    Host = "127.0.0.1",
-        //    Port = 7381,
-        //    Key = C_HNAME2HID,
-        //    Retry = 1,
-        //    RetryDelay = 0.1f,
-        //    ValidTime = -1,
-        //    Type = "Redis"
-        //};
+        }; 
     }
 }

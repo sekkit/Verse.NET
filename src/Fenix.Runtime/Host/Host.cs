@@ -39,9 +39,7 @@ namespace Fenix
 
         protected KcpHostServer kcpServer { get; set; }
 
-        protected TcpHostServer tcpServer { get; set; }
-
-        //protected NetPeer clientPeer { get; set; }
+        protected TcpHostServer tcpServer { get; set; } 
 
         public bool IsClientMode { get; set; }
 
@@ -134,8 +132,7 @@ namespace Fenix
 
         public static Host CreateClient()//string ip, int port)
         {
-            return Create(null, "", 0, true);
-            //return Create(Basic.GenID32FromName(string.Format("{0}:{1}", ip, port)).ToString(), ip, port, true);
+            return Create(null, "", 0, true); 
         }
 
         public static Host CreateServer(string name, string ip, int port)
@@ -146,7 +143,7 @@ namespace Fenix
         protected void OnReceiveBuffer(NetPeer peer, IByteBuffer buffer)
         {
             Console.WriteLine(string.Format("RECV({0}) {1} {2} {3}", peer.networkType, peer.ConnId, peer.RemoteAddress, StringUtil.ToHexString(buffer.ToArray())));
-            //Ping/Pong msg process 
+          
             if (buffer.ReadableBytes == 1)
             {
                 byte protoCode = buffer.ReadByte();
@@ -184,23 +181,14 @@ namespace Fenix
                     this.Register(hostId, hostName, context);
 
                     return;
-                }
-                //if (protoCode >= (uint)OpCode.CALL_ACTOR_METHOD)
-                //{
-                
+                } 
                 ulong msgId = (ulong)buffer.ReadLongLE();
                 //uint fromHostId = buffer.ReadUnsignedIntLE();
                 uint fromActorId = buffer.ReadUnsignedIntLE();
                 uint toActorId = buffer.ReadUnsignedIntLE();
                 byte[] bytes = new byte[buffer.ReadableBytes];
-                buffer.ReadBytes(bytes);
-                //if (peer.ConnId != fromHostId)
-                //{
-                //    //修正一下peer的id 
-                //    NetManager.Instance.ChangePeerId(peer.ConnId, fromHostId);
-                //} 
-
-                //var msg = MessagePackSerializer.Deserialize<ActorMessage>(bytes); 
+                buffer.ReadBytes(bytes); 
+                 
                 var packet = Packet.Create(msgId, 
                     protoCode, 
                     peer.ConnId, 
@@ -213,10 +201,7 @@ namespace Fenix
 
                 Console.WriteLine(string.Format("RECV2({0}): {1} {2} => {3} {4} >= {5} {6} => {7}", peer.networkType, protoCode, packet.FromHostId, packet.ToHostId,
                     packet.FromActorId, packet.ToActorId, peer.RemoteAddress.ToString(), peer.LocalAddress.ToString()));
-                
-                //Console.WriteLine(string.Format("RECV{0} {1}", packet.ToString()));
-
-
+                 
                 if (protoCode >= OpCode.CALL_ACTOR_METHOD && toActorId != 0)
                 {
                     this.CallActorMethod(packet);
@@ -437,6 +422,7 @@ namespace Fenix
         {
             //首先这个actor一定是本地的
             //如果actor不在本地，则把请求转到目标host上去
+            //TODO，等想到了应用场景再加
 
             //find actor.server
             var actorId = Global.IdManager.GetActorId(actorName);
