@@ -21,7 +21,7 @@ Fenix is in a early stage of development, but is also being used in commercial G
 
 5. Unity3D support will be released soon
 
-6. Any star or contribution is welcomed.
+6. Any stars or contributions are welcomed.
 
 ## Features
 
