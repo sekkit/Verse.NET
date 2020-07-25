@@ -106,22 +106,18 @@ namespace Fenix
         {
             if (peer == null)
                 return; 
-
-            peer.OnClose -= this.OnClose;
-            peer.OnReceive -= OnReceive;
-            peer.OnException -= OnException;
             
             peer.Stop();
 
-            if (peer.networkType == NetworkType.KCP) 
-            { 
-                kcpPeers.TryRemove(peer.ConnId, out var _); 
-            }
+            peer.OnClose -= OnClose;
+            peer.OnReceive -= OnReceive;
+            peer.OnException -= OnException;
 
-            if (peer.networkType == NetworkType.TCP)
-            { 
-                tcpPeers.TryRemove(peer.ConnId, out var _);
-            }
+            if (peer.networkType == NetworkType.KCP)  
+                kcpPeers.TryRemove(peer.ConnId, out var _);  
+
+            if (peer.networkType == NetworkType.TCP) 
+                tcpPeers.TryRemove(peer.ConnId, out var _); 
 
             if (channelPeers.ContainsKey(peer.ConnId))
                 channelPeers.TryRemove(peer.ConnId, out var _);
@@ -237,13 +233,13 @@ namespace Fenix
                 p?.Ping();
 
             foreach (var p in kcpPeers.Values)
-                p?.Ping();
+                p?.Ping(); 
         }
 
         public void OnPong(NetPeer peer)
         {
             peer.lastTickTime = TimeUtil.GetTimeStampMS();
-            Log.Info(string.Format("PONG({0}) {1} from {2}", peer.networkType, peer.ConnId, peer.RemoteAddress.ToString()));
+            Log.Info(string.Format("PONG({0}) {1} from {2}", peer.networkType, peer.ConnId, peer.RemoteAddress?.ToString()));
         }
 
         public void Update()

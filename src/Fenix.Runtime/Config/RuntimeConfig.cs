@@ -25,5 +25,8 @@ namespace Fenix.Config
 
         [JsonIgnore]
         public static long HeartbeatIntervalMS = 5000;
+
+        [JsonIgnore]
+        public static NetworkType ClientNetwork = NetworkType.KCP;
     }
 }

@@ -124,6 +124,11 @@ namespace Fenix
 
             heartbeatTh = new Thread(new ThreadStart(Heartbeat));
             heartbeatTh.Start();
+
+            this.AddRepeatedTimer(3000, 3000, () =>
+            {
+                NetManager.Instance.PrintPeerInfo("SEKKIT");
+            });
         }
 
         public static Host Create(string name, string ip, int port, bool clientMode)
@@ -211,8 +216,15 @@ namespace Fenix
                     Global.TypeManager.GetMessageType(protoCode), 
                     bytes);
 
-                Log.Info(string.Format("RECV2({0}): {1} {2} => {3} {4} >= {5} {6} => {7}", peer.networkType, protoCode, packet.FromHostId, packet.ToHostId,
-                    packet.FromActorId, packet.ToActorId, peer.RemoteAddress.ToString(), peer.LocalAddress.ToString()));
+                Log.Info(string.Format("RECV2({0}): {1} {2} => {3} {4} >= {5} {6} => {7}", 
+                    peer.networkType, 
+                    protoCode, 
+                    packet.FromHostId, 
+                    packet.ToHostId,
+                    packet.FromActorId, 
+                    packet.ToActorId, 
+                    peer.RemoteAddress.ToString(), 
+                    peer.LocalAddress.ToString()));
                  
                 if (protoCode >= OpCode.CALL_ACTOR_METHOD && toActorId != 0)
                 {
@@ -310,8 +322,10 @@ namespace Fenix
         {
             while (true)
             {
+                Log.Info(string.Format("Heartbeat:{0}", IsAlive));
+                NetManager.Instance?.PrintPeerInfo();
                 if (!IsAlive)
-                    return;
+                    return; 
 
                 if (IsClientMode)
                 {
@@ -479,7 +493,7 @@ namespace Fenix
             {
                 if (this.mTimerDic.TryGetValue(key, out var t))
                 {
-                    if (!t.CheckTimeout(curTime))
+                    if (t.CheckTimeout(curTime))
                     {
                         this.mTimerDic.TryRemove(key, out var _);
                         t.Dispose();
@@ -552,10 +566,8 @@ namespace Fenix
             //先销毁所有的actor, netpeer
             //再销毁自己
 
-            foreach(var a in this.actorDic.Values)
-            {
+            foreach(var a in this.actorDic.Values) 
                 a.Destroy();
-            }
 
             this.actorDic.Clear();
 

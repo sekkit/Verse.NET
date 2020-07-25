@@ -3,6 +3,7 @@ using Fenix.Common;
 using Fenix.Common.Message;
 using Fenix.Common.Rpc;
 using Fenix.Common.Utils;
+using Fenix.Config;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -26,7 +27,7 @@ namespace Fenix
 
         public bool isClient;
 
-        public NetworkType NetType => ((isClient || Host.Instance.IsClientMode)?NetworkType.KCP : NetworkType.TCP);
+        public NetworkType NetType => ((isClient || Host.Instance.IsClientMode)? RuntimeConfig.ClientNetwork : NetworkType.TCP);
 
         public static ActorRef Create(uint toHostId, uint toActorId, Type refType, Actor fromActor, Host fromHost, bool isClient, IPEndPoint toPeerEP=null)
         {

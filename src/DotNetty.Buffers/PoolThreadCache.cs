@@ -420,6 +420,11 @@ namespace DotNetty.Buffers
                 {
                     return false;
                 }
+                if (entry.Chunk == null)
+                {
+                    entry.Recycle();
+                    return false;
+                }
                 InitBuf(entry.Chunk, entry.Handle, buf, reqCapacity, threadCache);
                 entry.Recycle();
 
