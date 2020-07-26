@@ -33,7 +33,9 @@ namespace Client
         }
 #endif
         public void Init()
-        { 
+        {
+            Environment.SetEnvironmentVariable("AppName", "Client.App");
+
             Global.Init(new Assembly[] { typeof(App).Assembly });
 
             var localAddr = Basic.GetLocalIPv4(System.Net.NetworkInformation.NetworkInterfaceType.Ethernet);
