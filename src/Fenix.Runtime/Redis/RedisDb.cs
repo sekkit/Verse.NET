@@ -1,4 +1,5 @@
 ﻿using CSRedis;
+using Fenix.Common;
 using Server.Config.Db;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,7 @@ namespace Fenix.Redis
         {
             conf = db;
             string connStr = string.Format("{0}:{1},password=,defaultDatabase=0,prefix={2}_", conf.Host, conf.Port, conf.Key);
-            Console.WriteLine(string.Format("{0}:{1},password=,defaultDatabase=0,prefix={2}", conf.Host, conf.Port, conf.Key));
+            Log.Info(string.Format("{0}:{1},password=,defaultDatabase=0,prefix={2}", conf.Host, conf.Port, conf.Key));
             client = new CSRedisClient(connStr);
             helper = new RedisHelper();
             helper.Initialization(client);
