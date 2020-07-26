@@ -31,7 +31,6 @@ namespace Fenix.Common.Message
         public class Callback
         {
             [Key(0)]
-            [DefaultValue(DefaultErrCode.ERROR)]
             public DefaultErrCode code { get; set; } = DefaultErrCode.ERROR;
 
             [Key(1)]

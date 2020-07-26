@@ -37,7 +37,6 @@ namespace Shared.Message
         public class Callback
         {
             [Key(0)]
-            [DefaultValue(ErrCode.ERROR)]
             public ErrCode code { get; set; } = ErrCode.ERROR;
 
         }

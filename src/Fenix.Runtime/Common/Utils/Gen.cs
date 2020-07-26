@@ -212,7 +212,7 @@ namespace Fenix
                 if (attr2 != null)
                 {
                     var v = attr2.Value.GetType().IsEnum ? (attr2.Value.GetType().Name + "." + attr2.Value.ToString()) : attr2.Value;
-                    lines.Add($"{prefix}[Key({position})]\n[DefaultValue({attr2.Value})]\n{prefix}public {pType} {pName} {{ get; set; }} = {v};\n");
+                    lines.Add($"{prefix}[Key({position})]\n{prefix}[DefaultValue({attr2.Value})]\n{prefix}public {pType} {pName} {{ get; set; }} = {v};\n"); 
                 }
                     
                 else
