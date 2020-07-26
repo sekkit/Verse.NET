@@ -12,7 +12,7 @@ namespace Fenix
 
         public long Delay { get; set; }
         public long Interval { get; set; }
-        public bool repeated { get; set; }
+        public bool Repeated { get; set; }
 
         public Action call { get; set; }
 
@@ -32,6 +32,7 @@ namespace Fenix
             obj.Tid = Basic.GenID64();
             obj.fromTime = TimeUtil.GetTimeStampMS();
             obj.Delay = delay;
+            obj.Repeated = repeated;
             obj.Interval = interval;
             obj.call = call;
 
@@ -47,7 +48,7 @@ namespace Fenix
             {
                 this.call();
 
-                if(repeated)
+                if(Repeated)
                 {
                     this.fromTime = curTime;
                     return false;

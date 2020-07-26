@@ -127,7 +127,7 @@ namespace Fenix
 
             this.AddRepeatedTimer(3000, 3000, () =>
             {
-                NetManager.Instance.PrintPeerInfo("SEKKIT");
+                NetManager.Instance.PrintPeerInfo("All peers:");
             });
         }
 
