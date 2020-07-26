@@ -89,7 +89,7 @@ namespace Fenix
         //kcp目前不支持epoll/kqueue/IOCP，所以只在客户端上用用
         public void RegisterKcp(Ukcp ukcp)
         { 
-            var cid = ukcp.user().Channel.Id.AsLongText();
+            var cid = ukcp.user().Channel.Id.AsLongText()+ukcp.user().Channel.LocalAddress.ToString()+ukcp.user().RemoteAddress.ToString();
             var id = Basic.GenID32FromName(cid);
             var peer = NetPeer.Create(id, ukcp);
             channelPeers[peer.ConnId] = peer;
@@ -153,7 +153,7 @@ namespace Fenix
 
         public NetPeer GetPeer(Ukcp ukcp)
         {  
-            var cid = ukcp.user().Channel.Id.AsLongText();
+            var cid = ukcp.user().Channel.Id.AsLongText()+ukcp.user().Channel.LocalAddress.ToString() + ukcp.user().RemoteAddress.ToString();
             
             var id = Basic.GenID32FromName(cid);
             return channelPeers[id];

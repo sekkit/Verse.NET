@@ -257,7 +257,7 @@ namespace Fenix
             NetManager.Instance.RegisterKcp(ukcp);
             //ulong hostId = Global.IdManager.GetHostId(channel.RemoteAddress.ToString());
             Log.Info(string.Format("kcp_client_connected {0} {1}", 
-                Basic.GenID32FromName(ukcp.user().Channel.Id.AsLongText()), ukcp.user().RemoteAddress.ToString()));
+                Basic.GenID32FromName(ukcp.user().Channel.Id.AsLongText()+ukcp.user().Channel.LocalAddress.ToString() + ukcp.user().RemoteAddress.ToString()), ukcp.user().RemoteAddress.ToString()));
         }
 
         private void KcpServer_OnReceive(Ukcp ukcp, IByteBuffer buffer)
@@ -322,7 +322,7 @@ namespace Fenix
         {
             while (true)
             {
-                Log.Info(string.Format("Heartbeat:{0}", IsAlive));
+                //Log.Info(string.Format("Heartbeat:{0}", IsAlive));
                 NetManager.Instance?.PrintPeerInfo();
                 if (!IsAlive)
                     return; 
