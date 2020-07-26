@@ -12,6 +12,7 @@ namespace Fenix
 {
     public class DbManager
     {
+        static UInt32 fakeId = 1;
         protected DbManager()
         {
         }
@@ -22,7 +23,9 @@ namespace Fenix
 
         public string CreateUid()
         {
-            return "1";
+            string uid = fakeId.ToString();
+            fakeId++;
+            return uid;
         }
 
         public void LoadDb(DbEntry db)
