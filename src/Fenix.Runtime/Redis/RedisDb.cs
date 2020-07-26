@@ -3,19 +3,19 @@ using Fenix.Common;
 using Server.Config.Db;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Fenix.Redis
 {
     public class RedisDb : IDisposable
-    {
-        //public string Prefix;
-
+    { 
         private CSRedisClient client;
 
         private RedisHelper helper;
 
-        protected DbEntry conf;
+        protected DbEntry conf; 
 
         //public RedisDb(string prefix, string addr, int port)
         //{
@@ -36,12 +36,20 @@ namespace Fenix.Redis
             helper.Initialization(client);
         }
 
-        public bool Set(string key, object value)
+        public bool Set(string key, object value, int? expireSeconds=null)
         { 
             using (var lk = helper.Lock(key, 3))
             {
-                return this.client.Set(key, value, expireSeconds:conf.ValidTime);
+                if(expireSeconds!=null && expireSeconds.HasValue)
+                    return this.client.Set(key, value, expireSeconds: expireSeconds.Value);
+                else
+                    return this.client.Set(key, value, expireSeconds:conf.ValidTime);
             }
+        }
+
+        public bool HasKey(string key)
+        {
+            return this.client.Exists(key);
         }
 
         public T Get<T>(string key)
@@ -59,6 +67,17 @@ namespace Fenix.Redis
             return this.client.Del(key);
         }
 
+        public async Task<string[]> KeysAsync()
+        {
+            var keys = await this.client.KeysAsync(string.Format("{0}*", conf.Key));
+            return keys.Where(m => m != null && !m.Contains("CSRedisClientLock:")).Select(m => m.Substring(conf.Key.Length+1)).ToArray();
+        }
+
+        public string[] Keys()
+        {
+            var keys = this.client.Keys(string.Format("{0}*", conf.Key)); 
+            return keys.Where(m=>m!=null && !m.Contains("CSRedisClientLock:")).Select(m => m.Substring(conf.Key.Length+1)).ToArray();
+        }
         public void Dispose()
         {
             this.client.Dispose(); 

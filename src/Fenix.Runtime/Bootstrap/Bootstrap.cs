@@ -45,7 +45,7 @@ namespace Fenix
                 }
             }
 
-            HostHelper.Run(c);
+            HostHelper.RunThread(c);
         }
     }
 }

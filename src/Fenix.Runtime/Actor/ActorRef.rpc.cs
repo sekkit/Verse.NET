@@ -22,7 +22,7 @@ namespace Fenix
     {
         public void BindClientActor(String actorName, Action<DefaultErrCode> callback)
         {
-            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);//, this.isClient);
+            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
                 Host.Instance.GetActor(this.toActorId).CallLocalMethod(OpCode.BIND_CLIENT_ACTOR_REQ, new object[] { actorName, callback });
@@ -41,7 +41,7 @@ namespace Fenix
 
         public void CreateActor(String typename, String name, Action<DefaultErrCode, String, UInt32> callback)
         {
-            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);//, this.isClient);
+            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
                 Host.Instance.GetActor(this.toActorId).CallLocalMethod(OpCode.CREATE_ACTOR_REQ, new object[] { typename, name, callback });
@@ -61,7 +61,7 @@ namespace Fenix
 
         public void MigrateActor(UInt32 actorId)
         {
-           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);//, this.isClient);
+           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
            if (this.FromHostId == toHostId)
            {
                 Host.Instance.GetActor(this.toActorId).CallLocalMethod(OpCode.MIGRATE_ACTOR_REQ, new object[] { actorId });
@@ -76,7 +76,7 @@ namespace Fenix
 
         public void Register(UInt32 hostId, String hostName)
         {
-           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);//, this.isClient);
+           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
            if (this.FromHostId == toHostId)
            {
                 Host.Instance.GetActor(this.toActorId).CallLocalMethod(OpCode.REGISTER_REQ, new object[] { hostId, hostName });
@@ -92,7 +92,7 @@ namespace Fenix
 
         public void RegisterClient(UInt32 hostId, String hostName, Action<Int32, HostInfo> callback)
         {
-            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);//, this.isClient);
+            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
                 Host.Instance.GetActor(this.toActorId).CallLocalMethod(OpCode.REGISTER_CLIENT_REQ, new object[] { hostId, hostName, callback });
@@ -112,7 +112,7 @@ namespace Fenix
 
         public void RemoveActor(UInt32 actorId)
         {
-           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId);//, this.isClient);
+           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
            if (this.FromHostId == toHostId)
            {
                 Host.Instance.GetActor(this.toActorId).CallLocalMethod(OpCode.REMOVE_ACTOR_REQ, new object[] { actorId });

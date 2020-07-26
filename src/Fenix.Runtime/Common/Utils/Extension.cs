@@ -33,6 +33,17 @@ namespace Fenix.Common.Utils
             return iPEndPoint;
         }
 
+        public static string ToIPv4String(this IPEndPoint ep)
+        {
+            return string.Format("{0}:{1}", ep.Address.MapToIPv4().ToString(), ep.Port);
+        }
+
+        public static string ToIPv4String(this EndPoint ep)
+        {
+            var newEp = (IPEndPoint)ep;
+            return string.Format("{0}:{1}", newEp.Address.MapToIPv4().ToString(), newEp.Port);
+        }
+
         /// <summary>
         /// 获取IByteBuffer中的byte[]
         /// </summary>

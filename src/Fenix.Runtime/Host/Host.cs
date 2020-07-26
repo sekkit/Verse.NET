@@ -89,7 +89,7 @@ namespace Fenix
 
                 this.LocalAddress = new IPEndPoint(IPAddress.Parse(_ip), _port);
 
-                string addr = LocalAddress.ToString();
+                string addr = LocalAddress.ToIPv4String();
 
                 if (name == null)
                     this.UniqueName = Basic.GenID64().ToString();
@@ -114,12 +114,12 @@ namespace Fenix
 
             if (!this.IsClientMode)
             {
-                Log.Info(string.Format("{0}(ID:{1}) is running at {2} as ServerMode", this.UniqueName, this.Id, LocalAddress.ToString()));
+                Log.Info(string.Format("{0}(ID:{1}) is running at {2} as ServerMode", this.UniqueName, this.Id, LocalAddress.ToIPv4String()));
             }
             else
             {
                 Log.Info(string.Format("{0}(ID:{1}) is running as ClientMode", this.UniqueName, this.Id));
-                //Log.Info(string.Format("{0} is running at {1} as ClientMode", this.UniqueName, LocalAddress.ToString()));
+                //Log.Info(string.Format("{0} is running at {1} as ClientMode", this.UniqueName, LocalAddress.ToIPv4String()));
             }
 
             heartbeatTh = new Thread(new ThreadStart(Heartbeat));
@@ -167,8 +167,18 @@ namespace Fenix
                 byte protoCode = buffer.ReadByte();
                 if (protoCode == (byte)OpCode.PING)
                 {
-                    Log.Info(string.Format("Ping({0}) {1} from {2}", peer.networkType, peer.ConnId, peer.RemoteAddress));
+                    Log.Info(string.Format("Ping({0}) {1} FROM {2}", peer.networkType, peer.ConnId, peer.RemoteAddress));
+                    
+                    Global.IdManager.ReregisterHost(peer.ConnId, peer.RemoteAddress.ToIPv4String());
                     peer.Send(new byte[] { (byte)OpCode.PONG });
+#if !CLIENT
+                    //如果peer是客户端，则代表
+                    var clientActorId = Global.IdManager.GetClientActorId(peer.ConnId);
+                    if (clientActorId != 0)
+                    {
+                        Global.IdManager.RegisterClientActor(clientActorId, GetActor(clientActorId).UniqueName, peer.ConnId, peer.RemoteAddress.ToIPv4String());
+                    }
+#endif
                     NetManager.Instance.OnPong(peer);
                 }
                 else if(protoCode == (byte)OpCode.PONG)
@@ -223,8 +233,8 @@ namespace Fenix
                     packet.ToHostId,
                     packet.FromActorId, 
                     packet.ToActorId, 
-                    peer.RemoteAddress.ToString(), 
-                    peer.LocalAddress.ToString()));
+                    peer.RemoteAddress.ToIPv4String(), 
+                    peer.LocalAddress.ToIPv4String()));
                  
                 if (protoCode >= OpCode.CALL_ACTOR_METHOD && toActorId != 0)
                 {
@@ -237,7 +247,7 @@ namespace Fenix
             }
         }
 
-        #region KCP
+#region KCP
 
         protected KcpHostServer SetupKcpServer()
         {
@@ -247,7 +257,7 @@ namespace Fenix
             kcpServer.OnClose += KcpServer_OnClose;
             kcpServer.OnException += KcpServer_OnException;
 
-            Log.Info(string.Format("KCP-Server@{0}", this.LocalAddress.ToString()));
+            Log.Info(string.Format("KCP-Server@{0}", this.LocalAddress.ToIPv4String()));
             return kcpServer;
         }
 
@@ -255,9 +265,9 @@ namespace Fenix
         {
             //新连接
             NetManager.Instance.RegisterKcp(ukcp);
-            //ulong hostId = Global.IdManager.GetHostId(channel.RemoteAddress.ToString());
+            //ulong hostId = Global.IdManager.GetHostId(channel.RemoteAddress.ToIPv4String());
             Log.Info(string.Format("kcp_client_connected {0} {1}", 
-                Basic.GenID32FromName(ukcp.user().Channel.Id.AsLongText()+ukcp.user().Channel.LocalAddress.ToString() + ukcp.user().RemoteAddress.ToString()), ukcp.user().RemoteAddress.ToString()));
+                Basic.GenID32FromName(ukcp.user().Channel.Id.AsLongText()+ukcp.user().Channel.LocalAddress.ToIPv4String() + ukcp.user().RemoteAddress.ToIPv4String()), ukcp.user().RemoteAddress.ToIPv4String()));
         }
 
         private void KcpServer_OnReceive(Ukcp ukcp, IByteBuffer buffer)
@@ -277,9 +287,9 @@ namespace Fenix
         {
             NetManager.Instance.DeregisterKcp(ukcp);
         }
-        #endregion
+#endregion
 
-        #region TCP
+#region TCP
         protected TcpHostServer SetupTcpServer()
         {
             tcpServer = TcpHostServer.Create(this.LocalAddress);
@@ -287,7 +297,7 @@ namespace Fenix
             tcpServer.OnReceive += OnTcpServerReceive;
             tcpServer.OnClose += OnTcpServerClose;
             tcpServer.OnException += OnTcpServerException;
-            Log.Info(string.Format("TCP-Server@{0}", this.LocalAddress.ToString()));
+            Log.Info(string.Format("TCP-Server@{0}", this.LocalAddress.ToIPv4String()));
             return tcpServer;
         }
          
@@ -295,8 +305,8 @@ namespace Fenix
         {
             //新连接
             NetManager.Instance.RegisterChannel(channel);
-            //ulong hostId = Global.IdManager.GetHostId(channel.RemoteAddress.ToString());
-            Log.Info("TcpConnect: " + channel.RemoteAddress.ToString());
+            //ulong hostId = Global.IdManager.GetHostId(channel.RemoteAddress.ToIPv4String());
+            Log.Info("TcpConnect: " + channel.RemoteAddress.ToIPv4String());
         }
 
         void OnTcpServerReceive(IChannel channel, IByteBuffer buffer)
@@ -316,27 +326,37 @@ namespace Fenix
             NetManager.Instance.DeregisterChannel(channel);
         } 
 
-        #endregion
+#endregion
 
         protected void Heartbeat()
         {
-            while (true)
+            while(true)
             {
-                //Log.Info(string.Format("Heartbeat:{0}", IsAlive));
-                NetManager.Instance?.PrintPeerInfo();
-                if (!IsAlive)
-                    return; 
+                try
+                {
+                    //Log.Info(string.Format("Heartbeat:{0}", IsAlive));
+                    NetManager.Instance?.PrintPeerInfo();
+                    if (!IsAlive)
+                        return;
 
-                if (IsClientMode)
-                {
-                    NetManager.Instance.Ping();
+                    if (IsClientMode) //客户端无法访问全局缓存
+                    {
+                        NetManager.Instance.Ping();
+                    }
+                    else
+                    {
+                        NetManager.Instance.Ping();
+                        this.RegisterGlobalManager(this);
+                        foreach (var kv in this.actorDic)
+                            this.RegisterGlobalManager(kv.Value);
+                    }
+#if !CLIENT
+                Global.IdManager.SyncWithCache();
+#endif
                 }
-                else
+                catch(Exception ex)
                 {
-                    NetManager.Instance.Ping();
-                    this.RegisterGlobalManager(this);
-                    foreach (var kv in this.actorDic)
-                        this.RegisterGlobalManager(kv.Value);
+                    Log.Error(ex);
                 }
                 Thread.Sleep(5000);
             }
@@ -349,7 +369,7 @@ namespace Fenix
 
         protected void RegisterGlobalManager(Host host)
         {
-            Global.IdManager.RegisterHost(host, this.LocalAddress.ToString());
+            Global.IdManager.RegisterHost(host, this.LocalAddress.ToIPv4String());
         }
 
         protected void RegisterGlobalManager(Actor actor)
@@ -421,11 +441,11 @@ namespace Fenix
             if (__context.Peer.ConnId != hostId)
             {
                 //修正一下peer的id 
-                NetManager.Instance.ChangePeerId(__context.Peer.ConnId, hostId, hostName, __context.Peer.RemoteAddress.ToString()); 
+                NetManager.Instance.ChangePeerId(__context.Peer.ConnId, hostId, hostName, __context.Peer.RemoteAddress.ToIPv4String()); 
             }
             else
             {
-                Global.IdManager.RegisterHost(hostId, hostName, __context.Peer.RemoteAddress.ToString());
+                Global.IdManager.RegisterHost(hostId, hostName, __context.Peer.RemoteAddress.ToIPv4String());
             }
         }
 
@@ -436,7 +456,7 @@ namespace Fenix
         {
             if (__context.Peer.ConnId != hostId)
             {
-                NetManager.Instance.ChangePeerId(__context.Peer.ConnId, hostId, hostName, __context.Peer.RemoteAddress.ToString());
+                NetManager.Instance.ChangePeerId(__context.Peer.ConnId, hostId, hostName, __context.Peer.RemoteAddress.ToIPv4String());
             }
 
             NetManager.Instance.RegisterClient(hostId, hostName, __context.Peer);
@@ -456,7 +476,7 @@ namespace Fenix
             //find actor.server
             var actorId = Global.IdManager.GetActorId(actorName);
             //var hostAddr = Global.IdManager.GetHostAddrByActorId(actorId, false);
-            Global.IdManager.RegisterClientActor(actorId, actorName, __context.Packet.FromHostId, __context.Peer.RemoteAddress.ToString());
+            Global.IdManager.RegisterClientActor(actorId, actorName, __context.Packet.FromHostId, __context.Peer.RemoteAddress.ToIPv4String());
              
             //give actor.server hostId, ipaddr to client
             callback(DefaultErrCode.OK);

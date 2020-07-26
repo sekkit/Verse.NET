@@ -1,9 +1,12 @@
-﻿//
+﻿#if LEGACY_IDMANAGER
 
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 using Fenix.Common;
+using Fenix.Common.Utils;
 #if !CLIENT
 using Fenix.Redis;
 using Server.Config.Db;
@@ -37,7 +40,7 @@ namespace Fenix
         protected ConcurrentDictionary<uint, string> mAID2ANAME = new ConcurrentDictionary<uint, string>();
 
         protected ConcurrentDictionary<uint, string> mAID2TNAME = new ConcurrentDictionary<uint, string>();
-
+         
 #if !CLIENT
 
         protected IdManager()
@@ -78,13 +81,14 @@ namespace Fenix
         }
 
 #endif
-        public bool RegisterHost(Host host, string address)
+        public bool RegisterHost(Host host, IPEndPoint ep)
         {
-            return RegisterHost(host.Id, host.UniqueName, address);
+            return RegisterHost(host.Id, host.UniqueName, ep);
         }
 
-        public bool RegisterHost(uint hostId, string hostName, string address)
+        public bool RegisterHost(uint hostId, string hostName, IPEndPoint ep)
         {
+            string address = ep.ToIPv4String();
             mHID2ADDR[hostId] = address;
             mADDR2HID[address] = hostId;
 
@@ -102,9 +106,29 @@ namespace Fenix
 #endif
         }
 
-#if !CLIENT
-        public void RegisterClientHost(uint clientId, string clientName, string addr)
+        public bool ReregisterHost(uint hostId, IPEndPoint ep)
         {
+            string address = ep.ToIPv4String();
+            mHID2ADDR[hostId] = address;
+            mADDR2HID[address] = hostId;
+
+            var hostName = GetHostName(hostId); 
+
+#if !CLIENT
+            var key = hostId.ToString();
+            bool ret = Global.DbManager.GetDb(CacheConfig.ADDR2HID).Set(address, hostId);
+            ret = Global.DbManager.GetDb(CacheConfig.HNAME2HID).Set(hostName, hostId) && ret;
+            ret = Global.DbManager.GetDb(CacheConfig.HID2HNAME).Set(hostId.ToString(), hostName) && ret;
+            return Global.DbManager.GetDb(CacheConfig.HID2ADDR).Set(key, address) && ret;
+#else
+            return true;
+#endif
+        }
+
+#if !CLIENT
+        public void RegisterClientHost(uint clientId, string clientName, IPEndPoint ep)
+        {
+            string addr = ep.ToIPv4String();
             mHID2ADDR[clientId] = addr;
             mADDR2HID[addr] = clientId;
 
@@ -157,17 +181,16 @@ namespace Fenix
 
         } 
 
-        public uint GetHostId(string addr) 
+        public uint GetHostId(IPEndPoint ep) 
         {
-            {
-                if (mADDR2HID.ContainsKey(addr))
-                    return mADDR2HID[addr];
+            string addr = ep.ToIPv4String();
+            if (mADDR2HID.ContainsKey(addr))
+                return mADDR2HID[addr];
 #if !CLIENT
-                return Global.DbManager.GetDb(CacheConfig.ADDR2HID).Get<uint>(addr);
+            return Global.DbManager.GetDb(CacheConfig.ADDR2HID).Get<uint>(addr);
 #else
-                return 0;
-#endif
-            } 
+            return 0;
+#endif 
 
         }
 
@@ -395,5 +418,27 @@ namespace Fenix
                 this.mAID2TNAME[kv.Key] = kv.Value;
             } 
         }
+#if !CLIENT
+        public void SyncWithCache()
+        {
+            var cache = Global.DbManager.GetDb(CacheConfig.HID2ADDR);
+            foreach (var key in cache.Keys())
+            {
+                uint hid = uint.Parse(key);
+                //Log.Info(key, CacheHID2ADDR.Get(key));
+                //this.mHID2ADDR[hid] = cache.Get(key);
+            } 
+        }
+
+        public async Task SyncWithCacheAsync()
+        {
+            var CacheHID2ADDR = Global.DbManager.GetDb(CacheConfig.HID2ADDR);
+            foreach (var key in await CacheHID2ADDR.KeysAsync())
+            {
+                Log.Info(key, CacheHID2ADDR.Get(key));
+            }
+        }
+#endif
     }
 }
+#endif

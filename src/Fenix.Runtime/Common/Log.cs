@@ -90,7 +90,7 @@ namespace Fenix.Common
 
 		string Format(object[] objs, string logLevel)
 		{
-			string output = string.Join(" ", objs.Select(m => m.ToString()));
+			string output = string.Join(" ", objs.Select(m => m?.ToString()));
 
 			var appname = Environment.GetEnvironmentVariable("AppName");
 

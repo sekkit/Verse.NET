@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 
 namespace DotNetty.TCP
@@ -12,8 +13,10 @@ namespace DotNetty.TCP
 
         public bool UseSSL = false;
 
-        public string Address = "127.0.0.1";
+        //public string Address = "127.0.0.1";
 
-        public int Port = 0;
+        //public int Port = 0;
+
+        public IPEndPoint Address;
     }
 }

@@ -49,7 +49,7 @@ namespace Fenix
                 if (toHostId != 0)
                     toAddr = Basic.ToAddress(Global.IdManager.GetHostAddr(toHostId));//, isClient));
                 else if (toActorId != 0)
-                    toAddr = Basic.ToAddress(Global.IdManager.GetHostAddrByActorId(toActorId));//, isClient) ;//);
+                    toAddr = Basic.ToAddress(Global.IdManager.GetHostAddrByActorId(toActorId, isClient));//);
             }
 
             var obj = (ActorRef)Activator.CreateInstance(refType);

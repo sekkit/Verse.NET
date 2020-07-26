@@ -70,8 +70,9 @@ namespace Fenix
         public static TcpHostClient Create(IPEndPoint ep)
         {
             var channelConfig = new TcpChannelConfig();
-            channelConfig.Address = ep.Address.ToString();
-            channelConfig.Port = ep.Port;
+            channelConfig.Address = ep;
+            //channelConfig.Address = ep.Address.ToIPv4String();
+            //channelConfig.Port = ep.Port;
 #if !UNITY_5_3_OR_NEWER
             channelConfig.UseLibuv = false;
 #endif

@@ -35,7 +35,7 @@ namespace Server.Config.Db
             Key = "ACC",
             Retry = 1,
             RetryDelay = 0.1f,
-            ValidTime = -1,
+            ValidTime = 15,
             Type = "Redis"
         };
 

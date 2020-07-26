@@ -11,7 +11,7 @@ namespace Fenix
 
         public static bool NativeSerializationMethod = false;
 
-        public static IdManager IdManager => IdManager.Instance;
+        public static IdManagerSimple IdManager => IdManagerSimple.Instance;
 
         public static TypeManager TypeManager => TypeManager.Instance;
 

@@ -230,19 +230,19 @@ namespace Fenix
             kcpChannel?.writeMessage(Unpooled.WrappedBuffer(bytes));
             //Log.Info("2");
             if (kcpChannel != null)
-                Log.Info(string.Format("sento_sender({0}): {1} {2} => {3} Channel:{4} DATA:{5}", this.networkType, kcpChannel.user().RemoteAddress.ToString(), Host.Instance.Id, ConnId, this.kcpChannel.user().Channel.Id.AsLongText(), StringUtil.ToHexString(bytes)));
+                Log.Info(string.Format("sento_sender({0}): {1} {2} => {3} Channel:{4} DATA:{5}", this.networkType, kcpChannel.user().RemoteAddress.ToIPv4String(), Host.Instance.Id, ConnId, this.kcpChannel.user().Channel.Id.AsLongText(), StringUtil.ToHexString(bytes)));
             tcpChannel?.WriteAndFlushAsync(Unpooled.WrappedBuffer(bytes));
             //Log.Info("3");
             if (tcpChannel != null)
-                Log.Info(string.Format("sento_sender({0}): {1} {2} => {3} Channel:{4} DATA:{5}", this.networkType, tcpChannel.RemoteAddress.ToString(), Host.Instance.Id, ConnId, tcpChannel.Id.AsLongText(), StringUtil.ToHexString(bytes)));
+                Log.Info(string.Format("sento_sender({0}): {1} {2} => {3} Channel:{4} DATA:{5}", this.networkType, tcpChannel.RemoteAddress.ToIPv4String(), Host.Instance.Id, ConnId, tcpChannel.Id.AsLongText(), StringUtil.ToHexString(bytes)));
             kcpClient?.Send(bytes);
             //Log.Info("4");
             if (kcpClient != null)
-                Log.Info(string.Format("sento_receiver({0}): {1} {2} => {3} Channel:{4} DATA:{5}", this.networkType, kcpClient.RemoteAddress.ToString(), Host.Instance.Id, ConnId, kcpClient.ChannelId, StringUtil.ToHexString(bytes)));
+                Log.Info(string.Format("sento_receiver({0}): {1} {2} => {3} Channel:{4} DATA:{5}", this.networkType, kcpClient.RemoteAddress.ToIPv4String(), Host.Instance.Id, ConnId, kcpClient.ChannelId, StringUtil.ToHexString(bytes)));
             tcpClient?.Send(bytes);
             //Log.Info("5");
             if (tcpClient != null)
-                Log.Info(string.Format("sento_receiver({0}): {1} {2} => {3} Channel:{4} DATA:{5}", this.networkType, tcpClient.RemoteAddress.ToString(), Host.Instance?.Id, ConnId, tcpClient.ChannelId, StringUtil.ToHexString(bytes)));
+                Log.Info(string.Format("sento_receiver({0}): {1} {2} => {3} Channel:{4} DATA:{5}", this.networkType, tcpClient.RemoteAddress.ToIPv4String(), Host.Instance?.Id, ConnId, tcpClient.ChannelId, StringUtil.ToHexString(bytes)));
             //Log.Info("6");
         }
 

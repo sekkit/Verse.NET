@@ -46,8 +46,9 @@ namespace Server.GModule
             var svc = GetService<MasterServiceRef>();
             svc.CreateActor(nameof(Avatar), uid, (code, actorName, actorId) =>
             {
-                var hostId = Global.IdManager.GetHostIdByActorId(actorId);//, false);
+                var hostId = Global.IdManager.GetHostIdByActorId(actorId);//, false); 
                 //创建成功后，把客户端的avatar注册到服务端
+                
                 Log.Info(string.Format("login.create_actor@Master.App {0} {1} {2} {3} {4}", code, actorName, actorId,
                     Global.IdManager.GetHostName(hostId), Global.IdManager.GetHostAddrByActorId(actorId)));
                  

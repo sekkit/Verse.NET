@@ -84,7 +84,7 @@ namespace DotNetty.TCP
                       pipeline.AddLast("tcp-handler", new TcpChannelHandler(listener));
                   }));
  
-                var task = Task<IChannel>.Run(() => bootstrap.BindAsync(IPAddress.Parse(channelConfig.Address), channelConfig.Port));
+                var task = Task<IChannel>.Run(() => bootstrap.BindAsync(channelConfig.Address));
                 task.Wait();
                 boundChannel = task.Result;
             }

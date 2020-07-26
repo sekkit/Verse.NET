@@ -50,16 +50,16 @@ namespace Fenix
             OnReceive?.Invoke(channel, buffer); 
         }
 
+        //public static TcpHostServer Create(IPEndPoint ep)
+        //{
+        //    return Create(ep.Address.ToIPv4String(), ep.Port);
+        //}
+        
         public static TcpHostServer Create(IPEndPoint ep)
         {
-            return Create(ep.Address.ToString(), ep.Port);
-        }
-        
-        public static TcpHostServer Create(string ip, int port)
-        {
             var channelConfig = new TcpChannelConfig();
-            channelConfig.Address = ip;// "0.0.0.0";
-            channelConfig.Port = port;
+            channelConfig.Address = ep;// ip;// "0.0.0.0";
+            //channelConfig.Port = port;
 #if !UNITY_5_3_OR_NEWER
             channelConfig.UseLibuv = true;
 #endif
