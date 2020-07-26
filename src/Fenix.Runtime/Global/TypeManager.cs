@@ -20,6 +20,8 @@ namespace Fenix
 
         protected ConcurrentDictionary<string, Type> mTypeDic = new ConcurrentDictionary<string, Type>();
 
+        protected ConcurrentDictionary<UInt32, Api> RpcTypeDic = new ConcurrentDictionary<UInt32, Api>();
+
         protected ConcurrentDictionary<uint, Type> mMessageTypeDic = new ConcurrentDictionary<uint, Type>();
          
         protected ConcurrentDictionary<Type, string> mRef2ATNameDic = new ConcurrentDictionary<Type, string>();
@@ -34,7 +36,14 @@ namespace Fenix
 
         public void RegisterApi(uint code, Api api)
         {
-            RpcModule.RpcTypeDic[code] = api;
+            this.RpcTypeDic[code] = api;
+        } 
+        public Api GetRpcType(uint protoCode)
+        { 
+            if (RpcTypeDic.TryGetValue(protoCode, out var api))
+                return api;
+
+            return Api.NoneApi;
         }
 
         public void ScanAssemblies(Assembly[] asmList)
@@ -123,12 +132,6 @@ namespace Fenix
                 return RefType.SERVER;
             }
             return RefType.NONE;
-        }
-
-        public Api GetApiType(uint protocolCode)
-        {
-            RpcModule.RpcTypeDic.TryGetValue(protocolCode, out Api api);
-            return api;
         }
     }
 }

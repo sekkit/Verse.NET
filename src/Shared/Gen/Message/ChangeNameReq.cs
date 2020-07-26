@@ -4,6 +4,7 @@ using Fenix.Common;
 using Fenix.Common.Attributes;
 using Fenix.Common.Rpc;
 using MessagePack; 
+using System.ComponentModel;
 using Shared;
 using Shared.Protocol;
 using Shared.DataModel;
@@ -16,7 +17,7 @@ namespace Shared.Message
     public class ChangeNameReq : IMessageWithCallback
     {
         [Key(0)]
-        public String name;
+        public String name { get; set; }
 
 
         [Key(199)]
@@ -30,7 +31,8 @@ namespace Shared.Message
         public class Callback
         {
             [Key(0)]
-            public ErrCode code;
+            [DefaultValue(ErrCode.ERROR)]
+            public ErrCode code { get; set; } = ErrCode.ERROR;
 
         }
 

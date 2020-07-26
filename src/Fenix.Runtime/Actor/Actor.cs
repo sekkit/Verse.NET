@@ -16,20 +16,12 @@ namespace Fenix
 {
     [MessagePackObject]
     [Serializable]
-    public class Actor: RpcModule
+    public class Actor: Entity
     {
-        [Key(0)]
-        [DataMember]
-        public uint Id { get; set; }
-
         [IgnoreMember]
         [IgnoreDataMember]
         public uint HostId => Host.Instance.Id;
-
-        [Key(2)]
-        [DataMember]
-        public string UniqueName { get; set; }
-
+         
         [Key(3)]
         [DataMember]
         public bool CanTransfer { get; set; }
@@ -42,12 +34,7 @@ namespace Fenix
         [IgnoreMember]
         [IgnoreDataMember]
         protected Dictionary<Type, object> mPersistentDic = new Dictionary<Type, object>();
-
-        [IgnoreMember]
-        [IgnoreDataMember]
-        //private List<Timer> mTimerList = new List<Timer>();
-        private ConcurrentDictionary<ulong, Timer> mTimerDic = new ConcurrentDictionary<ulong, Timer>();
-
+ 
         public T Get<T>()
         {
             object value;
@@ -101,22 +88,7 @@ namespace Fenix
 
         public sealed override void Update()
         {
-            //Log.Info(string.Format("{0}:{1}", this.GetType().Name, rpcDic.Count));
-            var curTime = TimeUtil.GetTimeStampMS();
-
-            var keys = this.mTimerDic.Keys;
-
-            foreach (var key in keys)
-            {
-                if(this.mTimerDic.TryGetValue(key, out var t))
-                {
-                    if (!t.CheckTimeout(curTime))
-                    {
-                        this.mTimerDic.TryRemove(key, out var _);
-                        t.Dispose();
-                    }
-                } 
-            }
+            //Log.Info(string.Format("{0}:{1}", this.GetType().Name, rpcDic.Count)); 
 
             this.onUpdate();
         }
@@ -139,12 +111,11 @@ namespace Fenix
 
         } 
 
-        public void Destroy()
+        public override void Destroy()
         {
-            foreach (var t in mTimerDic.Values)
-                t.Dispose();
-            this.mTimerDic.Clear();
+            base.Destroy();
 
+            //actor api
             this.onDestroy();
         }
 
@@ -238,21 +209,6 @@ namespace Fenix
         public virtual void onDestroy()
         {
             
-        }
-
-        public void AddTimer(long delay, long interval, Action tickCallback)
-        {
-            //实现timer
-            var timer = Timer.Create(delay, interval, false, tickCallback);
-            this.mTimerDic.TryAdd(timer.Tid, timer); 
-        }
-
-        public void AddRepeatedTimer(long delay, long interval, Action tickCallback)
-        {
-            //实现timer
-            var timer = Timer.Create(delay, interval, true, tickCallback);
-            //this.mTimerDic[timer.Tid] = timer;
-            this.mTimerDic.TryAdd(timer.Tid, timer);
         }
     }
 }

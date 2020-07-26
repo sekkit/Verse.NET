@@ -22,7 +22,7 @@ namespace Client
     public partial class AvatarRef : ActorRef
     {
         public void client_on_api_test(String uid, Int32 match_type, Action<ErrCode> callback)
-        { 
+        {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
@@ -35,7 +35,7 @@ namespace Client
                 match_type=match_type
             };
             var cb = new Action<byte[]>((cbData) => {
-                var cbMsg = RpcUtil.Deserialize<ApiTestNtf.Callback>(cbData);
+                var cbMsg = cbData==null?new ApiTestNtf.Callback():RpcUtil.Deserialize<ApiTestNtf.Callback>(cbData);
                 callback?.Invoke(cbMsg.code);
             });
             this.CallRemoteMethod(ProtocolCode.API_TEST_NTF, msg, cb);

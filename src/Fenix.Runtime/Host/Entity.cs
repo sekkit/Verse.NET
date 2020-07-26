@@ -2,22 +2,38 @@
 using Fenix.Common;
 using Fenix.Common.Attributes;
 using Fenix.Common.Rpc;
-using Fenix.Common.Utils; 
+using Fenix.Common.Utils;
+using MessagePack;
 using System;
 using System.Collections.Concurrent; 
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Runtime.Serialization;
 
 namespace Fenix
 {
-    public abstract class RpcModule
+    [MessagePackObject]
+    [Serializable]
+    public abstract class Entity
     {
-        public static ConcurrentDictionary<UInt32, Api> RpcTypeDic = new ConcurrentDictionary<UInt32, Api>();
-        public static ConcurrentDictionary<UInt64, RpcCommand> rpcDic     = new ConcurrentDictionary<UInt64, RpcCommand>();
-        public static ConcurrentDictionary<UInt32, MethodInfo> rpcStubDic = new ConcurrentDictionary<UInt32, MethodInfo>(); 
+        [Key(0)]
+        [DataMember]
+        public uint Id { get; set; }
 
-        public RpcModule()
+        [Key(2)]
+        [DataMember]
+        public string UniqueName { get; set; }
+
+        public ConcurrentDictionary<UInt64, RpcCommand> rpcDic     = new ConcurrentDictionary<UInt64, RpcCommand>();
+        
+        public ConcurrentDictionary<UInt32, MethodInfo> rpcStubDic = new ConcurrentDictionary<UInt32, MethodInfo>();
+
+        [IgnoreMember]
+        [IgnoreDataMember]
+        private ConcurrentDictionary<ulong, Timer> mTimerDic = new ConcurrentDictionary<ulong, Timer>();
+
+        public Entity()
         {
             var methods = this.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
             for (int i = 0; i < methods.Length; ++i)
@@ -26,22 +42,22 @@ namespace Fenix
                 var attrs = method.GetCustomAttributes(typeof(ServerApiAttribute));
                 if (attrs.Count() > 0)
                 {
-                    uint code = Basic.GenID32FromName(method.Name); 
-                    RpcTypeDic[code] = Api.ServerApi;
+                    uint code = Basic.GenID32FromName(method.Name);
+                    Global.TypeManager.RegisterApi(code, Api.ServerApi);
                 }
 
                 attrs = method.GetCustomAttributes(typeof(ServerOnlyAttribute));
                 if (attrs.Count() > 0)
                 {
-                    uint code = Basic.GenID32FromName(method.Name); 
-                    RpcTypeDic[code] = Api.ServerOnly;
+                    uint code = Basic.GenID32FromName(method.Name);  
+                    Global.TypeManager.RegisterApi(code, Api.ServerOnly);
                 }
 
                 attrs = method.GetCustomAttributes(typeof(ClientApiAttribute));
                 if (attrs.Count() > 0)
                 {
-                    uint code = Basic.GenID32FromName(method.Name); 
-                    RpcTypeDic[code] = Api.ClientApi;
+                    uint code = Basic.GenID32FromName(method.Name);  
+                    Global.TypeManager.RegisterApi(code, Api.ClientApi);
                 }
 
                 attrs = method.GetCustomAttributes(typeof(RpcMethodAttribute));
@@ -49,29 +65,52 @@ namespace Fenix
                 {
                     var attr = (RpcMethodAttribute)attrs.First();
                     uint code = attr.Code;
-                    Api api = attr.Api;
-                    RpcTypeDic[code] = api;
+                    Api api = attr.Api; 
+                    Global.TypeManager.RegisterApi(code, api);
                     rpcStubDic[code] = method;
                 }
             }
+
+            this.AddRepeatedTimer(1000, 2000, CheckRpc);
+        }
+
+        public void AddCallbackRpc(RpcCommand cmd)
+        {
+            rpcDic[cmd.Id] = cmd;
+            Global.IdManager.RegisterRpcId(cmd.Id, this.Id);
+        }
+
+        public void RemoveRpc(ulong rpcId)
+        {
+            Global.IdManager.RemoveRpcId(rpcId);
+            rpcDic.TryRemove(rpcId, out var _);
+        }
+
+        public RpcCommand GetRpc(ulong rpcId)
+        {
+            rpcDic.TryGetValue(rpcId, out var cmd);
+            return cmd;
         }
 
         public virtual void CallMethod(Packet packet)
         {
-            bool isCallback = rpcDic.ContainsKey(packet.Id);
-            
+            bool isCallback = rpcDic.ContainsKey(packet.Id); 
             if (isCallback)
-            {
-                var cmd = rpcDic[packet.Id];
-                rpcDic.TryRemove(packet.Id, out var _);
+            { 
+                if(!rpcDic.TryGetValue(packet.Id, out var cmd))
+                {
+                    Log.Error("rpc_id_not_found", packet.Id, packet.ProtoCode, packet.MsgType, packet.NetType);
+                    return;
+                }
+                 
+                RemoveRpc(cmd.Id);
                 cmd.Callback(packet.Payload);
             }
             else
-            {
-                //IMessage msg = packet.Msg;
+            { 
                 var cmd = RpcCommand.Create(packet, null, this) ; 
                 cmd.Call(()=> {
-                    rpcDic.TryRemove(cmd.Id, out var _);
+                    RemoveRpc(cmd.Id);
                 });
             }
         }
@@ -86,15 +125,6 @@ namespace Fenix
             {
                 Log.Error(ex.ToString());
             }
-        }
-
-        public Api GetRpcType(uint protoCode)
-        {
-            Api api;
-            if (RpcTypeDic.TryGetValue(protoCode, out api))
-                return api;
-
-            return Api.NoneApi;
         }
 
         public void Rpc(uint protoCode, uint fromHostId, uint fromActorId, uint toHostId, uint toActorId, 
@@ -114,7 +144,9 @@ namespace Fenix
                 var toActor = Host.Instance.GetActor(toActorId);
 
                 if (msg.HasCallback())
-                    rpcDic[cmd.Id] = cmd; 
+                {
+                    AddCallbackRpc(cmd);
+                }
                 toActor.CallMethod(packet);
                 return;
             }
@@ -139,9 +171,11 @@ namespace Fenix
                 return;
             }
 
-            if(msg.HasCallback())
-                rpcDic[cmd.Id] = cmd; 
-            
+            if (msg.HasCallback())
+            {
+                AddCallbackRpc(cmd);
+            }
+
             peer.Send(packet);
         }
 
@@ -182,6 +216,60 @@ namespace Fenix
             //    peer == null ? "NULL" : ""));
 
             peer.Send(packet);
+        }
+
+        public void AddTimer(long delay, long interval, Action tickCallback)
+        {
+            //实现timer
+            var timer = Timer.Create(delay, interval, false, tickCallback);
+            this.mTimerDic.TryAdd(timer.Tid, timer);
+        }
+
+        public void AddRepeatedTimer(long delay, long interval, Action tickCallback)
+        {
+            //实现timer
+            var timer = Timer.Create(delay, interval, true, tickCallback);
+            //this.mTimerDic[timer.Tid] = timer;
+            this.mTimerDic.TryAdd(timer.Tid, timer);
+        }
+
+        protected void CheckRpc()
+        {
+            var curTime = TimeUtil.GetTimeStampMS();
+            foreach (var cmd in rpcDic.Values.ToArray())
+            {
+                if(curTime - cmd.CallTime > 15000)
+                {
+                    cmd.Callback(null);
+                    RemoveRpc(cmd.Id);
+                }
+            }
+        }
+
+        protected void CheckTimer()
+        {
+            var curTime = TimeUtil.GetTimeStampMS();
+
+            var keys = this.mTimerDic.Keys;
+
+            foreach (var key in keys)
+            {
+                if (this.mTimerDic.TryGetValue(key, out var t))
+                {
+                    if (t.CheckTimeout(curTime))
+                    {
+                        this.mTimerDic.TryRemove(key, out var _);
+                        t.Dispose();
+                    }
+                }
+            }
+        }
+
+        public virtual void Destroy()
+        {
+            foreach (var t in mTimerDic.Values)
+                t.Dispose();
+            this.mTimerDic.Clear();
         }
 
         public abstract void Update(); 

@@ -4,6 +4,7 @@ using Fenix.Common;
 using Fenix.Common.Attributes;
 using Fenix.Common.Rpc;
 using MessagePack; 
+using System.ComponentModel;
 using Shared;
 using Shared.Protocol;
 using Shared.DataModel;
@@ -16,10 +17,10 @@ namespace Shared.Message
     public class ResetPasswordReq : IMessage
     {
         [Key(0)]
-        public String username;
+        public String username { get; set; }
 
         [Key(1)]
-        public String email;
+        public String email { get; set; }
 
     }
 }

@@ -4,6 +4,7 @@ using Fenix.Common;
 using Fenix.Common.Attributes;
 using Fenix.Common.Rpc;
 using MessagePack; 
+using System.ComponentModel;
 using Shared;
 using Shared.Protocol;
 using Shared.DataModel;
@@ -16,10 +17,10 @@ namespace Shared.Message
     public class LoginReq : IMessageWithCallback
     {
         [Key(0)]
-        public String username;
+        public String username { get; set; }
 
         [Key(1)]
-        public String password;
+        public String password { get; set; }
 
 
         [Key(199)]
@@ -33,19 +34,20 @@ namespace Shared.Message
         public class Callback
         {
             [Key(0)]
-            public ErrCode code;
+            [DefaultValue(ErrCode.ERROR)]
+            public ErrCode code { get; set; } = ErrCode.ERROR;
 
             [Key(1)]
-            public String arg1;
+            public String arg1 { get; set; }
 
             [Key(2)]
-            public UInt32 arg2;
+            public UInt32 arg2 { get; set; }
 
             [Key(3)]
-            public String arg3;
+            public String arg3 { get; set; }
 
             [Key(4)]
-            public String arg4;
+            public String arg4 { get; set; }
 
         }
 

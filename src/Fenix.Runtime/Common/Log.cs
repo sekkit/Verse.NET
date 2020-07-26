@@ -75,11 +75,11 @@ namespace Fenix.Common
 			.WriteTo.Console(
 				outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u4}]{Message:lj}{NewLine}{Exception}"
 				)
-			.WriteTo.File(
+			.WriteTo.Async(a => a.File(
 				string.Format("{0}logs/{1}.log", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../"), Name +"."), 
 				outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u4}]{Message:lj}{NewLine}{Exception}",
 				rollingInterval: RollingInterval.Day,
-				rollOnFileSizeLimit: true)
+				rollOnFileSizeLimit: true))
 			.CreateLogger();
 #endif
 		} 

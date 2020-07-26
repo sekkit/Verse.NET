@@ -34,10 +34,25 @@ namespace Server
                 name=name
             };
             var cb = new Action<byte[]>((cbData) => {
-                var cbMsg = RpcUtil.Deserialize<ChangeNameReq.Callback>(cbData);
+                var cbMsg = cbData==null?new ChangeNameReq.Callback():RpcUtil.Deserialize<ChangeNameReq.Callback>(cbData);
                 callback?.Invoke(cbMsg.code);
             });
             this.CallRemoteMethod(ProtocolCode.CHANGE_NAME_REQ, msg, cb);
+        }
+
+        public void rpc_on_match_ok()
+        {
+           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
+           if (this.FromHostId == toHostId)
+           {
+                Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.ON_MATCH_OK_REQ, new object[] {  });
+               return;
+           }
+           var msg = new OnMatchOkReq()
+           {
+
+           };
+           this.CallRemoteMethod(ProtocolCode.ON_MATCH_OK_REQ, msg, null);
         }
     }
 }

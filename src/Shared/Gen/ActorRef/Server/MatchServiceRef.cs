@@ -34,7 +34,7 @@ namespace Server
                 uid=uid
             };
             var cb = new Action<byte[]>((cbData) => {
-                var cbMsg = RpcUtil.Deserialize<FindMatchReq.Callback>(cbData);
+                var cbMsg = cbData==null?new FindMatchReq.Callback():RpcUtil.Deserialize<FindMatchReq.Callback>(cbData);
                 callback?.Invoke(cbMsg.code, cbMsg.user);
             });
             this.CallRemoteMethod(ProtocolCode.FIND_MATCH_REQ, msg, cb);
@@ -54,7 +54,7 @@ namespace Server
                 match_type=match_type
             };
             var cb = new Action<byte[]>((cbData) => {
-                var cbMsg = RpcUtil.Deserialize<JoinMatchReq.Callback>(cbData);
+                var cbMsg = cbData==null?new JoinMatchReq.Callback():RpcUtil.Deserialize<JoinMatchReq.Callback>(cbData);
                 callback?.Invoke(cbMsg.code);
             });
             this.CallRemoteMethod(ProtocolCode.JOIN_MATCH_REQ, msg, cb);

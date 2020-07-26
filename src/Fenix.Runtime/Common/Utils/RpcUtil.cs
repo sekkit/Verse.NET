@@ -13,12 +13,14 @@ namespace Fenix.Common
         }
 
         public static T Deserialize<T>(byte[] bytes)
-        {
+        { 
+            Log.Info(MessagePackSerializer.ConvertToJson(bytes));
             return MessagePackSerializer.Deserialize<T>(bytes);
         }
 
         public static object Deserialize(Type type, byte[] bytes)
         {
+            Log.Info(MessagePackSerializer.ConvertToJson(bytes));
             return MessagePackSerializer.Deserialize(type, bytes);
         }
 

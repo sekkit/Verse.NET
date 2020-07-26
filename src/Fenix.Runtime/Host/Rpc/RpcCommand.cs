@@ -29,7 +29,7 @@ namespace Fenix
 
         public IMessage Msg => packet.Msg;
 
-        public Api RpcType => mInvoker.GetRpcType(ProtoCode);
+        public Api RpcType => Global.TypeManager.GetRpcType(ProtoCode);
 
         public uint ProtoCode => packet.ProtoCode;
 
@@ -37,18 +37,18 @@ namespace Fenix
 
         Packet packet;
 
-        //protected IPEndPoint toAddr;
-
-        protected RpcModule mInvoker;
+        protected Entity mInvoker;
 
         protected Action<byte[]> callbackMethod;
 
+        public long CallTime = 0;
+
         protected RpcCommand()
         {
-
+            CallTime = TimeUtil.GetTimeStampMS();
         }
 
-        public static RpcCommand Create(Packet packet, Action<byte[]> cb, RpcModule invoker)
+        public static RpcCommand Create(Packet packet, Action<byte[]> cb, Entity invoker)
         {
             var obj = new RpcCommand();
             obj.packet = packet;
@@ -63,7 +63,7 @@ namespace Fenix
         }
 
         public void Call(Action callDone)
-        {
+        { 
             var args = new List<object>();
             args.Add(this.Msg);
 

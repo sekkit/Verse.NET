@@ -4,6 +4,7 @@ using Fenix.Common;
 using Fenix.Common.Attributes;
 using Fenix.Common.Rpc;
 using MessagePack; 
+using System.ComponentModel;
 using System; 
 
 namespace Fenix.Common.Message
@@ -13,7 +14,7 @@ namespace Fenix.Common.Message
     public class RemoveActorReq : IMessage
     {
         [Key(0)]
-        public UInt32 actorId;
+        public UInt32 actorId { get; set; }
 
     }
 }

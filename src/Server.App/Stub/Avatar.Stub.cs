@@ -32,6 +32,14 @@ namespace Server.UModule
                 cb.Invoke(cbMsg);
             });
         }
+
+        [RpcMethod(ProtocolCode.ON_MATCH_OK_REQ, Api.ServerOnly)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SERVER_ONLY_on_match_ok(IMessage msg)
+        {
+            var _msg = (OnMatchOkReq)msg;
+            this.OnMatchOk();
+        }
     }
 }
 

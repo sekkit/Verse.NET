@@ -24,7 +24,7 @@ namespace Fenix
     //一个内网IP，必须
     //一个外网IP
 
-    public partial class Host : RpcModule
+    public partial class Host : Entity
     {
         public static Host Instance = null;
 
@@ -43,9 +43,7 @@ namespace Fenix
         public bool IsClientMode { get; set; }
 
         protected ConcurrentDictionary<UInt32, Actor> actorDic = new ConcurrentDictionary<UInt32, Actor>();
-      
-        private ConcurrentDictionary<ulong, Timer> mTimerDic = new ConcurrentDictionary<ulong, Timer>();
-
+        
         public bool IsAlive = true;
 
         private Thread heartbeatTh;
@@ -128,7 +126,7 @@ namespace Fenix
             this.AddRepeatedTimer(3000, 3000, () =>
             {
                 NetManager.Instance.PrintPeerInfo("All peers:");
-            });
+            }); 
         }
 
         public static Host Create(string name, string ip, int port, bool clientMode)
@@ -196,19 +194,20 @@ namespace Fenix
             else
             {
                 uint protoCode = buffer.ReadUnsignedIntLE();
-                if(protoCode == OpCode.REGISTER_REQ)
+                if (protoCode == OpCode.REGISTER_REQ)
                 {
                     var hostId = buffer.ReadUnsignedIntLE();
                     var nameBytes = new byte[buffer.ReadableBytes];
                     buffer.ReadBytes(nameBytes);
                     var hostName = Encoding.UTF8.GetString(nameBytes);
-                     
+
                     var context = new RpcContext(null, peer);
 
                     this.Register(hostId, hostName, context);
 
-                    return;
-                } 
+                    return; 
+                }
+
                 ulong msgId = (ulong)buffer.ReadLongLE();
                 //uint fromHostId = buffer.ReadUnsignedIntLE();
                 uint fromActorId = buffer.ReadUnsignedIntLE();
@@ -378,6 +377,35 @@ namespace Fenix
             Global.TypeManager.RegisterActorType(actor);
         }
 
+        public override void CallMethod(Packet packet)
+        {
+            bool isCallback = rpcDic.ContainsKey(packet.Id);
+            if (!isCallback)
+            { 
+                isCallback = Global.IdManager.GetRpcId(packet.Id) != 0;
+            }
+
+            if (isCallback)
+            {
+                if (!rpcDic.TryGetValue(packet.Id, out var cmd))
+                {
+                    var aId = Global.IdManager.GetRpcId(packet.Id);
+                    this.actorDic.TryGetValue(aId, out var actor);
+                    cmd = actor.GetRpc(packet.Id);
+                }
+
+                RemoveRpc(cmd.Id);
+                cmd.Callback(packet.Payload);
+            }
+            else
+            {
+                var cmd = RpcCommand.Create(packet, null, this);
+                cmd.Call(() => {
+                    RemoveRpc(cmd.Id);
+                });
+            }
+        }
+
         public Actor GetActor(uint actorId)
         {
             if (this.actorDic.TryGetValue(actorId, out Actor a))
@@ -398,6 +426,8 @@ namespace Fenix
 
         public T CreateActor<T>(string name) where T : Actor
         {
+            if (name == "" || name == null)
+                return null;
             var newActor = Actor.Create(typeof(T), name);
             this.ActivateActor(newActor);
             Log.Info(string.Format("CreateActor:success {0} {1}", name, newActor.Id));
@@ -406,6 +436,9 @@ namespace Fenix
 
         public Actor CreateActor(string typename, string name)
         {
+            if (name == "" || name == null)
+                return null;
+
             var type = Global.TypeManager.Get(typename);
             var newActor = Actor.Create(type, name);
             Log.Info(string.Format("CreateActor:success {0} {1}", name, newActor.Id));
@@ -452,7 +485,7 @@ namespace Fenix
 #if !CLIENT
 
         [ServerApi]
-        public void RegisterClient(uint hostId, string hostName, Action<int, HostInfo> callback, RpcContext __context)
+        public void RegisterClient(uint hostId, string hostName, Action<DefaultErrCode, HostInfo> callback, RpcContext __context)
         {
             if (__context.Peer.ConnId != hostId)
             {
@@ -463,7 +496,7 @@ namespace Fenix
 
             var hostInfo = Global.IdManager.GetHostInfo(this.Id);
 
-            callback((int)DefaultErrCode.OK, hostInfo);
+            callback(DefaultErrCode.OK, hostInfo);
         }
 
         [ServerApi]
@@ -497,7 +530,7 @@ namespace Fenix
 
             var actor = this.actorDic[packet.ToActorId]; 
             actor.CallMethod(packet);
-        }
+        } 
 
         public sealed override void Update()
         {
@@ -505,21 +538,8 @@ namespace Fenix
                 return;
 
             //Log.Info(string.Format("{0}:{1}", this.GetType().Name, rpcDic.Count));
-            var curTime = TimeUtil.GetTimeStampMS();
 
-            var keys = this.mTimerDic.Keys;
-
-            foreach (var key in keys)
-            {
-                if (this.mTimerDic.TryGetValue(key, out var t))
-                {
-                    if (t.CheckTimeout(curTime))
-                    {
-                        this.mTimerDic.TryRemove(key, out var _);
-                        t.Dispose();
-                    }
-                }
-            }
+            this.CheckTimer();
 
             foreach (var a in this.actorDic.Keys)
             {
@@ -564,22 +584,7 @@ namespace Fenix
         { 
             IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
             return Global.GetActorRefByAddr(typeof(ActorRef), ep, hostName, "", null, Host.Instance);
-        }
-
-        public void AddTimer(long delay, long interval, Action tickCallback)
-        {
-            //实现timer
-            var timer = Timer.Create(delay, interval, false, tickCallback);
-            this.mTimerDic.TryAdd(timer.Tid, timer);
-        }
-
-        public void AddRepeatedTimer(long delay, long interval, Action tickCallback)
-        {
-            //实现timer
-            var timer = Timer.Create(delay, interval, true, tickCallback);
-            //this.mTimerDic[timer.Tid] = timer;
-            this.mTimerDic.TryAdd(timer.Tid, timer);
-        }
+        } 
 
         public void Shutdown()
         {

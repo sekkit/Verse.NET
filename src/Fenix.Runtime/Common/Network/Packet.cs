@@ -43,8 +43,14 @@ namespace Fenix
             get
             {
                 if (_msg != null)
-                    return _msg; 
-                _msg = (IMessage)RpcUtil.Deserialize(MsgType, this.Payload);
+                    return _msg;
+                try
+                {
+                    _msg = (IMessage)RpcUtil.Deserialize(MsgType, this.Payload);
+                }catch(Exception ex)
+                {
+
+                }
                 return _msg;
             }
         }

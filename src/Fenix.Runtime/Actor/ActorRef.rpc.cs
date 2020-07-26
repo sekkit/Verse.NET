@@ -33,7 +33,7 @@ namespace Fenix
                 actorName=actorName
             };
             var cb = new Action<byte[]>((cbData) => {
-                var cbMsg = RpcUtil.Deserialize<BindClientActorReq.Callback>(cbData);
+                var cbMsg = cbData==null?new BindClientActorReq.Callback():RpcUtil.Deserialize<BindClientActorReq.Callback>(cbData);
                 callback?.Invoke(cbMsg.code);
             });
             this.CallRemoteMethod(OpCode.BIND_CLIENT_ACTOR_REQ, msg, cb);
@@ -53,7 +53,7 @@ namespace Fenix
                 name=name
             };
             var cb = new Action<byte[]>((cbData) => {
-                var cbMsg = RpcUtil.Deserialize<CreateActorReq.Callback>(cbData);
+                var cbMsg = cbData==null?new CreateActorReq.Callback():RpcUtil.Deserialize<CreateActorReq.Callback>(cbData);
                 callback?.Invoke(cbMsg.code, cbMsg.arg1, cbMsg.arg2);
             });
             this.CallRemoteMethod(OpCode.CREATE_ACTOR_REQ, msg, cb);
@@ -90,7 +90,7 @@ namespace Fenix
            this.CallRemoteMethod(OpCode.REGISTER_REQ, msg, null);
         }
 
-        public void RegisterClient(UInt32 hostId, String hostName, Action<Int32, HostInfo> callback)
+        public void RegisterClient(UInt32 hostId, String hostName, Action<DefaultErrCode, HostInfo> callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -104,8 +104,8 @@ namespace Fenix
                 hostName=hostName
             };
             var cb = new Action<byte[]>((cbData) => {
-                var cbMsg = RpcUtil.Deserialize<RegisterClientReq.Callback>(cbData);
-                callback?.Invoke(cbMsg.arg0, cbMsg.arg1);
+                var cbMsg = cbData==null?new RegisterClientReq.Callback():RpcUtil.Deserialize<RegisterClientReq.Callback>(cbData);
+                callback?.Invoke(cbMsg.code, cbMsg.arg1);
             });
             this.CallRemoteMethod(OpCode.REGISTER_CLIENT_REQ, msg, cb);
         }

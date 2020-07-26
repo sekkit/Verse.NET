@@ -36,7 +36,7 @@ namespace Server
                 extra=extra
             };
             var cb = new Action<byte[]>((cbData) => {
-                var cbMsg = RpcUtil.Deserialize<CreateAccountReq.Callback>(cbData);
+                var cbMsg = cbData==null?new CreateAccountReq.Callback():RpcUtil.Deserialize<CreateAccountReq.Callback>(cbData);
                 callback?.Invoke(cbMsg.code);
             });
             this.CallRemoteMethod(ProtocolCode.CREATE_ACCOUNT_REQ, msg, cb);
@@ -56,7 +56,7 @@ namespace Server
                 password=password
             };
             var cb = new Action<byte[]>((cbData) => {
-                var cbMsg = RpcUtil.Deserialize<DeleteAccountReq.Callback>(cbData);
+                var cbMsg = cbData==null?new DeleteAccountReq.Callback():RpcUtil.Deserialize<DeleteAccountReq.Callback>(cbData);
                 callback?.Invoke(cbMsg.code);
             });
             this.CallRemoteMethod(ProtocolCode.DELETE_ACCOUNT_REQ, msg, cb);
@@ -76,7 +76,7 @@ namespace Server
                 password=password
             };
             var cb = new Action<byte[]>((cbData) => {
-                var cbMsg = RpcUtil.Deserialize<LoginReq.Callback>(cbData);
+                var cbMsg = cbData==null?new LoginReq.Callback():RpcUtil.Deserialize<LoginReq.Callback>(cbData);
                 callback?.Invoke(cbMsg.code, cbMsg.arg1, cbMsg.arg2, cbMsg.arg3, cbMsg.arg4);
             });
             this.CallRemoteMethod(ProtocolCode.LOGIN_REQ, msg, cb);

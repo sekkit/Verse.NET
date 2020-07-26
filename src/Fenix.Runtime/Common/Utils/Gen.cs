@@ -208,8 +208,15 @@ namespace Fenix
                 int position = p.Position;
                 string pType = ParseTypeName(p.ParameterType);
                 string pName = p.Name;
-
-                lines.Add($"{prefix}[Key({position})]\n{prefix}public {pType} {pName};\n"); 
+                var attr2 = p.ParameterType.GetCustomAttribute(typeof(DefaultValueAttribute)) as DefaultValueAttribute;
+                if (attr2 != null)
+                {
+                    var v = attr2.Value.GetType().IsEnum ? (attr2.Value.GetType().Name + "." + attr2.Value.ToString()) : attr2.Value;
+                    lines.Add($"{prefix}[Key({position})]\n[DefaultValue({attr2.Value})]\n{prefix}public {pType} {pName} {{ get; set; }} = {v};\n");
+                }
+                    
+                else
+                    lines.Add($"{prefix}[Key({position})]\n{prefix}public {pType} {pName} {{ get; set; }}\n"); 
             }
 
             return string.Join("\n", lines);
@@ -230,7 +237,15 @@ namespace Fenix
                     pName = attr.Name;
                 else
                     pName = names.Length > position ? names[position] : "arg" + position.ToString();
-                lines.Add($"{prefix}[Key({position})]\n{prefix}public {pType} {pName};\n");
+
+                var attr2 = t.GetCustomAttribute(typeof(DefaultValueAttribute)) as DefaultValueAttribute;
+                if (attr2 != null)
+                {
+                    var v = attr2.Value.GetType().IsEnum ? (attr2.Value.GetType().Name + "." + attr2.Value.ToString()) : attr2.Value;
+                    lines.Add($"{prefix}[Key({position})]\n{prefix}[DefaultValue({v})]\n{prefix}public {pType} {pName} {{ get; set; }} = {v};\n");
+                } 
+                else
+                    lines.Add($"{prefix}[Key({position})]\n{prefix}public {pType} {pName} {{ get; set; }}\n");
             }
 
             return string.Join("\n", lines);
@@ -447,7 +462,9 @@ namespace Shared
                         .AppendLine($"using Fenix.Common;")
                         .AppendLine($"using Fenix.Common.Attributes;")
                         .AppendLine($"using Fenix.Common.Rpc;")
-                        .AppendLine($"using MessagePack; ");
+                        .AppendLine($"using MessagePack; ")
+                        .AppendLine($"using System.ComponentModel;");
+
                     if (type.Name != "Host")
                     {
                         msgBuilder.AppendLine($"using Shared;")
@@ -527,7 +544,7 @@ namespace Shared
                         .AppendLine($"{msg_assign}")
                         .AppendLine($"            }};")
                         .AppendLine($"            var cb = new Action<byte[]>((cbData) => {{")
-                        .AppendLine($"                var cbMsg = RpcUtil.Deserialize<{message_type}.Callback>(cbData);")
+                        .AppendLine($"                var cbMsg = cbData==null?new {message_type}.Callback():RpcUtil.Deserialize<{message_type}.Callback>(cbData);")
                         .AppendLine($"                callback?.Invoke({cb_args});")
                         .AppendLine($"            }});")
                         .AppendLine($"            this.CallRemoteMethod({pc_cls}.{proto_code}, msg, cb);")

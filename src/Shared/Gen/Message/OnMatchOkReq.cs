@@ -12,15 +12,10 @@ using System;
 
 namespace Shared.Message
 {
-    [MessageType(ProtocolCode.API_TEST2_NTF)]
+    [MessageType(ProtocolCode.ON_MATCH_OK_REQ)]
     [MessagePackObject]
-    public class ApiTest2Ntf : IMessage
+    public class OnMatchOkReq : IMessage
     {
-        [Key(0)]
-        public String uid { get; set; }
-
-        [Key(1)]
-        public Int32 match_type { get; set; }
 
     }
 }

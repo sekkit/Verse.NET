@@ -4,6 +4,7 @@ using Fenix.Common;
 using Fenix.Common.Attributes;
 using Fenix.Common.Rpc;
 using MessagePack; 
+using System.ComponentModel;
 using System; 
 
 namespace Fenix.Common.Message
@@ -13,7 +14,7 @@ namespace Fenix.Common.Message
     public class BindClientActorReq : IMessageWithCallback
     {
         [Key(0)]
-        public String actorName;
+        public String actorName { get; set; }
 
 
         [Key(199)]
@@ -27,7 +28,8 @@ namespace Fenix.Common.Message
         public class Callback
         {
             [Key(0)]
-            public DefaultErrCode code;
+            [DefaultValue(DefaultErrCode.ERROR)]
+            public DefaultErrCode code { get; set; } = DefaultErrCode.ERROR;
 
         }
 

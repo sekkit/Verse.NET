@@ -8,8 +8,7 @@ public class Main : MonoBehaviour
 {
     public Button btnLogin;
     public InputField inputName;
-    public InputField inputPassword;
-
+    public InputField inputPassword; 
     // Start is called before the first frame update
     void Start()
     {
@@ -19,6 +18,7 @@ public class Main : MonoBehaviour
         this.gameObject.AddComponent<App>();
 
         btnLogin.onClick.AddListener(OnLogin);
+        
     }
 
     private void Application_logMessageReceivedThreaded(string condition, string stackTrace, LogType type)

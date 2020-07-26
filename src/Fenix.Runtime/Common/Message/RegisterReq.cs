@@ -4,6 +4,7 @@ using Fenix.Common;
 using Fenix.Common.Attributes;
 using Fenix.Common.Rpc;
 using MessagePack; 
+using System.ComponentModel;
 using System; 
 
 namespace Fenix.Common.Message
@@ -13,10 +14,10 @@ namespace Fenix.Common.Message
     public class RegisterReq : IMessage
     {
         [Key(0)]
-        public UInt32 hostId;
+        public UInt32 hostId { get; set; }
 
         [Key(1)]
-        public String hostName;
+        public String hostName { get; set; }
 
     }
 }

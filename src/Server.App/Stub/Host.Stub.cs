@@ -46,10 +46,10 @@ namespace Fenix
         public void SERVER_API_register_client(IMessage msg, Action<object> cb, RpcContext context)
         {
             var _msg = (RegisterClientReq)msg;
-            this.RegisterClient(_msg.hostId, _msg.hostName, (arg0, arg1) =>
+            this.RegisterClient(_msg.hostId, _msg.hostName, (code, arg1) =>
             {
                 var cbMsg = new RegisterClientReq.Callback();
-                cbMsg.arg0=arg0;
+                cbMsg.code=code;
                 cbMsg.arg1=arg1;
                 cb.Invoke(cbMsg);
             }, context);

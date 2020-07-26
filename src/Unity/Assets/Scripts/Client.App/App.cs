@@ -3,6 +3,7 @@ using Fenix.Common;
 using Fenix.Common.Utils;
 using MessagePack;
 using Server;
+using Shared.Protocol;
 using System;
 using System.Net;
 using System.Reflection;
@@ -51,6 +52,12 @@ namespace Client
             //注册客户端，初始化路由表信息
             loginapp.RegisterClient(host.Id, host.UniqueName, (code, hostInfo) =>
             {
+                if(code == DefaultErrCode.ERROR)
+                {
+                    Log.Error("register_client_error, plz try again later");
+                    loginapp.Disconnect();
+                    return;
+                }
                 Log.Info(string.Format("Register to server {0}: {1} {2} {3}", code, hostInfo.HostId, 
                     hostInfo.HostName, hostInfo.HostAddr)); 
                 if(loginapp.toHostId != hostInfo.HostId) 
@@ -64,10 +71,15 @@ namespace Client
                     var svc = host.GetService<LoginServiceRef>(); 
                     svc.rpc_login("username", "password", (code2, uid, hostId, hostName, hostAddress) =>
                     {
-                        
+                        if(code2 != ErrCode.OK)
+                        {
+                            Log.Error("login_failed");
+                            loginapp.Disconnect();
+                            return;
+                        }
                         Log.Info(string.Format("ServerAvatar host: {0}@{1} {2} {3}", uid, hostId, hostName, hostAddress));
                         Game.Avatar = host.CreateActor<Client.Avatar>(uid);
-
+                        
                         Global.IdManager.RegisterHost(hostId, hostName, hostAddress);
                         Global.IdManager.RegisterActor(Game.Avatar, hostId);
 

@@ -44,6 +44,8 @@ namespace Fenix
         //客户端一个Host只有一个actor，所以...
         protected ConcurrentDictionary<string, string> mCNAME2ANAME = new ConcurrentDictionary<string, string>();
 
+        protected ConcurrentDictionary<ulong, uint> mRpcId2EntityId = new ConcurrentDictionary<ulong, uint>();
+
 #if !CLIENT
 
         protected RedisDb CacheHNAME2ADDR  => Global.DbManager.GetDb(CacheConfig.HNAME2ADDR);
@@ -356,6 +358,23 @@ namespace Fenix
             return GetHostAddr(hostId); 
         }
 
+        public void RegisterRpcId(ulong rpcId, uint actorId)
+        {
+            this.mRpcId2EntityId[rpcId] = actorId;
+        }
+
+        public uint RemoveRpcId(ulong rpcId)
+        {
+            this.mRpcId2EntityId.TryRemove(rpcId, out var result);
+            return result;
+        }
+
+        public uint GetRpcId(ulong rpcId)
+        {
+            this.mRpcId2EntityId.TryGetValue(rpcId, out var result);
+            return result;
+        }
+
         public HostInfo GetHostInfo(uint hostId)
         {
             var hostInfo = new HostInfo();
@@ -405,7 +424,9 @@ namespace Fenix
             foreach (var key in CacheHNAME2ADDR.Keys())
             {
                 var hName = key;
-                var addr = CacheHNAME2ADDR.Get(key); 
+                var addr = CacheHNAME2ADDR.Get(key);
+                if (addr == null) 
+                    continue; 
                 this.mHNAME2ADDR[hName] = addr;
                 this.mADDR2HNAME[addr] = hName;
                 AddNameId(hName);
