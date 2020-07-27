@@ -17,22 +17,30 @@ using System;
 
 namespace Server
 {
+
     [RefType("LoginService")]
     public partial class LoginServiceRef : ActorRef
     {
-        public void rpc_create_account(String username, String password, String extra, Action<ErrCode> callback)
+        public void rpc_create_account(String username, String password, Action<ErrCode> callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Global.Host.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.CREATE_ACCOUNT_REQ, new object[] { username, password, extra, callback });
+                var protoCode = ProtocolCode.CREATE_ACCOUNT_REQ;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { username, password, callback, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { username, password, callback });
                 return;
             }
             var msg = new CreateAccountReq()
             {
                 username=username,
-                password=password,
-                extra=extra
+                password=password
             };
             var cb = new Action<byte[]>((cbData) => {
                 var cbMsg = cbData==null?new CreateAccountReq.Callback():RpcUtil.Deserialize<CreateAccountReq.Callback>(cbData);
@@ -46,7 +54,15 @@ namespace Server
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Global.Host.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.DELETE_ACCOUNT_REQ, new object[] { username, password, callback });
+                var protoCode = ProtocolCode.DELETE_ACCOUNT_REQ;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { username, password, callback, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { username, password, callback });
                 return;
             }
             var msg = new DeleteAccountReq()
@@ -66,7 +82,15 @@ namespace Server
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Global.Host.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.LOGIN_REQ, new object[] { username, password, callback });
+                var protoCode = ProtocolCode.LOGIN_REQ;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { username, password, callback, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { username, password, callback });
                 return;
             }
             var msg = new LoginReq()
@@ -86,7 +110,15 @@ namespace Server
            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
            if (this.FromHostId == toHostId)
            {
-                Global.Host.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.RESET_PASSWORD_REQ, new object[] { username, email });
+                var protoCode = ProtocolCode.RESET_PASSWORD_REQ;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { username, email, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { username, email }); 
                return;
            }
            var msg = new ResetPasswordReq()

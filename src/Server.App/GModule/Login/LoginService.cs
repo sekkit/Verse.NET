@@ -30,15 +30,11 @@ namespace Server.GModule
 
         }
 
-        public event Action on_battle_start;
-
         [ServerApi]
         public void DeleteAccount(string username, string password, Action<ErrCode> callback)
         {
 
-        } 
-
-
+        }
 
         //callback: code, actorName, actorHostId, actorHostName, actorHostAddress, 
         [ServerApi]
@@ -62,14 +58,14 @@ namespace Server.GModule
                 
                 Log.Info(string.Format("login.create_actor@Master.App {0} {1} {2} {3} {4}", code, actorName, actorId,
                     Global.IdManager.GetHostName(hostId), Global.IdManager.GetHostAddrByActorId(actorId)));
-                 
+                var hostAddr = Global.IdManager.GetHostAddrByActorId(actorId);
                 ErrCode retCode = (code == DefaultErrCode.OK ? ErrCode.OK : ErrCode.ERROR);
                 callback(
                     retCode,
                     actorName,
                     hostId,
                     Global.IdManager.GetHostName(hostId),
-                    Global.IdManager.GetHostAddrByActorId(actorId)//, false)
+                    Global.IdManager.GetExtAddress(hostAddr)
                 );
             });
         }

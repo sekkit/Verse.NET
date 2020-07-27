@@ -22,6 +22,8 @@ namespace Server.Config.Db
         public const string ANAME2TNAME = "ANAME2TNAME";
         public const string ANAME2CNAME = "ANAME2CNAME";
         public const string ID2NAME     = "ID2NAME";
+        public const string ADDR2EXTADDR = "ADDR2EXTADDR";
+
 #if LEGACY_IDMANAGER
         public static DbEntry HID2ADDR_cache = new DbEntry()
         {
@@ -186,6 +188,16 @@ namespace Server.Config.Db
             ValidTime = 15,
             Type = "Redis"
         };
-
+        public static DbEntry ADDR2EXTADDR_cache = new DbEntry()
+        {
+            Name = "ADDR2EXTADDR",
+            Host = "127.0.0.1",
+            Port = 7381,
+            Key = ADDR2EXTADDR,
+            Retry = 1,
+            RetryDelay = 0.1f,
+            ValidTime = 15,
+            Type = "Redis"
+        };
     }
 }

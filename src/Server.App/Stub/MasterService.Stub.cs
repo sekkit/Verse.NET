@@ -20,6 +20,7 @@ namespace Server.GModule.Master
 {
     public partial class MasterService
     {
-    }
+
+   }
 }
 

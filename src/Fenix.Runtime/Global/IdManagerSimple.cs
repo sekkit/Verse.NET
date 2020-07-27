@@ -24,8 +24,6 @@ namespace Fenix
      */
     public class IdManagerSimple
     {
-        //public static IdManagerSimple Instance = new IdManagerSimple();
-
         protected ConcurrentDictionary<string, string> mHNAME2ADDR  = new ConcurrentDictionary<string, string>();
         protected ConcurrentDictionary<string, string> mADDR2HNAME  = new ConcurrentDictionary<string, string>();
 
@@ -34,8 +32,8 @@ namespace Fenix
 
         protected ConcurrentDictionary<string, string> mANAME2TNAME = new ConcurrentDictionary<string, string>();
 
-        protected ConcurrentDictionary<uint, string> mId2Name       = new ConcurrentDictionary<uint, string>();
-        protected ConcurrentDictionary<string, uint> mName2Id       = new ConcurrentDictionary<string, uint>();
+        protected ConcurrentDictionary<uint, string>   mId2Name       = new ConcurrentDictionary<uint, string>();
+        protected ConcurrentDictionary<string, uint>   mName2Id       = new ConcurrentDictionary<string, uint>();
 
         //protected ConcurrentDictionary<string, string> mCNAME2ADDR = new ConcurrentDictionary<string, string>();
         //protected ConcurrentDictionary<string, string> mCADDR2NAME = new ConcurrentDictionary<string, string>();
@@ -52,7 +50,8 @@ namespace Fenix
         protected RedisDb CacheANAME2HNAME => Global.DbManager.GetDb(CacheConfig.ANAME2HNAME);
         protected RedisDb CacheANAME2CNAME => Global.DbManager.GetDb(CacheConfig.ANAME2CNAME);
         protected RedisDb CacheANAME2TNAME => Global.DbManager.GetDb(CacheConfig.ANAME2TNAME); 
-        protected RedisDb CacheID2NAME     => Global.DbManager.GetDb(CacheConfig.ID2NAME); 
+        protected RedisDb CacheID2NAME     => Global.DbManager.GetDb(CacheConfig.ID2NAME);
+        protected RedisDb CacheAddr2ExAddr => Global.DbManager.GetDb(CacheConfig.ADDR2EXTADDR);
         
         public IdManagerSimple()
         {
@@ -60,7 +59,8 @@ namespace Fenix
             Global.DbManager.LoadDb(CacheConfig.ANAME2CNAME_cache);
             Global.DbManager.LoadDb(CacheConfig.ANAME2HNAME_cache);
             Global.DbManager.LoadDb(CacheConfig.ANAME2TNAME_cache);
-            Global.DbManager.LoadDb(CacheConfig.ID2NAME_cache); 
+            Global.DbManager.LoadDb(CacheConfig.ID2NAME_cache);
+            Global.DbManager.LoadDb(CacheConfig.ADDR2EXTADDR_cache);
 
             var assembly = typeof(Global).Assembly;
             Log.Info(assembly.FullName.Replace("Server.App", "Fenix.Runtime").Replace("Client.App", "Fenix.Runtime"));
@@ -84,24 +84,44 @@ namespace Fenix
         }
 
 #endif
-        public bool RegisterHost(Host host, string address)
+
+//#if !CLIENT
+
+        public bool RegisterHost(Host host, string address, string extAddress)
         {
-            return RegisterHost(host.Id, host.UniqueName, address);
+            return RegisterHost(host.Id, host.UniqueName, address, extAddress);
         }
 
-        public bool RegisterHost(uint hostId, string hostName, string address)
+        public bool RegisterHost(uint hostId, string hostName, string address, string extAddress)
         {
             mHNAME2ADDR[hostName] = address;
             mADDR2HNAME[address] = hostName;
 
             AddNameId(hostName, hostId);
-
-#if !CLIENT 
-            return CacheHNAME2ADDR.Set(hostName, address); 
+#if !CLIENT
+            CacheAddr2ExAddr.Set(address, extAddress);
+ 
+            return CacheHNAME2ADDR.Set(hostName, address);
 #else
             return true;
 #endif
         }
+//#else
+//        public bool RegisterHost(Host host, string address)
+//        {
+//            return RegisterHost(host.Id, host.UniqueName, address);
+//        }
+
+//        public bool RegisterHost(uint hostId, string hostName, string address)
+//        {
+//            mHNAME2ADDR[hostName] = address;
+//            mADDR2HNAME[address] = hostName;
+
+//            AddNameId(hostName, hostId);  
+
+//            return true;
+//        }
+//#endif
 
         public bool ReregisterHost(uint hostId, string address)
         {
@@ -109,9 +129,11 @@ namespace Fenix
             if (hostName == "" || hostName == null)
                 return false;
             mHNAME2ADDR[hostName] = address;
-            mADDR2HNAME[address] = hostName;
+            mADDR2HNAME[address] = hostName; 
 
 #if !CLIENT
+            var extAddr = CacheAddr2ExAddr.Get(address);
+            CacheAddr2ExAddr.Set(address, extAddr);
             return CacheHNAME2ADDR.Set(hostName, address);
 #else
             return true;
@@ -153,7 +175,7 @@ namespace Fenix
             return CacheHNAME2ADDR.Get(hostName);
 #else
             return "";
-#endif 
+#endif
         } 
 
         public string GetHostName(uint hostId)
@@ -330,17 +352,17 @@ namespace Fenix
                 return GetId(CacheANAME2CNAME.Get(aName));
 #else
             return 0;
-#endif 
+#endif
             }
             else
             {
                 if (mANAME2HNAME.ContainsKey(aName))
                     return GetId(mANAME2HNAME[aName]);
-#if !CLIENT 
+#if !CLIENT
                 return GetId(CacheANAME2HNAME.Get(aName));
 #else
             return 0;
-#endif 
+#endif
             } 
         }
 
@@ -357,6 +379,13 @@ namespace Fenix
             var hostId = GetHostIdByActorId(actorId, isClient);
             return GetHostAddr(hostId); 
         }
+
+#if !CLIENT
+        public string GetExtAddress(string addr)
+        {
+            return this.CacheAddr2ExAddr.Get(addr)??"";
+        }
+#endif
 
         public void RegisterRpcId(ulong rpcId, uint actorId)
         {
@@ -418,7 +447,9 @@ namespace Fenix
                 this.mANAME2TNAME[GetName(kv.Key)] = kv.Value;
             }
         }
+
 #if !CLIENT
+
         public void SyncWithCache()
         { 
             foreach (var key in CacheHNAME2ADDR.Keys())
@@ -528,6 +559,7 @@ namespace Fenix
                 this.mCNAME2ANAME[cName] = aName;
             }
         }
+
 #endif
     }
 }

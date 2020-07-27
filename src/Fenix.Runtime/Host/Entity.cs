@@ -29,6 +29,8 @@ namespace Fenix
         
         public ConcurrentDictionary<UInt32, MethodInfo> rpcStubDic = new ConcurrentDictionary<UInt32, MethodInfo>();
 
+        public ConcurrentDictionary<UInt32, MethodInfo> rpcNativeStubDic = new ConcurrentDictionary<uint, MethodInfo>();
+
         [IgnoreMember]
         [IgnoreDataMember]
         private ConcurrentDictionary<ulong, Timer> mTimerDic = new ConcurrentDictionary<ulong, Timer>();
@@ -67,7 +69,10 @@ namespace Fenix
                     uint code = attr.Code;
                     Api api = attr.Api; 
                     Global.TypeManager.RegisterApi(code, api);
-                    rpcStubDic[code] = method;
+                    if (method.Name.Contains("_NATIVE_"))
+                        rpcNativeStubDic[code] = method;
+                    else
+                        rpcStubDic[code] = method;
                 }
             }
 
@@ -115,13 +120,25 @@ namespace Fenix
             }
         }
 
-        public virtual void CallLocalMethod(uint protoCode, object[] args)
+        public virtual void CallMethodWithParams(uint protoCode, object[] args)
+        {
+            try
+            {
+                rpcNativeStubDic[protoCode].Invoke(this, args);
+            }
+            catch(Exception ex)
+            {
+                Log.Error(ex.ToString());
+            }
+        }
+
+        public virtual void CallMethodWithMsg(uint protoCode, object[] args)
         {
             try
             {
                 rpcStubDic[protoCode].Invoke(this, args);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Log.Error(ex.ToString());
             }

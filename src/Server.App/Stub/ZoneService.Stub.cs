@@ -20,6 +20,7 @@ namespace Server.GModule
 {
     public partial class ZoneService
     {
-    }
+
+   }
 }
 

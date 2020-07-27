@@ -19,9 +19,6 @@ namespace Shared.Message
         [Key(0)]
         public String uid { get; set; }
 
-        [Key(1)]
-        public Int32 match_type { get; set; }
-
 
         [Key(199)]
         public Callback callback
@@ -34,6 +31,7 @@ namespace Shared.Message
         public class Callback
         {
             [Key(0)]
+            [DefaultValue(ErrCode.ERROR)]
             public ErrCode code { get; set; } = ErrCode.ERROR;
 
         }

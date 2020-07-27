@@ -27,7 +27,7 @@ namespace Fenix
 
         public bool isClient;
 
-        public NetworkType NetType => ((isClient || Global.Host.IsClientMode)? RuntimeConfig.ClientNetwork : NetworkType.TCP);
+        public NetworkType NetType => ((isClient || Global.Host.IsClientMode)? Global.Config.ClientNetwork : NetworkType.TCP);
 
         public static ActorRef Create(uint toHostId, uint toActorId, Type refType, Actor fromActor, Host fromHost, bool isClient, IPEndPoint toPeerEP=null)
         {

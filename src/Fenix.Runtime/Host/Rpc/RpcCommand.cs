@@ -33,7 +33,7 @@ namespace Fenix
 
         public uint ProtoCode => packet.ProtoCode;
 
-        protected NetworkType networkType => packet.NetType;
+        protected NetworkType netType => packet.NetType;
 
         Packet packet;
 
@@ -76,7 +76,7 @@ namespace Fenix
                 var cb = new Action<object>((cbMsg) =>
                 {
                     callDone?.Invoke();
-                    this.mInvoker.RpcCallback(this.Id, this.ProtoCode, this.ToHostId, this.FromHostId, this.ToActorId, this.FromActorId, this.networkType, cbMsg);
+                    this.mInvoker.RpcCallback(this.Id, this.ProtoCode, this.ToHostId, this.FromHostId, this.ToActorId, this.FromActorId, this.netType, cbMsg);
                 });
 
                 args.Add(cb);
@@ -84,7 +84,7 @@ namespace Fenix
 
             if (this.ProtoCode <= OpCode.CALL_ACTOR_METHOD)
             {
-                var peer = NetManager.Instance.GetPeerById(packet.FromHostId, this.networkType);
+                var peer = NetManager.Instance.GetPeerById(packet.FromHostId, this.netType);
                 var context = new RpcContext(this.packet, peer);
                 args.Add(context);
             }
@@ -92,14 +92,14 @@ namespace Fenix
             //if (Global.IsServer)
             //{
             if (RpcType == Api.ServerApi)
-                this.mInvoker.CallLocalMethod(this.ProtoCode, args.ToArray());
+                this.mInvoker.CallMethodWithMsg(this.ProtoCode, args.ToArray());
             else if (RpcType == Api.ServerOnly)
-                this.mInvoker.CallLocalMethod(this.ProtoCode, args.ToArray());
+                this.mInvoker.CallMethodWithMsg(this.ProtoCode, args.ToArray());
             //}
             //else
             //{
             if (RpcType == Api.ClientApi)
-                this.mInvoker.CallLocalMethod(this.ProtoCode, args.ToArray());
+                this.mInvoker.CallMethodWithMsg(this.ProtoCode, args.ToArray());
             //}
         }
 

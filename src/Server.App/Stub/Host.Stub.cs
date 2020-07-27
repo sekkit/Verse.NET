@@ -85,6 +85,48 @@ namespace Fenix
             var _msg = (RemoveActorReq)msg;
             this.RemoveActor(_msg.actorId, context);
         }
-    }
+
+        [RpcMethod(OpCode.BIND_CLIENT_ACTOR_REQ, Api.ServerApi)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SERVER_API_NATIVE_bind_client_actor(String actorName, Action<DefaultErrCode> callback, RpcContext context)
+        {
+            this.BindClientActor(actorName, callback, context);
+        }
+
+        [RpcMethod(OpCode.REGISTER_REQ, Api.ServerApi)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SERVER_API_NATIVE_register(UInt32 hostId, String hostName, RpcContext context)
+        {
+            this.Register(hostId, hostName, context);
+        }
+
+        [RpcMethod(OpCode.REGISTER_CLIENT_REQ, Api.ServerApi)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SERVER_API_NATIVE_register_client(UInt32 hostId, String hostName, Action<DefaultErrCode, HostInfo> callback, RpcContext context)
+        {
+            this.RegisterClient(hostId, hostName, callback, context);
+        }
+
+        [RpcMethod(OpCode.CREATE_ACTOR_REQ, Api.ServerOnly)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SERVER_ONLY_NATIVE_create_actor(String typename, String name, Action<DefaultErrCode, String, UInt32> callback, RpcContext context)
+        {
+            this.CreateActor(typename, name, callback, context);
+        }
+
+        [RpcMethod(OpCode.MIGRATE_ACTOR_REQ, Api.ServerOnly)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SERVER_ONLY_NATIVE_migrate_actor(UInt32 actorId, RpcContext context)
+        {
+            this.MigrateActor(actorId, context);
+        }
+
+        [RpcMethod(OpCode.REMOVE_ACTOR_REQ, Api.ServerOnly)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SERVER_ONLY_NATIVE_remove_actor(UInt32 actorId, RpcContext context)
+        {
+            this.RemoveActor(actorId, context);
+        }
+   }
 }
 

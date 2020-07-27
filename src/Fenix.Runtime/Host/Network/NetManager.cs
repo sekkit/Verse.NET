@@ -78,7 +78,7 @@ namespace Fenix
             {
                 var peer = channelPeers[oldHostId];
                 peer.ConnId = newHostId; 
-                if (peer.networkType == NetworkType.KCP)
+                if (peer.netType == NetworkType.KCP)
                     kcpPeers[newHostId] = peer;
                 else
                     tcpPeers[newHostId] = peer;
@@ -114,25 +114,25 @@ namespace Fenix
             peer.OnReceive -= OnReceive;
             peer.OnException -= OnException;
 
-            if (peer.networkType == NetworkType.KCP)  
+            if (peer.netType == NetworkType.KCP)  
                 kcpPeers.TryRemove(peer.ConnId, out var _);  
 
-            if (peer.networkType == NetworkType.TCP) 
+            if (peer.netType == NetworkType.TCP) 
                 tcpPeers.TryRemove(peer.ConnId, out var _); 
 
             if (channelPeers.ContainsKey(peer.ConnId))
                 channelPeers.TryRemove(peer.ConnId, out var _);
 
-            Log.Info(string.Format("DeregisterPeer: {0} {1} {2}", peer.ConnId, peer.RemoteAddress, peer.networkType));
+            Log.Info(string.Format("DeregisterPeer: {0} {1} {2}", peer.ConnId, peer.RemoteAddress, peer.netType));
         }
 
 #if !CLIENT
         public void RegisterClient(uint clientId, string uniqueName, NetPeer peer)
         {
             var addr = peer.RemoteAddress.ToIPv4String();
-            if (peer.networkType == NetworkType.KCP)
+            if (peer.netType == NetworkType.KCP)
                 kcpPeers[clientId] = peer;
-            else if (peer.networkType == NetworkType.TCP)
+            else if (peer.netType == NetworkType.TCP)
                 tcpPeers[clientId] = peer; 
             Global.IdManager.RegisterClientHost(clientId, uniqueName, peer.RemoteAddress.ToIPv4String()); 
         }
@@ -241,7 +241,7 @@ namespace Fenix
         public void OnPong(NetPeer peer)
         {
             peer.lastTickTime = TimeUtil.GetTimeStampMS();
-            Log.Info(string.Format("PONG({0}) {1} from {2}", peer.networkType, peer.ConnId, peer.RemoteAddress?.ToString()));
+            Log.Info(string.Format("PONG({0}) {1} from {2}", peer.netType, peer.ConnId, peer.RemoteAddress?.ToString()));
         }
 
         public void Update()
@@ -257,15 +257,15 @@ namespace Fenix
             {
                 if (p.IsActive == false)
                 {
-                    Log.Info(string.Format("Remove: {0} {1} {2}", p.ConnId, p.RemoteAddress, p.networkType));
+                    Log.Info(string.Format("Remove: {0} {1} {2}", p.ConnId, p.RemoteAddress, p.netType));
                     this.Deregister(p);
                     continue;
                 }
 
-                if (curTS - p.lastTickTime >= RuntimeConfig.HeartbeatIntervalMS * 3)
+                if (curTS - p.lastTickTime >= Global.Config.HeartbeatIntervalMS * 3)
                 {
                     this.PrintPeerInfo("SEKKIT");
-                    Log.Info(string.Format("Timeout: {0} {1} {2}", p.ConnId, p.RemoteAddress, p.networkType));
+                    Log.Info(string.Format("Timeout: {0} {1} {2}", p.ConnId, p.RemoteAddress, p.netType));
                     this.Deregister(p);
                 }
             }
@@ -278,12 +278,12 @@ namespace Fenix
 
             foreach (var p in tcpPeers.Values)
             {
-                Log.Info(string.Format("========Peer({0}): {1} {2} {3} active:{4}", p.networkType, p.ConnId, p.RemoteAddress, p.LocalAddress, p.IsActive)); 
+                Log.Info(string.Format("========Peer({0}): {1} {2} {3} active:{4}", p.netType, p.ConnId, p.RemoteAddress, p.LocalAddress, p.IsActive)); 
             }
 
             foreach (var p in kcpPeers.Values)
             {
-                Log.Info(string.Format("========Peer({0}): {1} {2} {3} active:{4}", p.networkType, p.ConnId, p.RemoteAddress, p.LocalAddress, p.IsActive));
+                Log.Info(string.Format("========Peer({0}): {1} {2} {3} active:{4}", p.netType, p.ConnId, p.RemoteAddress, p.LocalAddress, p.IsActive));
             } 
         }
 

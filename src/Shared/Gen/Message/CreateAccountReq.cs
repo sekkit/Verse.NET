@@ -22,9 +22,6 @@ namespace Shared.Message
         [Key(1)]
         public String password { get; set; }
 
-        [Key(2)]
-        public String extra { get; set; }
-
 
         [Key(199)]
         public Callback callback
@@ -37,6 +34,7 @@ namespace Shared.Message
         public class Callback
         {
             [Key(0)]
+            [DefaultValue(ErrCode.ERROR)]
             public ErrCode code { get; set; } = ErrCode.ERROR;
 
         }

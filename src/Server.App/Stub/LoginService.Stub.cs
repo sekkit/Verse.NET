@@ -25,7 +25,7 @@ namespace Server.GModule
         public void SERVER_API_create_account(IMessage msg, Action<object> cb)
         {
             var _msg = (CreateAccountReq)msg;
-            this.CreateAccount(_msg.username, _msg.password, _msg.extra, (code) =>
+            this.CreateAccount(_msg.username, _msg.password, (code) =>
             {
                 var cbMsg = new CreateAccountReq.Callback();
                 cbMsg.code=code;
@@ -70,6 +70,34 @@ namespace Server.GModule
             var _msg = (ResetPasswordReq)msg;
             this.ResetPassword(_msg.username, _msg.email);
         }
-    }
+
+        [RpcMethod(ProtocolCode.CREATE_ACCOUNT_REQ, Api.ServerApi)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SERVER_API_NATIVE_create_account(String username, String password, Action<ErrCode> callback)
+        {
+            this.CreateAccount(username, password, callback);
+        }
+
+        [RpcMethod(ProtocolCode.DELETE_ACCOUNT_REQ, Api.ServerApi)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SERVER_API_NATIVE_delete_account(String username, String password, Action<ErrCode> callback)
+        {
+            this.DeleteAccount(username, password, callback);
+        }
+
+        [RpcMethod(ProtocolCode.LOGIN_REQ, Api.ServerApi)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SERVER_API_NATIVE_login(String username, String password, Action<ErrCode, String, UInt32, String, String> callback)
+        {
+            this.Login(username, password, callback);
+        }
+
+        [RpcMethod(ProtocolCode.RESET_PASSWORD_REQ, Api.ServerApi)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SERVER_API_NATIVE_reset_password(String username, String email)
+        {
+            this.ResetPassword(username, email);
+        }
+   }
 }
 

@@ -27,29 +27,22 @@ namespace Fenix
         static void Loop(object host)
         {
             var h = (Host)host;
-
-            try
+             
+            while (true)
             {
-                while (true)
+                try
                 {
-                    try
-                    {
-                        if (h == null || h.IsAlive == false)
-                            return; 
-                        Thread.Sleep(1);
-                        OneThreadSynchronizationContext.Instance.Update();
-                        h.Update();
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Error(e.ToString());
-                    }
+                    if (h == null || h.IsAlive == false)
+                        return; 
+                    Thread.Sleep(100);
+                    OneThreadSynchronizationContext.Instance.Update();
+                    h.Update();
                 }
-            }
-            catch (Exception e)
-            {
-                Log.Error(e);
-            }
+                catch (Exception e)
+                {
+                    Log.Error(e.ToString());
+                }
+            } 
         }
 
         public static void Stop(Host host)

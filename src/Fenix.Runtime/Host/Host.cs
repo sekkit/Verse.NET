@@ -28,9 +28,11 @@ namespace Fenix
     {
         //public static Host Instance = null; 
 
-        public string Tag { get; set; } 
+        public string Tag { get; set; }
 
-        protected IPEndPoint LocalAddress { get; set; }
+        public IPEndPoint LocalAddress { get; set; }
+
+        public IPEndPoint ExternalAddress { get; set; }
 
         protected KcpHostServer kcpServer { get; set; }
 
@@ -44,9 +46,9 @@ namespace Fenix
 
         private Thread heartbeatTh;
 
-        protected Host(string name, string ip, int port = 0, bool clientMode = false) : base()
+        protected Host(string name, string ip, string extIp, int port = 0, bool clientMode = false) : base()
         {
-            this.IsClientMode = clientMode;
+            this.IsClientMode = clientMode; 
 
             //NetManager.Instance.OnConnect += (peer) => 
             NetManager.Instance.OnReceive += (peer, buffer) => OnReceiveBuffer(peer, buffer);
@@ -73,15 +75,20 @@ namespace Fenix
             if (!clientMode)
             {
                 string _ip = ip;
-                int _port = port;
+                string _extIp = extIp;
+                int _port = port; 
 
                 if (ip == "auto")
                     _ip = Basic.GetLocalIPv4(NetworkInterfaceType.Ethernet);
+
+                if (extIp == "auto")
+                    _extIp = Basic.GetLocalIPv4(NetworkInterfaceType.Ethernet);
 
                 if (port == 0)
                     _port = Basic.GetAvailablePort(IPAddress.Parse(_ip));
 
                 this.LocalAddress = new IPEndPoint(IPAddress.Parse(_ip), _port);
+                this.ExternalAddress = new IPEndPoint(IPAddress.Parse(_extIp), port);
 
                 string addr = LocalAddress.ToIPv4String();
 
@@ -132,13 +139,13 @@ namespace Fenix
             }); 
         }
 
-        public static Host Create(string name, string ip, int port, bool clientMode)
+        public static Host Create(string name, string ip, string extIp, int port, bool clientMode)
         {
             if (Global.Host != null)
                 return Global.Host;
             try
             {
-                var c = new Host(name, ip, port, clientMode);
+                var c = new Host(name, ip, extIp, port, clientMode);
                 Global.Host = c;
                 return Global.Host;
             }
@@ -151,26 +158,26 @@ namespace Fenix
 
         public static Host CreateClient()//string ip, int port)
         {
-            return Create(null, "", 0, true); 
+            return Create(null, "", "", 0, true); 
         }
 
-        public static Host CreateServer(string name, string ip, int port)
+        public static Host CreateServer(string name, string ip, string extIp, int port)
         {
-            return Create(name, ip, port, false);
+            return Create(name, ip, extIp, port, false);
         } 
 
         protected void OnReceiveBuffer(NetPeer peer, IByteBuffer buffer)
         {
             if (!peer.IsActive)
                 return;
-            Log.Info(string.Format("RECV({0}) {1} {2} {3}", peer.networkType, peer.ConnId, peer.RemoteAddress, StringUtil.ToHexString(buffer.ToArray())));
+            Log.Info(string.Format("RECV({0}) {1} {2} {3}", peer.netType, peer.ConnId, peer.RemoteAddress, StringUtil.ToHexString(buffer.ToArray())));
           
             if (buffer.ReadableBytes == 1)
             {
                 byte protoCode = buffer.ReadByte();
                 if (protoCode == (byte)OpCode.PING)
                 {
-                    Log.Info(string.Format("Ping({0}) {1} FROM {2}", peer.networkType, peer.ConnId, peer.RemoteAddress));
+                    Log.Info(string.Format("Ping({0}) {1} FROM {2}", peer.netType, peer.ConnId, peer.RemoteAddress));
                     if(peer != null && peer.RemoteAddress != null) 
                         Global.IdManager.ReregisterHost(peer.ConnId, peer.RemoteAddress.ToIPv4String());
                     peer.Send(new byte[] { (byte)OpCode.PONG });
@@ -226,12 +233,12 @@ namespace Fenix
                     Global.Host.Id,
                     fromActorId, 
                     toActorId, 
-                    peer.networkType, 
+                    peer.netType, 
                     Global.TypeManager.GetMessageType(protoCode), 
                     bytes);
 
                 Log.Info(string.Format("RECV2({0}): {1} {2} => {3} {4} >= {5} {6} => {7}", 
-                    peer.networkType, 
+                    peer.netType, 
                     protoCode, 
                     packet.FromHostId, 
                     packet.ToHostId,
@@ -247,7 +254,7 @@ namespace Fenix
                 else
                 {
                     this.CallMethod(packet);
-                } 
+                }
             }
         }
 
@@ -373,7 +380,7 @@ namespace Fenix
 
         protected void RegisterGlobalManager(Host host)
         {
-            Global.IdManager.RegisterHost(host, this.LocalAddress.ToIPv4String());
+            Global.IdManager.RegisterHost(host, this.LocalAddress.ToIPv4String(), this.ExternalAddress.ToIPv4String());
         }
 
         protected void RegisterGlobalManager(Actor actor)
@@ -483,7 +490,7 @@ namespace Fenix
             }
             else
             {
-                Global.IdManager.RegisterHost(hostId, hostName, __context.Peer.RemoteAddress.ToIPv4String());
+                Global.IdManager.RegisterHost(hostId, hostName, __context.Peer.RemoteAddress.ToIPv4String(), __context.Peer.RemoteAddress.ToIPv4String());
             }
         }
 

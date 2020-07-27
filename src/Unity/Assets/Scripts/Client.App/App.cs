@@ -40,7 +40,8 @@ namespace Client
             Global.Init(new Assembly[] { typeof(App).Assembly });
 
             var localAddr = Basic.GetLocalIPv4(System.Net.NetworkInformation.NetworkInterfaceType.Ethernet);
-            localAddr = "172.16.20.162";
+            //localAddr = "172.16.20.162";
+            localAddr = "122.51.98.122";
 
             host = Host.CreateClient();  
             if (host == null)
@@ -81,7 +82,7 @@ namespace Client
                         Log.Info(string.Format("ServerAvatar host: {0}@{1} {2} {3}", uid, hostId, hostName, hostAddress));
                         Game.Avatar = host.CreateActor<Client.Avatar>(uid);
                         
-                        Global.IdManager.RegisterHost(hostId, hostName, hostAddress);
+                        Global.IdManager.RegisterHost(hostId, hostName, hostAddress, hostAddress);
                         Global.IdManager.RegisterActor(Game.Avatar, hostId);
 
                         var parts = hostAddress.Split(':');

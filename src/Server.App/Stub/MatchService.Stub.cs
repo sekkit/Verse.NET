@@ -46,6 +46,20 @@ namespace Server.GModule
                 cb.Invoke(cbMsg);
             });
         }
-    }
+
+        [RpcMethod(ProtocolCode.JOIN_MATCH_REQ, Api.ServerApi)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SERVER_API_NATIVE_join_match(String uid, Int32 match_type, Action<ErrCode> callback)
+        {
+            this.JoinMatch(uid, match_type, callback);
+        }
+
+        [RpcMethod(ProtocolCode.FIND_MATCH_REQ, Api.ServerOnly)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SERVER_ONLY_NATIVE_find_match(String uid, Action<ErrCode, Account> callback)
+        {
+            this.FindMatch(uid, callback);
+        }
+   }
 }
 

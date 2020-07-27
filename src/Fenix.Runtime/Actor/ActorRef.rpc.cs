@@ -25,7 +25,15 @@ namespace Fenix
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Global.Host.GetActor(this.toActorId).CallLocalMethod(OpCode.BIND_CLIENT_ACTOR_REQ, new object[] { actorName, callback });
+                var protoCode = OpCode.BIND_CLIENT_ACTOR_REQ;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { actorName, callback, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { actorName, callback });
                 return;
             }
             var msg = new BindClientActorReq()
@@ -44,7 +52,15 @@ namespace Fenix
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Global.Host.GetActor(this.toActorId).CallLocalMethod(OpCode.CREATE_ACTOR_REQ, new object[] { typename, name, callback });
+                var protoCode = OpCode.CREATE_ACTOR_REQ;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { typename, name, callback, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { typename, name, callback });
                 return;
             }
             var msg = new CreateActorReq()
@@ -64,7 +80,15 @@ namespace Fenix
            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
            if (this.FromHostId == toHostId)
            {
-                Global.Host.GetActor(this.toActorId).CallLocalMethod(OpCode.MIGRATE_ACTOR_REQ, new object[] { actorId });
+                var protoCode = OpCode.MIGRATE_ACTOR_REQ;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { actorId, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { actorId }); 
                return;
            }
            var msg = new MigrateActorReq()
@@ -79,7 +103,15 @@ namespace Fenix
            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
            if (this.FromHostId == toHostId)
            {
-                Global.Host.GetActor(this.toActorId).CallLocalMethod(OpCode.REGISTER_REQ, new object[] { hostId, hostName });
+                var protoCode = OpCode.REGISTER_REQ;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { hostId, hostName, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { hostId, hostName }); 
                return;
            }
            var msg = new RegisterReq()
@@ -95,7 +127,15 @@ namespace Fenix
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Global.Host.GetActor(this.toActorId).CallLocalMethod(OpCode.REGISTER_CLIENT_REQ, new object[] { hostId, hostName, callback });
+                var protoCode = OpCode.REGISTER_CLIENT_REQ;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { hostId, hostName, callback, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { hostId, hostName, callback });
                 return;
             }
             var msg = new RegisterClientReq()
@@ -115,7 +155,15 @@ namespace Fenix
            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
            if (this.FromHostId == toHostId)
            {
-                Global.Host.GetActor(this.toActorId).CallLocalMethod(OpCode.REMOVE_ACTOR_REQ, new object[] { actorId });
+                var protoCode = OpCode.REMOVE_ACTOR_REQ;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { actorId, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { actorId }); 
                return;
            }
            var msg = new RemoveActorReq()

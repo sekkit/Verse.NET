@@ -26,7 +26,15 @@ namespace Server
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Global.Host.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.FIND_MATCH_REQ, new object[] { uid, callback });
+                var protoCode = ProtocolCode.FIND_MATCH_REQ;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { uid, callback, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { uid, callback });
                 return;
             }
             var msg = new FindMatchReq()
@@ -45,7 +53,15 @@ namespace Server
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Global.Host.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.JOIN_MATCH_REQ, new object[] { uid, match_type, callback });
+                var protoCode = ProtocolCode.JOIN_MATCH_REQ;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { uid, match_type, callback, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { uid, match_type, callback });
                 return;
             }
             var msg = new JoinMatchReq()

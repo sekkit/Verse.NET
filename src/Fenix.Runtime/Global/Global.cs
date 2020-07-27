@@ -1,4 +1,5 @@
 ﻿
+using Fenix.Config;
 using System;
 using System.Net;
 using System.Reflection; 
@@ -9,18 +10,18 @@ namespace Fenix
     {
         public static Host Host;
 
+        public static RuntimeConfig Config = RuntimeConfig.MakeDefaultConfig();
 
 #if !CLIENT
-        public static DbManager DbManager = new DbManager();// => DbManager.Instance;
+        public static DbManager DbManager = new DbManager();
 #endif
 
-        public static IdManagerSimple IdManager = new IdManagerSimple();// => IdManagerSimple.Instance;
+        public static IdManagerSimple IdManager = new IdManagerSimple();
 
-        public static TypeManager TypeManager = new TypeManager();//=> TypeManager.Instance;
+        public static TypeManager TypeManager = new TypeManager();
 
-        public static ActorManager ActorManager = new ActorManager();// => ActorManager.Instance;
+        public static ActorManager ActorManager = new ActorManager();
 
-          
         public static ActorRef GetActorRef(Type refType, string actorName, Actor fromActor, Host fromHost)
         {
             return Global.ActorManager.GetActorRefByName(refType, actorName, fromActor, fromHost);

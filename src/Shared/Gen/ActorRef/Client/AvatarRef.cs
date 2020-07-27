@@ -21,18 +21,25 @@ namespace Client
     [RefType("Client.Avatar")]
     public partial class AvatarRef : ActorRef
     {
-        public void client_on_api_test(String uid, Int32 match_type, Action<ErrCode> callback)
+        public void client_on_api_test(String uid, Action<ErrCode> callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Global.Host.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.API_TEST_NTF, new object[] { uid, match_type, callback });
+                var protoCode = ProtocolCode.API_TEST_NTF;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { uid, callback, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { uid, callback });
                 return;
             }
             var msg = new ApiTestNtf()
             {
-                uid=uid,
-                match_type=match_type
+                uid=uid
             };
             var cb = new Action<byte[]>((cbData) => {
                 var cbMsg = cbData==null?new ApiTestNtf.Callback():RpcUtil.Deserialize<ApiTestNtf.Callback>(cbData);
@@ -46,7 +53,15 @@ namespace Client
            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
            if (this.FromHostId == toHostId)
            {
-                Global.Host.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.API_TEST2_NTF, new object[] { uid, match_type });
+                var protoCode = ProtocolCode.API_TEST2_NTF;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { uid, match_type, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { uid, match_type }); 
                return;
            }
            var msg = new ApiTest2Ntf()

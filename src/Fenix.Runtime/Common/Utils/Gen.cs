@@ -393,6 +393,7 @@ namespace Shared
         { 
             var rpcDefineDic = new SortedDictionary<string, string>();
             var apiDefineDic = new SortedDictionary<string, string>();
+            var apiNativeDefineDic = new SortedDictionary<string, string>();
 
             if (GetAttribute<ActorTypeAttribute>(type) == null && type.Name != "Host")
                 return;
@@ -535,7 +536,19 @@ namespace Shared
                         .AppendLine($"            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);")
                         .AppendLine($"            if (this.FromHostId == toHostId)")
                         .AppendLine($"            {{")
-                        .AppendLine($"                Global.Host.GetActor(this.toActorId).CallLocalMethod({pc_cls}.{proto_code}, new object[] {{ {args} }});")
+                        .AppendLine($"                var protoCode = {pc_cls}.{proto_code};")
+                        .AppendLine($"                if (protoCode < OpCode.CALL_ACTOR_METHOD)")
+                        .AppendLine($"                {{")
+                        .AppendLine($"                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);")
+                        .AppendLine($"                    var context = new RpcContext(null, peer);");
+                        if (args.Trim().Length == 0)
+                            builder.AppendLine($"                    Global.Host.CallMethodWithParams(protoCode, new object[] {{ context }});");
+                        else
+                            builder.AppendLine($"                    Global.Host.CallMethodWithParams(protoCode, new object[] {{ {args}, context }});");
+                        builder.AppendLine($"                }}")
+                        .AppendLine($"                else")
+                        .AppendLine($"                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] {{ {args} }});")
+                        //.AppendLine($"                Global.Host.GetActor(this.toActorId).CallLocalMethod({pc_cls}.{proto_code}, new object[] {{ {args} }});")
                         //.AppendLine($"                (({typename})Global.Host.GetActor(this.toActorId)).{method_name}({args});")
                         .AppendLine($"                return;")
                         .AppendLine($"            }}")
@@ -558,7 +571,19 @@ namespace Shared
                         .AppendLine($"           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);")
                         .AppendLine($"           if (this.FromHostId == toHostId)")
                         .AppendLine($"           {{")
-                        .AppendLine($"                Global.Host.GetActor(this.toActorId).CallLocalMethod({pc_cls}.{proto_code}, new object[] {{ {args} }});")
+                        .AppendLine($"                var protoCode = {pc_cls}.{proto_code};")
+                        .AppendLine($"                if (protoCode < OpCode.CALL_ACTOR_METHOD)")
+                        .AppendLine($"                {{")
+                        .AppendLine($"                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);")
+                        .AppendLine($"                    var context = new RpcContext(null, peer);");
+                        if (args.Trim().Length == 0)
+                            builder.AppendLine($"                    Global.Host.CallMethodWithParams(protoCode, new object[] {{ context }});");
+                        else
+                            builder.AppendLine($"                    Global.Host.CallMethodWithParams(protoCode, new object[] {{ {args}, context }});");
+                        builder.AppendLine($"                }}")
+                        .AppendLine($"                else")
+                        .AppendLine($"                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] {{ {args} }}); ")
+                        //.AppendLine($"                Global.Host.GetActor(this.toActorId).CallLocalMethod({pc_cls}.{proto_code}, new object[] {{ {args} }});")
                         //.AppendLine($"                (({typename})Global.Host.GetActor(this.toActorId)).{method_name}({args});")
                         .AppendLine($"               return;")
                         .AppendLine($"           }}")
@@ -641,6 +666,60 @@ namespace Shared
 
                     var apiDefineCode = builder.ToString();
                     apiDefineDic[api_name] = apiDefineCode;
+
+                    api_type = "ServerApi";
+                    api_name = "SERVER_API_NATIVE_" + NameToApi(method.Name);
+                    if (api == Api.ClientApi)
+                    {
+                        api_name = "CLIENT_API_NATIVE_" + NameToApi(method.Name);
+                        api_type = "ClientApi";
+                    }
+                    else if (api == Api.ServerOnly)
+                    {
+                        api_name = "SERVER_ONLY_NATIVE_" + NameToApi(method.Name);
+                        api_type = "ServerOnly";
+                    }
+
+                    builder = new StringBuilder()
+                        .AppendLine($"        [RpcMethod({pc_cls}.{proto_code}, Api.{api_type})]")
+                        .AppendLine($"        [EditorBrowsable(EditorBrowsableState.Never)]");
+                    if(type.Name == "Host")
+                    {
+                        if (callback_define != "")
+                            builder.AppendLine($"        public void {api_name}({args_decl}, RpcContext context)");
+                        else
+                            builder.AppendLine($"        public void {api_name}({args_decl}, RpcContext context)");
+                    }
+                    else
+                    {
+                        if (callback_define != "")
+                            builder.AppendLine($"        public void {api_name}({args_decl})");
+                        else
+                            builder.AppendLine($"        public void {api_name}({args_decl})");
+                    } 
+
+                    if (callback_define != "")
+                    {
+                        var cbType2 = methodParameterList.Where(m => m.Name == "callback").First().ParameterType;
+                        //string api_cb_args = GenCbArgs(cbType2.GetGenericArguments(), GetCallbackArgs(method), "");
+                        if (type.Name == "Host")
+                            builder.AppendLine($"        {{\n            this.{method.Name}({args}, context);");
+                        else
+                            builder.AppendLine($"        {{\n            this.{method.Name}({args});");
+                    }
+                    else
+                    {
+                        
+                        if (type.Name == "Host")
+                            builder.AppendLine($"        {{\n            this.{method.Name}({args}, context);");
+                        else
+                            builder.AppendLine($"        {{\n            this.{method.Name}({args});");
+                    }
+
+                    builder.AppendLine($"        }}");
+
+                    var apiNativeDefineCode = builder.ToString();
+                    apiNativeDefineDic[api_name] = apiNativeDefineCode; 
                 }
             }
 
@@ -717,6 +796,8 @@ refBuilder.AppendLine($"    {{")
             
 
             string internalApiCode = string.Join("\n", apiDefineDic.Values);
+            string internalNativeApiCode = string.Join("\n", apiNativeDefineDic.Values);
+
             var apiBuilder = new StringBuilder()
                 .AppendLine(@"
 //AUTOGEN, do not modify it!
@@ -740,17 +821,20 @@ using System.Text;
 .AppendLine("{")
 .AppendLine($"    public partial class {tname}")
 .AppendLine($"    {{")
-.AppendLine($"{internalApiCode}    }}")
+.AppendLine($"{internalApiCode}")
+.AppendLine($"{internalNativeApiCode}   }}")
 .AppendLine($"}}");
 
              
             var apiResultCode = apiBuilder.ToString();
+             
             //if (type.Name != "Host")
             //{
                 string output = isServer ? serverPath : clientPath;
                 using (var sw = new StreamWriter(Path.Combine(output, "Stub", type.Name + ".Stub.cs"), false, Encoding.UTF8))
                 {
                     sw.WriteLine(apiResultCode);
+
                 }
             //}
             //else

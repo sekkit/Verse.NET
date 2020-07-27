@@ -40,6 +40,20 @@ namespace Server.UModule
             var _msg = (OnMatchOkReq)msg;
             this.OnMatchOk();
         }
-    }
+
+        [RpcMethod(ProtocolCode.CHANGE_NAME_REQ, Api.ServerApi)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SERVER_API_NATIVE_change_name(String name, Action<ErrCode> callback)
+        {
+            this.ChangeName(name, callback);
+        }
+
+        [RpcMethod(ProtocolCode.ON_MATCH_OK_REQ, Api.ServerOnly)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SERVER_ONLY_NATIVE_on_match_ok()
+        {
+            this.OnMatchOk();
+        }
+   }
 }
 

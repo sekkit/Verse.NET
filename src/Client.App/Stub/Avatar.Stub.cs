@@ -25,7 +25,7 @@ namespace Client
         public void CLIENT_API_api_test(IMessage msg, Action<object> cb)
         {
             var _msg = (ApiTestNtf)msg;
-            this.ApiTest(_msg.uid, _msg.match_type, (code) =>
+            this.ApiTest(_msg.uid, (code) =>
             {
                 var cbMsg = new ApiTestNtf.Callback();
                 cbMsg.code=code;
@@ -40,6 +40,20 @@ namespace Client
             var _msg = (ApiTest2Ntf)msg;
             this.ApiTest2(_msg.uid, _msg.match_type);
         }
-    }
+
+        [RpcMethod(ProtocolCode.API_TEST_NTF, Api.ClientApi)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void CLIENT_API_NATIVE_api_test(String uid, Action<ErrCode> callback)
+        {
+            this.ApiTest(uid, callback);
+        }
+
+        [RpcMethod(ProtocolCode.API_TEST2_NTF, Api.ClientApi)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void CLIENT_API_NATIVE_api_test2(String uid, Int32 match_type)
+        {
+            this.ApiTest2(uid, match_type);
+        }
+   }
 }
 
