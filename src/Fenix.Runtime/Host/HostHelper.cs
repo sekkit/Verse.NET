@@ -36,7 +36,7 @@ namespace Fenix
                     {
                         if (h == null || h.IsAlive == false)
                             return; 
-                        Thread.Sleep(1);
+                        Thread.Sleep(0);
                         OneThreadSynchronizationContext.Instance.Update();
                         h.Update();
                     }

@@ -13,11 +13,11 @@ namespace Fenix
     public class DbManager
     {
         static UInt32 fakeId = 1;
-        protected DbManager()
+        public DbManager()
         {
         }
 
-        public static DbManager Instance = new DbManager();
+        //public static DbManager Instance = new DbManager();
 
         public ConcurrentDictionary<string, RedisDb> DbDic = new ConcurrentDictionary<string, RedisDb>();
 

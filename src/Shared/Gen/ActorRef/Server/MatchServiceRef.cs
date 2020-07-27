@@ -26,7 +26,7 @@ namespace Server
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.FIND_MATCH_REQ, new object[] { uid, callback });
+                Global.Host.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.FIND_MATCH_REQ, new object[] { uid, callback });
                 return;
             }
             var msg = new FindMatchReq()
@@ -45,7 +45,7 @@ namespace Server
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.JOIN_MATCH_REQ, new object[] { uid, match_type, callback });
+                Global.Host.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.JOIN_MATCH_REQ, new object[] { uid, match_type, callback });
                 return;
             }
             var msg = new JoinMatchReq()

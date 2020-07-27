@@ -12,11 +12,11 @@ namespace Fenix
 {
     public class TypeManager
     { 
-        protected TypeManager()
+        public TypeManager()
         {
         }
 
-        public static TypeManager Instance = new TypeManager();
+        //public static TypeManager Instance = new TypeManager();
 
         protected ConcurrentDictionary<string, Type> mTypeDic = new ConcurrentDictionary<string, Type>();
 

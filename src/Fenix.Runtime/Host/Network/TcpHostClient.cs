@@ -78,7 +78,7 @@ namespace Fenix
 #endif
             if (client==null)
             {
-                client = TcpSocketClient.Instance;
+                client = new TcpSocketClient();
                 if (!client.init(channelConfig))
                 {
                     client = null;
@@ -101,7 +101,7 @@ namespace Fenix
         public void Send(byte[] bytes)
         {
             clientChannel?.WriteAndFlushAsync(Unpooled.WrappedBuffer(bytes));
-            //SendAsync(bytes);
+    
             //SendAsync(bytes);
             //    /*
             //var task = Task.Run(()=> SendAsync(bytes));

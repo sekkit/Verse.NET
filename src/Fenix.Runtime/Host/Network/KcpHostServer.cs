@@ -48,27 +48,46 @@ namespace Fenix
         }
 
         public void handleReceive(IByteBuffer byteBuf, Ukcp ukcp)
-        { 
+        {
+            //OneThreadSynchronizationContext.Instance.Post((obj) =>
+            //{
+            //    var objs = (object[])obj;
+            //OnReceive?.Invoke(ukcp, byteBuf);
+            //   OnReceive?.Invoke((Ukcp)objs[1], (IByteBuffer)objs[0]);
+            //}, new object[] { byteBuf.Retain(), ukcp });
             OnReceive?.Invoke(ukcp, byteBuf);
         }
          
         public void handleException(Ukcp ukcp, Exception ex)
         {
-            //Log.Info(ex.ToString());
-            OnException?.Invoke(ukcp, ex); 
+            //OneThreadSynchronizationContext.Instance.Post((obj) =>
+            //{
+            //    var objs = (object[])obj;
+            //    OnException?.Invoke((Ukcp)objs[0], (Exception)objs[1]);
+            //}, new object[] { ukcp, ex});
+            OnException?.Invoke(ukcp, ex);
         }
 
         public void handleClose(Ukcp ukcp)
         {
-            OnClose?.Invoke(ukcp); 
+            //OneThreadSynchronizationContext.Instance.Post((obj) =>
+            //{
+            //    OnClose?.Invoke((Ukcp)obj);
+            //}, ukcp);
+
+            OnClose?.Invoke(ukcp);
 
             Log.Info(Snmp.snmp.ToString());
             Snmp.snmp = new Snmp();
         }
 
         public void handleConnect(Ukcp ukcp)
-        { 
-            OnConnect?.Invoke(ukcp); 
+        {
+            //OneThreadSynchronizationContext.Instance.Post((obj) =>
+            //{ 
+            //    OnConnect?.Invoke((Ukcp)obj);
+            //}, ukcp);
+            OnConnect?.Invoke(ukcp);
         }
 
         //public void Send(byte[] bytes)

@@ -1,10 +1,12 @@
-﻿  
+﻿
+using DotNetty.KCP;
 using Fenix;
 using Fenix.Common;
 using Fenix.Common.Attributes;
 using Server.UModule;
 using Shared.Protocol;
-using System; 
+using System;
+using System.Collections.Generic;
 
 namespace Server.GModule
 {
@@ -22,12 +24,21 @@ namespace Server.GModule
 
         }
 
+        [ServerApi]
+        public void CreateAccount(string username, string password, Action<ErrCode> callback)
+        {
+
+        }
+
+        public event Action on_battle_start;
 
         [ServerApi]
         public void DeleteAccount(string username, string password, Action<ErrCode> callback)
         {
 
-        }
+        } 
+
+
 
         //callback: code, actorName, actorHostId, actorHostName, actorHostAddress, 
         [ServerApi]

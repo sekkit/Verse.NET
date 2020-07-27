@@ -17,7 +17,6 @@ using System;
 
 namespace Server
 {
-
     [RefType("LoginService")]
     public partial class LoginServiceRef : ActorRef
     {
@@ -26,7 +25,7 @@ namespace Server
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.CREATE_ACCOUNT_REQ, new object[] { username, password, extra, callback });
+                Global.Host.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.CREATE_ACCOUNT_REQ, new object[] { username, password, extra, callback });
                 return;
             }
             var msg = new CreateAccountReq()
@@ -47,7 +46,7 @@ namespace Server
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.DELETE_ACCOUNT_REQ, new object[] { username, password, callback });
+                Global.Host.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.DELETE_ACCOUNT_REQ, new object[] { username, password, callback });
                 return;
             }
             var msg = new DeleteAccountReq()
@@ -67,7 +66,7 @@ namespace Server
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.LOGIN_REQ, new object[] { username, password, callback });
+                Global.Host.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.LOGIN_REQ, new object[] { username, password, callback });
                 return;
             }
             var msg = new LoginReq()
@@ -87,7 +86,7 @@ namespace Server
            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
            if (this.FromHostId == toHostId)
            {
-                Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.RESET_PASSWORD_REQ, new object[] { username, email });
+                Global.Host.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.RESET_PASSWORD_REQ, new object[] { username, email });
                return;
            }
            var msg = new ResetPasswordReq()

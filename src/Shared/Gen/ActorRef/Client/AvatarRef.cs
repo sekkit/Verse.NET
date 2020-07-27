@@ -26,7 +26,7 @@ namespace Client
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.API_TEST_NTF, new object[] { uid, match_type, callback });
+                Global.Host.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.API_TEST_NTF, new object[] { uid, match_type, callback });
                 return;
             }
             var msg = new ApiTestNtf()
@@ -46,7 +46,7 @@ namespace Client
            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
            if (this.FromHostId == toHostId)
            {
-                Host.Instance.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.API_TEST2_NTF, new object[] { uid, match_type });
+                Global.Host.GetActor(this.toActorId).CallLocalMethod(ProtocolCode.API_TEST2_NTF, new object[] { uid, match_type });
                return;
            }
            var msg = new ApiTest2Ntf()

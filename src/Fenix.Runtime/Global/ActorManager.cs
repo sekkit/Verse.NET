@@ -9,7 +9,7 @@ namespace Fenix
 {
     public class ActorManager
     {
-        public static ActorManager Instance = new ActorManager();
+        //public static ActorManager Instance = new ActorManager();
 
         //客户端与服务端，其实就是Avatar之间的单点通信
         //如果是客户端，则取不到名字和类型信息

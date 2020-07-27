@@ -157,7 +157,8 @@ namespace Fenix
             var cid = ukcp.user().Channel.Id.AsLongText()+ukcp.user().Channel.LocalAddress.ToIPv4String() + ukcp.user().RemoteAddress.ToIPv4String();
             
             var id = Basic.GenID32FromName(cid);
-            return channelPeers[id];
+            channelPeers.TryGetValue(id, out var peer);
+            return peer;
         }
 
         public NetPeer GetPeerById(uint peerId, NetworkType netType)

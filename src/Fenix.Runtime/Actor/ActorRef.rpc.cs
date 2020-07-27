@@ -25,7 +25,7 @@ namespace Fenix
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Host.Instance.GetActor(this.toActorId).CallLocalMethod(OpCode.BIND_CLIENT_ACTOR_REQ, new object[] { actorName, callback });
+                Global.Host.GetActor(this.toActorId).CallLocalMethod(OpCode.BIND_CLIENT_ACTOR_REQ, new object[] { actorName, callback });
                 return;
             }
             var msg = new BindClientActorReq()
@@ -44,7 +44,7 @@ namespace Fenix
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Host.Instance.GetActor(this.toActorId).CallLocalMethod(OpCode.CREATE_ACTOR_REQ, new object[] { typename, name, callback });
+                Global.Host.GetActor(this.toActorId).CallLocalMethod(OpCode.CREATE_ACTOR_REQ, new object[] { typename, name, callback });
                 return;
             }
             var msg = new CreateActorReq()
@@ -64,7 +64,7 @@ namespace Fenix
            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
            if (this.FromHostId == toHostId)
            {
-                Host.Instance.GetActor(this.toActorId).CallLocalMethod(OpCode.MIGRATE_ACTOR_REQ, new object[] { actorId });
+                Global.Host.GetActor(this.toActorId).CallLocalMethod(OpCode.MIGRATE_ACTOR_REQ, new object[] { actorId });
                return;
            }
            var msg = new MigrateActorReq()
@@ -79,7 +79,7 @@ namespace Fenix
            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
            if (this.FromHostId == toHostId)
            {
-                Host.Instance.GetActor(this.toActorId).CallLocalMethod(OpCode.REGISTER_REQ, new object[] { hostId, hostName });
+                Global.Host.GetActor(this.toActorId).CallLocalMethod(OpCode.REGISTER_REQ, new object[] { hostId, hostName });
                return;
            }
            var msg = new RegisterReq()
@@ -95,7 +95,7 @@ namespace Fenix
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Host.Instance.GetActor(this.toActorId).CallLocalMethod(OpCode.REGISTER_CLIENT_REQ, new object[] { hostId, hostName, callback });
+                Global.Host.GetActor(this.toActorId).CallLocalMethod(OpCode.REGISTER_CLIENT_REQ, new object[] { hostId, hostName, callback });
                 return;
             }
             var msg = new RegisterClientReq()
@@ -115,7 +115,7 @@ namespace Fenix
            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
            if (this.FromHostId == toHostId)
            {
-                Host.Instance.GetActor(this.toActorId).CallLocalMethod(OpCode.REMOVE_ACTOR_REQ, new object[] { actorId });
+                Global.Host.GetActor(this.toActorId).CallLocalMethod(OpCode.REMOVE_ACTOR_REQ, new object[] { actorId });
                return;
            }
            var msg = new RemoveActorReq()

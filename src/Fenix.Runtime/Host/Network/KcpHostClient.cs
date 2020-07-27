@@ -61,30 +61,37 @@ namespace Fenix
             var listener = new KcpHostClient(channelConfig, remoteAddress);
                
             return listener;
-        } 
-       
+        }
+
 
         public void handleReceive(IByteBuffer byteBuf, Ukcp ukcp)
         {
             //OneThreadSynchronizationContext.Instance.Post((obj) =>
             //{
-            //byte[] bytes = new byte[byteBuf.ReadableBytes];
-            //byteBuf.GetBytes(byteBuf.ReaderIndex, bytes);
-            //OnReceive?.Invoke(bytes, ukcp, protocolType);
+            //    var objs = (object[])obj;
+            //OnReceive?.Invoke(ukcp, byteBuf);
+            //   OnReceive?.Invoke((Ukcp)objs[1], (IByteBuffer)objs[0]);
+            //}, new object[] { byteBuf.Retain(), ukcp });
             OnReceive?.Invoke(ukcp, byteBuf);
-                //OnReceive?.Invoke(byteBuf, ukcp, protocolType);
-            //}, null); 
         }
 
         public void handleException(Ukcp ukcp, Exception ex)
         {
-            //Console.WriteLine(ex.ToString());
-           
-            OnException?.Invoke(ukcp, ex); 
+            //OneThreadSynchronizationContext.Instance.Post((obj) =>
+            //{
+            //    var objs = (object[])obj;
+            //    OnException?.Invoke((Ukcp)objs[0], (Exception)objs[1]);
+            //}, new object[] { ukcp, ex});
+            OnException?.Invoke(ukcp, ex);
         }
 
         public void handleClose(Ukcp ukcp)
-        { 
+        {
+            //OneThreadSynchronizationContext.Instance.Post((obj) =>
+            //{
+            //    OnClose?.Invoke((Ukcp)obj);
+            //}, ukcp);
+
             OnClose?.Invoke(ukcp);
 
             Log.Info(Snmp.snmp.ToString());

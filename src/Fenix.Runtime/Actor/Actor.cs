@@ -20,7 +20,7 @@ namespace Fenix
     {
         [IgnoreMember]
         [IgnoreDataMember]
-        public uint HostId => Host.Instance.Id;
+        public uint HostId => Global.Host.Id;
          
         [Key(3)]
         [DataMember]
@@ -121,29 +121,29 @@ namespace Fenix
 
         public T GetService<T>(string name) where T : ActorRef
         {
-            return (T)Global.GetActorRef(typeof(T), name, this, Host.Instance);
+            return (T)Global.GetActorRef(typeof(T), name, this, Global.Host);
         }
 
         public T GetAvatar<T>(string uid) where T : ActorRef
         {
-            return (T)Global.GetActorRef(typeof(T), uid, this, Host.Instance);
+            return (T)Global.GetActorRef(typeof(T), uid, this, Global.Host);
         }
 
         public T GetActorRef<T>(string actorName) where T: ActorRef
         {
-            return (T)Global.GetActorRef(typeof(T), actorName, this, Host.Instance);
+            return (T)Global.GetActorRef(typeof(T), actorName, this, Global.Host);
         } 
 
         public ActorRef GetActorRef(Type refType, string actorName)
         {
-            return Global.GetActorRef(refType, actorName, this, Host.Instance);
+            return Global.GetActorRef(refType, actorName, this, Global.Host);
         }
 
         public T GetService<T>() where T : ActorRef
         {
             var tname = typeof(T).Name;
             string actorName = tname.Substring(0, tname.Length - 3);
-            return (T)Global.GetActorRef(typeof(T), actorName, this, Host.Instance);
+            return (T)Global.GetActorRef(typeof(T), actorName, this, Global.Host);
         }
 
         public T GetService<T>(string hostName, string ip, int port) where T : ActorRef
@@ -151,7 +151,7 @@ namespace Fenix
             var refTypeName = typeof(T).Name;
             string name = refTypeName.Substring(0, refTypeName.Length - 3);
             IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
-            return (T)Global.GetActorRefByAddr(typeof(T), ep, hostName, name, null, Host.Instance);
+            return (T)Global.GetActorRefByAddr(typeof(T), ep, hostName, name, null, Global.Host);
         }
 #if !CLIENT
         [ServerOnly]

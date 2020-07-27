@@ -26,13 +26,9 @@ namespace Fenix
 
     public partial class Host : Entity
     {
-        public static Host Instance = null;
+        //public static Host Instance = null; 
 
-        public uint Id { get; set; } // 实例ID，全局唯一
-
-        public string Tag { get; set; }
-
-        public string UniqueName { get; set; }
+        public string Tag { get; set; } 
 
         protected IPEndPoint LocalAddress { get; set; }
 
@@ -131,13 +127,13 @@ namespace Fenix
 
         public static Host Create(string name, string ip, int port, bool clientMode)
         {
-            if (Instance != null)
-                return Instance;
+            if (Global.Host != null)
+                return Global.Host;
             try
             {
                 var c = new Host(name, ip, port, clientMode);
-                Instance = c;
-                return Instance;
+                Global.Host = c;
+                return Global.Host;
             }
             catch (Exception ex)
             {
@@ -158,6 +154,8 @@ namespace Fenix
 
         protected void OnReceiveBuffer(NetPeer peer, IByteBuffer buffer)
         {
+            if (!peer.IsActive)
+                return;
             Log.Info(string.Format("RECV({0}) {1} {2} {3}", peer.networkType, peer.ConnId, peer.RemoteAddress, StringUtil.ToHexString(buffer.ToArray())));
           
             if (buffer.ReadableBytes == 1)
@@ -166,13 +164,13 @@ namespace Fenix
                 if (protoCode == (byte)OpCode.PING)
                 {
                     Log.Info(string.Format("Ping({0}) {1} FROM {2}", peer.networkType, peer.ConnId, peer.RemoteAddress));
-                    
-                    Global.IdManager.ReregisterHost(peer.ConnId, peer.RemoteAddress.ToIPv4String());
+                    if(peer != null && peer.RemoteAddress != null) 
+                        Global.IdManager.ReregisterHost(peer.ConnId, peer.RemoteAddress.ToIPv4String());
                     peer.Send(new byte[] { (byte)OpCode.PONG });
 #if !CLIENT
                     //如果peer是客户端，则代表
                     var clientActorId = Global.IdManager.GetClientActorId(peer.ConnId);
-                    if (clientActorId != 0)
+                    if (clientActorId != 0 && this.actorDic.ContainsKey(clientActorId))
                     {
                         Global.IdManager.RegisterClientActor(clientActorId, GetActor(clientActorId).UniqueName, peer.ConnId, peer.RemoteAddress.ToIPv4String());
                     }
@@ -218,7 +216,7 @@ namespace Fenix
                 var packet = Packet.Create(msgId, 
                     protoCode, 
                     peer.ConnId, 
-                    Host.Instance.Id,
+                    Global.Host.Id,
                     fromActorId, 
                     toActorId, 
                     peer.networkType, 
@@ -515,7 +513,7 @@ namespace Fenix
             callback(DefaultErrCode.OK);
 
             //Set actor.server's client property
-            var a = Host.Instance.GetActor(actorId);
+            var a = Global.Host.GetActor(actorId);
             a.OnClientEnable(actorName);
         }
 #endif
@@ -553,23 +551,23 @@ namespace Fenix
 
         public T GetService<T>(string name) where T : ActorRef
         {
-            return (T)Global.GetActorRef(typeof(T), name, null, Host.Instance);
+            return (T)Global.GetActorRef(typeof(T), name, null, Global.Host);
         }
 
         public T GetAvatar<T>(string uid) where T : ActorRef
         {
-            return (T)Global.GetActorRef(typeof(T), uid, null, Host.Instance);
+            return (T)Global.GetActorRef(typeof(T), uid, null, Global.Host);
         } 
         public T GetActorRef<T>(string name) where T: ActorRef
         {
-            return (T)Global.GetActorRef(typeof(T), name, null, Host.Instance);
+            return (T)Global.GetActorRef(typeof(T), name, null, Global.Host);
         }
 
         public T GetService<T>() where T : ActorRef
         {
             var refTypeName = typeof(T).Name;
             string name = refTypeName.Substring(0, refTypeName.Length - 3); 
-            return (T)Global.GetActorRef(typeof(T), name, null, Host.Instance);
+            return (T)Global.GetActorRef(typeof(T), name, null, Global.Host);
         }
 
         //public T GetService<T>(string hostName, string ip, int port) where T : ActorRef
@@ -577,13 +575,13 @@ namespace Fenix
         //    var refTypeName = typeof(T).Name;
         //    string name = refTypeName.Substring(0, refTypeName.Length - 3);
         //    IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
-        //    return (T)Global.GetActorRefByAddr(typeof(T), ep, hostName, name,  null, Host.Instance);
+        //    return (T)Global.GetActorRefByAddr(typeof(T), ep, hostName, name,  null, Global.Host);
         //}
 
         public ActorRef GetHost(string hostName, string ip, int port)
         { 
             IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
-            return Global.GetActorRefByAddr(typeof(ActorRef), ep, hostName, "", null, Host.Instance);
+            return Global.GetActorRefByAddr(typeof(ActorRef), ep, hostName, "", null, Global.Host);
         } 
 
         public void Shutdown()

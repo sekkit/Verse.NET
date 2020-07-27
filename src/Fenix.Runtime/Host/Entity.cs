@@ -141,7 +141,7 @@ namespace Fenix
             //如果是同进程，则本地调用
             if (fromHostId == toHostId)
             {
-                var toActor = Host.Instance.GetActor(toActorId);
+                var toActor = Global.Host.GetActor(toActorId);
 
                 if (msg.HasCallback())
                 {
@@ -186,7 +186,7 @@ namespace Fenix
             //如果是同进程，则本地调用
             if (fromHostId == toHostId)
             {
-                var toActor = Host.Instance.GetActor(toActorId);
+                var toActor = Global.Host.GetActor(toActorId);
                 toActor.CallMethod(packet);
                 return;
             }
@@ -211,7 +211,7 @@ namespace Fenix
                 return;
             }
 
-            //Log.Info(string.Format("{0} {1} {2} {3} {4}", Host.Instance.Id, toHostId,
+            //Log.Info(string.Format("{0} {1} {2} {3} {4}", Global.Host.Id, toHostId,
             //    Global.TypeManager.GetActorType(fromActorId).Name, Global.TypeManager.GetActorType(toActorId).Name,
             //    peer == null ? "NULL" : ""));
 

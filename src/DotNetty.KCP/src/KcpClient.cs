@@ -44,16 +44,16 @@ namespace DotNetty.KCP
             {
                 localAddress = new IPEndPoint(IPAddress.Any, 0);
             }
-#if UNITY_5_3_OR_NEWER
+//#if UNITY_5_3_OR_NEWER
             //var task = bootstrap.BindAsync(localAddress);
             //task.Wait();
             var task = Task.Run(() => bootstrap.BindAsync(localAddress));
             task.Wait();
             return task.Result;
-#else
+//#else
  
-            return bootstrap.BindAsync(localAddress).Result;
-#endif
+//            return bootstrap.BindAsync(localAddress).Result;
+//#endif
         }
 
         public void init(ChannelConfig channelConfig,ExecutorPool executorPool,IEventLoopGroup eventLoopGroup)

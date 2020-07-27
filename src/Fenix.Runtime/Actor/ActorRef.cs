@@ -27,7 +27,7 @@ namespace Fenix
 
         public bool isClient;
 
-        public NetworkType NetType => ((isClient || Host.Instance.IsClientMode)? RuntimeConfig.ClientNetwork : NetworkType.TCP);
+        public NetworkType NetType => ((isClient || Global.Host.IsClientMode)? RuntimeConfig.ClientNetwork : NetworkType.TCP);
 
         public static ActorRef Create(uint toHostId, uint toActorId, Type refType, Actor fromActor, Host fromHost, bool isClient, IPEndPoint toPeerEP=null)
         {
@@ -76,7 +76,7 @@ namespace Fenix
             //if (api == Common.Attributes.Api.ClientApi)
             //    netType = NetworkType.KCP;
 
-            //if (Host.Instance.IsClientMode)
+            //if (Global.Host.IsClientMode)
             //    netType = NetworkType.KCP;
 
             if (fromActor != null)

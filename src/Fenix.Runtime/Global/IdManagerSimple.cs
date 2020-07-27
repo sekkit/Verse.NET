@@ -24,7 +24,7 @@ namespace Fenix
      */
     public class IdManagerSimple
     {
-        public static IdManagerSimple Instance = new IdManagerSimple();
+        //public static IdManagerSimple Instance = new IdManagerSimple();
 
         protected ConcurrentDictionary<string, string> mHNAME2ADDR  = new ConcurrentDictionary<string, string>();
         protected ConcurrentDictionary<string, string> mADDR2HNAME  = new ConcurrentDictionary<string, string>();
@@ -54,7 +54,7 @@ namespace Fenix
         protected RedisDb CacheANAME2TNAME => Global.DbManager.GetDb(CacheConfig.ANAME2TNAME); 
         protected RedisDb CacheID2NAME     => Global.DbManager.GetDb(CacheConfig.ID2NAME); 
         
-        protected IdManagerSimple()
+        public IdManagerSimple()
         {
             Global.DbManager.LoadDb(CacheConfig.HNAME2ADDR_cache);
             Global.DbManager.LoadDb(CacheConfig.ANAME2CNAME_cache);
@@ -72,7 +72,7 @@ namespace Fenix
         }
 
 #else
-        protected IdManagerSimple()
+        public IdManagerSimple()
         {
             var assembly = typeof(Global).Assembly;
             Log.Info(assembly.FullName.Replace("Server.App", "Fenix.Runtime").Replace("Client.App", "Fenix.Runtime"));
@@ -436,7 +436,9 @@ namespace Fenix
             { 
                 var aName = key;
                 AddNameId(aName);
-                var hName = CacheANAME2HNAME.Get(key); 
+                var hName = CacheANAME2HNAME.Get(key);
+                if (hName == null)
+                    continue;
                 this.mANAME2HNAME[aName] = hName;
                 if (!mHNAME2ANAME.ContainsKey(hName))
                     mHNAME2ANAME[hName] = new List<string>();
@@ -447,7 +449,9 @@ namespace Fenix
             foreach (var key in CacheANAME2TNAME.Keys())
             {
                 var aName = key;
-                var tName = CacheANAME2TNAME.Get(key); 
+                var tName = CacheANAME2TNAME.Get(key);
+                if (tName == null)
+                    continue;
                 this.mANAME2TNAME[aName] = tName;
             }
 
@@ -455,6 +459,8 @@ namespace Fenix
             {
                 var id = uint.Parse(key);
                 var name = CacheID2NAME.Get(key);
+                if (name == null)
+                    continue;
                 this.mId2Name[id] = name;
                 this.mName2Id[name] = id;
             }

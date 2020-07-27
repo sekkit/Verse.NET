@@ -5,21 +5,21 @@ using System.Reflection;
 
 namespace Fenix
 {
-    public partial class Global
+    public static partial class Global
     {
-        public static bool IsServer = true;
+        public static Host Host;
 
-        public static bool NativeSerializationMethod = false;
-
-        public static IdManagerSimple IdManager => IdManagerSimple.Instance;
-
-        public static TypeManager TypeManager => TypeManager.Instance;
-
-        public static ActorManager ActorManager => ActorManager.Instance;
 
 #if !CLIENT
-        public static DbManager DbManager => DbManager.Instance;
+        public static DbManager DbManager = new DbManager();// => DbManager.Instance;
 #endif
+
+        public static IdManagerSimple IdManager = new IdManagerSimple();// => IdManagerSimple.Instance;
+
+        public static TypeManager TypeManager = new TypeManager();//=> TypeManager.Instance;
+
+        public static ActorManager ActorManager = new ActorManager();// => ActorManager.Instance;
+
           
         public static ActorRef GetActorRef(Type refType, string actorName, Actor fromActor, Host fromHost)
         {

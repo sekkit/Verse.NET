@@ -15,19 +15,20 @@ using System.Collections.Concurrent;
 namespace DotNetty.TCP
 { 
     public class TcpSocketClient : ITcpListener
-    {
-        private Bootstrap bootstrap;
+    { 
+        private volatile Bootstrap bootstrap;
+
         protected TcpChannelConfig channelConfig;
 
         //private IChannel clientChannel;
         private MultithreadEventLoopGroup group;
 
-        private TcpSocketClient()
+        public TcpSocketClient()
         {
 
         } 
 
-        public static TcpSocketClient Instance = new TcpSocketClient();
+        //public static TcpSocketClient Instance = new TcpSocketClient();
 
         public bool init(TcpChannelConfig channelConfig)
         {
@@ -81,9 +82,14 @@ namespace DotNetty.TCP
 
         public IChannel Connect(IPEndPoint ep, ITcpListener listener)
         {
+            
+//#if UNITY_5_3_OR_NEWER
             var task = Task<IChannel>.Run(() => bootstrap.ConnectAsync(ep));
             task.Wait();
             var ch = task.Result;
+//#else
+//            var ch = bootstrap.ConnectAsync(ep).Result;
+//#endif
             var chId = ch.Id.AsLongText(); 
             clientListenerDic[chId] = listener;
             return ch;
