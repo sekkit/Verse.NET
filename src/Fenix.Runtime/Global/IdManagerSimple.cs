@@ -474,44 +474,60 @@ namespace Fenix
             }
         }
 
-        //public async Task SyncWithCacheAsync()
-        //{
-        //    foreach (var key in await CacheHNAME2ADDR.KeysAsync())
-        //    {
-        //        var hName = key;
-        //        var addr = CacheHNAME2ADDR.Get(key);
-        //        this.mHNAME2ADDR[hName] = addr;
-        //        this.mADDR2HNAME[addr] = hName;
-        //        AddNameId(hName);
-        //    }
+        public async Task SyncWithCacheAsync()
+        {
+            foreach (var key in await CacheHNAME2ADDR.KeysAsync())
+            {
+                var hName = key;
+                var addr = await CacheHNAME2ADDR.GetAsync(key);
+                if (addr == null)
+                    continue;
+                this.mHNAME2ADDR[hName] = addr;
+                this.mADDR2HNAME[addr] = hName;
+                AddNameId(hName);
+            }
 
-        //    foreach (var key in await CacheANAME2HNAME.KeysAsync())
-        //    {
-        //        var aName = key;
-        //        AddNameId(aName);
-        //        var hName = CacheANAME2HNAME.Get(key);
-        //        this.mANAME2HNAME[aName] = hName;
-        //        if (!mHNAME2ANAME.ContainsKey(hName))
-        //            mHNAME2ANAME[hName] = new List<string>();
-        //        if (!this.mHNAME2ANAME[hName].Contains(aName))
-        //            this.mHNAME2ANAME[hName].Add(aName);
-        //    }
+            foreach (var key in await CacheANAME2HNAME.KeysAsync())
+            {
+                var aName = key;
+                AddNameId(aName);
+                var hName = await CacheANAME2HNAME.GetAsync(key);
+                if (hName == null)
+                    continue;
+                this.mANAME2HNAME[aName] = hName;
+                if (!mHNAME2ANAME.ContainsKey(hName))
+                    mHNAME2ANAME[hName] = new List<string>();
+                if (!this.mHNAME2ANAME[hName].Contains(aName))
+                    this.mHNAME2ANAME[hName].Add(aName);
+            }
 
-        //    foreach (var key in await CacheANAME2TNAME.KeysAsync())
-        //    {
-        //        var aName = key;
-        //        var tName = CacheANAME2TNAME.Get(key);
-        //        this.mANAME2TNAME[aName] = tName;
-        //    }
+            foreach (var key in await CacheANAME2TNAME.KeysAsync())
+            {
+                var aName = key;
+                var tName = await CacheANAME2TNAME.GetAsync(key);
+                if (tName == null)
+                    continue;
+                this.mANAME2TNAME[aName] = tName;
+            }
 
-        //    foreach(var key in await CacheID2NAME.KeysAsync())
-        //    {
-        //        var id = uint.Parse(key);
-        //        var name = CacheID2NAME.Get(key);
-        //        this.mId2Name[id] = name;
-        //        this.mName2Id[name] = id;
-        //    }
-        //}
+            foreach (var key in await CacheID2NAME.KeysAsync())
+            {
+                var id = uint.Parse(key);
+                var name = await CacheID2NAME.GetAsync(key);
+                if (name == null)
+                    continue;
+                this.mId2Name[id] = name;
+                this.mName2Id[name] = id;
+            }
+
+            foreach (var key in await CacheANAME2CNAME.KeysAsync())
+            {
+                var aName = key;
+                var cName = await CacheANAME2CNAME.GetAsync(key);
+                this.mANAME2CNAME[aName] = cName;
+                this.mCNAME2ANAME[cName] = aName;
+            }
+        }
 #endif
     }
 }

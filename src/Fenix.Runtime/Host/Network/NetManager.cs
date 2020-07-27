@@ -284,7 +284,7 @@ namespace Fenix
             foreach (var p in kcpPeers.Values)
             {
                 Log.Info(string.Format("========Peer({0}): {1} {2} {3} active:{4}", p.networkType, p.ConnId, p.RemoteAddress, p.LocalAddress, p.IsActive));
-            }
+            } 
         }
 
         public void Destroy()

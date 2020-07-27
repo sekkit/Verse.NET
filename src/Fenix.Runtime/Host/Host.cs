@@ -122,6 +122,13 @@ namespace Fenix
             this.AddRepeatedTimer(3000, 3000, () =>
             {
                 NetManager.Instance.PrintPeerInfo("All peers:");
+
+                foreach(var a in this.actorDic.Values)
+                {
+                    Log.Info("===========Actor info", a.Id, a.UniqueName);
+                }
+
+                Log.Info("End of Print");
             }); 
         }
 
@@ -348,7 +355,7 @@ namespace Fenix
                             this.RegisterGlobalManager(kv.Value);
                     }
 #if !CLIENT
-                Global.IdManager.SyncWithCache();
+                    Global.IdManager.SyncWithCacheAsync();
 #endif
                 }
                 catch(Exception ex)

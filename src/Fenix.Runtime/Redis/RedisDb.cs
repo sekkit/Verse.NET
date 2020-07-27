@@ -62,6 +62,11 @@ namespace Fenix.Redis
             return this.client.Get(key);
         }
 
+        public async Task<string> GetAsync(string key)
+        {
+            return await this.client.GetAsync(key);
+        }
+
         public long Delete(string key)
         {
             return this.client.Del(key);
