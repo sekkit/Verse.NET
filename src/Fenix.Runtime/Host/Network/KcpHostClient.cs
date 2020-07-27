@@ -48,7 +48,7 @@ namespace Fenix
             ChannelConfig channelConfig = new ChannelConfig();
             channelConfig.KcpTag = false;
             channelConfig.Crc32Check = true;
-            channelConfig.initNodelay(true, 0, 2, true);
+            channelConfig.initNodelay(true, 10, 2, true);
             channelConfig.Sndwnd = 512;
             channelConfig.Rcvwnd = 512;
             channelConfig.Mtu = 512;
