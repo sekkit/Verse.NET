@@ -36,7 +36,7 @@ namespace Fenix.Config
             obj.Port = 17777;
             obj.AppName = "Login.App";
             obj.HeartbeatIntervalMS = 5000;
-            obj.ClientNetwork = NetworkType.KCP;
+            obj.ClientNetwork = NetworkType.TCP;
             obj.DefaultActorNames = new List<string>()
             {
                 "LoginService",
