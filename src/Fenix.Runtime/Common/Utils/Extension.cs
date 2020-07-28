@@ -1,5 +1,6 @@
 ﻿using DotNetty.Buffers;
 using DotNetty.Common.Utilities;
+using DotNetty.KCP;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -65,6 +66,13 @@ namespace Fenix.Common.Utils
             var bytes = new byte[readableBytes];
             byteBuffer.GetBytes(byteBuffer.ReaderIndex, bytes);
             return bytes;
+        }
+
+        public static uint GetUniqueId(this Ukcp ukcp)
+        {
+            return Basic.GenID32FromName(ukcp.user().Channel.Id.AsLongText() +
+                ukcp.user().Channel.LocalAddress.ToIPv4String() +
+                ukcp.user().RemoteAddress.ToIPv4String() + ukcp.getConv().ToString());
         }
 
     }

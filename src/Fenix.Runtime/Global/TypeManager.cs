@@ -16,8 +16,6 @@ namespace Fenix
         {
         }
 
-        //public static TypeManager Instance = new TypeManager();
-
         protected ConcurrentDictionary<string, Type> mTypeDic = new ConcurrentDictionary<string, Type>();
 
         protected ConcurrentDictionary<UInt32, Api> RpcTypeDic = new ConcurrentDictionary<UInt32, Api>();
@@ -50,11 +48,11 @@ namespace Fenix
         {
             //扫描一下
             foreach(var asm in asmList)
-            foreach (var t in asm.GetTypes())
-            {
-                if(RpcUtil.IsHeritedType(t, "Actor"))
-                    RegisterType(t.Name, t);
-            } 
+                foreach (var t in asm.GetTypes())
+                {
+                    if(RpcUtil.IsHeritedType(t, "Actor"))
+                        RegisterType(t.Name, t);
+                }
 
             foreach(var asm in asmList)
                 foreach(var t in asm.GetTypes())

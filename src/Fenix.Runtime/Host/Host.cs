@@ -278,9 +278,7 @@ namespace Fenix
             NetManager.Instance.RegisterKcp(ukcp);
             //ulong hostId = Global.IdManager.GetHostId(channel.RemoteAddress.ToIPv4String());
             Log.Info(string.Format("kcp_client_connected {0} {1}", 
-                Basic.GenID32FromName(ukcp.user().Channel.Id.AsLongText()+
-                ukcp.user().Channel.LocalAddress.ToIPv4String() + 
-                ukcp.user().RemoteAddress.ToIPv4String()+ukcp.getConv().ToString()), 
+                ukcp.GetUniqueId(), 
                 ukcp.user().RemoteAddress.ToIPv4String()));
         }
 
