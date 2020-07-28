@@ -1,31 +1,31 @@
-﻿using Newtonsoft.Json; 
+﻿using MessagePack; 
 using System.Collections.Generic; 
 
 
 namespace Fenix.Config
 {
-    [JsonObject]
+    [MessagePackObject]
     public class RuntimeConfig
     {
-        [JsonProperty]
-        public string AppName { get; set; } 
+        [Key(0)]
+        public string AppName { get; set; }
 
-        [JsonProperty]
+        [Key(1)]
         public string ExternalIp { get; set; }
 
-        [JsonProperty]
-        public string InternalIp { get; set; }  
+        [Key(2)]
+        public string InternalIp { get; set; }
 
-        [JsonProperty]
-        public int Port { get; set; } 
+        [Key(3)]
+        public int Port { get; set; }
 
-        [JsonProperty]
+        [Key(4)]
         public List<string> DefaultActorNames { get; set; }
 
-        [JsonProperty]
+        [Key(5)]
         public long HeartbeatIntervalMS { get; set; }
 
-        [JsonProperty]
+        [Key(6)]
         public NetworkType ClientNetwork { get; set; }
 
         public static RuntimeConfig MakeDefaultConfig()
@@ -36,7 +36,8 @@ namespace Fenix.Config
             obj.Port = 17777;
             obj.AppName = "Login.App";
             obj.HeartbeatIntervalMS = 5000;
-            obj.ClientNetwork = NetworkType.TCP;
+            obj.ClientNetwork = NetworkType.KCP;
+            
             obj.DefaultActorNames = new List<string>()
             {
                 "LoginService",

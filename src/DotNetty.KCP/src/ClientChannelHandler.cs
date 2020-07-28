@@ -23,7 +23,7 @@ namespace DotNetty.KCP
 #if !UNITY_5_3_OR_NEWER
             Console.WriteLine(exception.ToString());
 #else
-            UnityEngine.Debug.Log(exception.ToString());
+            Console.WriteLine(exception.ToString());
 #endif
         }
 

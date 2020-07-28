@@ -1,9 +1,7 @@
-﻿using DotNetty.KCP;
+﻿ 
 using Fenix;
 using Fenix.Common;
-using Fenix.Common.Attributes;
-using Microsoft.VisualBasic;
-using Server;
+using Fenix.Common.Attributes; 
 using Shared.Protocol;
 using System;
 
@@ -19,7 +17,7 @@ namespace Client
         public Avatar(string uid) : base(uid)
         {
 
-        } 
+        }
 
         [ClientApi]
         public void ApiTest(string uid, int match_type, Action<ErrCode> callback)

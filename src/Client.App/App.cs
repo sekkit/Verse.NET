@@ -1,7 +1,6 @@
 ﻿using Fenix;
 using Fenix.Common;
 using Fenix.Common.Utils;
-using MessagePack;
 using Server;
 using Shared.Protocol;
 using System;
@@ -16,7 +15,7 @@ namespace Client
 #if UNITY_5_3_OR_NEWER
     public class App : MonoBehaviour
     {
-#else
+#else 
     public class App
     {
 #endif
@@ -40,38 +39,39 @@ namespace Client
             Global.Init(new Assembly[] { typeof(App).Assembly });
 
             var localAddr = Basic.GetLocalIPv4(System.Net.NetworkInformation.NetworkInterfaceType.Ethernet);
-             
-            host = Host.CreateClient();  
+            //localAddr = "182.254.179.250";
+
+            host = Host.CreateClient();
             if (host == null)
             {
                 Log.Info(string.Format("unable_connect_to_server {0}:{1}", localAddr, 17777));
                 return;
-            } 
+            }
 
-            var loginapp = host.GetHost("Login.App", localAddr, 17777); 
+            var loginapp = host.GetHost("Login.App", localAddr, 17777);
             //注册客户端，初始化路由表信息
             loginapp.RegisterClient(host.Id, host.UniqueName, (code, hostInfo) =>
             {
-                if(code == DefaultErrCode.ERROR)
+                if (code == DefaultErrCode.ERROR)
                 {
                     Log.Error("register_client_error, plz try again later");
                     loginapp.Disconnect();
                     return;
                 }
-                Log.Info(string.Format("Register to server {0}: {1} {2} {3}", code, hostInfo.HostId, 
-                    hostInfo.HostName, hostInfo.HostAddr)); 
-                if(loginapp.toHostId != hostInfo.HostId) 
+                Log.Info(string.Format("Register to server {0}: {1} {2} {3}", code, hostInfo.HostId,
+                    hostInfo.HostName, hostInfo.HostAddr));
+                if (loginapp.toHostId != hostInfo.HostId)
                     NetManager.Instance.ChangePeerId(loginapp.toHostId, hostInfo.HostId, hostInfo.HostName, hostInfo.HostAddr);
- 
+
                 Global.IdManager.RegisterHostInfo(hostInfo);
                 //loginapp.Disconnect(); 
                 if (code == 0)
                 {
                     //发起登陆请求，得到玩家entity所在host信息
-                    var svc = host.GetService<LoginServiceRef>(); 
+                    var svc = host.GetService<LoginServiceRef>();
                     svc.rpc_login("username", "password", (code2, uid, hostId, hostName, hostAddress) =>
                     {
-                        if(code2 != ErrCode.OK)
+                        if (code2 != ErrCode.OK)
                         {
                             Log.Error("login_failed");
                             loginapp.Disconnect();
@@ -79,7 +79,7 @@ namespace Client
                         }
                         Log.Info(string.Format("ServerAvatar host: {0}@{1} {2} {3}", uid, hostId, hostName, hostAddress));
                         Game.Avatar = host.CreateActor<Client.Avatar>(uid);
-                        
+
                         Global.IdManager.RegisterHost(hostId, hostName, hostAddress, hostAddress);
                         Global.IdManager.RegisterActor(Game.Avatar, hostId);
 
@@ -97,12 +97,12 @@ namespace Client
                     });
                 }
             });
-            
+
             HostHelper.RunThread(host);
         }
 
         public void Close()
-        { 
+        {
             HostHelper.Stop(host);
         }
 

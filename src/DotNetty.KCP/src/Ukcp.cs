@@ -621,7 +621,6 @@ namespace DotNetty.KCP
         {
             return _kcp.currentMs();
         }
-
         
         internal AtomicBoolean ReadProcessing => _readProcessing;
 

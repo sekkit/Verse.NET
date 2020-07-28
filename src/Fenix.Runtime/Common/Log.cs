@@ -1,5 +1,5 @@
 ﻿
-#if !CLIENT
+#if !UNITY_5_3_OR_NEWER
 using Serilog;
 #endif
 using DotNetty.Common.Utilities;
@@ -8,9 +8,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-#if !CLIENT 
+#if !UNITY_5_3_OR_NEWER 
 using globalLog = Serilog.Log;
-using Server;
 using System.IO;
 #endif
 namespace Fenix.Common
@@ -68,7 +67,7 @@ namespace Fenix.Common
 			else
 				Name = name;
 
-#if !CLIENT
+#if !UNITY_5_3_OR_NEWER
 			 
 			globalLog.Logger = new LoggerConfiguration() 
 			.MinimumLevel.Information()
@@ -82,9 +81,9 @@ namespace Fenix.Common
 				rollOnFileSizeLimit: true))
 			.CreateLogger();
 #endif
-		} 
+        }
 
-		string Name = null;
+        string Name = null;
 
 		public static Logger Instance = new Logger(null); 
 
@@ -98,11 +97,11 @@ namespace Fenix.Common
 				Name = appname;
 
 #if !UNITY_5_3_OR_NEWER
-#if !CLIENT
-			return string.Format("({0}) {1}",  Name, output);
-#else
-			return string.Format("{0} [{1}]({2}) {3}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), logLevel, Name, output); 
-#endif
+    //#if !CLIENT
+			    return string.Format("({0}) {1}",  Name, output);
+    //#else
+			 //   return string.Format("{0} [{1}]({2}) {3}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), logLevel, Name, output); 
+    //#endif
 #else
 			return string.Format("[{0}]({1}) {2}", logLevel, Name, output); 
 #endif
@@ -114,84 +113,60 @@ namespace Fenix.Common
 			var message = Format(args, "VERB");
 
 #if !UNITY_5_3_OR_NEWER
-#if !CLIENT
-			globalLog.Verbose(message);
+			globalLog.Verbose(message); 
 #else
-			Console.WriteLine(message);
+            Console.WriteLine(message);
 #endif
-#else
-			UnityEngine.Debug.Log(message); 
-#endif
-		}
+        }
 
-		public void Warning(params object[] args)
+        public void Warning(params object[] args)
 		{
 			var message = Format(args, "WARN");
 #if !UNITY_5_3_OR_NEWER
-#if !CLIENT
-			globalLog.Warning(message);
+			globalLog.Warning(message); 
 #else
-			Console.WriteLine(message);
+            Console.WriteLine(message);
 #endif
-#else
-			UnityEngine.Debug.Log(message); 
-#endif
-		}
+        }
 
-		public void Info(params object[] args)
+        public void Info(params object[] args)
 		{
 			var message = Format(args, "INFO");
-#if !UNITY_5_3_OR_NEWER 
-#if !CLIENT
-			globalLog.Information(message);
+#if !UNITY_5_3_OR_NEWER
+			globalLog.Information(message); 
 #else
-			Console.WriteLine(message);
-#endif
-#else
-			UnityEngine.Debug.Log(message); 
+            Console.WriteLine(message);
 #endif
 
-		}
+        }
 
-		public void Debug(params object[] args)
+        public void Debug(params object[] args)
 		{
 			var message = Format(args, "DEBUG");
 #if !UNITY_5_3_OR_NEWER
-#if !CLIENT
-			globalLog.Debug(message);
+			globalLog.Debug(message); 
 #else
-			Console.WriteLine(message);
+            Console.WriteLine(message);
 #endif
-#else
-			UnityEngine.Debug.Log(message); 
-#endif
-		}
+        }
 
-		public void Error(params object[] args)
+        public void Error(params object[] args)
 		{
 			var message = Format(args, "ERROR");
 #if !UNITY_5_3_OR_NEWER
-#if !CLIENT
-			globalLog.Error(message);
+			globalLog.Error(message); 
 #else
-			Console.WriteLine(message);
+            Console.WriteLine(message);
 #endif
-#else
-			UnityEngine.Debug.Log(message); 
-#endif
-		}
-		public void Fatal(params object[] args)
+        }
+        public void Fatal(params object[] args)
 		{
 			var message = Format(args, "FATAL");
 #if !UNITY_5_3_OR_NEWER
-#if !CLIENT
-			globalLog.Fatal(message);
+			globalLog.Fatal(message); 
 #else
-			Console.WriteLine(message);
+            Console.WriteLine(message);
 #endif
-#else
-			UnityEngine.Debug.Log(message); 
-#endif
-		}
+        }
 	}
 }

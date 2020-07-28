@@ -75,9 +75,5 @@ namespace Server.GModule
         {
 
         }
-
-        //bool sent = false;
-
-        int i = 0;
     }
 }

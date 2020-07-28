@@ -7,12 +7,7 @@ using Fenix.Common.Attributes;
 using Fenix.Common.Utils;
 using Fenix.Common.Message;
 
-using Shared;
-using Shared.DataModel;
-using Shared.Protocol; 
-using Shared.Message;
-
-using MessagePack; 
+//using MessagePack; 
 using System;
 
 namespace Fenix

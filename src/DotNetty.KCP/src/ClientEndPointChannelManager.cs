@@ -29,7 +29,7 @@ namespace DotNetty.KCP
 #if !UNITY_5_3_OR_NEWER
                 Console.WriteLine("ukcp session is not exist RemoteAddress: " + ukcp.user().RemoteAddress);
 #else
-                UnityEngine.Debug.Log("ukcp session is not exist RemoteAddress: " + ukcp.user().RemoteAddress);
+                Console.WriteLine("ukcp session is not exist RemoteAddress: " + ukcp.user().RemoteAddress);
 #endif
                 
             }

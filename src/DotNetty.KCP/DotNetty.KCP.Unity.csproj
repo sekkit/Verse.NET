@@ -1,0 +1,54 @@
+﻿<Project>
+
+  <PropertyGroup>
+    <BaseIntermediateOutputPath>obj\$(MSBuildProjectName)</BaseIntermediateOutputPath>
+  </PropertyGroup>
+
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk"/>
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <OutputPath>bin\$(Configuration)\$(TargetFramework)\$(MSBuildProjectName)</OutputPath>
+  </PropertyGroup>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk"/>
+
+  <ItemGroup>
+    <Compile Remove="obj\\**\*"/>
+    <Compile Include="obj\$(MSBuildProjectName)\**\$(MSBuildProjectName).AssemblyInfo.cs"/>
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'"> 
+    <DefineConstants>TRACE;NET_3_5_GREATER;SIGNED;NETSTANDARD;NET_4_0_GREATER;NET_4_5_GREATER;NET_4_6_GREATER;UNITY_5_3_OR_NEWER;CLIENT;</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'"> 
+    <DefineConstants>TRACE;NET_3_5_GREATER;SIGNED;NETSTANDARD;NET_4_0_GREATER;NET_4_5_GREATER;NET_4_6_GREATER;UNITY_5_3_OR_NEWER;CLIENT;</DefineConstants>
+  </PropertyGroup> 
+
+    <ItemGroup>
+      <Reference Include="DotNetty.Buffers">
+        <HintPath>..\..\Libs\Unity\DotNetty.Buffers.dll</HintPath>
+      </Reference>
+      <Reference Include="DotNetty.Codecs">
+        <HintPath>..\..\Libs\Unity\DotNetty.Codecs.dll</HintPath>
+      </Reference>
+      <Reference Include="DotNetty.Common">
+        <HintPath>..\..\Libs\Unity\DotNetty.Common.dll</HintPath>
+      </Reference>
+      <Reference Include="DotNetty.Handlers">
+        <HintPath>..\..\Libs\Unity\DotNetty.Handlers.dll</HintPath>
+      </Reference>
+      <Reference Include="DotNetty.Transport">
+        <HintPath>..\..\Libs\Unity\DotNetty.Transport.dll</HintPath>
+      </Reference>
+      <Reference Include="reedsolomon_csharp">
+        <HintPath>kcp\fec\reedsolomon_csharp.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+      <Exec Command="xcopy /K /D /H /Y $(TargetPath) $(SolutionDir)Unity\Assets\Plugins\Fenix\" />
+    </Target>  
+
+</Project>

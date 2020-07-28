@@ -1,5 +1,6 @@
 ﻿using CSRedis;
 using Fenix.Common;
+using Fenix.Common.Db;
 using Server.Config.Db;
 using System;
 using System.Collections.Generic;
