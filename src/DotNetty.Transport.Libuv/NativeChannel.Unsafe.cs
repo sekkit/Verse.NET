@@ -245,7 +245,7 @@ namespace DotNetty.Transport.Libuv
                     {
                         if (bytesWritten > 0)
                         {
-                            input.RemoveBytes(bytesWritten);
+                            input?.RemoveBytes(bytesWritten);
                         }
                     }
                 }
