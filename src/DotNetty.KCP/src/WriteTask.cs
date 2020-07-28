@@ -54,7 +54,7 @@ namespace DotNetty.KCP
                     }
                     catch (IOException e)
                     {
-                        kcp.getKcpListener().handleException(kcp, e);
+                        kcp.getKcpListener().handleException(e, kcp);
                         return;
                     }
                 }
@@ -65,12 +65,10 @@ namespace DotNetty.KCP
                     return;
                 }
 
-                long startTicks = DateTime.Now.Ticks;
                 long now = kcp.currentMs();
                 long next = kcp.flush(now);
-                //Console.WriteLine(next);
-                long currentTicks = DateTime.Now.Ticks; 
-                //Console.WriteLine("耗时"+(currentTicks - startTicks) / TimeSpan.TicksPerMillisecond);
+                //System.out.println(next);
+                //System.out.println("耗时"+(System.currentTimeMillis()-now));
                 kcp.setTsUpdate(now + next);
             }
             catch (Exception e)

@@ -6,7 +6,7 @@ using fec;
 
 namespace DotNetty.KCP
 {
-    public class KcpOutPutImp : KcpOutput
+    public class KcpOutPutImp:KcpOutput
     {
         public void outPut(IByteBuffer data, Kcp kcp)
         {

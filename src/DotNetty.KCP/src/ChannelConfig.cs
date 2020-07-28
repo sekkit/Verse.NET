@@ -35,8 +35,6 @@ namespace DotNetty.KCP
         /**预留长度**/
         private int reserved;
 
-        /**在协议的第一字节标记为kcp对象 用于与非可靠udp整合**/
-        private bool kcpTag;
 
         public void initNodelay(bool nodelay, int interval, int resend, bool nc){
             this.nodelay = nodelay;
@@ -45,19 +43,6 @@ namespace DotNetty.KCP
             this.nocwnd=nc;
         }
 
-
-        public bool KcpTag
-        {
-            get => kcpTag;
-            set
-            {
-                if (value)
-                {
-                    reserved += Fec.fecHeaderSizePlus2;
-                }
-                kcpTag = value;
-            }
-        }
 
         public int Conv { get; set; }
 

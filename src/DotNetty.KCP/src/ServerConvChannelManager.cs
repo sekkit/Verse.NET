@@ -12,14 +12,14 @@ namespace DotNetty.KCP
     /**
      * 根据conv确定一个session
      */
-    public class ConvChannelManager : IChannelManager
+    public class ServerConvChannelManager : IChannelManager
     {
 
         private readonly ConcurrentDictionary<int, Ukcp> _ukcps = new ConcurrentDictionary<int, Ukcp>();
 
         private readonly int convIndex;
 
-        public ConvChannelManager(int convIndex)
+        public ServerConvChannelManager(int convIndex)
         {
             this.convIndex = convIndex;
         }
@@ -50,8 +50,8 @@ namespace DotNetty.KCP
 
         public void del(Ukcp ukcp)
         {
-            if(!_ukcps.TryRemove(ukcp.getConv(), out var temp))
-            //if (temp == null)
+            _ukcps.TryRemove(ukcp.getConv(), out var temp);
+            if (temp == null)
             {
                 Console.WriteLine("ukcp session is not exist conv: " + ukcp.getConv());
             }

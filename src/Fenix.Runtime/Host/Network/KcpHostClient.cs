@@ -45,8 +45,7 @@ namespace Fenix
 
         public static KcpHostClient Create(IPEndPoint remoteAddress)
         {
-            ChannelConfig channelConfig = new ChannelConfig();
-            channelConfig.KcpTag = false;
+            ChannelConfig channelConfig = new ChannelConfig(); 
             channelConfig.Crc32Check = true;
             channelConfig.initNodelay(true, 10, 2, true);
             channelConfig.Sndwnd = 512;
@@ -55,7 +54,7 @@ namespace Fenix
             channelConfig.FecDataShardCount = 3;
             channelConfig.FecParityShardCount = 1;
             channelConfig.AckNoDelay = true;
-            //channelConfig.Conv = 10;//.AutoSetConv = true;
+            //channelConfig.Conv = 10;//.AutoSetConv = true; 
             channelConfig.UseConvChannel = false;
 
             var listener = new KcpHostClient(channelConfig, remoteAddress);
@@ -75,7 +74,7 @@ namespace Fenix
             OnReceive?.Invoke(ukcp, byteBuf);
         }
 
-        public void handleException(Ukcp ukcp, Exception ex)
+        public void handleException(Exception ex, Ukcp ukcp)
         {
             //OneThreadSynchronizationContext.Instance.Post((obj) =>
             //{
@@ -102,17 +101,17 @@ namespace Fenix
         {
             IByteBuffer buf = Unpooled.WrappedBuffer(bytes);
             //int dataLen = buf.ReadableBytes;
-            _ukcp.writeMessage(buf);
+            _ukcp.write(buf);
         }
 
-        public void handleConnect(Ukcp ukcp)
+        public void onConnected(Ukcp ukcp)
         {
             
         }
 
         public void Stop()
         {
-            this._ukcp.notifyCloseEvent();
+            this._ukcp.close();
         }
     }
 }

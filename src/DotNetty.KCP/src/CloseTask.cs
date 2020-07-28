@@ -13,7 +13,7 @@ namespace DotNetty.KCP
 
         public override void execute()
         {
-            _ukcp.close();
+            _ukcp.internalClose();
         }
     }
 }

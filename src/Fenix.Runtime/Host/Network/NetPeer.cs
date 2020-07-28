@@ -227,7 +227,7 @@ namespace Fenix
         public void Send(byte[] bytes)
         {
             //Log.Info("1");
-            kcpChannel?.writeMessage(Unpooled.WrappedBuffer(bytes));
+            kcpChannel?.write(Unpooled.WrappedBuffer(bytes));
             //Log.Info("2");
             if (kcpChannel != null)
                 Log.Info(string.Format("sento_sender({0}): {1} {2} => {3} Channel:{4} DATA:{5}", this.netType, kcpChannel.user().RemoteAddress.ToIPv4String(), Global.Host.Id, ConnId, this.kcpChannel.user().Channel.Id.AsLongText(), StringUtil.ToHexString(bytes)));
@@ -272,7 +272,7 @@ namespace Fenix
             kcpClient?.Stop();
             tcpClient?.Stop();
             tcpChannel?.CloseAsync();
-            kcpChannel?.notifyCloseEvent();
+            kcpChannel?.close();
 
             kcpClient = null;
             tcpClient = null;

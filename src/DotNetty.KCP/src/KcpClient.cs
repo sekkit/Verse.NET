@@ -19,11 +19,10 @@ namespace DotNetty.KCP
      * 2,kcp通过conv标识与服务器通讯
      * 3,客户端发现网络断开重连之后必须通过kcp发送一个心跳包出去 用于服务器确定客户端的出口地址
      * 4,客户端需要最少每60秒发送一个心跳数据包服务端收到后回复客户端用于 路由表记录映射信息
-     *  TODO 需要测试一下移动环境ip切换了  是否需要重新绑定本地ip  朋友说是不用的  还是需要测一下
      */
     public class KcpClient
     {
-        private Bootstrap bootstrap;
+        private volatile Bootstrap bootstrap;
 
         private IExecutorPool _executorPool;
 
@@ -38,12 +37,13 @@ namespace DotNetty.KCP
 
         public static KcpClient Instance = new KcpClient();
 
-        public IChannel bindLocal(EndPoint localAddress = null)
+        private static IChannel bindLocal(Bootstrap bootstrap, EndPoint localAddress = null)
         {
             if (localAddress == null)
             {
                 localAddress = new IPEndPoint(IPAddress.Any, 0);
             }
+             
 //#if UNITY_5_3_OR_NEWER
             //var task = bootstrap.BindAsync(localAddress);
             //task.Wait();
@@ -60,17 +60,13 @@ namespace DotNetty.KCP
         {
             if(channelConfig.UseConvChannel){
                 var convIndex = 0;
-                if (channelConfig.KcpTag)
-                {
-                    convIndex += Ukcp.KCP_TAG;
-                }
                 if(channelConfig.Crc32Check){
                     convIndex+=Ukcp.HEADER_CRC;
                 }
                 if(channelConfig.FecDataShardCount!=0&&channelConfig.FecParityShardCount!=0){
                     convIndex+= Fec.fecHeaderSizePlus2;
                 }
-                _channelManager = new ConvChannelManager(convIndex);
+                _channelManager = new ClientConvChannelManager(convIndex);
             }else{
                 _channelManager = new ClientEndPointChannelManager();
             }
@@ -90,16 +86,53 @@ namespace DotNetty.KCP
             }));
         }
 
+
+
         public void init(ChannelConfig channelConfig)
         {
             var executorPool = new ExecutorPool();
             executorPool.CreateMessageExecutor();
             init(channelConfig,executorPool,new MultithreadEventLoopGroup());
         }
+        
+        
+        /**
+         * 重连接口
+         * 使用旧的kcp对象，出口ip和端口替换为新的
+         * 在4G切换为wifi等场景使用
+         * @param ukcp
+         */
+        public void reconnect(Ukcp ukcp){
+            if (!(_channelManager is ServerConvChannelManager))
+            {
+                throw new Exception("reconnect can only be used in convChannel");
+            }
+            ukcp.IMessageExecutor.execute(new ReconnectTask(ukcp,bootstrap));
+        }
+
+        private class ReconnectTask : ITask
+        {
+            private readonly Ukcp _ukcp;
+            private readonly Bootstrap _bootstrap;
+
+            public ReconnectTask(Ukcp ukcp, Bootstrap bootstrap)
+            {
+                _ukcp = ukcp;
+                _bootstrap = bootstrap;
+            }
+
+            public override void execute()
+            {
+                _ukcp.user().Channel.CloseAsync();
+                var iChannel = bindLocal(_bootstrap);
+                _ukcp.user().Channel = iChannel;
+            }
+        }
 
 
         public Ukcp connect(IChannel localChannel,EndPoint remoteAddress, ChannelConfig channelConfig, KcpListener kcpListener)
         {
+
             KcpOutput kcpOutput = new KcpOutPutImp();
             ReedSolomon reedSolomon = null;
             if (channelConfig.FecDataShardCount != 0 && channelConfig.FecParityShardCount != 0)
@@ -116,6 +149,8 @@ namespace DotNetty.KCP
 
             _channelManager.New(localChannel.LocalAddress, ukcp,null);
 
+            _messageExecutor.execute(new ConnectTask(ukcp, kcpListener));
+
             var scheduleTask = new ScheduleTask( _channelManager, ukcp);
             KcpUntils.scheduleHashedWheel(scheduleTask, TimeSpan.FromMilliseconds(ukcp.getInterval()));
             return ukcp;
@@ -126,7 +161,7 @@ namespace DotNetty.KCP
          */
         public Ukcp connect(EndPoint localAddress,EndPoint remoteAddress, ChannelConfig channelConfig, KcpListener kcpListener)
         {
-            var channel = bindLocal(localAddress);
+            var channel = bindLocal(bootstrap,localAddress);
             return connect(channel, remoteAddress, channelConfig, kcpListener);
         }
 
@@ -135,7 +170,7 @@ namespace DotNetty.KCP
          */
         public Ukcp connect(EndPoint remoteAddress, ChannelConfig channelConfig, KcpListener kcpListener)
         {
-            var channel = bindLocal();
+            var channel = bindLocal(bootstrap);
             return connect(channel, remoteAddress, channelConfig, kcpListener);
         }
 
@@ -144,7 +179,7 @@ namespace DotNetty.KCP
         {
             foreach (var ukcp in _channelManager.getAll())
             {
-                ukcp.notifyCloseEvent();
+                ukcp.close();
             }
             _executorPool?.stop(false);
             if (_eventLoopGroup != null&&!_eventLoopGroup.IsShuttingDown)

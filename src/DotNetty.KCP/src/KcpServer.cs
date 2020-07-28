@@ -16,7 +16,7 @@ namespace DotNetty.KCP
 
         private IExecutorPool _executorPool;
 
-        private Bootstrap _bootstrap;
+        private volatile Bootstrap _bootstrap;
 
         private IEventLoopGroup _eventLoopGroup;
 
@@ -45,7 +45,7 @@ namespace DotNetty.KCP
                 if(channelConfig.FecDataShardCount!=0&&channelConfig.FecParityShardCount!=0){
                     convIndex+= Fec.fecHeaderSizePlus2;
                 }
-                _channelManager = new ConvChannelManager(convIndex);
+                _channelManager = new ServerConvChannelManager(convIndex);
             }else{
                 _channelManager = new ServerEndPointChannelManager();
             }
@@ -58,6 +58,7 @@ namespace DotNetty.KCP
             _bootstrap = new Bootstrap();
             //TODO epoll模型 服务器端怎么支持？得试试成功没有
             _bootstrap.Option(ChannelOption.SoReuseport, true);
+
             _bootstrap.Option(ChannelOption.SoReuseaddr, true);
             _bootstrap.Group(_eventLoopGroup);
             _bootstrap.ChannelFactory(() => new SocketDatagramChannel(AddressFamily.InterNetwork));
@@ -90,7 +91,7 @@ namespace DotNetty.KCP
             }
             foreach (var ukcp in _channelManager.getAll())
             {
-                ukcp.notifyCloseEvent();
+                ukcp.close();
             }
             _eventLoopGroup?.ShutdownGracefullyAsync();
             _executorPool?.stop(false);

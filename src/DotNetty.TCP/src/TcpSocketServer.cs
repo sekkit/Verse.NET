@@ -19,6 +19,7 @@ namespace DotNetty.TCP
     {
         IEventLoopGroup bossGroup;
         IEventLoopGroup workerGroup;
+        volatile ServerBootstrap bootstrap;
 
         IChannel boundChannel;
 
@@ -49,7 +50,7 @@ namespace DotNetty.TCP
 
             try
             {
-                var bootstrap = new ServerBootstrap();
+                bootstrap = new ServerBootstrap();
                 bootstrap.Group(bossGroup, workerGroup);
 #if !UNITY_5_3_OR_NEWER
                 if (channelConfig.UseLibuv)

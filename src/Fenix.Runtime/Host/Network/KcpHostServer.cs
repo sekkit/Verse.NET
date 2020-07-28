@@ -27,8 +27,7 @@ namespace Fenix
         {
             KcpHostServer listener = new KcpHostServer();
 
-            ChannelConfig channelConfig = new ChannelConfig();
-            channelConfig.KcpTag = false;
+            ChannelConfig channelConfig = new ChannelConfig(); 
             channelConfig.Crc32Check = true;
             channelConfig.initNodelay(true, 10, 2, true);
             channelConfig.Sndwnd = 512;
@@ -58,7 +57,7 @@ namespace Fenix
             OnReceive?.Invoke(ukcp, byteBuf);
         }
          
-        public void handleException(Ukcp ukcp, Exception ex)
+        public void handleException(Exception ex, Ukcp ukcp)
         {
             //OneThreadSynchronizationContext.Instance.Post((obj) =>
             //{
@@ -81,7 +80,7 @@ namespace Fenix
             Snmp.snmp = new Snmp();
         }
 
-        public void handleConnect(Ukcp ukcp)
+        public void onConnected(Ukcp ukcp)
         {
             //OneThreadSynchronizationContext.Instance.Post((obj) =>
             //{ 

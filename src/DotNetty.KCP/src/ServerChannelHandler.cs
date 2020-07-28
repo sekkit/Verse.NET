@@ -3,7 +3,9 @@ using DotNetty.KCP.Base;
 using DotNetty.Transport.Channels;
 using DotNetty.Transport.Channels.Sockets;
 using DotNetty.KCP.thread;
+using DotNetty.Buffers;
 using fec;
+using fec.fec;
 
 namespace DotNetty.KCP
 {
@@ -34,7 +36,6 @@ namespace DotNetty.KCP
 
         public override void ChannelRead(IChannelHandlerContext context, object message)
         {
-            long last_ts = DateTime.Now.Ticks;
             var msg = (DatagramPacket) message;
             var channel = context.Channel;
             var ukcp = _channelManager.get(msg);
@@ -46,7 +47,15 @@ namespace DotNetty.KCP
                 //每次收到消息重绑定地址
                 user.RemoteAddress = msg.Sender;
                 ukcp.read(content);
-                //Console.WriteLine(string.Format("(LAGS1){0}", (DateTime.Now.Ticks - last_ts)/10000.0));
+                return;
+            }
+            
+            
+            //如果是新连接第一个包的sn必须为0
+            var sn = getSn(content,_channelConfig);
+            if(sn!=0)
+            {
+                msg.Release();
                 return;
             }
 
@@ -62,18 +71,28 @@ namespace DotNetty.KCP
 
             user = new User(channel,msg.Sender,msg.Recipient);
             ukcp.user(user);
-
             _channelManager.New(msg.Sender,ukcp,msg);
-
-            ukcp.connect();
-
+            
+            messageExecutor.execute(new ConnectTask(ukcp, _kcpListener));
+            
             ukcp.read(content);
 
-            var scheduleTask = new ScheduleTask(_channelManager, ukcp);
-            //Console.WriteLine(ukcp.getInterval());
+            var scheduleTask = new ScheduleTask(_channelManager,ukcp);
             KcpUntils.scheduleHashedWheel(scheduleTask, TimeSpan.FromMilliseconds(ukcp.getInterval()));
-            
-            Console.WriteLine(string.Format("(LAGS2){0}", (DateTime.Now.Ticks-last_ts)/10000.0));
+        }
+        
+        
+        private int getSn(IByteBuffer byteBuf,ChannelConfig channelConfig){
+            var headerSize = 0;
+            if (channelConfig.Crc32Check)
+            {
+                headerSize+=Ukcp.HEADER_CRC;
+            }
+            if(channelConfig.FecDataShardCount!=0&&channelConfig.FecParityShardCount!=0){
+                headerSize+= Fec.fecHeaderSizePlus2;
+            }
+            var sn = byteBuf.GetIntLE(byteBuf.ReaderIndex+Kcp.IKCP_SN_OFFSET+headerSize);
+            return sn;
         }
 
 

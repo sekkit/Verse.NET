@@ -28,7 +28,6 @@ namespace DotNetty.KCP
 
         public override void execute()
         {
-            //long last_ts = DateTime.Now.Ticks;
             CodecOutputList<IByteBuffer> bufList = null;
             try {
                 //Thread.sleep(1000);
@@ -64,13 +63,11 @@ namespace DotNetty.KCP
                     for (int i = 0; i < size; i++)
                     {
                         byteBuf = bufList[i];
-                        //Console.WriteLine(string.Format("(READBYTE2){0}", (DateTime.Now.Ticks-last_ts)/10000.0));
                         readBytebuf(byteBuf,current);
                     }
                 } else {
                     while (kcp.canRecv()) {
                         IByteBuffer recvBuf = kcp.mergeReceive();
-                        //Console.WriteLine(string.Format("(READBYTE3){0}", (DateTime.Now.Ticks-last_ts)/10000.0));
                         readBytebuf(recvBuf,current);
                     }
                 }
@@ -79,7 +76,7 @@ namespace DotNetty.KCP
                     kcp.notifyWriteEvent();
                 }
             } catch (Exception e) {
-                kcp.KcpListener.handleException(kcp, e);
+                kcp.KcpListener.handleException(e,kcp);
                 Console.WriteLine(e);
             } finally {
                 release();
@@ -97,7 +94,7 @@ namespace DotNetty.KCP
             }
             catch (Exception throwable)
             {
-                kcp.getKcpListener().handleException(kcp, throwable);
+                kcp.getKcpListener().handleException(throwable, kcp);
             }
             finally
             {

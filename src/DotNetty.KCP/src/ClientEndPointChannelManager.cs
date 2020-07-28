@@ -8,7 +8,7 @@ namespace DotNetty.KCP
 {
     public class ClientEndPointChannelManager : IChannelManager
     {
-        private readonly ConcurrentDictionary<EndPoint, Ukcp> _ukcps = new System.Collections.Concurrent.ConcurrentDictionary<EndPoint, Ukcp>();
+        private readonly ConcurrentDictionary<EndPoint, Ukcp> _ukcps = new ConcurrentDictionary<EndPoint, Ukcp>();
 
         public Ukcp get(DatagramPacket msg)
         {
@@ -23,7 +23,8 @@ namespace DotNetty.KCP
 
         public void del(Ukcp ukcp)
         {
-            if(!_ukcps.TryRemove(ukcp.user().LocalAddress, out var temp))
+            _ukcps.TryRemove(ukcp.user().LocalAddress, out var temp);
+            if (temp == null)
             {
 #if !UNITY_5_3_OR_NEWER
                 Console.WriteLine("ukcp session is not exist RemoteAddress: " + ukcp.user().RemoteAddress);
@@ -32,6 +33,7 @@ namespace DotNetty.KCP
 #endif
                 
             }
+            ukcp.user().Channel.CloseAsync();
         }
 
         public ICollection<Ukcp> getAll()

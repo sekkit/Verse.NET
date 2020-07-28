@@ -22,8 +22,9 @@ namespace DotNetty.KCP
         }
 
         public void del(Ukcp ukcp)
-        { 
-            if (!_ukcps.TryRemove(ukcp.user().RemoteAddress, out var temp))
+        {
+            _ukcps.TryRemove(ukcp.user().RemoteAddress, out var temp);
+            if (temp == null)
             {
                 Console.WriteLine("ukcp session is not exist RemoteAddress: " + ukcp.user().RemoteAddress);
             }
