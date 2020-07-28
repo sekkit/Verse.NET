@@ -79,6 +79,7 @@
     <Compile Include="Assets\Scripts\Client.App\Gen\Protocol\ProtocolCode.Avatar.c.cs" />
     <Compile Include="Assets\Scripts\Client.App\Gen\Protocol\ProtocolCode.Avatar.s.cs" />
     <Compile Include="Assets\Scripts\Client.App\Gen\Protocol\ProtocolCode.LoginService.s.cs" />
+    <Compile Include="Assets\Scripts\Client.App\Gen\Protocol\ProtocolCode.cs" />
     <Compile Include="Assets\Scripts\Client.App\Stub\Avatar.Stub.cs" />
     <None Include="Assets\Scripts\Client.App\Client.App.asmdef" />
     <Reference Include="DotNetty.Buffers">
