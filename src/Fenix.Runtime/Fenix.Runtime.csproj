@@ -55,4 +55,9 @@
     <ProjectReference Include="..\MessagePack\MessagePack.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Common\Message\" />
+    <Folder Include="Common\Stub\" />
+  </ItemGroup>
+
 </Project>

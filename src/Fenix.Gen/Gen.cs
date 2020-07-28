@@ -279,11 +279,11 @@ namespace Fenix
 
         static void GenProtoCode(List<Type> types, string sharedCPath, string sharedSPath, string clientPath, string serverPath)
         {
-
             foreach (var type in types)
             {
                 if (GetAttribute<ActorTypeAttribute>(type) == null)
                     continue;
+                bool isHost = type.Name == "Host";
                 var codes = new SortedDictionary<string, uint>();
                 var methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
                 for (int i = 0; i < methods.Length; ++i)
@@ -324,10 +324,27 @@ namespace Fenix
 
                 bool isServer = (int)GetAttribute<ActorTypeAttribute>(type).AType == (int)AType.SERVER;
 
-                foreach(var sharedPath in new List<string>() { sharedCPath, sharedSPath })
-                using (var sw = new StreamWriter(Path.Combine(sharedPath, "Protocol", string.Format("ProtocolCode.{0}.{1}.cs", type.Name, isServer ? "s" : "c")), false, Encoding.UTF8))
+                foreach (var sharedPath in new List<string>() { sharedCPath, sharedSPath })
                 {
-                    string lines = @"
+                    var pPath = Path.Combine(sharedPath, "Protocol");
+                    //if (Directory.Exists(pPath))
+                    //    Directory.Delete(pPath, false);
+                    if (!Directory.Exists(pPath))
+                        Directory.CreateDirectory(pPath);
+
+                    //生成客户端msg时，判断一下actor类型的accesstype，如果是serveronly的就不写客户端msg
+                    if (!isHost && sharedPath == sharedCPath)
+                    {
+                        var al = GetAttribute<AccessLevelAttribute>(type);
+                        if (al == null)
+                            continue; 
+                        if ((int)al.AccessLevel == (int)ALevel.SERVER)
+                            continue;
+                    }
+
+                    using (var sw = new StreamWriter(Path.Combine(sharedPath, "Protocol", string.Format("ProtocolCode.{0}.{1}.cs", type.Name, isServer ? "s" : "c")), false, Encoding.UTF8))
+                    {
+                        string lines = @"
 //AUTOGEN, do not modify it!
 
 using System;
@@ -338,15 +355,16 @@ namespace Shared
     public partial class ProtocolCode
     {
 ";
-                    foreach (var kv in codes)
-                    {
-                        lines += string.Format("        public const uint {0} = {1};\n", kv.Key, kv.Value);
-                    }
-                    lines += @"    }
+                        foreach (var kv in codes)
+                        {
+                            lines += string.Format("        public const uint {0} = {1};\n", kv.Key, kv.Value);
+                        }
+                        lines += @"    }
 }
 ";
 
-                    sw.WriteLine(lines.Replace("\r", ""));
+                        sw.WriteLine(lines.Replace("\r", ""));
+                    }
                 }
             }
         }
@@ -398,6 +416,8 @@ namespace Shared
 
             bool isServer = type.Name == "Host" ? true : ((int)GetAttribute<ActorTypeAttribute>(type).AType == (int)AType.SERVER);
 
+            bool isHost = type.Name == "Host";
+
             var methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
             for (int i = 0; i < methods.Length; ++i)
             {
@@ -435,7 +455,7 @@ namespace Shared
                     if (type.Name == "Host")
                     {
                         var newList = new List<ParameterInfo>();
-                        for(var ii =0;i< methodParameterList.Length;++i) 
+                        for(var ii =0; ii < methodParameterList.Length;++ii) 
                         {
                             if (ii == methodParameterList.Length - 1)
                                 continue;
@@ -473,12 +493,13 @@ namespace Shared
                         .AppendLine($"using MessagePack; ")
                         .AppendLine($"using System.ComponentModel;");
 
-                    if (type.Name != "Host")
+                    if (!isHost)
                     {
                         msgBuilder.AppendLine($"using Shared;")
                         .AppendLine($"using Shared.Protocol;")
                         .AppendLine($"using Shared.DataModel;");
                     }
+
                     msgBuilder.AppendLine($"using System; ")
                         .AppendLine($"")
                         .AppendLine($"namespace {msg_ns}")
@@ -505,10 +526,28 @@ namespace Shared
                         .AppendLine($"}}");
 
                     var msgCode = msgBuilder.ToString();
-                    foreach(var sharedPath in new List<string>() { sharedCPath, sharedSPath})
-                    using (var sw = new StreamWriter(Path.Combine(sharedPath, "Message", message_type + ".cs"), false, Encoding.UTF8))
+                    foreach (var sharedPath in new List<string>() { sharedCPath, sharedSPath })
                     {
-                        sw.WriteLine(msgCode.Replace("\r", ""));
+                        var pPath = Path.Combine(sharedPath, "Message");
+                        //if(Directory.Exists(pPath))
+                        //    Directory.Delete(pPath, false);
+                        if (!Directory.Exists(pPath))
+                            Directory.CreateDirectory(pPath);
+
+                        //生成客户端msg时，判断一下actor类型的accesstype，如果是serveronly的就不写客户端msg
+                        if(!isHost && sharedPath == sharedCPath)
+                        {
+                            var al = GetAttribute<AccessLevelAttribute>(type);
+                            if (al == null) 
+                                continue; 
+                            if ((int)al.AccessLevel == (int)ALevel.SERVER)
+                                continue;
+                        }
+
+                        using (var sw = new StreamWriter(Path.Combine(pPath, message_type + ".cs"), false, Encoding.UTF8))
+                        {
+                            sw.WriteLine(msgCode.Replace("\r", ""));
+                        }
                     }
 
                     //现在生成actor_ref定义 
@@ -761,12 +800,17 @@ using Fenix.Common.Attributes;
 using Fenix.Common.Utils;
 using Fenix.Common.Message;
 
-using Shared;
-using Shared.DataModel;
-using Shared.Protocol; 
-using Shared.Message;
-")
-.AppendLine(@"//using MessagePack; 
+");
+            if(!isHost)
+            {
+                refBuilder.AppendLine(@"using Shared;
+                    using Shared.DataModel;
+                    using Shared.Protocol; 
+                    using Shared.Message;
+                    ");
+            }
+
+refBuilder.AppendLine(@"//using MessagePack; 
 using System;
 ")
 .AppendLine($"namespace {root_ns}")
@@ -786,20 +830,38 @@ using System;
             .AppendLine($"}}");
             var result = refBuilder.ToString();
 
-            if (type.Name == "Host")
+            if (isHost)
             {
-                Log.Info("");
-                //using (var sw = new StreamWriter(Path.Combine(sharedPath, "../Actor", "ActorRef.rpc.cs"), false, Encoding.UTF8))
-                //{
-                //    sw.WriteLine(result);
-                //}
+                if (!Directory.Exists(Path.Combine(sharedCPath, "../Actor")))
+                    Directory.CreateDirectory(Path.Combine(sharedCPath, "../Actor"));
+                using (var sw = new StreamWriter(Path.Combine(sharedCPath, "../Actor", "ActorRef.rpc.cs"), false, Encoding.UTF8))
+                {
+                    sw.WriteLine(result);
+                }
             }
             else
             {
-                foreach(var sharedPath in new List<string>() { sharedCPath, sharedSPath})
-                using (var sw = new StreamWriter(Path.Combine(sharedPath, "ActorRef", root_ns, type.Name + "Ref.cs"), false, Encoding.UTF8))
+                foreach (var sharedPath in new List<string>() { sharedCPath, sharedSPath })
                 {
-                    sw.WriteLine(result);
+                    var pPath = Path.Combine(sharedPath, "ActorRef", root_ns);
+                    //Directory.Delete(pPath, false);
+                    if (!Directory.Exists(pPath))
+                        Directory.CreateDirectory(pPath);
+
+                    //生成客户端msg时，判断一下actor类型的accesstype，如果是serveronly的就不写客户端msg
+                    if (!isHost && sharedPath == sharedCPath)
+                    {
+                        var al = GetAttribute<AccessLevelAttribute>(type);
+                        if (al == null)
+                            continue;
+                        if ((int)al.AccessLevel == (int)ALevel.SERVER)
+                            continue;
+                    }
+
+                    using (var sw = new StreamWriter(Path.Combine(sharedPath, "ActorRef", root_ns, type.Name + "Ref.cs"), false, Encoding.UTF8))
+                    {
+                        sw.WriteLine(result);
+                    }
                 }
             }
 
@@ -815,11 +877,16 @@ using Fenix.Common;
 using Fenix.Common.Attributes;
 using Fenix.Common.Message;
 using Fenix.Common.Rpc;
-using Fenix.Common.Utils;
+using Fenix.Common.Utils;");
+            if (!isHost)
+            {
+                apiBuilder.AppendLine(@"
 using Shared;
 using Shared.DataModel;
 using Shared.Protocol; 
-using Shared.Message;
+using Shared.Message;");
+            }
+            apiBuilder.AppendLine(@"
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -836,28 +903,35 @@ using System.Text;
 
 
             var apiResultCode = apiBuilder.ToString();
-
-            //if (type.Name != "Host")
-            //{
-            string output = isServer ? serverPath : clientPath;
-            using (var sw = new StreamWriter(Path.Combine(output, "Stub", type.Name + ".Stub.cs"), false, Encoding.UTF8))
+             
+            if(isHost)
             {
-                sw.WriteLine(apiResultCode);
-
+                var stubPath = Path.Combine(sharedCPath, "Stub");
+                //if(Directory.Exists(stubPath))
+                //    Directory.Delete(stubPath, true);
+                if (!Directory.Exists(stubPath))
+                    Directory.CreateDirectory(stubPath);
+                using (var sw = new StreamWriter(Path.Combine(stubPath, type.Name + ".Stub.cs"), false, Encoding.UTF8))
+                {
+                    sw.WriteLine("\n#if !CLIENT\n"+apiResultCode+"\n#endif");
+                }
             }
-            //}
-            //else
-            //{ 
-            //    using (var sw = new StreamWriter(Path.Combine(serverPath, "Stub", type.Name + ".Stub.cs"), false, Encoding.UTF8))
-            //    {
-            //        sw.WriteLine(apiResultCode);
-            //    }
+            else
+            {
+                string output = isServer ? serverPath : clientPath;
 
-            //    using (var sw = new StreamWriter(Path.Combine(clientPath, "Stub", type.Name + ".Stub.cs"), false, Encoding.UTF8))
-            //    {
-            //        sw.WriteLine(apiResultCode);
-            //    }
-            //}
+                var stubPath = Path.Combine(output, "Stub");
+                //if (Directory.Exists(stubPath))
+                //    Directory.Delete(stubPath, true);
+
+                if (!Directory.Exists(stubPath))
+                    Directory.CreateDirectory(stubPath);
+
+                using (var sw = new StreamWriter(Path.Combine(stubPath, type.Name + ".Stub.cs"), false, Encoding.UTF8))
+                {
+                    sw.WriteLine(apiResultCode);
+                }
+            }
         }
     }
 }

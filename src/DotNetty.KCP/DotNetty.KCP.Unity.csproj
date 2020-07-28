@@ -4,18 +4,18 @@
     <BaseIntermediateOutputPath>obj\$(MSBuildProjectName)</BaseIntermediateOutputPath>
   </PropertyGroup>
 
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk"/>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <OutputPath>bin\$(Configuration)\$(TargetFramework)\$(MSBuildProjectName)</OutputPath>
   </PropertyGroup>
 
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk"/>
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 
   <ItemGroup>
-    <Compile Remove="obj\\**\*"/>
-    <Compile Include="obj\$(MSBuildProjectName)\**\$(MSBuildProjectName).AssemblyInfo.cs"/>
+    <Compile Remove="obj\\**\*" />
+    <Compile Include="obj\$(MSBuildProjectName)\**\$(MSBuildProjectName).AssemblyInfo.cs" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'"> 
@@ -47,12 +47,12 @@
       </Reference>
     </ItemGroup>
 
-    <Target Name="PostBuild" AfterTargets="PostBuildEvent"  Condition=" '$(OS)' == 'Windows_NT' ">
-      <Exec Command="xcopy /K /D /H /Y $(TargetPath) $(SolutionDir)Unity\Assets\Plugins\Fenix\" />
-    </Target>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(OS)' == 'Windows_NT' ">
+    <Exec Command="xcopy /K /D /H /Y $(TargetPath) $(SolutionDir)Unity\Assets\Plugins\Fenix\&#xD;&#xA;xcopy /K /D /H /Y $(TargetPath) $(SolutionDir)Libs\Unity\" />
+  </Target>
 
-    <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(OS)' == 'Darwin' ">
-      <Exec Command="cp $(TargetPath) $(SolutionDir)Unity\Assets\Plugins\Fenix\" />
-    </Target>
+  <!--<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(OS)' == 'Darwin' ">
+    <Exec Command="cp $(TargetPath) $(SolutionDir)Unity\Assets\Plugins\Fenix\" />
+  </Target>-->
   
 </Project>

@@ -27,11 +27,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Fenix.Runtime\Fenix.Runtime.Unity.csproj" />
-    <ProjectReference Include="..\Shared\Shared.Unity.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="MessagePack">
       <HintPath>..\..\Libs\Unity\MessagePack.dll</HintPath>
     </Reference>

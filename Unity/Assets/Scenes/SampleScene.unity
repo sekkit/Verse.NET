@@ -1171,9 +1171,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 2065173217}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f2efc2dfe64036429b235fc799bcbdc, type: 3}
+  m_Script: {fileID: 11500000, guid: 547bb1fe0455c174da2982c779d4d952, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  btnLogin: {fileID: 1273058329}
-  inputName: {fileID: 1592433742}
-  inputPassword: {fileID: 843185455}

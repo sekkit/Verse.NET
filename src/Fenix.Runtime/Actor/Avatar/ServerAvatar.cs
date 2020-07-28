@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Fenix.Common.Message
+namespace Fenix.Runtime.Actor.Avatar
 {
-   
+    class ServerAvatar
+    {
+    }
 }

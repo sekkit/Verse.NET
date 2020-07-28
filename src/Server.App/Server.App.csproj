@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Server</RootNamespace>
   </PropertyGroup>
 
@@ -33,6 +33,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Gen\" />
+    <Folder Include="Stub\" />
     <Folder Include="UModule\Item\" />
     <Folder Include="UModule\Reward\" />
   </ItemGroup>

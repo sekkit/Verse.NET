@@ -74,11 +74,11 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(OS)' == 'Windows_NT' ">
-    <Exec Command="echo $(OS);xcopy /K /D /H /Y $(TargetPath) $(SolutionDir)Unity\Assets\Plugins\Fenix\&#xD;&#xA;" />
+    <Exec Command="xcopy /K /D /H /Y $(TargetPath) $(SolutionDir)Unity\Assets\Plugins\Fenix\&#xD;&#xA;xcopy /K /D /H /Y $(TargetPath) $(SolutionDir)Libs\Unity\" />
   </Target>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(OS)' == 'Darwin' ">
+  <!--<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(OS)' == 'Darwin' ">
     <Exec Command="cp $(TargetPath) $(SolutionDir)Unity\Assets\Plugins\Fenix\" />
-  </Target>
+  </Target>-->
   
 </Project>
