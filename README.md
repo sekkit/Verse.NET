@@ -81,9 +81,8 @@ to tag a funtion with ServerApi, ServerOnly, ClientOnly you can create a RPC pro
       "LoginService"
     ],
     "HeartbeatIntervalMS": 5000,
-    "ClientNetwork": NetworkType.KCP
-  },
-  //...
+    "ClientNetwork": "NetworkType.KCP"
+  }
   ]
   ```
 3. Messagepack/Zeroformatter/Protobuf are easily supported, AutoGen takes care of serialization&deserializtion
