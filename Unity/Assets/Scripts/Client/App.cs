@@ -61,8 +61,7 @@ namespace Client
                 if (loginapp.toHostId != hostInfo.HostId)
                     NetManager.Instance.ChangePeerId(loginapp.toHostId, hostInfo.HostId, hostInfo.HostName, hostInfo.HostAddr);
 
-                Global.IdManager.RegisterHostInfo(hostInfo);
-                //loginapp.Disconnect(); 
+                Global.IdManager.RegisterHostInfo(hostInfo); 
                 if (code == 0)
                 {
                     //发起登陆请求，得到玩家entity所在host信息

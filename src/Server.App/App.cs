@@ -82,7 +82,7 @@ namespace Server
                 };
 
                 cfgList.Add(obj);
-                 
+                
                 using (var sw = new StreamWriter("app.json", false, Encoding.UTF8))
                 {
                     var content = JsonConvert.SerializeObject(cfgList, Formatting.Indented);

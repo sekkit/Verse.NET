@@ -85,7 +85,6 @@ namespace Fenix
 
 #endif
 
-//#if !CLIENT
 
         public bool RegisterHost(Host host, string address, string extAddress)
         {
@@ -106,22 +105,6 @@ namespace Fenix
             return true;
 #endif
         }
-//#else
-//        public bool RegisterHost(Host host, string address)
-//        {
-//            return RegisterHost(host.Id, host.UniqueName, address);
-//        }
-
-//        public bool RegisterHost(uint hostId, string hostName, string address)
-//        {
-//            mHNAME2ADDR[hostName] = address;
-//            mADDR2HNAME[address] = hostName;
-
-//            AddNameId(hostName, hostId);  
-
-//            return true;
-//        }
-//#endif
 
         public bool ReregisterHost(uint hostId, string address)
         {

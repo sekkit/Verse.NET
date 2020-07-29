@@ -20,23 +20,23 @@ Fenix is in a early stage of development, but is also being used in commercial G
 
 ## Get Started
 
-1. Click LinkAll.bat to automatically creat symbol links to Client.App and Server.App projects
+1. Run Unity3D and open Unity project at root path
 
-2. Open Fenix.sln with Visual Studio 2019(.netcore 3.1 SDK installed)
+2. Open Fenix.sln with Visual Studio 2019(.NetCore 3.1+ SDK installed)
 
 3. Build solution
 
 3. Go to ./bin folder, run start_redis.bat and start_server.bat
 
-4. Now build and run Client.App to see what happens.
+4. (Unity3d) now play in Unity OR (Native) Now build and run Client.App
 
 5. Unity3D support
 
-6. Any stars or contributions are welcomed.
+6. Any stars or contributions are welcomed
 
 ## Features
 
-1. RPC calls are super easy
+1. RPC calls
     
 2. Switch between KCP/TCP/websockets super easy
 

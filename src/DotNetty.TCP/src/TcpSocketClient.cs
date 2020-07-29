@@ -19,16 +19,13 @@ namespace DotNetty.TCP
         private volatile Bootstrap bootstrap;
 
         protected TcpChannelConfig channelConfig;
-
-        //private IChannel clientChannel;
+         
         private MultithreadEventLoopGroup group;
 
         public TcpSocketClient()
         {
 
-        } 
-
-        //public static TcpSocketClient Instance = new TcpSocketClient();
+        }  
 
         public bool init(TcpChannelConfig channelConfig)
         {
