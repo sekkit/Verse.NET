@@ -20,10 +20,10 @@ Fenix is in a early stage of development, but is also being used in commercial G
 ## Status
    
 
-· [![status](https://img.shields.io/badge/Passed%3F-yes-green.svg)]() macOS/Linux/Windows supported (for client sdk supports macOS/Linux/Windows/Android/iOS)<br>
-· [![status](https://img.shields.io/badge/Passed%3F-yes-green.svg)]() Unity Mono/IL2CPP compilation passed<br>
-· [![status](https://img.shields.io/badge/Passed%3F-yes-green.svg)]() KCP/TCP benchmark passed (Recommend to use IL2CPP compilation for client, maybe server also**UNTESTED)<br>
-· [![status](https://img.shields.io/pypi/status/ansicolortags.svg)]() Not all feature completed, Fenix will get better as our commercial project finished.<br>
+· [![status](https://img.shields.io/badge/Passed%3F-yes-green.svg)]()    macOS/Linux/Windows supported (for client sdk supports macOS/Linux/Windows/Android/iOS)<br>
+· [![status](https://img.shields.io/badge/Passed%3F-yes-green.svg)]()    Unity Mono/IL2CPP compilation passed<br>
+· [![status](https://img.shields.io/badge/Passed%3F-yes-green.svg)]()    KCP/TCP benchmark passed (Recommend to use IL2CPP compilation for client, maybe server also**UNTESTED)<br>
+· [![status](https://img.shields.io/pypi/status/ansicolortags.svg)]()     Not all feature completed, Fenix will get better as our commercial project finished.<br>
 
 ## Get Started
 
