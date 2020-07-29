@@ -28,7 +28,7 @@ Fenix is in a early stage of development, but is also being used in commercial G
 
 3. Go to ./bin folder, run start_redis.bat and start_server.bat
 
-4. (Unity3d) now play in Unity OR (Native) Now build and run Client.App
+4. (Unity3d) Press play button in Unity OR (Native) Now build and run Client.App
 
 5. Unity3D support
 
