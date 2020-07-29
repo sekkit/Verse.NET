@@ -49,10 +49,10 @@ namespace Fenix
             var asmServerApp = Assembly.LoadFrom(Path.Combine(rootFolder, "../../../../../../../bin/netcoreapp3.1/Server.App.dll"));
             var asmRuntime = Assembly.LoadFrom(Path.Combine(rootFolder, "../../../../../../../bin/netcoreapp3.1/Fenix.Runtime.dll"));
 
-            string sharedClientPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../../../../Unity/Assets/Scripts/Client.App/Gen"));
+            string sharedClientPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../../../../Unity/Assets/Scripts/Client/Gen"));
             string sharedServerPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../../../../src/Server.App/Gen"));
 
-            string clientPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../../../../Unity/Assets/Scripts/Client.App"));
+            string clientPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../../../../Unity/Assets/Scripts/Client"));
             string serverPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../../../../src/Server.App"));
 
             Gen.AutogenHost(asmRuntime, Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../../../../src/Fenix.Runtime/Common")), clientPath, serverPath);
