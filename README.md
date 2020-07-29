@@ -1,6 +1,14 @@
 
 ![OpenCraft.Fenix](/src/images/opencraft.png)
 
+OpenCraft是向魔兽争霸III致敬的游戏项目，致力于以开源方式制作下一代东方文化为背景的新一代RTS游戏
+Fenix属于OpenCraft项目下的分布式服务器项目
+想参与制作OpenCraft可前往 https://github.com/sekkit/OpenCraft
+
+To War3 fans:
+OpenCraft is not Warcraft III, but for those who's been waiting for Warcraft IV for many years,
+this project is aimed at making Next Generation RTS games, learning from Blizzard's design.
+
 # Fenix Project
  
 A distributed game server featuring asynchronous event-driven networking, KCP/TCP/Websockets support.
