@@ -33,8 +33,9 @@ Fenix is in a early stage of development, but is also being used in commercial G
 ## Features
 
 1. RPC decleration
-to tag a funtion with ServerApi, ServerOnly, ClientOnly you can create a RPC protocol without effort.
+
 ```csharp
+    //to tag a funtion with ServerApi, ServerOnly, ClientOnly you can create a RPC protocol without effort.
     [RuntimeData(typeof(MatchData))]
     public partial class MatchService : Service
     {
@@ -97,6 +98,7 @@ svc.rpc_login("username", "password", (code2, uid, hostId, hostName, hostAddress
      //...
 });
  ```
+ 
 5. Architecture specifically designed for Game developers, easier than any other distributable server framework.
  ```
 A Host is a container(Process) for many/single actors.
@@ -107,6 +109,64 @@ Scaling is achieved through multiprocesses, interprocess communication are mainl
 Design principle comes from Bigworld, and microservices. 
 The simple, the better.
  ```
+ 
+ 6. State/Stateless Actor & Disaster Recovery & Access Control
+  ```
+using Fenix;
+using Fenix.Common;
+using Fenix.Common.Attributes;
+using Shared.Protocol;
+using System;
+using Shared.DataModel;
+
+namespace Server.UModule
+{
+    [ActorType(AType.SERVER)] //this actor exists only in server side
+    [AccessLevel(ALevel.CLIENT_AND_SERVER)] //this actor can be accessed from both client/server
+    [RuntimeData(typeof(Account))]  //Tag an actor with RuntimeData/PersistData, the DB saving process is taken care of.
+    //When disaster happens, the actor can be recovered from previous state
+    public partial class Avatar : Actor
+    {
+        public Client.AvatarRef Client => (Client.AvatarRef)this.client;
+
+        public Avatar()
+        { 
+        }
+
+        public Avatar(string uid) : base(uid)
+        { 
+        }
+
+        public override void onLoad()
+        { 
+        }
+
+        public override void onClientEnable()
+        {
+            //向客户端发消息的前提是，已经绑定了ClientAvatarRef,而且一个Actor的ClientRef不是全局可见的，只能在该host进程上调用
+            this.Client.client_on_api_test("", (code) =>
+            {
+                Log.Info("client_on_api_test", code);
+            });
+        }
+
+        [ServerApi]
+        public void ChangeName(string name, Action<ErrCode> callback)
+        {
+            Get<Account>().uid = name;
+
+            callback(ErrCode.OK);
+        }
+
+        [ServerOnly]
+        public void OnMatchOk()
+        { 
+        }
+    }
+}
+
+  ```
+ 
 
 ## Contribute
 
