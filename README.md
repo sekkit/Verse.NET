@@ -4,7 +4,7 @@
    
 # To Warcraft 3 fans:
 OpenCraft is not Warcraft III, but for those who's been waiting for Warcraft IV for many years,
-this project is for you. To make Next Generation RTS games while learning from Blizzard's design.
+this project is for you. Targeting Next Generation RTS games while learning from Blizzard's design.
 
 Fenix is part of OpenCraft project, it is a distributed server designed for https://github.com/sekkit/OpenCraft
 
@@ -52,4 +52,4 @@ We gladly accept community contributions.
 
 * Issues: Please report bugs using the Issues section of GitHub
 * Source Code Contributions: 
- * See [C# Coding Style](https://github.com/Azure/DotNetty/wiki/C%23-Coding-Style) for reference on coding style.
+* See [C# Coding Style](https://github.com/Azure/DotNetty/wiki/C%23-Coding-Style) for reference on coding style.
