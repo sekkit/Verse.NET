@@ -18,11 +18,12 @@ With the power of .NetCore, Fenix can be run on MacOS/Linux/Windows.
 Fenix is in a early stage of development, but is also being used in commercial Game projects.
 
 ## Status
+   
 
-· macOS/Linux/Windows supported (for client sdk supports macOS/Linux/Windows/Android/iOS)<br>
-· Unity Mono/IL2CPP compilation passed<br>
-· KCP/TCP benchmark passed (Recommend to use IL2CPP compilation for client, maybe server also**UNTESTED)<br>
-· Not all feature completed, Fenix will get better as our commercial project finished.<br>
+· [![Run](https://img.shields.io/badge/Passed%3F-yes-green.svg)]()macOS/Linux/Windows supported (for client sdk supports macOS/Linux/Windows/Android/iOS)<br>
+· [![Compilation](https://img.shields.io/badge/Passed%3F-yes-green.svg)]()Unity Mono/IL2CPP compilation passed<br>
+· [![Benchmark](https://img.shields.io/badge/Passed%3F-yes-green.svg)]()KCP/TCP benchmark passed (Recommend to use IL2CPP compilation for client, maybe server also**UNTESTED)<br>
+· [![status](https://img.shields.io/pypi/status/ansicolortags.svg)]()Not all feature completed, Fenix will get better as our commercial project finished.<br>
 
 ## Get Started
 
