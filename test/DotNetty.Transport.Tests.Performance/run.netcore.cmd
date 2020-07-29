@@ -1,1 +1,0 @@
-%UserProfile%\.nuget\packages\nbench.runner\1.2.2\tools\netcoreapp2.1\NBench.Runner.exe bin\Release\netcoreapp2.2\DotNetty.Tests.Performance.dll output-directory="Perf"

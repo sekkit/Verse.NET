@@ -1,1 +1,0 @@
-dotnet run --configuration Release --framework net48 -- RunConfiguration.TargetPlatform=x64
