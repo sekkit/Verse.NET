@@ -89,7 +89,7 @@ to tag a funtion with ServerApi, ServerOnly, ClientOnly you can create a RPC pro
 
 4. Able to call Actors and Hosts through ActorRef anywhere(reference of real net objects)
  ```csharp
-var svc = host.GetService<LoginServiceRef>(); 
+var svc = this.GetActorRef<LoginServiceRef>(); 
 svc.rpc_login("username", "password", (code2, uid, hostId, hostName, hostAddress) =>
 {
      if (code2 != ErrCode.OK)
