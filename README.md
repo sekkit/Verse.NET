@@ -36,7 +36,39 @@ Fenix is in a early stage of development, but is also being used in commercial G
 
 ## Features
 
-1. RPC calls
+1. RPC decleration
+### to tag a funtion with ServerApi, ServerOnly, ClientOnly you can create a RPC protocol without effort.
+```
+    [RuntimeData(typeof(MatchData))]
+    public partial class MatchService : Service
+    {
+        public MatchService(string name): base(name)
+        {
+
+        }
+
+        public void onLoad()
+        {
+
+        }
+
+        //public new string UniqueName => nameof(MatchService);
+
+        [ServerApi] 
+        public void JoinMatch(string uid, int match_type, Action<ErrCode> callback)
+        {
+            Log.Info("Call=>server_api:JoinMatch");
+            callback(ErrCode.OK);
+        } 
+
+        [ServerOnly]
+        [CallbackArgs("code", "user")]
+        public void FindMatch(string uid, Action<ErrCode, Account> callback)
+        {
+            callback(ErrCode.OK, null);
+        }
+    }
+```
     
 2. Switch between KCP/TCP/websockets super easy
 
