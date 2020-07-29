@@ -38,8 +38,9 @@ namespace Client
 
             Global.Init(new Assembly[] { typeof(App).Assembly });
             var i = Global.TypeManager;
-            var localAddr = Basic.GetLocalIPv4(System.Net.NetworkInformation.NetworkInterfaceType.Ethernet);
-            //localAddr = "182.254.179.250";
+            var localAddr = Basic.GetLocalIPv4(System.Net.NetworkInformation.NetworkInterfaceType.Ethernet); 
+
+            host = Host.CreateClient();
 
             if (host == null)
             {
