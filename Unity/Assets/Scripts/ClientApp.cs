@@ -11,23 +11,26 @@ using System.Reflection;
 using System.Threading;
 using UnityEditor;
 using UnityEngine;
- 
-public class ClientApp : MonoBehaviour
+
+namespace Client
 {
-    public void Start()
+    public class ClientApp : MonoBehaviour
     {
-        UnitySystemConsoleRedirector.Redirect();
+        public void Start()
+        {
+            UnitySystemConsoleRedirector.Redirect();
 
-        App.Instance.Init();
-    }
+            App.Instance.Init();
+        }
 
-    public void Update()
-    {
-        App.Instance.Update();
-    }
+        public void Update()
+        {
+            App.Instance.Update();
+        }
 
-    public void OnDestroy()
-    {
-        App.Instance.OnDestroy();
+        public void OnDestroy()
+        {
+            App.Instance.OnDestroy();
+        }
     }
-}  
+}

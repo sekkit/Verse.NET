@@ -95,11 +95,17 @@
     <Reference Include="DotNetty.Handlers">
       <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/DotNetty.Handlers.dll</HintPath>
     </Reference>
+    <Reference Include="DotNetty.KCP.Unity">
+      <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/DotNetty.KCP.Unity.dll</HintPath>
+    </Reference>
     <Reference Include="DotNetty.TCP.Unity">
       <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/DotNetty.TCP.Unity.dll</HintPath>
     </Reference>
     <Reference Include="DotNetty.Transport">
       <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/DotNetty.Transport.dll</HintPath>
+    </Reference>
+    <Reference Include="Fenix.Runtime.Unity">
+      <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/Fenix.Runtime.Unity.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
       <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
@@ -112,6 +118,12 @@
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="reedsolomon_csharp">
+      <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/reedsolomon_csharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Shared.Unity">
+      <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/Shared.Unity.dll</HintPath>
     </Reference>
     <Reference Include="System.Buffers">
       <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/System.Buffers.dll</HintPath>
@@ -127,18 +139,6 @@
     </Reference>
     <Reference Include="System.Threading.Tasks.Extensions">
       <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/System.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="DotNetty.KCP.Unity">
-      <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/DotNetty.KCP.Unity.dll</HintPath>
-    </Reference>
-    <Reference Include="Fenix.Runtime.Unity">
-      <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/Fenix.Runtime.Unity.dll</HintPath>
-    </Reference>
-    <Reference Include="Shared.Unity">
-      <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/Shared.Unity.dll</HintPath>
-    </Reference>
-    <Reference Include="reedsolomon_csharp">
-      <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/reedsolomon_csharp.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>C:/Program Files/Unity/2019.3.0f1/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/mscorlib.dll</HintPath>
