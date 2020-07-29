@@ -1,0 +1,13 @@
+{
+    "name": "Client.App",
+    "references": ["MessagePack", "Fenix.Runtime", "Shared"],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}

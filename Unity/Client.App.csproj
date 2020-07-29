@@ -63,25 +63,26 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\Client.App\Avatar.cs" />
-    <Compile Include="Assets\Scripts\Client.App\Game.cs" />
-    <Compile Include="Assets\Scripts\Client.App\Gen\ActorRef\Client\AvatarRef.cs" />
-    <Compile Include="Assets\Scripts\Client.App\Gen\ActorRef\Server\AvatarRef.cs" />
-    <Compile Include="Assets\Scripts\Client.App\Gen\ActorRef\Server\LoginServiceRef.cs" />
-    <Compile Include="Assets\Scripts\Client.App\Gen\Message\ApiTest2Ntf.cs" />
-    <Compile Include="Assets\Scripts\Client.App\Gen\Message\ApiTestNtf.cs" />
-    <Compile Include="Assets\Scripts\Client.App\Gen\Message\ChangeNameReq.cs" />
-    <Compile Include="Assets\Scripts\Client.App\Gen\Message\CreateAccountReq.cs" />
-    <Compile Include="Assets\Scripts\Client.App\Gen\Message\DeleteAccountReq.cs" />
-    <Compile Include="Assets\Scripts\Client.App\Gen\Message\LoginReq.cs" />
-    <Compile Include="Assets\Scripts\Client.App\Gen\Message\OnMatchOkReq.cs" />
-    <Compile Include="Assets\Scripts\Client.App\Gen\Message\ResetPasswordReq.cs" />
-    <Compile Include="Assets\Scripts\Client.App\Gen\Protocol\ProtocolCode.Avatar.c.cs" />
-    <Compile Include="Assets\Scripts\Client.App\Gen\Protocol\ProtocolCode.Avatar.s.cs" />
-    <Compile Include="Assets\Scripts\Client.App\Gen\Protocol\ProtocolCode.LoginService.s.cs" />
-    <Compile Include="Assets\Scripts\Client.App\Gen\Protocol\ProtocolCode.cs" />
-    <Compile Include="Assets\Scripts\Client.App\Stub\Avatar.Stub.cs" />
-    <None Include="Assets\Scripts\Client.App\Client.App.asmdef" />
+    <Compile Include="Assets\Scripts\Client\App.cs" />
+    <Compile Include="Assets\Scripts\Client\Avatar.cs" />
+    <Compile Include="Assets\Scripts\Client\Game.cs" />
+    <Compile Include="Assets\Scripts\Client\Gen\ActorRef\Client\AvatarRef.cs" />
+    <Compile Include="Assets\Scripts\Client\Gen\ActorRef\Server\AvatarRef.cs" />
+    <Compile Include="Assets\Scripts\Client\Gen\ActorRef\Server\LoginServiceRef.cs" />
+    <Compile Include="Assets\Scripts\Client\Gen\Message\ApiTest2Ntf.cs" />
+    <Compile Include="Assets\Scripts\Client\Gen\Message\ApiTestNtf.cs" />
+    <Compile Include="Assets\Scripts\Client\Gen\Message\ChangeNameReq.cs" />
+    <Compile Include="Assets\Scripts\Client\Gen\Message\CreateAccountReq.cs" />
+    <Compile Include="Assets\Scripts\Client\Gen\Message\DeleteAccountReq.cs" />
+    <Compile Include="Assets\Scripts\Client\Gen\Message\LoginReq.cs" />
+    <Compile Include="Assets\Scripts\Client\Gen\Message\OnMatchOkReq.cs" />
+    <Compile Include="Assets\Scripts\Client\Gen\Message\ResetPasswordReq.cs" />
+    <Compile Include="Assets\Scripts\Client\Gen\Protocol\ProtocolCode.Avatar.c.cs" />
+    <Compile Include="Assets\Scripts\Client\Gen\Protocol\ProtocolCode.Avatar.s.cs" />
+    <Compile Include="Assets\Scripts\Client\Gen\Protocol\ProtocolCode.LoginService.s.cs" />
+    <Compile Include="Assets\Scripts\Client\Gen\Protocol\ProtocolCode.cs" />
+    <Compile Include="Assets\Scripts\Client\Stub\Avatar.Stub.cs" />
+    <None Include="Assets\Scripts\Client\Client.App.asmdef" />
     <Reference Include="DotNetty.Buffers">
       <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/DotNetty.Buffers.dll</HintPath>
     </Reference>
@@ -94,26 +95,11 @@
     <Reference Include="DotNetty.Handlers">
       <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/DotNetty.Handlers.dll</HintPath>
     </Reference>
-    <Reference Include="DotNetty.KCP-Unity">
-      <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/DotNetty.KCP-Unity.dll</HintPath>
-    </Reference>
-    <Reference Include="DotNetty.KCP.Unity">
-      <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/DotNetty.KCP.Unity.dll</HintPath>
-    </Reference>
-    <Reference Include="DotNetty.TCP-Unity">
-      <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/DotNetty.TCP-Unity.dll</HintPath>
-    </Reference>
     <Reference Include="DotNetty.TCP.Unity">
       <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/DotNetty.TCP.Unity.dll</HintPath>
     </Reference>
     <Reference Include="DotNetty.Transport">
       <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/DotNetty.Transport.dll</HintPath>
-    </Reference>
-    <Reference Include="Fenix.Runtime.Unity">
-      <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/Fenix.Runtime.Unity.dll</HintPath>
-    </Reference>
-    <Reference Include="MessagePack">
-      <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/MessagePack.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
       <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
@@ -126,12 +112,6 @@
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="reedsolomon_csharp">
-      <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/reedsolomon_csharp.dll</HintPath>
-    </Reference>
-    <Reference Include="Shared.Unity">
-      <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/Shared.Unity.dll</HintPath>
     </Reference>
     <Reference Include="System.Buffers">
       <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/System.Buffers.dll</HintPath>
@@ -147,6 +127,18 @@
     </Reference>
     <Reference Include="System.Threading.Tasks.Extensions">
       <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetty.KCP.Unity">
+      <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/DotNetty.KCP.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Fenix.Runtime.Unity">
+      <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/Fenix.Runtime.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Shared.Unity">
+      <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/Shared.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="reedsolomon_csharp">
+      <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/reedsolomon_csharp.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>C:/Program Files/Unity/2019.3.0f1/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/mscorlib.dll</HintPath>
@@ -502,6 +494,12 @@
     <Reference Include="Boo.Lang">
       <HintPath>C:/Program Files/Unity/2019.3.0f1/Editor/Data/MonoBleedingEdge/lib/mono/unityscript/Boo.Lang.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="MessagePack.csproj">
+      <Project>{84B17D6D-76A9-1856-5DF6-BCD3FE192693}</Project>
+      <Name>MessagePack</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />
