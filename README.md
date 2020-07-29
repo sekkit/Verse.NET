@@ -21,7 +21,7 @@ Fenix is in a early stage of development, but is also being used in commercial G
 
 #### · macOS/Linux/Windows supported (for client sdk supports macOS/Linux/Windows/Android/iOS)
 #### · Unity Mono/IL2CPP compilation passed
-#### · KCP/TCP benchmark passed (Recommend to use IL2CPP compilation for client, maybe server also)
+#### · KCP/TCP benchmark passed (Recommend to use IL2CPP compilation for client, maybe server also**UNTESTED)
 #### · Not all feature completed, Fenix will get better as our commercial project finished.
 
 ## Get Started
