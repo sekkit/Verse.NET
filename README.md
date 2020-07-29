@@ -83,7 +83,7 @@ to tag a funtion with ServerApi, ServerOnly, ClientOnly you can create a RPC pro
   ```
 3. Messagepack/Zeroformatter/Protobuf are easily supported, AutoGen takes care of serialization&deserializtion
 
-4. Able to call Actors and Hosts through ActorRef anywhere(reference of real net objects)
+4. Able to call Actors and Hosts through ActorRef anywhere
  ```csharp
 var svc = this.GetActorRef<LoginServiceRef>(); 
 svc.rpc_login("username", "password", (code2, uid, hostId, hostName, hostAddress) =>
