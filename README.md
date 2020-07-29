@@ -81,7 +81,7 @@ to tag a funtion with ServerApi, ServerOnly, ClientOnly you can create a RPC pro
       "LoginService"
     ],
     "HeartbeatIntervalMS": 5000,
-    "ClientNetwork": NetworkType.KCP //NetworkType.TCP
+    "ClientNetwork": NetworkType.KCP|TCP
   },
   ...
   ]
@@ -99,7 +99,7 @@ svc.rpc_login("username", "password", (code2, uid, hostId, hostName, hostAddress
        return;
    }
    Log.Info("login_ok");
-   ...
+   //...
 });
  ```
 5. Architecture specifically designed for Game developers, easier than any other distributable server framework.
