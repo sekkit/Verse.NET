@@ -1,5 +1,6 @@
 ﻿using Fenix.Common;
 using System;
+using System.Data;
 using System.Linq.Expressions;
 using System.Threading;
 
@@ -35,14 +36,19 @@ namespace Fenix
                     if (h == null || h.IsAlive == false)
                         return; 
                     Thread.Sleep(100);
-                    OneThreadSynchronizationContext.Instance.Update();
-                    h.Update();
+                    Update(h);
                 }
                 catch (Exception e)
                 {
                     Log.Error(e.ToString());
                 }
             } 
+        }
+
+        public static void Update(Host host)
+        {
+            OneThreadSynchronizationContext.Instance.Update();
+            host.Update();
         }
 
         public static void Stop(Host host)

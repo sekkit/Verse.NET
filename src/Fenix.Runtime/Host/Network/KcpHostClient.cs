@@ -46,13 +46,13 @@ namespace Fenix
         public static KcpHostClient Create(IPEndPoint remoteAddress)
         {
             ChannelConfig channelConfig = new ChannelConfig(); 
-            channelConfig.Crc32Check = true;
+            channelConfig.Crc32Check = false;
             channelConfig.initNodelay(true, 10, 2, true);
             channelConfig.Sndwnd = 512;
             channelConfig.Rcvwnd = 512;
             channelConfig.Mtu = 512;
-            channelConfig.FecDataShardCount = 3;
-            channelConfig.FecParityShardCount = 1;
+            channelConfig.FecDataShardCount = 0;
+            channelConfig.FecParityShardCount = 0;
             channelConfig.AckNoDelay = true;
             //channelConfig.Conv = 10;//.AutoSetConv = true; 
             channelConfig.UseConvChannel = false;

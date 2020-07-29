@@ -225,25 +225,19 @@ namespace Fenix
         }
 
         public void Send(byte[] bytes)
-        {
-            //Log.Info("1");
-            kcpChannel?.write(Unpooled.WrappedBuffer(bytes));
-            //Log.Info("2");
+        { 
+            kcpChannel?.write(Unpooled.WrappedBuffer(bytes)); 
             if (kcpChannel != null)
                 Log.Info(string.Format("sento_sender({0}): {1} {2} => {3} Channel:{4} DATA:{5}", this.netType, kcpChannel.user().RemoteAddress.ToIPv4String(), Global.Host.Id, ConnId, this.kcpChannel.user().Channel.Id.AsLongText(), StringUtil.ToHexString(bytes)));
-            tcpChannel?.WriteAndFlushAsync(Unpooled.WrappedBuffer(bytes));
-            //Log.Info("3");
+            tcpChannel?.WriteAndFlushAsync(Unpooled.WrappedBuffer(bytes)); 
             if (tcpChannel != null)
                 Log.Info(string.Format("sento_sender({0}): {1} {2} => {3} Channel:{4} DATA:{5}", this.netType, tcpChannel.RemoteAddress.ToIPv4String(), Global.Host.Id, ConnId, tcpChannel.Id.AsLongText(), StringUtil.ToHexString(bytes)));
-            kcpClient?.Send(bytes);
-            //Log.Info("4");
+            kcpClient?.Send(bytes); 
             if (kcpClient != null)
                 Log.Info(string.Format("sento_receiver({0}): {1} {2} => {3} Channel:{4} DATA:{5}", this.netType, kcpClient.RemoteAddress.ToIPv4String(), Global.Host.Id, ConnId, kcpClient.ChannelId, StringUtil.ToHexString(bytes)));
-            tcpClient?.Send(bytes);
-            //Log.Info("5");
+            tcpClient?.Send(bytes); 
             if (tcpClient != null)
                 Log.Info(string.Format("sento_receiver({0}): {1} {2} => {3} Channel:{4} DATA:{5}", this.netType, tcpClient.RemoteAddress.ToIPv4String(), Global.Host?.Id, ConnId, tcpClient.ChannelId, StringUtil.ToHexString(bytes)));
-            //Log.Info("6");
         }
 
         //public async Task SendAsync(byte[] bytes)

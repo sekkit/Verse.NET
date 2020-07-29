@@ -35,6 +35,7 @@ namespace Fenix
         public static void Init(Assembly[] asmList)
         {
             Global.TypeManager.ScanAssemblies(asmList);
+            Global.TypeManager.ScanAssemblies(new Assembly[] { typeof(Global).Assembly });
         }
     }
 }

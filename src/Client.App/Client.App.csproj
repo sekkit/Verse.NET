@@ -12,6 +12,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Shared\**" />
+    <EmbeddedResource Remove="Shared\**" />
+    <None Remove="Shared\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\DotNetty.Buffers\DotNetty.Buffers.csproj" />
     <ProjectReference Include="..\DotNetty.Codecs\DotNetty.Codecs.csproj" />
     <ProjectReference Include="..\DotNetty.Common\DotNetty.Common.csproj" />
@@ -20,14 +26,14 @@
     <ProjectReference Include="..\DotNetty.TCP\DotNetty.TCP.csproj" />
     <ProjectReference Include="..\DotNetty.Transport.Libuv\DotNetty.Transport.Libuv.csproj" />
     <ProjectReference Include="..\DotNetty.Transport\DotNetty.Transport.csproj" />
+    <ProjectReference Include="..\Fenix.Runtime\Fenix.Runtime.csproj" />
     <ProjectReference Include="..\MessagePack.Annotations\MessagePack.Annotations.csproj" />
     <ProjectReference Include="..\MessagePack.UnityShims\MessagePack.UnityShims.csproj" />
     <ProjectReference Include="..\MessagePack\MessagePack.csproj" />
+    <ProjectReference Include="..\Shared\Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Shared\Gen\ActorRef\Server\" />
-    <Folder Include="Shared\Gen\Message\" />
     <Folder Include="Stub\" />
   </ItemGroup>
 

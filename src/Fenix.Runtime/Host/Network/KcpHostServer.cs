@@ -28,13 +28,13 @@ namespace Fenix
             KcpHostServer listener = new KcpHostServer();
 
             ChannelConfig channelConfig = new ChannelConfig(); 
-            channelConfig.Crc32Check = true;
+            channelConfig.Crc32Check = false;
             channelConfig.initNodelay(true, 10, 2, true);
             channelConfig.Sndwnd = 512;
             channelConfig.Rcvwnd = 512;
             channelConfig.Mtu = 512; 
-            channelConfig.FecDataShardCount = 3;
-            channelConfig.FecParityShardCount = 1;
+            channelConfig.FecDataShardCount = 0;
+            channelConfig.FecParityShardCount = 0;
             channelConfig.AckNoDelay = true;
             channelConfig.TimeoutMillis = 10000;
             //channelConfig.Conv = 55;

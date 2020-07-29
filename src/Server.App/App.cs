@@ -33,7 +33,7 @@ namespace Server
                 obj.Port = 17777; //auto
                 obj.AppName = "Login.App";
                 obj.HeartbeatIntervalMS = 5000;
-                obj.ClientNetwork = NetworkType.KCP;
+                obj.ClientNetwork = NetworkType.TCP;
                 obj.DefaultActorNames = new List<string>()
                 {
                     "LoginService"
@@ -47,7 +47,7 @@ namespace Server
                 obj.Port = 17778; //auto
                 obj.AppName = "Match.App";
                 obj.HeartbeatIntervalMS = 5000;
-                obj.ClientNetwork = NetworkType.KCP;
+                obj.ClientNetwork = NetworkType.TCP;
                 obj.DefaultActorNames = new List<string>()
                 {
                     "MatchService"
@@ -61,7 +61,7 @@ namespace Server
                 obj.Port = 17779; //auto
                 obj.AppName = "Master.App";
                 obj.HeartbeatIntervalMS = 5000;
-                obj.ClientNetwork = NetworkType.KCP;
+                obj.ClientNetwork = NetworkType.TCP;
                 obj.DefaultActorNames = new List<string>()
                 {
                     "MasterService"
@@ -75,7 +75,7 @@ namespace Server
                 obj.Port = 17780; //auto
                 obj.AppName = "Zone.App";
                 obj.HeartbeatIntervalMS = 5000;
-                obj.ClientNetwork = NetworkType.KCP;
+                obj.ClientNetwork = NetworkType.TCP;
                 obj.DefaultActorNames = new List<string>()
                 {
                     "ZoneService"
@@ -91,7 +91,7 @@ namespace Server
 
                 Environment.SetEnvironmentVariable("AppName", "Master.App");
 
-                Bootstrap.Start(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfgList, OnInit, isMultiProcess:true); //单进程模式
+                Bootstrap.Start(new Assembly[] { typeof(UModule.Avatar).Assembly}, cfgList, OnInit, isMultiProcess:true); //单进程模式
 
                 //Bootstrap.Start(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfgList, OnInit, isMultiProcess: false); //单进程模式
             }

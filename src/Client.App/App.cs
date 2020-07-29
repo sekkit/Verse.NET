@@ -37,11 +37,10 @@ namespace Client
             Environment.SetEnvironmentVariable("AppName", "Client.App");
 
             Global.Init(new Assembly[] { typeof(App).Assembly });
-
+            var i = Global.TypeManager;
             var localAddr = Basic.GetLocalIPv4(System.Net.NetworkInformation.NetworkInterfaceType.Ethernet);
             //localAddr = "182.254.179.250";
 
-            host = Host.CreateClient();
             if (host == null)
             {
                 Log.Info(string.Format("unable_connect_to_server {0}:{1}", localAddr, 17777));
