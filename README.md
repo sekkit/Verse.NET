@@ -1,5 +1,5 @@
 
-![image](/src/images/opencraft.png)
+![image](http://facg.sekkit.com/images/opencraft.png)
 
    
 # To Warcraft 3 fans:
