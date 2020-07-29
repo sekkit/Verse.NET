@@ -17,6 +17,12 @@ With the power of .NetCore, Fenix can be run on MacOS/Linux/Windows.
 
 Fenix is in a early stage of development, but is also being used in commercial Game projects.
 
+##Status
+
+#### macOS/Linux/Windows supported
+#### Unity Mono/IL2CPP compilation passed
+#### KCP/TCP benchmark passed (Recommend to use IL2CPP compilation for client, maybe server also)
+#### Not all feature completed, Fenix will get better as our commercial project finished.
 
 ## Get Started
 
