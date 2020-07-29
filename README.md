@@ -44,12 +44,10 @@ to tag a funtion with ServerApi, ServerOnly, ClientOnly you can create a RPC pro
     {
         public MatchService(string name): base(name)
         {
-
         }
 
         public void onLoad()
         {
-
         }
 
         //public new string UniqueName => nameof(MatchService);
@@ -109,8 +107,10 @@ svc.rpc_login("username", "password", (code2, uid, hostId, hostName, hostAddress
 A Host is a container(Process) for many/single actors.
 An Actor is an entity with state, able to make rpc calls, has its own lifecycle within the Host.
 
+Scaling is achieved through multiprocesses, interprocess communication are mainly through Global cache or TCP/KCP networking.
 
-Design principle comes from Bigworld, and microservices. The simple, the better.
+Design principle comes from Bigworld, and microservices. 
+The simple, the better.
  ```
 
 ## Contribute
