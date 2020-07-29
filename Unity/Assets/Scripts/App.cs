@@ -34,6 +34,8 @@ namespace Client
 #endif
         public void Init()
         {
+            UnitySystemConsoleRedirector.Redirect();
+
             Environment.SetEnvironmentVariable("AppName", "Client.App");
 
             Global.Init(new Assembly[] { typeof(App).Assembly });
