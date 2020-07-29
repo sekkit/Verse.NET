@@ -1,3 +1,6 @@
+
+![OpenCraft.Fenix](/src/images/opencraft.png)
+
 # Fenix Project
  
 A distributed game server featuring asynchronous event-driven networking, KCP/TCP/Websockets support.
@@ -40,6 +43,5 @@ Fenix is in a early stage of development, but is also being used in commercial G
 We gladly accept community contributions.
 
 * Issues: Please report bugs using the Issues section of GitHub
-* Source Code Contributions:
- * Please follow the [Contribution Guidelines for Microsoft Azure](http://azure.github.io/guidelines.html) open source that details information on onboarding as a contributor
+* Source Code Contributions: 
  * See [C# Coding Style](https://github.com/Azure/DotNetty/wiki/C%23-Coding-Style) for reference on coding style.
