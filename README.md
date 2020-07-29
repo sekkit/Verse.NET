@@ -17,6 +17,13 @@ With the power of .NetCore, Fenix can be run on MacOS/Linux/Windows.
 
 Fenix is in a early stage of development, but is also being used in commercial Game projects.
 
+## Status
+   
+
+· [![status](https://img.shields.io/badge/Passed%3F-yes-green.svg)]()&nbsp;&nbsp;&nbsp;&nbsp;macOS/Linux/Windows supported (for client sdk supports macOS/Linux/Windows/Android/iOS)<br>
+· [![status](https://img.shields.io/badge/Passed%3F-yes-green.svg)]()&nbsp;&nbsp;&nbsp;&nbsp;Unity Mono/IL2CPP compilation passed<br>
+· [![status](https://img.shields.io/badge/Passed%3F-yes-green.svg)]()&nbsp;&nbsp;&nbsp;&nbsp;KCP/TCP benchmark passed (Recommend to use IL2CPP compilation for client, maybe server also**UNTESTED)<br>
+· [![status](https://img.shields.io/pypi/status/ansicolortags.svg)]()&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Not all feature completed, Fenix will get better as our commercial project finished.<br>
 
 ## Get Started
 
@@ -65,9 +72,13 @@ Fenix is in a early stage of development, but is also being used in commercial G
     }
 ```
 
-2. Unified DB access API for both cache and storage. <br>
+2. Unified DB access API for both cache and storage with Distributed Lock. <br>
 Redis for cache and Rocksdb for persistency(also in redis protocol^^)
 
+```csharp
+   var db = Global.DbManager.LoadDb(DbConfig.account_db); //Create and get db
+   db.Set("PLAYER0001", userData);
+```
 3. Switch between KCP/TCP/websockets super easy (just open conf/app.json)
 
 ```json
@@ -166,48 +177,48 @@ using Shared.DataModel;
 
 namespace Server.UModule
 {
-    [ActorType(AType.SERVER)] //this actor exists only in server side
-    [AccessLevel(ALevel.CLIENT_AND_SERVER)] //this actor can be accessed from both client/server
-    [RuntimeData(typeof(Account))]  //Tag an actor with RuntimeData/PersistData, the DB saving process is taken care of.
-    //When disaster happens, the actor can be recovered from previous state
-    public partial class Avatar : Actor
-    {
-        public Client.AvatarRef Client => (Client.AvatarRef)this.client;
+       [ActorType(AType.SERVER)] //this actor exists only in server side
+       [AccessLevel(ALevel.CLIENT_AND_SERVER)] //this actor can be accessed from both client/server
+       [RuntimeData(typeof(Account))]  //Tag an actor with RuntimeData/PersistData, the DB saving process is taken care of.
+       //When disaster happens, the actor can be recovered from previous state
+       public partial class Avatar : Actor
+       {
+           public Client.AvatarRef Client => (Client.AvatarRef)this.client;
 
-        public Avatar()
-        { 
-        }
+           public Avatar()
+           { 
+           }
 
-        public Avatar(string uid) : base(uid)
-        { 
-        }
+           public Avatar(string uid) : base(uid)
+           { 
+           }
 
-        public override void onLoad()
-        { 
-        }
+           public override void onLoad()
+           { 
+           }
 
-        public override void onClientEnable()
-        {
-            //向客户端发消息的前提是，已经绑定了ClientAvatarRef,而且一个Actor的ClientRef不是全局可见的，只能在该host进程上调用
-            this.Client.client_on_api_test("", (code) =>
-            {
-                Log.Info("client_on_api_test", code);
-            });
-        }
+           public override void onClientEnable()
+           {
+              //向客户端发消息的前提是，已经绑定了ClientAvatarRef,而且一个Actor的ClientRef不是全局可见的，只能在该host进程上调用
+              this.Client.client_on_api_test("", (code) =>
+              {
+                  Log.Info("client_on_api_test", code);
+              });
+           }
 
-        [ServerApi]
-        public void ChangeName(string name, Action<ErrCode> callback)
-        {
-            Get<Account>().uid = name;
+           [ServerApi]
+           public void ChangeName(string name, Action<ErrCode> callback)
+           {
+              Get<Account>().uid = name;
 
-            callback(ErrCode.OK);
-        }
+              callback(ErrCode.OK);
+           }
 
-        [ServerOnly]
-        public void OnMatchOk()
-        { 
-        }
-    }
+           [ServerOnly]
+           public void OnMatchOk()
+           { 
+           }
+       }
 }
 
   ```
