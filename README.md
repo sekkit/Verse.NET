@@ -64,8 +64,11 @@ Fenix is in a early stage of development, but is also being used in commercial G
         }
     }
 ```
-    
-2. Switch between KCP/TCP/websockets super easy (just open conf/app.json)
+
+2. Unified DB access API for both cache and storage. <br>
+Redis for cache and Rocksdb for persistency(also in redis protocol^^)
+
+3. Switch between KCP/TCP/websockets super easy (just open conf/app.json)
 
 ```json
 [
@@ -82,9 +85,51 @@ Fenix is in a early stage of development, but is also being used in commercial G
     }
 ]
   ```
-3. Messagepack/Zeroformatter/Protobuf are easily supported, AutoGen takes care of serialization&deserializtion
+4. Messagepack/Zeroformatter/Protobuf are easily supported <br>AutoGen takes care of serialization&deserializtion
+```csharp
+//AUTOGEN, do not modify it!
 
-4. Able to call Actors and Hosts through ActorRef anywhere
+using Fenix.Common;
+using Fenix.Common.Attributes;
+using Fenix.Common.Rpc;
+using MessagePack; 
+using System.ComponentModel;
+using Shared;
+using Shared.Protocol;
+using Shared.DataModel;
+using System; 
+
+namespace Shared.Message
+{
+    [MessageType(ProtocolCode.CHANGE_NAME_REQ)]
+    [MessagePackObject]
+    public class ChangeNameReq : IMessageWithCallback
+    {
+        [Key(0)]
+        public String name { get; set; }
+
+
+        [Key(199)]
+        public Callback callback
+        {
+            get => _callback as Callback;
+            set => _callback = value;
+        } 
+
+        [MessagePackObject]
+        public class Callback
+        {
+            [Key(0)]
+            [DefaultValue(ErrCode.ERROR)]
+            public ErrCode code { get; set; } = ErrCode.ERROR;
+
+        }
+
+    }
+}
+```
+
+5. Able to call Actors and Hosts through ActorRef anywhere
  ```csharp
 var svc = this.GetActorRef<LoginServiceRef>(); 
 svc.rpc_login("username", "password", (code2, uid, hostId, hostName, hostAddress) =>
@@ -99,7 +144,7 @@ svc.rpc_login("username", "password", (code2, uid, hostId, hostName, hostAddress
 });
  ```
  
-5. Architecture specifically designed for Game developers, easier than any other distributable server framework.
+6. Architecture specifically designed for Game developers<br>Liteweight and easy to use than any other distributable server framework.
  ```
 A Host is a container(Process) for many/single actors.
 An Actor is an entity with state, able to make rpc calls, has its own lifecycle within the Host.
@@ -110,7 +155,7 @@ Design principle comes from Bigworld, and microservices.
 The simple, the better.
  ```
  
- 6. State/Stateless Actor & Disaster Recovery & Access Control
+7. State/Stateless Actor & Disaster Recovery & Access Control
   ```csharp
 using Fenix;
 using Fenix.Common;
