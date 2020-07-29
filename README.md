@@ -37,8 +37,8 @@ Fenix is in a early stage of development, but is also being used in commercial G
 ## Features
 
 1. RPC decleration
-### to tag a funtion with ServerApi, ServerOnly, ClientOnly you can create a RPC protocol without effort.
-```
+to tag a funtion with ServerApi, ServerOnly, ClientOnly you can create a RPC protocol without effort.
+```csharp
     [RuntimeData(typeof(MatchData))]
     public partial class MatchService : Service
     {
@@ -72,11 +72,46 @@ Fenix is in a early stage of development, but is also being used in commercial G
     
 2. Switch between KCP/TCP/websockets super easy
 
-3. Messagepack/Zeroformatter/Protobuf are easily supported
+```json
+[
+  {
+    "AppName": "Login.App",
+    "ExternalIp": "auto",
+    "InternalIp": "auto",
+    "Port": 17777,
+    "DefaultActorNames": [
+      "LoginService"
+    ],
+    "HeartbeatIntervalMS": 5000,
+    "ClientNetwork": NetworkType.KCP //NetworkType.TCP
+  },
+  ...
+  ]
+  ```
+3. Messagepack/Zeroformatter/Protobuf are easily supported, AutoGen takes care of serialization&deserializtion
 
 4. Able to call Actors and Hosts through ActorRef anywhere(reference of real net objects)
- 
+ ```csharp
+var svc = host.GetService<LoginServiceRef>(); 
+svc.rpc_login("username", "password", (code2, uid, hostId, hostName, hostAddress) =>
+{
+   if (code2 != ErrCode.OK)
+   {
+       Log.Error("login_failed"); 
+       return;
+   }
+   Log.Info("login_ok");
+   ...
+});
+ ```
 5. Architecture specifically designed for Game developers, easier than any other distributable server framework.
+ ```
+A Host is a container(Process) for many/single actors.
+An Actor is an entity with state, able to make rpc calls, has its own lifecycle within the Host.
+
+
+Design principle comes from Bigworld, and microservices. The simple, the better.
+ ```
 
 ## Contribute
 
