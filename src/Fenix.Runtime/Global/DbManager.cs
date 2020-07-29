@@ -28,9 +28,10 @@ namespace Fenix
             return uid;
         }
 
-        public void LoadDb(DbEntry db)
+        public RedisDb LoadDb(DbEntry db)
         {
             DbDic[db.Name] = new RedisDb(db);
+            return DbDic[db.Name];
         }
 
         public RedisDb GetDb(string name)

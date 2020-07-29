@@ -120,7 +120,6 @@ namespace Fenix
             else
             {
                 Log.Info(string.Format("{0}(ID:{1}) is running as ClientMode", this.UniqueName, this.Id));
-                //Log.Info(string.Format("{0} is running at {1} as ClientMode", this.UniqueName, LocalAddress.ToIPv4String()));
             }
 
             heartbeatTh = new Thread(new ThreadStart(Heartbeat));

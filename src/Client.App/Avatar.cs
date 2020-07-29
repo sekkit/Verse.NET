@@ -16,7 +16,7 @@ namespace Client
 
         public Avatar(string uid) : base(uid)
         {
-
+            
         }
 
         [ClientApi]
