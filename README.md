@@ -68,22 +68,22 @@ to tag a funtion with ServerApi, ServerOnly, ClientOnly you can create a RPC pro
     }
 ```
     
-2. Switch between KCP/TCP/websockets super easy
+2. Switch between KCP/TCP/websockets super easy (just open conf/app.json)
 
 ```json
 [
-  {
-    "AppName": "Login.App",
-    "ExternalIp": "auto",
-    "InternalIp": "auto",
-    "Port": 17777,
-    "DefaultActorNames": [
-      "LoginService"
-    ],
-    "HeartbeatIntervalMS": 5000,
-    "ClientNetwork": "NetworkType.KCP"
-  }
-  ]
+    {
+       "AppName": "Login.App",
+       "ExternalIp": "auto",
+       "InternalIp": "auto",
+       "Port": 17777,
+       "DefaultActorNames": [
+         "LoginService"
+       ],
+       "HeartbeatIntervalMS": 5000,
+       "ClientNetwork": "NetworkType.KCP"
+    }
+]
   ```
 3. Messagepack/Zeroformatter/Protobuf are easily supported, AutoGen takes care of serialization&deserializtion
 
