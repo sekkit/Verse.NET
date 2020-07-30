@@ -1,0 +1,56 @@
+<linker>
+	<assembly fullname="System">
+		<type fullname="System.ComponentModel.ArrayConverter" preserve="all"/>
+		<type fullname="System.ComponentModel.BaseNumberConverter" preserve="all"/>
+		<type fullname="System.ComponentModel.BooleanConverter" preserve="all"/>
+		<type fullname="System.ComponentModel.ByteConverter" preserve="all"/>
+		<type fullname="System.ComponentModel.CharConverter" preserve="all"/>
+		<type fullname="System.ComponentModel.CollectionConverter" preserve="all"/>
+		<type fullname="System.ComponentModel.ComponentConverter" preserve="all"/>
+		<type fullname="System.ComponentModel.CultureInfoConverter" preserve="all"/>
+		<type fullname="System.ComponentModel.DateTimeConverter" preserve="all"/>
+		<type fullname="System.ComponentModel.DecimalConverter" preserve="all"/>
+		<type fullname="System.ComponentModel.DoubleConverter" preserve="all"/>
+		<type fullname="System.ComponentModel.EnumConverter" preserve="all"/>
+		<type fullname="System.ComponentModel.ExpandableObjectConverter" preserve="all"/>
+		<type fullname="System.ComponentModel.Int16Converter" preserve="all"/>
+		<type fullname="System.ComponentModel.Int32Converter" preserve="all"/>
+		<type fullname="System.ComponentModel.Int64Converter" preserve="all"/>
+		<type fullname="System.ComponentModel.NullableConverter" preserve="all"/>
+		<type fullname="System.ComponentModel.SByteConverter" preserve="all"/>
+		<type fullname="System.ComponentModel.SingleConverter" preserve="all"/>
+		<type fullname="System.ComponentModel.StringConverter" preserve="all"/>
+		<type fullname="System.ComponentModel.TimeSpanConverter" preserve="all"/>
+		<type fullname="System.ComponentModel.TypeConverter" preserve="all"/>
+		<type fullname="System.ComponentModel.UInt16Converter" preserve="all"/>
+		<type fullname="System.ComponentModel.UInt32Converter" preserve="all"/>
+		<type fullname="System.ComponentModel.UInt64Converter" preserve="all"/>
+	</assembly>
+  <assembly fullname="DotNetty.Handlers">
+    <namespace fullname="DotNetty.Handlers" preserve="all"/>
+    <namespace fullname="DotNetty.Handlers.Steams" preserve="all"/>
+    <namespace fullname="DotNetty.Handlers.Timeout" preserve="all"/>
+    <namespace fullname="DotNetty.Handlers.IPFilter" preserve="all"/>
+    <namespace fullname="DotNetty.Handlers.Internal" preserve="all"/>
+    <namespace fullname="DotNetty.Handlers.Flow" preserve="all"/>
+    <namespace fullname="DotNetty.Handlers.Common" preserve="all"/>
+  </assembly>
+  <assembly fullname="DotNetty.KCP">
+    <namespace fullname="DotNetty.KCP" preserve="all"/> 
+  </assembly>
+  <assembly fullname="DotNetty.TCP">
+    <namespace fullname="DotNetty.TCP" preserve="all"/>
+  </assembly>
+  <assembly fullname="DotNetty.Codecs">
+    <namespace fullname="DotNetty.Codecs" preserve="all"/>
+  </assembly>
+  <assembly fullname="DotNetty.Buffers">
+    <namespace fullname="DotNetty.Buffers" preserve="all"/>
+  </assembly>
+  <assembly fullname="DotNetty.Transport">
+    <namespace fullname="DotNetty.Transport" preserve="all"/>
+  </assembly>
+  <assembly fullname="DotNetty.Transport.Libuv">
+  <namespace fullname="DotNetty.Transport.Libuv" preserve="all"/>
+  </assembly>
+</linker>

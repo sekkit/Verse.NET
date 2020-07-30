@@ -83,6 +83,7 @@
     <Compile Include="Assets\Scripts\Client\Gen\Protocol\ProtocolCode.cs" />
     <Compile Include="Assets\Scripts\Client\Stub\Avatar.Stub.cs" />
     <None Include="Assets\Scripts\Client\Client.App.asmdef" />
+    <None Include="Assets\Scripts\Client\link.xml" />
     <Reference Include="DotNetty.Buffers">
       <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/DotNetty.Buffers.dll</HintPath>
     </Reference>
