@@ -804,9 +804,9 @@ using Fenix.Common.Message;
             if(!isHost)
             {
                 refBuilder.AppendLine(@"using Shared;
-                    using Shared.DataModel;
-                    using Shared.Protocol; 
-                    using Shared.Message;
+using Shared.DataModel;
+using Shared.Protocol; 
+using Shared.Message;
                     ");
             }
 

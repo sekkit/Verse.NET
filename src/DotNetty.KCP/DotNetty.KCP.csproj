@@ -13,11 +13,6 @@
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 
   <ItemGroup>
-    <Compile Remove="obj\\**\*" />
-    <Compile Include="obj\$(MSBuildProjectName)\**\$(MSBuildProjectName).AssemblyInfo.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
       <ProjectReference Include="..\DotNetty.Buffers\DotNetty.Buffers.csproj" />
       <ProjectReference Include="..\DotNetty.Codecs.Http2\DotNetty.Codecs.Http2.csproj" />
       <ProjectReference Include="..\DotNetty.Codecs.Http\DotNetty.Codecs.Http.csproj" />
