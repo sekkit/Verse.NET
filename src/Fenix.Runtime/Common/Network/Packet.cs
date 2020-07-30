@@ -25,10 +25,10 @@ namespace Fenix
         [Key(3)]
         public uint ToHostId { get; set; }
 
-        [Key(2)]
+        [Key(4)]
         public uint FromActorId { get; set; }
 
-        [Key(3)]
+        [Key(5)]
         public uint ToActorId { get; set; }
  
         [IgnoreMember]
@@ -61,7 +61,7 @@ namespace Fenix
         [Key(100)]
         public byte[] Payload { get; set; }
 
-        protected Packet()
+        public Packet()
         { 
         }
 

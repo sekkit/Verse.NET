@@ -22,8 +22,8 @@ namespace Shared.Message
         [Key(1)]
         public String password { get; set; }
 
+        [Key(2)]
 
-        [Key(199)]
         public Callback callback
         {
             get => _callback as Callback;

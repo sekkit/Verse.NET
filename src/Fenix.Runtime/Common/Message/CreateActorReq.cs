@@ -19,8 +19,8 @@ namespace Fenix.Common.Message
         [Key(1)]
         public String name { get; set; }
 
+        [Key(2)]
 
-        [Key(199)]
         public Callback callback
         {
             get => _callback as Callback;

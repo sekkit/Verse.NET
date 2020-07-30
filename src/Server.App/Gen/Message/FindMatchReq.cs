@@ -19,8 +19,8 @@ namespace Shared.Message
         [Key(0)]
         public String uid { get; set; }
 
+        [Key(1)]
 
-        [Key(199)]
         public Callback callback
         {
             get => _callback as Callback;

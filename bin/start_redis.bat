@@ -12,9 +12,9 @@ set REDIS_CONF=%cwdpath%../conf/redis.conf
 
 taskkill /f /im redis-server.exe
 
-start %REDIS_BIN% %REDIS_LOGIN_CONF% --port 7379
+start %REDIS_BIN% %REDIS_CONF% --port 7379
 
-start %REDIS_BIN% %REDIS_ACC_CONF% --port 7380
+start %REDIS_BIN% %REDIS_CONF% --port 7380
 
 start %REDIS_BIN% %REDIS_CONF% --port 7381
 

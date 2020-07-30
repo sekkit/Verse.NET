@@ -18,8 +18,8 @@ export REDIS_CONF=${SERVER_ROOT}/conf/redis.conf
 
 mkdir -p ${SERVER_ROOT}/db/account/
 
-nohup redis-server ${REDIS_LOGIN_CONF} --port 7379 > /dev/null 2>&1  &
-nohup redis-server ${REDIS_ACC_CONF} --port 7380 > /dev/null 2>&1  &
+nohup redis-server ${REDIS_CONF} --port 7379 > /dev/null 2>&1  &
+nohup redis-server ${REDIS_CONF} --port 7380 > /dev/null 2>&1  &
 nohup redis-server ${REDIS_CONF} --port 7381 > /dev/null 2>&1  &
 nohup redis-server ${REDIS_CONF} --port 7382 > /dev/null 2>&1  &
 nohup redis-server ${REDIS_CONF} --port 7383 > /dev/null 2>&1  &

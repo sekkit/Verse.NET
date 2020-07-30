@@ -512,8 +512,8 @@ namespace Shared
 
                     if (callback_define != "")
                     {
-                        msgBuilder.AppendLine(@"
-        [Key(199)]
+                        msgBuilder.AppendLine($"        [Key({methodParameterList.Length-1})]")
+                            .AppendLine(@"
         public Callback callback
         {
             get => _callback as Callback;

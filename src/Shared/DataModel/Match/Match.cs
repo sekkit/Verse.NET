@@ -8,6 +8,7 @@ namespace Shared.DataModel
     [MessagePackObject]
     public class MatchData
     {
+        [Key(0)]
         public Dictionary<int, object> matchData;
     }
 }

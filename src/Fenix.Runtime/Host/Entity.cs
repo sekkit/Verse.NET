@@ -25,10 +25,16 @@ namespace Fenix
         [DataMember]
         public string UniqueName { get; set; }
 
+        [IgnoreMember]
+        [IgnoreDataMember]
         public ConcurrentDictionary<UInt64, RpcCommand> rpcDic     = new ConcurrentDictionary<UInt64, RpcCommand>();
-        
+
+        [IgnoreMember]
+        [IgnoreDataMember]
         public ConcurrentDictionary<UInt32, MethodInfo> rpcStubDic = new ConcurrentDictionary<UInt32, MethodInfo>();
 
+        [IgnoreMember]
+        [IgnoreDataMember]
         public ConcurrentDictionary<UInt32, MethodInfo> rpcNativeStubDic = new ConcurrentDictionary<uint, MethodInfo>();
 
         [IgnoreMember]
