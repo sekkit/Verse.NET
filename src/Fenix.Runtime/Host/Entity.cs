@@ -15,7 +15,7 @@ namespace Fenix
 {
     [MessagePackObject]
     [Serializable]
-    public abstract class Entity
+    public abstract class Entity: IMessage
     {
         [Key(0)]
         [DataMember]
@@ -202,7 +202,7 @@ namespace Fenix
             peer.Send(packet);
         }
 
-        public void RpcCallback(ulong protoId, uint protoCode, uint fromHostId, uint toHostId, uint fromActorId, uint toActorId, NetworkType netType, object cbMsg)
+        public void RpcCallback(ulong protoId, uint protoCode, uint fromHostId, uint toHostId, uint fromActorId, uint toActorId, NetworkType netType, IMessage cbMsg)
         {  
             var packet = Packet.Create(protoId, protoCode, fromHostId, toHostId, fromActorId, toActorId, netType, cbMsg.GetType(), RpcUtil.Serialize(cbMsg));
 

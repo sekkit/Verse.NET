@@ -1,6 +1,7 @@
 
 using Fenix.Common;
 using Fenix.Common.Attributes;
+using Fenix.Common.Rpc;
 using Fenix.Common.Utils;
 using MessagePack;
 using System;
@@ -33,11 +34,11 @@ namespace Fenix
 
         [IgnoreMember]
         [IgnoreDataMember]
-        protected Dictionary<Type, object> mPersistentDic = new Dictionary<Type, object>();
+        protected Dictionary<Type, IMessage> mPersistentDic = new Dictionary<Type, IMessage>();
  
-        public T Get<T>()
+        public T Get<T>() where T: IMessage
         {
-            object value;
+            IMessage value;
             mPersistentDic.TryGetValue(typeof(T), out value);
             return (T)value;
         }
@@ -65,7 +66,7 @@ namespace Fenix
                 {
                     foreach (RuntimeDataAttribute attr in attrs)
                     {
-                        mPersistentDic[attr.dataType] = Activator.CreateInstance(attr.dataType);
+                        mPersistentDic[attr.dataType] = Activator.CreateInstance(attr.dataType) as IMessage;
                     }
                 }
             }

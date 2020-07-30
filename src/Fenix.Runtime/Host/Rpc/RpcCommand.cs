@@ -73,7 +73,7 @@ namespace Fenix
             }
             else
             {
-                var cb = new Action<object>((cbMsg) =>
+                var cb = new Action<IMessage>((cbMsg) =>
                 {
                     callDone?.Invoke();
                     this.mInvoker.RpcCallback(this.Id, this.ProtoCode, this.ToHostId, this.FromHostId, this.ToActorId, this.FromActorId, this.netType, cbMsg);

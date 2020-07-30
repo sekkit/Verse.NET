@@ -21,7 +21,7 @@ namespace Fenix
     {
         [RpcMethod(OpCode.BIND_CLIENT_ACTOR_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_API_bind_client_actor(IMessage msg, Action<object> cb, RpcContext context)
+        public void SERVER_API_bind_client_actor(IMessage msg, Action<IMessage> cb, RpcContext context)
         {
             var _msg = (BindClientActorReq)msg;
             this.BindClientActor(_msg.actorName, (code) =>
@@ -42,7 +42,7 @@ namespace Fenix
 
         [RpcMethod(OpCode.REGISTER_CLIENT_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_API_register_client(IMessage msg, Action<object> cb, RpcContext context)
+        public void SERVER_API_register_client(IMessage msg, Action<IMessage> cb, RpcContext context)
         {
             var _msg = (RegisterClientReq)msg;
             this.RegisterClient(_msg.hostId, _msg.hostName, (code, arg1) =>
@@ -56,7 +56,7 @@ namespace Fenix
 
         [RpcMethod(OpCode.CREATE_ACTOR_REQ, Api.ServerOnly)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_ONLY_create_actor(IMessage msg, Action<object> cb, RpcContext context)
+        public void SERVER_ONLY_create_actor(IMessage msg, Action<IMessage> cb, RpcContext context)
         {
             var _msg = (CreateActorReq)msg;
             this.CreateActor(_msg.typename, _msg.name, (code, arg1, arg2) =>

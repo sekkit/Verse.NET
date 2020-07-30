@@ -1,15 +1,16 @@
+using Fenix.Common.Rpc;
 using MessagePack;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Fenix.Common.Utils
-{
+{ 
     public class RpcUtil
     {
-        public static byte[] Serialize(object msg)
+        public static byte[] Serialize(IMessage msg)
         {
-            return MessagePackSerializer.Serialize(msg);
+            return MessagePackSerializer.Serialize(((object)msg).GetType(), msg); 
         }
 
         public static T Deserialize<T>(byte[] bytes)

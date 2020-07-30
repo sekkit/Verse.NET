@@ -28,7 +28,7 @@ namespace Shared.Message
         } 
 
         [MessagePackObject]
-        public class Callback
+        public class Callback : IMessage
         {
             [Key(0)]
             [DefaultValue(ErrCode.ERROR)]

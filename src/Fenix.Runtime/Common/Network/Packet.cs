@@ -58,7 +58,7 @@ namespace Fenix
         [IgnoreMember]
         public Type MsgType { get; set; }
 
-        [Key(100)]
+        [Key(6)]
         public byte[] Payload { get; set; }
 
         public Packet()

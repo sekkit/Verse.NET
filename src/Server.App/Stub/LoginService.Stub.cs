@@ -24,7 +24,7 @@ namespace Server.GModule
     {
         [RpcMethod(ProtocolCode.CREATE_ACCOUNT_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_API_create_account(IMessage msg, Action<object> cb)
+        public void SERVER_API_create_account(IMessage msg, Action<IMessage> cb)
         {
             var _msg = (CreateAccountReq)msg;
             this.CreateAccount(_msg.username, _msg.password, (code) =>
@@ -37,7 +37,7 @@ namespace Server.GModule
 
         [RpcMethod(ProtocolCode.DELETE_ACCOUNT_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_API_delete_account(IMessage msg, Action<object> cb)
+        public void SERVER_API_delete_account(IMessage msg, Action<IMessage> cb)
         {
             var _msg = (DeleteAccountReq)msg;
             this.DeleteAccount(_msg.username, _msg.password, (code) =>
@@ -50,7 +50,7 @@ namespace Server.GModule
 
         [RpcMethod(ProtocolCode.LOGIN_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_API_login(IMessage msg, Action<object> cb)
+        public void SERVER_API_login(IMessage msg, Action<IMessage> cb)
         {
             var _msg = (LoginReq)msg;
             this.Login(_msg.username, _msg.password, (code, arg1, arg2, arg3, arg4) =>

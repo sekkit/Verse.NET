@@ -100,9 +100,9 @@ namespace Server
 
                 Environment.SetEnvironmentVariable("AppName", "Login.App");
 
-                //Bootstrap.Start(new Assembly[] { typeof(UModule.Avatar).Assembly}, cfgList, OnInit, isMultiProcess:true); //单进程模式
+                Bootstrap.Start(new Assembly[] { typeof(UModule.Avatar).Assembly}, cfgList, OnInit, isMultiProcess:true); //单进程模式
 
-                Bootstrap.Start(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfgList, OnInit, isMultiProcess: false); //单进程模式
+                //Bootstrap.Start(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfgList, OnInit, isMultiProcess: false); //单进程模式
             }
             else
             {

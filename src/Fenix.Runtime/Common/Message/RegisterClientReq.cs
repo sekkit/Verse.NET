@@ -28,7 +28,7 @@ namespace Fenix.Common.Message
         } 
 
         [MessagePackObject]
-        public class Callback
+        public class Callback : IMessage
         {
             [Key(0)]
             [DefaultValue(DefaultErrCode.ERROR)]

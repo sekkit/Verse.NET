@@ -24,7 +24,7 @@ namespace Client
     {
         [RpcMethod(ProtocolCode.API_TEST_NTF, Api.ClientApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void CLIENT_API_api_test(IMessage msg, Action<object> cb)
+        public void CLIENT_API_api_test(IMessage msg, Action<IMessage> cb)
         {
             var _msg = (ApiTestNtf)msg;
             this.ApiTest(_msg.uid, (code) =>

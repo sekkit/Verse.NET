@@ -259,7 +259,7 @@ namespace Fenix
                 string code = ParseMessageFields(p.ParameterType.GetGenericArguments(), names, prefix + "    ");
                 var builder = new StringBuilder()
                     .AppendLine($"        [MessagePackObject]")
-                    .AppendLine($"        public class Callback")
+                    .AppendLine($"        public class Callback : IMessage")
                     .AppendLine($"        {{")
                     .AppendLine($"{code}")
                     .AppendLine($"        }}");
@@ -664,14 +664,14 @@ namespace Shared
                     if (type.Name == "Host")
                     {
                         if (callback_define != "")
-                            builder.AppendLine($"        public void {api_name}(IMessage msg, Action<object> cb, RpcContext context)");
+                            builder.AppendLine($"        public void {api_name}(IMessage msg, Action<IMessage> cb, RpcContext context)");
                         else
                             builder.AppendLine($"        public void {api_name}(IMessage msg, RpcContext context)");
                     }
                     else
                     {
                         if (callback_define != "")
-                            builder.AppendLine($"        public void {api_name}(IMessage msg, Action<object> cb)");
+                            builder.AppendLine($"        public void {api_name}(IMessage msg, Action<IMessage> cb)");
                         else
                             builder.AppendLine($"        public void {api_name}(IMessage msg)");
                     }
