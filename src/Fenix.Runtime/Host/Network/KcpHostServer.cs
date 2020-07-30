@@ -21,12 +21,10 @@ namespace Fenix
 
         public event Action<Ukcp> OnClose;
 
-        protected KcpServer server; 
+        protected volatile KcpServer server; 
 
         public static KcpHostServer Create(IPEndPoint ep)
         {
-            KcpHostServer listener = new KcpHostServer();
-
             ChannelConfig channelConfig = new ChannelConfig(); 
             channelConfig.Crc32Check = false;
             channelConfig.initNodelay(true, 10, 2, true);
@@ -39,11 +37,18 @@ namespace Fenix
             channelConfig.TimeoutMillis = 10000;
             //channelConfig.Conv = 55;
             ////AutoSetConv = true;
-            channelConfig.UseConvChannel = false; 
-            listener.server = new KcpServer();
-            listener.server.init(Environment.ProcessorCount, listener, channelConfig, ep.Port);
-            
+            channelConfig.UseConvChannel = false;  
+            KcpHostServer listener = new KcpHostServer();
+            if (!listener.Init(channelConfig, ep))
+                return null;
             return listener;
+        }
+
+        public bool Init(ChannelConfig channelConfig, IPEndPoint ep)
+        {  
+            server = new KcpServer();
+            server.init(Environment.ProcessorCount, this, channelConfig, ep.Port); 
+            return true;
         }
 
         public void handleReceive(IByteBuffer byteBuf, Ukcp ukcp)

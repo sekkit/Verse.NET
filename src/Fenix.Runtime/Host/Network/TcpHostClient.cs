@@ -1,4 +1,5 @@
-﻿using DotNetty.Buffers; 
+﻿using DotNetty.Buffers;
+using DotNetty.KCP;
 using DotNetty.TCP;
 using DotNetty.Transport.Channels;
 using Fenix.Common;
@@ -23,7 +24,7 @@ namespace Fenix
 
         public event Action<IChannel, IByteBuffer> OnReceive;
 
-        public static TcpSocketClient client;
+        public static volatile TcpSocketClient client;
 
         protected IChannel clientChannel;
 
@@ -36,6 +37,24 @@ namespace Fenix
         public IPEndPoint LocalAddress => (IPEndPoint)clientChannel.LocalAddress;
 
         public string ChannelId => clientChannel.Id.AsLongText();
+
+        public bool Init(TcpChannelConfig channelConfig, IPEndPoint ep)
+        {
+            if (client == null)
+            {
+                client = new TcpSocketClient();
+                if (!client.init(channelConfig))
+                {
+                    client = null;
+                    return false;
+                }
+            } 
+
+            this.clientChannel = client.Connect(ep, this);
+            if (this.clientChannel == null)
+                return false;
+            return true;
+        }
 
         public void handleConnect(IChannel channel)
         { 
@@ -76,21 +95,11 @@ namespace Fenix
 #if !UNITY_5_3_OR_NEWER
             channelConfig.UseLibuv = false;
 #endif
-            if (client==null)
-            {
-                client = new TcpSocketClient();
-                if (!client.init(channelConfig))
-                {
-                    client = null;
-                    return null;
-                }
-            }
 
-            var listener = new TcpHostClient();
-            listener.clientChannel = client.Connect(ep, listener);
-            if (listener.clientChannel == null)
-                return null;
-            return listener;
+            var obj = new TcpHostClient();
+            if (!obj.Init(channelConfig, ep))
+                return null;            
+            return obj;
         }
 
         public async Task SendAsync(byte[] bytes)

@@ -30,12 +30,12 @@ namespace DotNetty.KCP
 
         private IEventLoopGroup _eventLoopGroup;
 
-        private KcpClient()
+        public KcpClient()
         {
 
         }
 
-        public static KcpClient Instance = new KcpClient();
+        //public static KcpClient Instance = new KcpClient();
 
         private static IChannel bindLocal(Bootstrap bootstrap, EndPoint localAddress = null)
         {

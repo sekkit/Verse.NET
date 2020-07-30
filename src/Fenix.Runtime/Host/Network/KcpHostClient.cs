@@ -20,7 +20,7 @@ namespace Fenix
 
         public event Action<Ukcp> OnClose;
 
-        protected static KcpClient client;
+        protected volatile static KcpClient client;
 
         protected Ukcp _ukcp;
 
@@ -36,7 +36,7 @@ namespace Fenix
         {
             if(client == null)
             {
-                client = KcpClient.Instance;
+                client = new KcpClient();
                 client.init(channelConfig);
             }
 

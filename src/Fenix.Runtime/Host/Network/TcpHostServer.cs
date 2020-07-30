@@ -13,7 +13,7 @@ namespace Fenix
 {
     public class TcpHostServer: ITcpListener
     {
-        public TcpSocketServer server;
+        public volatile TcpSocketServer server;
         
         public event Action<IChannel> OnClose;
 
@@ -55,6 +55,14 @@ namespace Fenix
         //    return Create(ep.Address.ToIPv4String(), ep.Port);
         //}
         
+        public bool Init(TcpChannelConfig channelConfig, IPEndPoint ep)
+        {
+            server = new TcpSocketServer();
+            if (!server.Start(channelConfig, this))
+                return false;
+            return true;
+        }
+
         public static TcpHostServer Create(IPEndPoint ep)
         {
             var channelConfig = new TcpChannelConfig();
@@ -63,11 +71,10 @@ namespace Fenix
 #if !UNITY_5_3_OR_NEWER
             channelConfig.UseLibuv = true;
 #endif
-            var listener = new TcpHostServer();
-            var server = new TcpSocketServer();
-            if (!server.Start(channelConfig, listener))
+            var obj = new TcpHostServer(); 
+            if (!obj.Init(channelConfig, ep))
                 return null;
-            return listener;
+            return obj;
         } 
 
         //public void Send(NetPeer peer, byte[] bytes)
