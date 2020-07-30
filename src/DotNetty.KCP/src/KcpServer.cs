@@ -8,6 +8,7 @@ using DotNetty.Transport.Channels;
 using DotNetty.Transport.Channels.Sockets;
 using DotNetty.KCP.thread;
 using fec.fec;
+using System.Threading.Tasks;
 
 namespace DotNetty.KCP
 {
@@ -73,8 +74,9 @@ namespace DotNetty.KCP
 
             foreach (var port in ports)
             {
-//                for (int i = 0; i < bindTimes; i++) {
-                    var task = _bootstrap.BindAsync(port);
+                //                for (int i = 0; i < bindTimes; i++) {
+                    var task = Task.Run(() => _bootstrap.BindAsync(port));
+                    task.Wait();
                     var channel = task.Result;
                     _localAddress.Add(channel);
 //                }

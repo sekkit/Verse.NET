@@ -8,6 +8,7 @@ using DotNetty.Transport.Channels.Sockets;
 using DotNetty.KCP.thread;
 using fec;
 using fec.fec;
+using System.Threading.Tasks;
 
 namespace DotNetty.KCP
 {
@@ -41,7 +42,9 @@ namespace DotNetty.KCP
             {
                 localAddress = new IPEndPoint(IPAddress.Any, 0);
             }
-            return bootstrap.BindAsync(localAddress).Result;
+            var task = Task.Run(()=> bootstrap.BindAsync(localAddress));
+            task.Wait();
+            return task.Result;
         }
 
         public void init(ChannelConfig channelConfig,ExecutorPool executorPool,IEventLoopGroup eventLoopGroup)
@@ -175,7 +178,7 @@ namespace DotNetty.KCP
             _executorPool?.stop(false);
             if (_eventLoopGroup != null&&!_eventLoopGroup.IsShuttingDown)
             {
-                _eventLoopGroup?.ShutdownGracefullyAsync().Wait();
+                Task.Run(()=>_eventLoopGroup?.ShutdownGracefullyAsync()).Wait();
             }
             _scheduleThread.stop();
         }

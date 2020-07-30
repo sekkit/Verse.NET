@@ -46,7 +46,7 @@ namespace Client
             }
 
             var loginapp = host.GetHost("Login.App", localAddr, 17777);
-            //注册客户端，初始化路由表信息
+            //注册客户端，初始化路由表信息 
 
             loginapp.RegisterClient(host.Id, host.UniqueName, (code, hostInfo) =>
             {
