@@ -117,9 +117,6 @@
     <Reference Include="Microsoft.Extensions.Logging">
       <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/Microsoft.Extensions.Logging.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="reedsolomon_csharp">
       <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/reedsolomon_csharp.dll</HintPath>
     </Reference>
@@ -140,6 +137,9 @@
     </Reference>
     <Reference Include="System.Threading.Tasks.Extensions">
       <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>C:/Code/Fenix/Unity/Library/PackageCache/jillejr.newtonsoft.json-for-unity@12.0.101/Plugins/Newtonsoft.Json Editor/Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>C:/Program Files/Unity/Editor/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/mscorlib.dll</HintPath>
