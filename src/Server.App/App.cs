@@ -13,12 +13,21 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using Microsoft.Extensions.Configuration; 
 using System.Text;
 using Server.Config.Db;
+using CommandLine;
 
 namespace Server
-{ 
+{
+    public class Options
+    {
+        [Option('a', "AppName", Required = false, HelpText = "AppName")]
+        public string AppName { get; set; }
+
+        [Option('c', "Config", Required = false, HelpText = "Config")]
+        public string Config { get; set; }
+    }
+
     class App
     { 
         static void Main(string[] args)
@@ -96,18 +105,19 @@ namespace Server
                 Bootstrap.Start(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfgList, OnInit, isMultiProcess: false); //单进程模式
             }
             else
-            { 
-                var builder = new ConfigurationBuilder().AddCommandLine(args);
-                var cmdLine = builder.Build();
-                 
-                //将命令行参数，设置到进程的环境变量
-                Environment.SetEnvironmentVariable("AppName", cmdLine["AppName"]);
+            {
+                Parser.Default.ParseArguments<Options>(args)
+                   .WithParsed<Options>(o =>
+                   {
+                       //将命令行参数，设置到进程的环境变量
+                       Environment.SetEnvironmentVariable("AppName", o.AppName);
 
-                using (var sr = new StreamReader(cmdLine["Config"]))
-                {
-                    var cfgList = JsonConvert.DeserializeObject<List<RuntimeConfig>>(sr.ReadToEnd());
-                    Bootstrap.Start(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfgList, OnInit, isMultiProcess: true); //分布式
-                }
+                       using (var sr = new StreamReader(o.Config))
+                       {
+                           var cfgList = JsonConvert.DeserializeObject<List<RuntimeConfig>>(sr.ReadToEnd());
+                           Bootstrap.Start(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfgList, OnInit, isMultiProcess: true); //分布式
+                       }
+                   });
             }
         }
 

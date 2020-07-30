@@ -8,7 +8,6 @@ using DotNetty.Transport.Channels.Sockets;
 using DotNetty.KCP.thread;
 using fec;
 using fec.fec;
-using System.Threading.Tasks;
 
 namespace DotNetty.KCP
 {
@@ -30,30 +29,19 @@ namespace DotNetty.KCP
 
         private IEventLoopGroup _eventLoopGroup;
 
+        private IScheduleThread _scheduleThread; 
         public KcpClient()
         {
 
         }
 
-        //public static KcpClient Instance = new KcpClient();
-
-        private static IChannel bindLocal(Bootstrap bootstrap, EndPoint localAddress = null)
+        private static IChannel bindLocal(Bootstrap bootstrap,EndPoint localAddress = null)
         {
             if (localAddress == null)
             {
                 localAddress = new IPEndPoint(IPAddress.Any, 0);
             }
-             
-//#if UNITY_5_3_OR_NEWER
-            //var task = bootstrap.BindAsync(localAddress);
-            //task.Wait();
-            var task = Task.Run(() => bootstrap.BindAsync(localAddress));
-            task.Wait();
-            return task.Result;
-//#else
- 
-//            return bootstrap.BindAsync(localAddress).Result;
-//#endif
+            return bootstrap.BindAsync(localAddress).Result;
         }
 
         public void init(ChannelConfig channelConfig,ExecutorPool executorPool,IEventLoopGroup eventLoopGroup)
@@ -75,6 +63,8 @@ namespace DotNetty.KCP
             _executorPool = executorPool;
             _executorPool.CreateMessageExecutor();
             _eventLoopGroup = eventLoopGroup;
+            
+            _scheduleThread = new EventLoopScheduleThread();
 
             bootstrap = new Bootstrap();
             bootstrap.Group(_eventLoopGroup);
@@ -121,7 +111,7 @@ namespace DotNetty.KCP
                 _bootstrap = bootstrap;
             }
 
-            public override void execute()
+            public void execute()
             {
                 _ukcp.user().Channel.CloseAsync();
                 var iChannel = bindLocal(_bootstrap);
@@ -151,8 +141,9 @@ namespace DotNetty.KCP
 
             _messageExecutor.execute(new ConnectTask(ukcp, kcpListener));
 
-            var scheduleTask = new ScheduleTask( _channelManager, ukcp);
-            KcpUntils.scheduleHashedWheel(scheduleTask, TimeSpan.FromMilliseconds(ukcp.getInterval()));
+            var scheduleTask = new ScheduleTask( _channelManager, ukcp,_scheduleThread);
+            
+            _scheduleThread.schedule(scheduleTask,TimeSpan.FromMilliseconds(ukcp.getInterval()));
             return ukcp;
         }
 
@@ -184,8 +175,9 @@ namespace DotNetty.KCP
             _executorPool?.stop(false);
             if (_eventLoopGroup != null&&!_eventLoopGroup.IsShuttingDown)
             {
-                Task.Run(()=>_eventLoopGroup?.ShutdownGracefullyAsync());
+                _eventLoopGroup?.ShutdownGracefullyAsync().Wait();
             }
+            _scheduleThread.stop();
         }
     }
 }

@@ -11,7 +11,7 @@ namespace DotNetty.KCP
             _ukcp = ukcp;
         }
 
-        public override void execute()
+        public void execute()
         {
             _ukcp.internalClose();
         }

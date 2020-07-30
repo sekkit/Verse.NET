@@ -26,12 +26,7 @@ namespace DotNetty.KCP
             _ukcps.TryRemove(ukcp.user().LocalAddress, out var temp);
             if (temp == null)
             {
-#if !UNITY_5_3_OR_NEWER
                 Console.WriteLine("ukcp session is not exist RemoteAddress: " + ukcp.user().RemoteAddress);
-#else
-                Console.WriteLine("ukcp session is not exist RemoteAddress: " + ukcp.user().RemoteAddress);
-#endif
-                
             }
             ukcp.user().Channel.CloseAsync();
         }

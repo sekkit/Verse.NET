@@ -16,7 +16,7 @@ namespace DotNetty.KCP
         }
 
 
-        public override void execute()
+        public void execute()
         {
             try
             {

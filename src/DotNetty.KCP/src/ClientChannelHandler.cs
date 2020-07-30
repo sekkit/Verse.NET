@@ -20,11 +20,7 @@ namespace DotNetty.KCP
 
         public override void ExceptionCaught(IChannelHandlerContext context, Exception exception)
         {
-#if !UNITY_5_3_OR_NEWER
-            Console.WriteLine(exception.ToString());
-#else
-            Console.WriteLine(exception.ToString());
-#endif
+            Console.WriteLine(exception);
         }
 
         public override void ChannelRead(IChannelHandlerContext context, object message)

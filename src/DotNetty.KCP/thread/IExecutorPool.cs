@@ -10,5 +10,8 @@ namespace DotNetty.KCP.thread
 
          IMessageExecutor GetAutoMessageExecutor();
 
+
+         void scheduleTask(IScheduleTask scheduleTask);
+
     }
 }
