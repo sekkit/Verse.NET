@@ -16,31 +16,15 @@
   <ItemGroup>
     <Compile Remove="obj\\**\*" />
     <Compile Include="obj\$(MSBuildProjectName)\**\$(MSBuildProjectName).AssemblyInfo.cs" />
-  </ItemGroup>
+  </ItemGroup> 
+  
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'"> 
     <DefineConstants>TRACE;NET_3_5_GREATER;SIGNED;NETSTANDARD;NET_4_0_GREATER;NET_4_5_GREATER;NET_4_6_GREATER;CLIENT;UNITY_5_3_OR_NEWER;</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'"> 
     <DefineConstants>TRACE;NET_3_5_GREATER;SIGNED;NETSTANDARD;NET_4_0_GREATER;NET_4_5_GREATER;NET_4_6_GREATER;UNITY_5_3_OR_NEWER;</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.1|AnyCPU'">
-    <OutputPath>..\..\Libs</OutputPath>
-  </PropertyGroup>
-
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.1|AnyCPU'">
-    <OutputPath>..\..\Libs</OutputPath>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp3.1|AnyCPU'">
-    <OutputPath>..\..\Libs</OutputPath>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.1|AnyCPU'">
-    <OutputPath>..\..\Libs</OutputPath>
-  </PropertyGroup>
+  </PropertyGroup> 
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.6">
