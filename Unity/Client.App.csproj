@@ -74,6 +74,9 @@
     <Compile Include="Assets\Scripts\Client\Gen\Message\ChangeNameReq.cs" />
     <Compile Include="Assets\Scripts\Client\Gen\Message\CreateAccountReq.cs" />
     <Compile Include="Assets\Scripts\Client\Gen\Message\DeleteAccountReq.cs" />
+    <Compile Include="Assets\Scripts\Client\Gen\Message\Generated\ClientAppMsg.g.cs" />
+    <Compile Include="Assets\Scripts\Client\Gen\Message\Generated\FenixRuntimeMsg.g.cs" />
+    <Compile Include="Assets\Scripts\Client\Gen\Message\Generated\SharedMsg.g.cs" />
     <Compile Include="Assets\Scripts\Client\Gen\Message\LoginReq.cs" />
     <Compile Include="Assets\Scripts\Client\Gen\Message\OnMatchOkReq.cs" />
     <Compile Include="Assets\Scripts\Client\Gen\Message\ResetPasswordReq.cs" />

@@ -17,9 +17,7 @@ namespace Client
     public class ClientApp : MonoBehaviour
     {
         public void Start()
-        {
-            UnitySystemConsoleRedirector.Redirect();
-
+        { 
             App.Instance.Init();
         }
 

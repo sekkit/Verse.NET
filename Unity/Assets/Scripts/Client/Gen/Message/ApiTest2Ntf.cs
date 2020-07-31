@@ -26,6 +26,10 @@ namespace Shared.Message
         {
             return MessagePackSerializer.Serialize<ApiTest2Ntf>(this);
         }
+        public new static ApiTest2Ntf Deserialize(byte[] data)
+        {
+            return MessagePackSerializer.Deserialize<ApiTest2Ntf>(data);
+        }
     }
 }
 

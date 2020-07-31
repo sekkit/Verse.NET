@@ -41,11 +41,19 @@ namespace Shared.Message
             {
                 return MessagePackSerializer.Serialize<Callback>(this);
             }
+            public new static Callback Deserialize(byte[] data)
+            {
+                return MessagePackSerializer.Deserialize<Callback>(data);
+            }
         }
 
         public override byte[] Pack()
         {
             return MessagePackSerializer.Serialize<CreateAccountReq>(this);
+        }
+        public new static CreateAccountReq Deserialize(byte[] data)
+        {
+            return MessagePackSerializer.Deserialize<CreateAccountReq>(data);
         }
     }
 }

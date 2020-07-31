@@ -1,6 +1,6 @@
 @echo off
 
-dotnet-mpc -i Client.App.csproj -o Assets\Plugins\Fenix\Gen\ClientAppMsg.g.cs -r ClientAppResolver
-dotnet-mpc -i ..\src\Fenix.Runtime\Common -o Assets\Plugins\Fenix\Gen\FenixRuntimeMsg.g.cs -r FenixRuntimeResolver
-dotnet-mpc -i ..\src\Shared\ -o Assets\Plugins\Fenix\Gen\SharedMsg.g.cs -r SharedResolver
+dotnet-mpc -i Client.App.csproj -o Assets\Scripts\Client\Gen\Message\Generated\ClientAppMsg.g.cs -r ClientAppResolver
+dotnet-mpc -i ..\src\Fenix.Runtime\Common -o Assets\Scripts\Client\Gen\Message\Generated\FenixRuntimeMsg.g.cs -r FenixRuntimeResolver
+dotnet-mpc -i ..\src\Shared\ -o Assets\Scripts\Client\Gen\Message\Generated\SharedMsg.g.cs -r SharedResolver
 

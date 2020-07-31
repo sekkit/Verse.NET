@@ -23,6 +23,8 @@ public class Startup
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     static void Initialize()
     {
+        UnitySystemConsoleRedirector.Redirect();
+
         if (!serializerRegistered)
         { 
             StaticCompositeResolver.Instance.Register(
@@ -40,6 +42,9 @@ public class Startup
             MessagePackSerializer.DefaultOptions = option;
             serializerRegistered = true;
         }
+
+        Console.WriteLine(typeof(int).GUID);
+        Console.WriteLine(typeof(float).GUID);
     }
 
 #if UNITY_EDITOR
