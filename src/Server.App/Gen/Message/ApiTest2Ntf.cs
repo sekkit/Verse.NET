@@ -22,6 +22,10 @@ namespace Shared.Message
         [Key(1)]
         public Int32 match_type { get; set; }
 
+        public override byte[] Pack()
+        {
+            return MessagePackSerializer.Serialize<ApiTest2Ntf>(this);
+        }
     }
 }
 

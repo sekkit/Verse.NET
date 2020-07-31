@@ -17,6 +17,10 @@ namespace Shared.Message
     public class OnMatchOkReq : IMessage
     {
 
+        public override byte[] Pack()
+        {
+            return MessagePackSerializer.Serialize<OnMatchOkReq>(this);
+        }
     }
 }
 

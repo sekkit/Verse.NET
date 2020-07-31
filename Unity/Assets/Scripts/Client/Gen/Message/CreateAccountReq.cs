@@ -37,8 +37,16 @@ namespace Shared.Message
             [DefaultValue(ErrCode.ERROR)]
             public ErrCode code { get; set; } = ErrCode.ERROR;
 
+            public override byte[] Pack()
+            {
+                return MessagePackSerializer.Serialize<Callback>(this);
+            }
         }
 
+        public override byte[] Pack()
+        {
+            return MessagePackSerializer.Serialize<CreateAccountReq>(this);
+        }
     }
 }
 

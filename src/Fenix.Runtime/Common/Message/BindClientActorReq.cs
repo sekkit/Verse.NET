@@ -31,8 +31,16 @@ namespace Fenix.Common.Message
             [DefaultValue(DefaultErrCode.ERROR)]
             public DefaultErrCode code { get; set; } = DefaultErrCode.ERROR;
 
+            public override byte[] Pack()
+            {
+                return MessagePackSerializer.Serialize<Callback>(this);
+            }
         }
 
+        public override byte[] Pack()
+        {
+            return MessagePackSerializer.Serialize<BindClientActorReq>(this);
+        }
     }
 }
 

@@ -8,7 +8,7 @@ namespace Fenix.Common.Rpc
     [MessagePackObject]
     public class IMessage
     {
-        public byte[] Pack()
+        public virtual byte[] Pack()
         {
             return MessagePackSerializer.Serialize(this);
         }

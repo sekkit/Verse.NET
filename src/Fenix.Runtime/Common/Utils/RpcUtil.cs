@@ -10,7 +10,7 @@ namespace Fenix.Common.Utils
     {
         public static byte[] Serialize(IMessage msg)
         {
-            return MessagePackSerializer.Serialize(((object)msg).GetType(), msg); 
+            return msg.Pack(); 
         }
 
         public static T Deserialize<T>(byte[] bytes)

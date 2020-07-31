@@ -37,8 +37,16 @@ namespace Fenix.Common.Message
             [Key(1)]
             public HostInfo arg1 { get; set; }
 
+            public override byte[] Pack()
+            {
+                return MessagePackSerializer.Serialize<Callback>(this);
+            }
         }
 
+        public override byte[] Pack()
+        {
+            return MessagePackSerializer.Serialize<RegisterClientReq>(this);
+        }
     }
 }
 

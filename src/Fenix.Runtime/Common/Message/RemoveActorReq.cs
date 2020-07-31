@@ -16,6 +16,10 @@ namespace Fenix.Common.Message
         [Key(0)]
         public UInt32 actorId { get; set; }
 
+        public override byte[] Pack()
+        {
+            return MessagePackSerializer.Serialize<RemoveActorReq>(this);
+        }
     }
 }
 

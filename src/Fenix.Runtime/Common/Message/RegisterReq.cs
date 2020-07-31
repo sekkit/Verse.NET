@@ -19,6 +19,10 @@ namespace Fenix.Common.Message
         [Key(1)]
         public String hostName { get; set; }
 
+        public override byte[] Pack()
+        {
+            return MessagePackSerializer.Serialize<RegisterReq>(this);
+        }
     }
 }
 

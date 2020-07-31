@@ -40,8 +40,16 @@ namespace Fenix.Common.Message
             [Key(2)]
             public UInt32 arg2 { get; set; }
 
+            public override byte[] Pack()
+            {
+                return MessagePackSerializer.Serialize<Callback>(this);
+            }
         }
 
+        public override byte[] Pack()
+        {
+            return MessagePackSerializer.Serialize<CreateActorReq>(this);
+        }
     }
 }
 

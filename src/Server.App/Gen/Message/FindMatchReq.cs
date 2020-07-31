@@ -37,8 +37,16 @@ namespace Shared.Message
             [Key(1)]
             public Account user { get; set; }
 
+            public override byte[] Pack()
+            {
+                return MessagePackSerializer.Serialize<Callback>(this);
+            }
         }
 
+        public override byte[] Pack()
+        {
+            return MessagePackSerializer.Serialize<FindMatchReq>(this);
+        }
     }
 }
 

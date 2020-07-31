@@ -262,6 +262,10 @@ namespace Fenix
                     .AppendLine($"        public class Callback : IMessage")
                     .AppendLine($"        {{")
                     .AppendLine($"{code}")
+                    .AppendLine($"            public override byte[] Pack()")
+                    .AppendLine($"            {{")
+                    .AppendLine($"                return MessagePackSerializer.Serialize<Callback>(this);")
+                    .AppendLine($"            }}")
                     .AppendLine($"        }}");
                 return builder.ToString();
             }
@@ -521,7 +525,10 @@ namespace Shared
         } 
 ").AppendLine($"{callback_define}");
                     }
-
+                    msgBuilder.AppendLine($"        public override byte[] Pack()")
+                    .AppendLine($"        {{")
+                    .AppendLine($"            return MessagePackSerializer.Serialize<{message_type}>(this);")
+                    .AppendLine($"        }}");
                     msgBuilder.AppendLine($"    }}")
                         .AppendLine($"}}");
 

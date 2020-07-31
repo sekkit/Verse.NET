@@ -49,8 +49,16 @@ namespace Shared.Message
             [Key(4)]
             public String arg4 { get; set; }
 
+            public override byte[] Pack()
+            {
+                return MessagePackSerializer.Serialize<Callback>(this);
+            }
         }
 
+        public override byte[] Pack()
+        {
+            return MessagePackSerializer.Serialize<LoginReq>(this);
+        }
     }
 }
 
