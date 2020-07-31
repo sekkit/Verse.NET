@@ -20,6 +20,10 @@ namespace Fenix.Common.Message
         {
             return MessagePackSerializer.Serialize<MigrateActorReq>(this);
         }
+        public new static MigrateActorReq Deserialize(byte[] data)
+        {
+            return MessagePackSerializer.Deserialize<MigrateActorReq>(data);
+        }
     }
 }
 

@@ -53,11 +53,19 @@ namespace Shared.Message
             {
                 return MessagePackSerializer.Serialize<Callback>(this);
             }
+            public new static Callback Deserialize(byte[] data)
+            {
+                return MessagePackSerializer.Deserialize<Callback>(data);
+            }
         }
 
         public override byte[] Pack()
         {
             return MessagePackSerializer.Serialize<LoginReq>(this);
+        }
+        public new static LoginReq Deserialize(byte[] data)
+        {
+            return MessagePackSerializer.Deserialize<LoginReq>(data);
         }
     }
 }

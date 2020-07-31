@@ -22,6 +22,10 @@ namespace Shared.Message
         [Key(1)]
         public String email { get; set; }
 
+        public override byte[] Pack()
+        {
+            return MessagePackSerializer.Serialize<ResetPasswordReq>(this);
+        }
     }
 }
 

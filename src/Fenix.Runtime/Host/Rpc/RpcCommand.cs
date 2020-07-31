@@ -65,8 +65,9 @@ namespace Fenix
         public void Call(Action callDone)
         { 
             var args = new List<object>();
+            Log.Info("cmd_call=>before_add", this.Msg.GetType().Name);
             args.Add(this.Msg);
-
+            Log.Info("cmd_call=>has_cb", this.Msg.HasCallback());
             if (!this.Msg.HasCallback())
             {
                 callDone?.Invoke();

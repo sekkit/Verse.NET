@@ -23,6 +23,10 @@ namespace Fenix.Common.Message
         {
             return MessagePackSerializer.Serialize<RegisterReq>(this);
         }
+        public new static RegisterReq Deserialize(byte[] data)
+        {
+            return MessagePackSerializer.Deserialize<RegisterReq>(data);
+        }
     }
 }
 

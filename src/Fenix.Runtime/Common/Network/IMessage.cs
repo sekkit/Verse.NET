@@ -13,6 +13,16 @@ namespace Fenix.Common.Rpc
             return MessagePackSerializer.Serialize(this);
         }
 
+        public virtual void UnPack(byte[] data)
+        {
+            
+        }
+
+        public static IMessage Deserialize(byte[] data)
+        {
+            return MessagePackSerializer.Deserialize<IMessage>(data);
+        }
+
         public virtual bool HasCallback()
         {
             return false;

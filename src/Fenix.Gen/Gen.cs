@@ -266,6 +266,10 @@ namespace Fenix
                     .AppendLine($"            {{")
                     .AppendLine($"                return MessagePackSerializer.Serialize<Callback>(this);")
                     .AppendLine($"            }}")
+                     .AppendLine($"            public new static Callback Deserialize(byte[] data)")
+                    .AppendLine($"            {{")
+                    .AppendLine($"                return MessagePackSerializer.Deserialize<Callback>(data);")
+                    .AppendLine($"            }}")
                     .AppendLine($"        }}");
                 return builder.ToString();
             }
@@ -528,6 +532,10 @@ namespace Shared
                     msgBuilder.AppendLine($"        public override byte[] Pack()")
                     .AppendLine($"        {{")
                     .AppendLine($"            return MessagePackSerializer.Serialize<{message_type}>(this);")
+                    .AppendLine($"        }}");
+                    msgBuilder.AppendLine($"        public new static {message_type} Deserialize(byte[] data)")
+                    .AppendLine($"        {{")
+                    .AppendLine($"            return MessagePackSerializer.Deserialize<{message_type}>(data);")
                     .AppendLine($"        }}");
                     msgBuilder.AppendLine($"    }}")
                         .AppendLine($"}}");

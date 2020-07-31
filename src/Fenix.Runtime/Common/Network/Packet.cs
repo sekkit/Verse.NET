@@ -46,10 +46,10 @@ namespace Fenix
                     return _msg;
                 try
                 {
-                    _msg = (IMessage)RpcUtil.Deserialize(MsgType, this.Payload);
+                    _msg = RpcUtil.Deserialize(MsgType, this.Payload);
                 }catch(Exception ex)
                 {
-
+                    Log.Error(ex.ToString());
                 }
                 return _msg;
             }

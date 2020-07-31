@@ -22,8 +22,8 @@ namespace Shared.Message
         [Key(1)]
         public String password { get; set; }
 
+        [Key(2)]
 
-        [Key(199)]
         public Callback callback
         {
             get => _callback as Callback;
@@ -31,14 +31,22 @@ namespace Shared.Message
         } 
 
         [MessagePackObject]
-        public class Callback
+        public class Callback : IMessage
         {
             [Key(0)]
             [DefaultValue(ErrCode.ERROR)]
             public ErrCode code { get; set; } = ErrCode.ERROR;
 
+            public override byte[] Pack()
+            {
+                return MessagePackSerializer.Serialize<Callback>(this);
+            }
         }
 
+        public override byte[] Pack()
+        {
+            return MessagePackSerializer.Serialize<CreateAccountReq>(this);
+        }
     }
 }
 

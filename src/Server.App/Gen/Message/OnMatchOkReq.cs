@@ -21,6 +21,10 @@ namespace Shared.Message
         {
             return MessagePackSerializer.Serialize<OnMatchOkReq>(this);
         }
+        public new static OnMatchOkReq Deserialize(byte[] data)
+        {
+            return MessagePackSerializer.Deserialize<OnMatchOkReq>(data);
+        }
     }
 }
 

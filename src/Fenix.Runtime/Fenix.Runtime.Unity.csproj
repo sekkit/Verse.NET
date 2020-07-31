@@ -26,11 +26,11 @@
   </PropertyGroup> 
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;NET_3_5_GREATER;SIGNED;UNITY_5_3_OR_NEWER;CLIENT;</DefineConstants>
+    <DefineConstants>TRACE;NET_3_5_GREATER;SIGNED;UNITY_5_3_OR_NEWER;CLIENT;ENABLE_IL2CPP;</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>TRACE;NET_3_5_GREATER;SIGNED;UNITY_5_3_OR_NEWER;CLIENT;</DefineConstants>
+    <DefineConstants>TRACE;NET_3_5_GREATER;SIGNED;UNITY_5_3_OR_NEWER;CLIENT;ENABLE_IL2CPP;</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
