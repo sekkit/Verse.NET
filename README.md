@@ -42,7 +42,7 @@ Fenix is in a early stage of development, but is also being used in commercial G
 1. RPC decleration
 
 ```csharp
-    //to tag a funtion with ServerApi, ServerOnly, ClientOnly you can create a RPC protocol without effort.
+    //to tag a function with ServerApi, ServerOnly, ClienApi you can create a RPC protocol without effort.
     [RuntimeData(typeof(MatchData))]
     public partial class MatchService : Service
     {
