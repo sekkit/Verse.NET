@@ -191,6 +191,7 @@ namespace Fenix
                     NetManager.Instance.RemovePeerId(toHostId);
                 else
                     NetManager.Instance.Deregister(peer);
+                cb?.Invoke(null);
                 return;
             }
 

@@ -48,8 +48,7 @@ namespace Fenix
                     client = null;
                     return false;
                 }
-            } 
-
+            }  
             this.clientChannel = client.Connect(ep, this);
             if (this.clientChannel == null)
                 return false;
