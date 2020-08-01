@@ -27,23 +27,28 @@ namespace Client
             this.Init();
         }
 #endif
-        public void Init()
+        public void Init(bool threaded=true)
         {
             Environment.SetEnvironmentVariable("AppName", "Client.App");
 
             Global.Init(new Assembly[] { typeof(App).Assembly });
-             
             host = Host.CreateClient();
-
-            var localAddr = Basic.GetLocalIPv4(System.Net.NetworkInformation.NetworkInterfaceType.Ethernet);
-            //localAddr = "182.254.179.250";
-
-            host = Host.CreateClient();
-            if (host == null)
+            if (threaded)
+                HostHelper.RunThread(host);
+            else
             {
-                Log.Info(string.Format("unable_connect_to_server {0}:{1}", localAddr, 17777));
-                return;
+#if !UNITY_5_3_OR_NEWER
+                HostHelper.Run(host);
+#else
+                
+#endif
             }
+        }
+
+        public void Login(string userName, string password, Action<ErrCode> callback)
+        { 
+            var localAddr = Basic.GetLocalIPv4(System.Net.NetworkInformation.NetworkInterfaceType.Ethernet);
+            //localAddr = "182.254.179.250"; 
 
             var loginapp = host.GetHost("Login.App", localAddr, 17777);
             //注册客户端，初始化路由表信息 
@@ -54,14 +59,18 @@ namespace Client
                 {
                     Log.Error("register_client_error, plz try again later");
                     loginapp.Disconnect();
+                    callback?.Invoke(ErrCode.ERROR);
                     return;
                 }
-                Log.Info(string.Format("Register to server {0}: {1} {2} {3}", code, hostInfo.HostId,
-                    hostInfo.HostName, hostInfo.HostAddr));
+
+                Log.Info(string.Format("Register to server {0}: {1} {2} {3}", code, 
+                    hostInfo.HostId, hostInfo.HostName, hostInfo.HostAddr));
+
                 if (loginapp.toHostId != hostInfo.HostId)
                     NetManager.Instance.ChangePeerId(loginapp.toHostId, hostInfo.HostId, hostInfo.HostName, hostInfo.HostAddr);
 
                 Global.IdManager.RegisterHostInfo(hostInfo); 
+
                 if (code == 0)
                 {
                     //发起登陆请求，得到玩家entity所在host信息
@@ -72,8 +81,10 @@ namespace Client
                         {
                             Log.Error("login_failed");
                             loginapp.Disconnect();
+                            callback?.Invoke(code2);
                             return;
                         }
+
                         Log.Info(string.Format("ServerAvatar host: {0}@{1} {2} {3}", uid, hostId, hostName, hostAddress));
                         Game.Avatar = host.CreateActor<Client.Avatar>(uid);
 
@@ -89,6 +100,8 @@ namespace Client
                         {
                             NetManager.Instance.PrintPeerInfo("# Master.App: BindClientActor called");
                             Log.Info("Avatar已经和服务端绑定");
+
+                            callback?.Invoke((ErrCode)code3);
                         });
                         loginapp.Disconnect();
                     });
@@ -105,7 +118,7 @@ namespace Client
 
         public void Update()
         {
-
+            HostHelper.Update(host);
         }
 
         public void OnDestroy()

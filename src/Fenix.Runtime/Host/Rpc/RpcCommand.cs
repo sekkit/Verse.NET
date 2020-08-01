@@ -106,7 +106,15 @@ namespace Fenix
 
         public void Callback(byte[] cbData)
         {
+#if CLIENT
+            OneThreadSynchronizationContext.Instance.Post((obj) =>
+            {
+                var cb = (byte[])cbData;
+                this.callbackMethod?.Invoke(cb);
+            }, cbData);
+#else
             this.callbackMethod?.Invoke(cbData);
+#endif
         }
     }
 

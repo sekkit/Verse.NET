@@ -51,10 +51,9 @@
     <namespace fullname="DotNetty.Transport" preserve="all"/>
   </assembly>
   <assembly fullname="DotNetty.Transport.Libuv">
-  <namespace fullname="DotNetty.Transport.Libuv" preserve="all"/>
+    <namespace fullname="DotNetty.Transport.Libuv" preserve="all"/>
   </assembly>
   <assembly fullname="Client.App" preserve="all"/> 
   <assembly fullname="Fenix.Runtime.Unity" preserve="all"/>  
-	<assembly fullname="MessagePack" preserve="all"/> 
-<assembly fullname="MessagePack" preserve="all"/> 
+	<assembly fullname="MessagePack" preserve="all"/>  
 </linker>
