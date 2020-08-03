@@ -13,6 +13,11 @@
 
     <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 
+    <ItemGroup>
+      <Compile Remove="obj\\**\*" />
+      <Compile Include="obj\$(MSBuildProjectName)\**\$(MSBuildProjectName).AssemblyInfo.cs" />
+    </ItemGroup>
+
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;NET_3_5_GREATER;SIGNED;CLIENT;GEN;UNITY_5_3_OR_NEWER;</DefineConstants>
   </PropertyGroup>

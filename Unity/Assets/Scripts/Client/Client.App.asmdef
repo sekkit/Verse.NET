@@ -1,6 +1,6 @@
 {
     "name": "Client.App",
-    "references": ["MessagePack", "Fenix.Runtime", "Shared", "MsgGen"],
+    "references": ["MessagePack", "Fenix.Runtime", "Shared"],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": true,
