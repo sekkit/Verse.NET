@@ -191,6 +191,7 @@ namespace Fenix
                     NetManager.Instance.RemovePeerId(toHostId);
                 else
                     NetManager.Instance.Deregister(peer);
+                cb?.Invoke(null);
                 return;
             }
 
@@ -258,11 +259,13 @@ namespace Fenix
 
         protected void CheckRpc()
         {
+            
             var curTime = TimeUtil.GetTimeStampMS();
             foreach (var cmd in rpcDic.Values.ToArray())
             {
                 if(curTime - cmd.CallTime > 15000)
                 {
+                    Log.Info("CheckRpc->timeout");
                     cmd.Callback(null);
                     RemoveRpc(cmd.Id);
                 }

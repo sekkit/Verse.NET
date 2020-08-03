@@ -9,6 +9,7 @@ using System;
 using System.Net;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
@@ -18,7 +19,7 @@ namespace Client
     {
         public void Start()
         { 
-            App.Instance.Init();
+            App.Instance.Init(threaded:false);
         }
 
         public void Update()
@@ -29,6 +30,26 @@ namespace Client
         public void OnDestroy()
         {
             App.Instance.OnDestroy();
+        }
+
+        public void Login(string userName, string password, Action<ErrCode> callback)
+        {
+            Task.Run(() => App.Instance.Login(userName, password, callback));
+        }
+
+        public void Register(string userName, string password, bool isGuest, Action<ErrCode> callback)
+        {
+            //App.Instance.Register(userName, password, callback);
+        }
+
+        public void Logout(string userName, string password, Action<ErrCode> callback)
+        {
+            //App.Instance.Login(userName, password, callback);
+        }
+
+        public void ReInit()
+        {
+
         }
     }
 }

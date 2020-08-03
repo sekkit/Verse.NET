@@ -5,16 +5,7 @@ using Fenix.Common.Utils;
 using MessagePack;
 using MessagePack.Resolvers;
 using System;
-using UnityEngine;
-
-//AUTOGEN, do not modify it!
-
-using Fenix.Common;
-using Fenix.Common.Attributes;
-using Fenix.Common.Rpc;
-using MessagePack;
-using System.ComponentModel;
-using System;
+using UnityEngine; 
 
 public class Startup
 {

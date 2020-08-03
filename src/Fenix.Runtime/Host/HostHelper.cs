@@ -42,7 +42,7 @@ namespace Fenix
                 {
                     Log.Error(e.ToString());
                 }
-            } 
+            }
         }
 
         public static void Update(Host host)

@@ -79,17 +79,24 @@ namespace DotNetty.TCP
 
         public IChannel Connect(IPEndPoint ep, ITcpListener listener)
         {
-            
-//#if UNITY_5_3_OR_NEWER
-            var task = Task<IChannel>.Run(() => bootstrap.ConnectAsync(ep));
-            task.Wait();
-            var ch = task.Result;
-//#else
-//            var ch = bootstrap.ConnectAsync(ep).Result;
-//#endif
-            var chId = ch.Id.AsLongText(); 
-            clientListenerDic[chId] = listener;
-            return ch;
+
+            try
+            {
+                //#if UNITY_5_3_OR_NEWER
+                var task = Task<IChannel>.Run(() => bootstrap.ConnectAsync(ep));
+                task.Wait();
+                var ch = task.Result;
+                //#else
+                //            var ch = bootstrap.ConnectAsync(ep).Result;
+                //#endif
+                var chId = ch.Id.AsLongText();
+                clientListenerDic[chId] = listener;
+                return ch;
+            }
+            catch(Exception ex)
+            {
+                return null;
+            } 
         } 
         
         public async void Shutdown()

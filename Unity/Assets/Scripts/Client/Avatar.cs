@@ -1,7 +1,8 @@
 ﻿ 
 using Fenix;
 using Fenix.Common;
-using Fenix.Common.Attributes; 
+using Fenix.Common.Attributes;
+using Shared.DataModel;
 using Shared.Protocol;
 using System;
 
@@ -10,9 +11,12 @@ namespace Client
     //Avatar.Client
     [ActorType(AType.CLIENT)]
     [AccessLevel(ALevel.CLIENT_AND_SERVER)]
+    [RuntimeData(typeof(User))]
     public partial class Avatar : Actor
     {
         public string Uid => this.UniqueName;
+
+        public User User => Get<User>();
 
         public Avatar(string uid) : base(uid)
         {
