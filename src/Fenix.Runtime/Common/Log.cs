@@ -1,7 +1,4 @@
-﻿
-#if !UNITY_5_3_OR_NEWER
-using Serilog;
-#endif
+﻿ 
 
 using System;
 using System.Collections.Generic;
