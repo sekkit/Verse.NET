@@ -11,7 +11,7 @@ using System.Reflection;
 namespace Client
 { 
     public class App
-    {
+    { 
         public static App Instance = new App();
 
         Host host;
@@ -30,7 +30,6 @@ namespace Client
         public void Init(bool threaded=true)
         {
             Environment.SetEnvironmentVariable("AppName", "Client.App");
-
             Global.Init(new Assembly[] { typeof(App).Assembly });
             host = Host.CreateClient();
             if (threaded)
