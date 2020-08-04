@@ -147,7 +147,6 @@ namespace Fenix
 
             tcpClient.OnReceive += (ch, buffer) =>
             {
-                Console.WriteLine("PEER_RECV: " + (Fenix.Common.Utils.TimeUtil.GetTimeStampMS2() - lastTickTime).ToString());
                 OnReceive?.Invoke(this, buffer);
             };
 

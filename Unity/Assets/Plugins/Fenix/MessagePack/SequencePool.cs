@@ -44,7 +44,7 @@ namespace MessagePack
         /// <devremarks>
         /// We allow 100 arrays to be shared (instead of the default 50) and reduce the max array length from the default 1MB to something more reasonable for our expected use.
         /// </devremarks>
-        private readonly ArrayPool<byte> arrayPool = ArrayPool<byte>.Create(80 * 1024, 100);
+        private readonly System.Buffers.ArrayPool<byte> arrayPool = System.Buffers.ArrayPool<byte>.Create(80 * 1024, 100);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SequencePool"/> class.

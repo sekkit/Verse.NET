@@ -451,7 +451,7 @@ namespace MessagePack
             }
             else
             {
-                rentedInputArray = ArrayPool<byte>.Shared.Rent((int)input.Length);
+                rentedInputArray = System.Buffers.ArrayPool<byte>.Shared.Rent((int)input.Length);
                 input.CopyTo(rentedInputArray);
                 inputSpan = rentedInputArray.AsSpan(0, (int)input.Length);
             }
@@ -464,7 +464,7 @@ namespace MessagePack
             {
                 if (rentedInputArray != null)
                 {
-                    ArrayPool<byte>.Shared.Return(rentedInputArray);
+                    System.Buffers.ArrayPool<byte>.Shared.Return(rentedInputArray);
                 }
             }
         }
@@ -514,7 +514,7 @@ namespace MessagePack
 
                             // Read from [Ext(98:int,int...), bin,bin,bin...]
                             var sequenceCount = arrayLength - 1;
-                            var uncompressedLengths = ArrayPool<int>.Shared.Rent(sequenceCount);
+                            var uncompressedLengths = System.Buffers.ArrayPool<int>.Shared.Rent(sequenceCount);
                             try
                             {
                                 for (int i = 0; i < sequenceCount; i++)
@@ -536,7 +536,7 @@ namespace MessagePack
                             }
                             finally
                             {
-                                ArrayPool<int>.Shared.Return(uncompressedLengths);
+                                System.Buffers.ArrayPool<int>.Shared.Return(uncompressedLengths);
                             }
                         }
                     }
@@ -557,7 +557,7 @@ namespace MessagePack
                 }
 
                 var maxCompressedLength = LZ4Codec.MaximumOutputLength((int)msgpackUncompressedData.Length);
-                var lz4Span = ArrayPool<byte>.Shared.Rent(maxCompressedLength);
+                var lz4Span = System.Buffers.ArrayPool<byte>.Shared.Rent(maxCompressedLength);
                 try
                 {
                     int lz4Length = LZ4Operation(msgpackUncompressedData, lz4Span, LZ4CodecEncode);
@@ -569,7 +569,7 @@ namespace MessagePack
                 }
                 finally
                 {
-                    ArrayPool<byte>.Shared.Return(lz4Span);
+                    System.Buffers.ArrayPool<byte>.Shared.Return(lz4Span);
                 }
             }
             else if (compression == MessagePackCompression.Lz4BlockArray)

@@ -13,7 +13,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+using System.Runtime.InteropServices; 
+
 
 namespace Nerdbank.Streams
 {
@@ -31,9 +32,9 @@ namespace Nerdbank.Streams
 
         private readonly Stack<SequenceSegment> segmentPool = new Stack<SequenceSegment>();
 
-        private readonly MemoryPool<T> memoryPool;
+        private readonly System.Buffers.MemoryPool<T> memoryPool;
 
-        private readonly ArrayPool<T> arrayPool;
+        private readonly System.Buffers.ArrayPool<T> arrayPool;
 
         private SequenceSegment first;
 
@@ -44,7 +45,7 @@ namespace Nerdbank.Streams
         /// that uses a private <see cref="ArrayPool{T}"/> for recycling arrays.
         /// </summary>
         public Sequence()
-            : this(ArrayPool<T>.Create())
+            : this(System.Buffers.ArrayPool<T>.Create())
         {
         }
 
@@ -52,7 +53,7 @@ namespace Nerdbank.Streams
         /// Initializes a new instance of the <see cref="Sequence{T}"/> class.
         /// </summary>
         /// <param name="memoryPool">The pool to use for recycling backing arrays.</param>
-        public Sequence(MemoryPool<T> memoryPool)
+        public Sequence(System.Buffers.MemoryPool<T> memoryPool)
         {
             Requires.NotNull(memoryPool, nameof(memoryPool));
             this.memoryPool = memoryPool;
@@ -62,7 +63,7 @@ namespace Nerdbank.Streams
         /// Initializes a new instance of the <see cref="Sequence{T}"/> class.
         /// </summary>
         /// <param name="arrayPool">The pool to use for recycling backing arrays.</param>
-        public Sequence(ArrayPool<T> arrayPool)
+        public Sequence(System.Buffers.ArrayPool<T> arrayPool)
         {
             Requires.NotNull(arrayPool, nameof(arrayPool));
             this.arrayPool = arrayPool;
@@ -385,7 +386,7 @@ namespace Nerdbank.Streams
             /// <summary>
             /// Clears all fields in preparation to recycle this instance.
             /// </summary>
-            public void ResetMemory(ArrayPool<T> arrayPool)
+            public void ResetMemory(System.Buffers.ArrayPool<T> arrayPool)
             {
                 this.ClearReferences(this.Start, this.End);
                 this.Memory = default;

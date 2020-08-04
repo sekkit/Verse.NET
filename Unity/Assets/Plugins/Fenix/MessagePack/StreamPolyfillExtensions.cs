@@ -29,7 +29,7 @@ namespace MessagePack
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            byte[] array = ArrayPool<byte>.Shared.Rent(buffer.Length);
+            byte[] array = System.Buffers.ArrayPool<byte>.Shared.Rent(buffer.Length);
             try
             {
                 int bytesRead = stream.Read(array, 0, buffer.Length);
@@ -38,7 +38,7 @@ namespace MessagePack
             }
             finally
             {
-                ArrayPool<byte>.Shared.Return(array);
+                System.Buffers.ArrayPool<byte>.Shared.Return(array);
             }
         }
 
@@ -65,7 +65,7 @@ namespace MessagePack
             }
             else
             {
-                byte[] sharedBuffer = ArrayPool<byte>.Shared.Rent(buffer.Length);
+                byte[] sharedBuffer = System.Buffers.ArrayPool<byte>.Shared.Rent(buffer.Length);
                 return FinishReadAsync(stream.ReadAsync(sharedBuffer, 0, buffer.Length, cancellationToken), sharedBuffer, buffer);
 
                 async ValueTask<int> FinishReadAsync(Task<int> readTask, byte[] localBuffer, Memory<byte> localDestination)
@@ -78,7 +78,7 @@ namespace MessagePack
                     }
                     finally
                     {
-                        ArrayPool<byte>.Shared.Return(localBuffer);
+                        System.Buffers.ArrayPool<byte>.Shared.Return(localBuffer);
                     }
                 }
             }
@@ -96,7 +96,7 @@ namespace MessagePack
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            var sharedBuffer = ArrayPool<byte>.Shared.Rent(buffer.Length);
+            var sharedBuffer = System.Buffers.ArrayPool<byte>.Shared.Rent(buffer.Length);
             try
             {
                 buffer.CopyTo(sharedBuffer);
@@ -104,7 +104,7 @@ namespace MessagePack
             }
             finally
             {
-                ArrayPool<byte>.Shared.Return(sharedBuffer);
+                System.Buffers.ArrayPool<byte>.Shared.Return(sharedBuffer);
             }
         }
 
@@ -121,7 +121,7 @@ namespace MessagePack
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            var sharedBuffer = ArrayPool<byte>.Shared.Rent(buffer.Length);
+            var sharedBuffer = System.Buffers.ArrayPool<byte>.Shared.Rent(buffer.Length);
             try
             {
                 buffer.CopyTo(sharedBuffer);
@@ -129,7 +129,7 @@ namespace MessagePack
             }
             finally
             {
-                ArrayPool<byte>.Shared.Return(sharedBuffer);
+                System.Buffers.ArrayPool<byte>.Shared.Return(sharedBuffer);
             }
         }
     }

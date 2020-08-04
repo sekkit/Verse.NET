@@ -1099,7 +1099,7 @@ namespace MessagePack
 
             // We need to decode bytes incrementally across multiple spans.
             int maxCharLength = StringEncoding.UTF8.GetMaxCharCount(byteLength);
-            char[] charArray = ArrayPool<char>.Shared.Rent(maxCharLength);
+            char[] charArray = System.Buffers.ArrayPool<char>.Shared.Rent(maxCharLength);
             System.Text.Decoder decoder = StringEncoding.UTF8.GetDecoder();
 
             int remainingByteLength = byteLength;
@@ -1125,7 +1125,7 @@ namespace MessagePack
             }
 
             string value = new string(charArray, 0, initializedChars);
-            ArrayPool<char>.Shared.Return(charArray);
+            System.Buffers.ArrayPool<char>.Shared.Return(charArray);
             return value;
         }
 

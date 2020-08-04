@@ -163,7 +163,7 @@ namespace MessagePack.Formatters
                 }
                 else
                 {
-                    var rentArray = ArrayPool<byte>.Shared.Rent(seqLen);
+                    var rentArray = System.Buffers.ArrayPool<byte>.Shared.Rent(seqLen);
                     try
                     {
                         sequence.CopyTo(rentArray);
@@ -179,7 +179,7 @@ namespace MessagePack.Formatters
                     }
                     finally
                     {
-                        ArrayPool<byte>.Shared.Return(rentArray);
+                        System.Buffers.ArrayPool<byte>.Shared.Return(rentArray);
                     }
                 }
             }

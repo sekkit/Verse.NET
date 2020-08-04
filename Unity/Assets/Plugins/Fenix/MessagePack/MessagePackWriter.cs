@@ -1299,7 +1299,7 @@ namespace MessagePack
             {
                 // mono does not guarantee overlapped memcpy so for Unity and NETSTANDARD use slow path.
                 // https://github.com/neuecc/MessagePack-CSharp/issues/562
-                var buffer = ArrayPool<byte>.Shared.Rent((int)sourceBytesToCopy);
+                var buffer = System.Buffers.ArrayPool<byte>.Shared.Rent((int)sourceBytesToCopy);
                 try
                 {
                     fixed (byte* p = buffer)
@@ -1310,7 +1310,7 @@ namespace MessagePack
                 }
                 finally
                 {
-                    ArrayPool<byte>.Shared.Return(buffer);
+                    System.Buffers.ArrayPool<byte>.Shared.Return(buffer);
                 }
             }
             else
