@@ -179,7 +179,7 @@ namespace Fenix
             //Log.Info(string.Format("{0} {1} {2} {3} {4}", fromHostId, toHostId, fromActorId, toActorId, peer==null?"NULL":""));
             if (peer == null)
             {
-                Log.Warning(string.Format("Rpc:cannot_find_peer_and_create {0} => {1} ({2})", fromHostId, toHostId, netType));
+                Log.Warn(string.Format("Rpc:cannot_find_peer_and_create {0} => {1} ({2})", fromHostId, toHostId, netType));
                 peer = NetManager.Instance.CreatePeer(toHostId, toPeerAddr, netType);
             }
   
@@ -220,7 +220,7 @@ namespace Fenix
 
             if (peer == null)
             {
-                Log.Warning(string.Format("RpcCallback:cannot_find_peer_and_create {0} => {1} ({2}", fromHostId, toHostId, netType));
+                Log.Warn(string.Format("RpcCallback:cannot_find_peer_and_create {0} => {1} ({2}", fromHostId, toHostId, netType));
                 peer = NetManager.Instance.CreatePeer(toHostId, null, netType);
             }
 

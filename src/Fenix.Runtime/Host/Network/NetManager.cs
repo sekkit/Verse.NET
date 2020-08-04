@@ -226,13 +226,21 @@ namespace Fenix
         }
 
         //服务端都是tcp，所以不需要心跳？暂时都是发ping/pong包，5s一次，5次没收到就断开 
-        public void Ping()
+        public void Ping(bool pingServerOnly)
         {
             foreach (var p in tcpPeers.Values)
-                p?.Ping();
+                if (pingServerOnly && !p.IsRemoteClient)
+                    p?.Ping();
+                else if (!pingServerOnly && p.IsRemoteClient)
+                    p?.Ping();
+            //p?.Ping();
 
             foreach (var p in kcpPeers.Values)
-                p?.Ping(); 
+                if (pingServerOnly && !p.IsRemoteClient)
+                    p?.Ping();
+                else if (!pingServerOnly && p.IsRemoteClient)
+                    p?.Ping();
+            //p?.Ping();
         }
 
         public void OnPong(NetPeer peer)
@@ -258,13 +266,14 @@ namespace Fenix
                     this.Deregister(p);
                     continue;
                 }
-
+#if CLIENT
                 if (curTS - p.lastTickTime >= Global.Config.HeartbeatIntervalMS * 3)
                 {
                     this.PrintPeerInfo("SEKKIT");
                     Log.Info(string.Format("Timeout: {0} {1} {2}", p.ConnId, p.RemoteAddress, p.netType));
                     this.Deregister(p);
                 }
+#endif
             }
         }
 

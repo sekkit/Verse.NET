@@ -36,7 +36,7 @@ namespace Fenix
 
         public NetworkType netType;
 
-        public long lastTickTime = 0;
+        public double lastTickTime = 0;
 
         public bool IsActive
         {
@@ -55,6 +55,20 @@ namespace Fenix
         }
 
         public bool IsAlive = true;
+
+        public bool IsRemoteClient
+        {
+            get
+            {
+                if (tcpChannel != null)
+                    return true;
+                if (tcpClient != null)
+                    return false;
+                if (kcpChannel != null)
+                    return true; 
+                return false;
+            }
+        }
         
         protected NetPeer()
         {
@@ -133,6 +147,7 @@ namespace Fenix
 
             tcpClient.OnReceive += (ch, buffer) =>
             {
+                Console.WriteLine("PEER_RECV: " + (Fenix.Common.Utils.TimeUtil.GetTimeStampMS2() - lastTickTime).ToString());
                 OnReceive?.Invoke(this, buffer);
             };
 
@@ -140,19 +155,20 @@ namespace Fenix
             { 
                 OnClose?.Invoke(this); 
             };
+
             tcpClient.OnException += (ch, ex) => 
             { 
                 OnException?.Invoke(this, ex); 
             };
+
             Log.Info(string.Format("init_tcp_client_localaddr@{0}", tcpClient.LocalAddress));
             return true;
         }
  
-
         protected bool InitKcpClient(IPEndPoint ep)
         { 
-            kcpClient = KcpHostClient.Create(ep);  
-            kcpClient.OnReceive += (kcp, buffer)=> { 
+            kcpClient = KcpHostClient.Create(ep);
+            kcpClient.OnReceive += (kcp, buffer)=> {
                 OnReceive?.Invoke(this, buffer); 
             };
             kcpClient.OnClose += (kcp) => { 
@@ -224,20 +240,16 @@ namespace Fenix
              
         }
 
+        static byte[] pingBytes = new byte[] { (byte)OpCode.PING };
+        static byte[] pongBytes = new byte[] { (byte)OpCode.PONG };
+
         public void Send(byte[] bytes)
-        { 
-            kcpChannel?.write(Unpooled.WrappedBuffer(bytes)); 
-            if (kcpChannel != null)
-                Log.Info(string.Format("sento_sender({0}): {1} {2} => {3} Channel:{4} DATA:{5}", this.netType, kcpChannel.user().RemoteAddress.ToIPv4String(), Global.Host.Id, ConnId, this.kcpChannel.user().Channel.Id.AsLongText(), StringUtil.ToHexString(bytes)));
-            tcpChannel?.WriteAndFlushAsync(Unpooled.WrappedBuffer(bytes)); 
-            if (tcpChannel != null)
-                Log.Info(string.Format("sento_sender({0}): {1} {2} => {3} Channel:{4} DATA:{5}", this.netType, tcpChannel.RemoteAddress.ToIPv4String(), Global.Host.Id, ConnId, tcpChannel.Id.AsLongText(), StringUtil.ToHexString(bytes)));
-            kcpClient?.Send(bytes); 
-            if (kcpClient != null)
-                Log.Info(string.Format("sento_receiver({0}): {1} {2} => {3} Channel:{4} DATA:{5}", this.netType, kcpClient.RemoteAddress.ToIPv4String(), Global.Host.Id, ConnId, kcpClient.ChannelId, StringUtil.ToHexString(bytes)));
-            tcpClient?.Send(bytes); 
-            if (tcpClient != null)
-                Log.Info(string.Format("sento_receiver({0}): {1} {2} => {3} Channel:{4} DATA:{5}", this.netType, tcpClient.RemoteAddress.ToIPv4String(), Global.Host?.Id, ConnId, tcpClient.ChannelId, StringUtil.ToHexString(bytes)));
+        {
+            if (kcpChannel != null) { kcpChannel.write(Unpooled.WrappedBuffer(bytes)); Log.Debug("SEND_END:" + (Fenix.Common.Utils.TimeUtil.GetTimeStampMS2() - lastTickTime).ToString()); return; }
+            if (kcpClient != null) { kcpClient.Send(bytes); Log.Debug("SEND_END:" + (Fenix.Common.Utils.TimeUtil.GetTimeStampMS2() - lastTickTime).ToString()); return; }
+            if (tcpChannel != null) { tcpChannel.WriteAndFlushAsync(Unpooled.WrappedBuffer(bytes)); Log.Debug("SEND_END:" + (Fenix.Common.Utils.TimeUtil.GetTimeStampMS2() - lastTickTime).ToString()); return; }
+            if (tcpClient != null) { tcpClient.Send(bytes); Log.Debug("SEND_END:" + (Fenix.Common.Utils.TimeUtil.GetTimeStampMS2() - lastTickTime).ToString()); return; } 
+             
         }
 
         //public async Task SendAsync(byte[] bytes)
@@ -276,7 +288,14 @@ namespace Fenix
 
         public void Ping()
         {
-            this.Send(new byte[] { (byte)OpCode.PING });
+            lastTickTime = Fenix.Common.Utils.TimeUtil.GetTimeStampMS2();
+            this.Send(pingBytes);
+        }
+
+        public void Pong()
+        {
+            this.Send(pongBytes);
+            this.lastTickTime = Fenix.Common.Utils.TimeUtil.GetTimeStampMS2();
         }
 
         public void GoodBye()

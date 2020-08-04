@@ -20,6 +20,12 @@ namespace Fenix.Common.Utils
             return timeStamp;
         }
 
+        public static double GetTimeStampMS2()
+        {
+            var startTime = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1));
+            return (DateTime.Now - startTime).TotalMilliseconds; 
+        }
+
         //public static ulong GetTimeStamp()
         //{
         //    TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);

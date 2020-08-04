@@ -44,6 +44,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.5" />
+    <PackageReference Include="NLog.Extensions.Logging" Version="1.6.4" />
     <PackageReference Include="System.Memory" Version="4.5.3" />
   </ItemGroup>
 
@@ -70,6 +71,9 @@
     </Reference>
     <Reference Include="MessagePack">
       <HintPath>..\..\Libs\Unity\MessagePack.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Common">
+      <HintPath>..\..\Unity\Library\ScriptAssemblies\Unity.Common.dll</HintPath>
     </Reference>
   </ItemGroup>
 

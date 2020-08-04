@@ -125,7 +125,7 @@ namespace Fenix
             heartbeatTh = new Thread(new ThreadStart(Heartbeat));
             heartbeatTh.Start();
 
-            this.AddRepeatedTimer(3000, 3000, () =>
+            this.AddRepeatedTimer(3000, 10000, () =>
             {
                 NetManager.Instance.PrintPeerInfo("All peers:");
 
@@ -163,23 +163,27 @@ namespace Fenix
         public static Host CreateServer(string name, string ip, string extIp, int port)
         {
             return Create(name, ip, extIp, port, false);
-        } 
+        }
+
+        double lastTs = 0;
 
         protected void OnReceiveBuffer(NetPeer peer, IByteBuffer buffer)
         {
             if (!peer.IsActive)
                 return;
-            Log.Info(string.Format("RECV({0}) {1} {2} {3}", peer.netType, peer.ConnId, peer.RemoteAddress, StringUtil.ToHexString(buffer.ToArray())));
-          
+            //Log.Debug(string.Format("RECV({0}) {1} {2} {3}", peer.netType, peer.ConnId, peer.RemoteAddress, StringUtil.ToHexString(buffer.ToArray())));
             if (buffer.ReadableBytes == 1)
             {
                 byte protoCode = buffer.ReadByte();
                 if (protoCode == (byte)OpCode.PING)
                 {
-                    Log.Info(string.Format("Ping({0}) {1} FROM {2}", peer.netType, peer.ConnId, peer.RemoteAddress));
-                    if(peer != null && peer.RemoteAddress != null) 
+                    Log.Debug(string.Format("Ping({0}) {1} FROM {2}", peer.netType, peer.ConnId, peer.RemoteAddress));
+                    
+                    peer.Pong();
+
+                    if (peer != null && peer.RemoteAddress != null) 
                         Global.IdManager.ReregisterHost(peer.ConnId, peer.RemoteAddress.ToIPv4String());
-                    peer.Send(new byte[] { (byte)OpCode.PONG });
+                    
 #if !CLIENT
                     //如果peer是客户端，则代表
                     var clientActorId = Global.IdManager.GetClientActorId(peer.ConnId);
@@ -188,10 +192,13 @@ namespace Fenix
                         Global.IdManager.RegisterClientActor(clientActorId, GetActor(clientActorId).UniqueName, peer.ConnId, peer.RemoteAddress.ToIPv4String());
                     }
 #endif
+
                     NetManager.Instance.OnPong(peer);
                 }
                 else if(protoCode == (byte)OpCode.PONG)
                 {
+                    Log.Info("ping>>>" + (TimeUtil.GetTimeStampMS2() - lastTs).ToString());
+                    peer.lastTickTime = TimeUtil.GetTimeStampMS2();
                     NetManager.Instance.OnPong(peer);
                 }
                 else if (protoCode == (byte)OpCode.GOODBYE)
@@ -236,7 +243,7 @@ namespace Fenix
                     Global.TypeManager.GetMessageType(protoCode), 
                     bytes);
 
-                Log.Info(string.Format("RECV2({0}): {1} {2} => {3} {4} >= {5} {6} => {7}", 
+                Log.Debug(string.Format("RECV2({0}): {1} {2} => {3} {4} >= {5} {6} => {7}", 
                     peer.netType, 
                     protoCode, 
                     packet.FromHostId, 
@@ -352,11 +359,12 @@ namespace Fenix
 
                     if (IsClientMode) //客户端无法访问全局缓存
                     {
-                        NetManager.Instance.Ping();
+                        lastTs = TimeUtil.GetTimeStampMS2();
+                        NetManager.Instance.Ping(true);
                     }
                     else
                     {
-                        NetManager.Instance.Ping();
+                        NetManager.Instance.Ping(true);
                         this.RegisterGlobalManager(this);
                         foreach (var kv in this.actorDic)
                             this.RegisterGlobalManager(kv.Value);

@@ -106,6 +106,11 @@ namespace Fenix
 #endif
         }
 
+        public async Task<bool> ReregisterHostAsync(uint hostId, string address)
+        {
+            return await Task.Run(() => ReregisterHost(hostId, address));
+        }
+
         public bool ReregisterHost(uint hostId, string address)
         {
             var hostName = GetName(hostId);
@@ -133,7 +138,7 @@ namespace Fenix
             mADDR2HNAME[address] = clientName;
 
             CacheHNAME2ADDR.Set(clientName, address);
-        }
+        } 
 
         public void RegisterClientActor(uint actorId, string actorName, uint clientId, string address)
         { 
