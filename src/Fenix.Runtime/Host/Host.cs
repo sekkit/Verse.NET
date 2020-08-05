@@ -48,27 +48,23 @@ namespace Fenix
 
         protected Host(string name, string ip, string extIp, int port = 0, bool clientMode = false) : base()
         {
-            this.IsClientMode = clientMode; 
+            this.IsClientMode = clientMode;
 
             //Global.NetManager.OnConnect += (peer) => 
-            Global.NetManager.OnReceive += (peer, buffer) => OnReceiveBuffer(peer, buffer);
-            Global.NetManager.OnClose += (peer) => Global.NetManager.Deregister(peer);
-            Global.NetManager.OnException += (peer, ex) =>
-            {
-                Log.Error(ex.ToString()); 
-                Global.NetManager.Deregister(peer);
-            };
+            Global.NetManager.OnReceive += OnReceiveBuffer;
+            Global.NetManager.OnClose += OnClose;
+            Global.NetManager.OnException += OnExcept; 
+            //Global.NetManager.OnPeerLost += (peer) =>
+            //{
+            //    Log.Info("OnPeerLost", peer.ConnId);
+            //    if(this.actorDic.Any(m=>m.Key == peer.ConnId && m.Value.GetType().Name == "Avatar"))
+            //    {
+            //        //客户端没了，就先删除actor吧（玩家avatar)
 
-            Global.NetManager.OnPeerLost += (peer) =>
-            {
-                if(this.actorDic.Any(m=>m.Key == peer.ConnId && m.Value.GetType().Name == "Avatar"))
-                {
-                    //客户端没了，就先删除actor吧（玩家avatar)
-
-                    this.actorDic[peer.ConnId].Destroy();
-                    this.actorDic.TryRemove(peer.ConnId, out var _);
-                }
-            };
+            //        this.actorDic[peer.ConnId].Destroy();
+            //        this.actorDic.TryRemove(peer.ConnId, out var _);
+            //    }
+            //};
 
             //如果是客户端，则用本地连接做为id
             //如果是服务端，则从名称计算一个id, 方便路由查找
@@ -254,6 +250,22 @@ namespace Fenix
             ProcessRpcProtocol(peer, protoCode, buffer); 
         }
 
+        protected void OnClose(NetPeer peer)
+        {
+            Global.NetManager.Deregister(peer);
+        } 
+
+        protected void OnExcept(NetPeer peer, Exception ex)
+        {
+            Log.Error(ex);
+            Global.NetManager.Deregister(peer);
+        }
+
+        protected void OnConnect(NetPeer peer)
+        {
+
+        }
+
         void ProcessRegisterProtocol(NetPeer peer, uint protoCode, IByteBuffer buffer)
         {
             if (protoCode == OpCode.REGISTER_REQ)
@@ -327,11 +339,12 @@ namespace Fenix
         protected void KcpServer_OnConnect(Ukcp ukcp)
         {
             //新连接
-            Global.NetManager.RegisterKcp(ukcp);
+            var peer = Global.NetManager.RegisterKcp(ukcp);
             //ulong hostId = Global.IdManager.GetHostId(channel.RemoteAddress.ToIPv4String());
             Log.Info(string.Format("kcp_client_connected {0} {1}", 
                 ukcp.GetUniqueId(), 
                 ukcp.user().RemoteAddress.ToIPv4String()));
+            OnConnect(peer);
         }
 
         private void KcpServer_OnReceive(Ukcp ukcp, IByteBuffer buffer)
@@ -341,15 +354,17 @@ namespace Fenix
         }
 
         private void KcpServer_OnException(Ukcp ukcp, Exception ex)
-        {
-            Log.Error(ex.ToString());
-
-            Global.NetManager.DeregisterKcp(ukcp);
+        { 
+            var peer = Global.NetManager.GetPeer(ukcp);
+            OnExcept(peer, ex);
+            //Global.NetManager.DeregisterKcp(ukcp);
         }
 
         private void KcpServer_OnClose(Ukcp ukcp)
         {
-            Global.NetManager.DeregisterKcp(ukcp);
+            var peer = Global.NetManager.GetPeer(ukcp);
+            OnClose(peer);
+            //Global.NetManager.DeregisterKcp(ukcp);
         }
 #endregion
 
@@ -368,9 +383,11 @@ namespace Fenix
         void OnTcpConnect(IChannel channel)
         {
             //新连接
-            Global.NetManager.RegisterChannel(channel);
+            var peer = Global.NetManager.RegisterChannel(channel);
             //ulong hostId = Global.IdManager.GetHostId(channel.RemoteAddress.ToIPv4String());
             Log.Info("TcpConnect: " + channel.RemoteAddress.ToIPv4String());
+
+            OnConnect(peer);
         }
 
         void OnTcpServerReceive(IChannel channel, IByteBuffer buffer)
@@ -381,14 +398,17 @@ namespace Fenix
 
         void OnTcpServerClose(IChannel channel)
         {
-            Global.NetManager.DeregisterChannel(channel);
+            //Global.NetManager.DeregisterChannel(channel);
+            var peer = Global.NetManager.GetPeer(channel);
+            OnClose(peer);
         }
 
         void OnTcpServerException(IChannel channel, Exception ex)
         {
-            Log.Error(ex.ToString());
-            Global.NetManager.DeregisterChannel(channel);
-        } 
+            //Global.NetManager.DeregisterChannel(channel);
+            var peer = Global.NetManager.GetPeer(channel);
+            OnExcept(peer, ex);
+        }
 
 #endregion
 

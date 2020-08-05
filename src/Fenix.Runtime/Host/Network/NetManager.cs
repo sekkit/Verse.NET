@@ -30,14 +30,15 @@ namespace Fenix
         public event Action<NetPeer> OnClose;
         public event Action<NetPeer, Exception> OnException;
         public event Action<NetPeer, IByteBuffer> OnSend;
-        public event Action<NetPeer> OnPeerLost;
+        //public event Action<NetPeer> OnPeerLost;
 
-        public void RegisterChannel(IChannel channel)
+        public NetPeer RegisterChannel(IChannel channel)
         { 
             var cid = channel.Id.AsLongText();
             var id = Basic.GenID32FromName(cid);
             var peer = NetPeer.Create(id, channel);
-            channelPeers[id] = peer; 
+            channelPeers[id] = peer;
+            return peer;
         }
 
         public void DeregisterChannel(IChannel ch)
@@ -92,12 +93,13 @@ namespace Fenix
         } 
 
         //kcp目前不支持epoll/kqueue/IOCP，所以只在客户端上用用
-        public void RegisterKcp(Ukcp ukcp)
+        public NetPeer RegisterKcp(Ukcp ukcp)
         {  
             var id = ukcp.GetUniqueId();
             var peer = NetPeer.Create(id, ukcp);
             channelPeers[peer.ConnId] = peer;
             Log.Info(string.Format("Incoming KCP id: {0}", id));
+            return peer;
         }  
 
         public void DeregisterKcp(Ukcp ukcp)
@@ -390,7 +392,7 @@ namespace Fenix
             this.OnException = null;
             this.OnReceive = null;
             this.OnSend = null;
-            this.OnPeerLost = null;
+            //this.OnPeerLost = null;
             Global.NetManager = null;
         }
     }
