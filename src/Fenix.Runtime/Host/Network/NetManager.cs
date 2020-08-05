@@ -3,6 +3,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
+using System.Threading;
 using System.Threading.Tasks;
 using DotNetty.Buffers;
 using DotNetty.KCP;
@@ -29,8 +31,142 @@ namespace Fenix
         public event Action<NetPeer, IByteBuffer> OnReceive;
         public event Action<NetPeer> OnClose;
         public event Action<NetPeer, Exception> OnException;
-        public event Action<NetPeer, IByteBuffer> OnSend;
+        //public event Action<NetPeer, IByteBuffer> OnSend;
+        public event Action OnHeartBeat;
         //public event Action<NetPeer> OnPeerLost;
+
+        protected ConcurrentDictionary<uint, KcpHostServer> kcpServerDic { get; set; } = new ConcurrentDictionary<uint, KcpHostServer>();
+
+        protected ConcurrentDictionary<uint, TcpHostServer> tcpServerDic { get; set; } = new ConcurrentDictionary<uint, TcpHostServer>();
+         
+        private Thread heartbeatTh;
+
+        public void RegisterHost(Host host)
+        {
+            if (!host.IsClientMode)
+            {
+                var kcpServer = CreateKcpServer(host.ExternalAddress, host.LocalAddress);
+                kcpServerDic[host.Id] = kcpServer;
+
+                var tcpServer = this.CreateTcpServer(host.ExternalAddress, host.LocalAddress);
+                tcpServerDic[host.Id] = tcpServer;
+            }
+        }
+
+        public NetManager()
+        {
+            heartbeatTh = new Thread(new ThreadStart(Heartbeat));
+            heartbeatTh.Start();
+        }
+
+        protected void Heartbeat()
+        {
+            while (true)
+            {
+                Thread.Sleep(5000);
+                try
+                { 
+                    //Log.Info(string.Format("Heartbeat:{0}", IsAlive));
+                    PrintPeerInfo();
+                    Ping(true);
+                    OnHeartBeat?.Invoke();
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                }
+            }
+        }
+
+        #region KCP Server
+
+        protected KcpHostServer CreateKcpServer(IPEndPoint extAddr, IPEndPoint localAddr)
+        {
+            var kcpServer = KcpHostServer.Create(localAddr);
+            kcpServer.OnConnect += KcpServer_OnConnect;
+            kcpServer.OnReceive += KcpServer_OnReceive;
+            kcpServer.OnClose += KcpServer_OnClose;
+            kcpServer.OnException += KcpServer_OnException;
+
+            Log.Info(string.Format("KCP-Server@{0}", localAddr.ToIPv4String()));
+            return kcpServer;
+        }
+
+        protected void KcpServer_OnConnect(Ukcp ukcp)
+        {
+            //新连接
+            var peer = Global.NetManager.RegisterKcp(ukcp);
+            //ulong hostId = Global.IdManager.GetHostId(channel.RemoteAddress.ToIPv4String());
+            Log.Info(string.Format("kcp_client_connected {0} {1}",
+                ukcp.GetUniqueId(),
+                ukcp.user().RemoteAddress.ToIPv4String()));
+            OnConnect(peer);
+        }
+
+        private void KcpServer_OnReceive(Ukcp ukcp, IByteBuffer buffer)
+        {
+            var peer = Global.NetManager.GetPeer(ukcp);
+            OnReceive(peer, buffer);
+        }
+
+        private void KcpServer_OnException(Ukcp ukcp, Exception ex)
+        {
+            var peer = Global.NetManager.GetPeer(ukcp);
+            OnException(peer, ex);
+        }
+
+        private void KcpServer_OnClose(Ukcp ukcp)
+        {
+            var peer = Global.NetManager.GetPeer(ukcp);
+            OnClose(peer);
+            Deregister(peer); 
+        }
+        #endregion
+
+        #region TCP Server
+        protected TcpHostServer CreateTcpServer(IPEndPoint extAddr, IPEndPoint localAddr)
+        {
+            var tcpServer = TcpHostServer.Create(localAddr);
+            tcpServer.OnConnect += OnTcpConnect;
+            tcpServer.OnReceive += OnTcpServerReceive;
+            tcpServer.OnClose += OnTcpServerClose;
+            tcpServer.OnException += OnTcpServerException;
+            Log.Info(string.Format("TCP-Server@{0}", localAddr.ToIPv4String()));
+            return tcpServer;
+        }
+
+        void OnTcpConnect(IChannel channel)
+        {
+            //新连接
+            var peer = Global.NetManager.RegisterChannel(channel);
+            //ulong hostId = Global.IdManager.GetHostId(channel.RemoteAddress.ToIPv4String());
+            Log.Info("TcpConnect: " + channel.RemoteAddress.ToIPv4String());
+
+            OnConnect(peer);
+        }
+
+        void OnTcpServerReceive(IChannel channel, IByteBuffer buffer)
+        {
+            var peer = Global.NetManager.GetPeer(channel);
+            OnReceive(peer, buffer);
+        }
+
+        void OnTcpServerClose(IChannel channel)
+        {
+            //Global.NetManager.DeregisterChannel(channel);
+            var peer = Global.NetManager.GetPeer(channel);
+            OnClose(peer);
+            Deregister(peer);
+        }
+
+        void OnTcpServerException(IChannel channel, Exception ex)
+        {
+            //Global.NetManager.DeregisterChannel(channel);
+            var peer = Global.NetManager.GetPeer(channel);
+            OnException(peer, ex);
+        }
+
+        #endregion
 
         public NetPeer RegisterChannel(IChannel channel)
         { 
@@ -43,8 +179,7 @@ namespace Fenix
 
         public void DeregisterChannel(IChannel ch)
         { 
-            var peer = GetPeer(ch);   
-            this.Deregister(peer); 
+            this.Deregister(GetPeer(ch)); 
         }
 
         public void ChangePeerId(uint oldHostId, uint newHostId, string hostName, string address)
@@ -192,7 +327,7 @@ namespace Fenix
             peer = NetPeer.Create(remoteHostId, addr, netType);
             if (peer == null)
                 return null;
-            peer.OnClose += this.OnClose;
+            peer.OnClose += OnClose;
             peer.OnReceive += OnReceive;
             peer.OnException += OnException;
             if (netType == NetworkType.TCP)
@@ -219,7 +354,7 @@ namespace Fenix
             if (peer == null)
                 return null;
 
-            peer.OnClose += this.OnClose;
+            peer.OnClose += OnClose;
             peer.OnReceive += OnReceive;
             peer.OnException += OnException; 
 
@@ -380,20 +515,33 @@ namespace Fenix
             foreach (var p in tcpPeers.Values)
                 Deregister(p);
             tcpPeers.Clear();
+
             foreach (var p in kcpPeers.Values)
                 Deregister(p);
             kcpPeers.Clear();
+
             foreach (var p in channelPeers.Values)
                 Deregister(p);
             channelPeers.Clear();
+
+            foreach(var kv in tcpServerDic) 
+                kv.Value.Stop();
+            tcpServerDic.Clear();
+
+            foreach (var kv in kcpServerDic) 
+                kv.Value.Stop();
+            kcpServerDic.Clear();
 
             this.OnClose = null;
             this.OnConnect = null;
             this.OnException = null;
             this.OnReceive = null;
-            this.OnSend = null;
+            //this.OnSend = null;
             //this.OnPeerLost = null;
             Global.NetManager = null;
+
+            heartbeatTh.Join();
+            heartbeatTh = null;
         }
     }
 }

@@ -109,7 +109,7 @@ namespace Fenix
 #if CLIENT
             OneThreadSynchronizationContext.Instance.Post((obj) =>
             {
-                var cb = (byte[])cbData;
+                var cb = (byte[])obj;
                 this.callbackMethod?.Invoke(cb);
             }, cbData);
 #else

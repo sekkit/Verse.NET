@@ -52,6 +52,9 @@ namespace Fenix
                     toAddr = Basic.ToAddress(Global.IdManager.GetHostAddrByActorId(toActorId, isClient));//);
             }
 
+            if (toAddr == null)
+                return null;
+
             var obj = (ActorRef)Activator.CreateInstance(refType);
             obj.toHostId = toHostId;
             obj.toActorId = toActorId;

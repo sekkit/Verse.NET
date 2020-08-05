@@ -22,7 +22,7 @@ namespace Server.Config.Db
             Key = HNAME2ADDR,
             Retry = 1,
             RetryDelay = 0.1f,
-            ValidTime = 30,
+            ValidTime = 15,
             Type = "Redis"
         };
         public static DbEntry ANAME2HNAME_cache = new DbEntry()
@@ -33,7 +33,7 @@ namespace Server.Config.Db
             Key = ANAME2HNAME,
             Retry = 1,
             RetryDelay = 0.1f,
-            ValidTime = 30,
+            ValidTime = 15,
             Type = "Redis"
         };
         public static DbEntry ANAME2TNAME_cache = new DbEntry()
@@ -44,7 +44,7 @@ namespace Server.Config.Db
             Key = ANAME2TNAME,
             Retry = 1,
             RetryDelay = 0.1f,
-            ValidTime = 30,
+            ValidTime = 15,
             Type = "Redis"
         };
         public static DbEntry ID2NAME_cache = new DbEntry()
@@ -55,7 +55,7 @@ namespace Server.Config.Db
             Key = ID2NAME,
             Retry = 1,
             RetryDelay = 0.1f,
-            ValidTime = 30,
+            ValidTime = 15,
             Type = "Redis"
         };
         public static DbEntry ANAME2CNAME_cache = new DbEntry()
@@ -66,7 +66,7 @@ namespace Server.Config.Db
             Key = ANAME2CNAME,
             Retry = 1,
             RetryDelay = 0.1f,
-            ValidTime = 30,
+            ValidTime = 15,
             Type = "Redis"
         };
         public static DbEntry ADDR2EXTADDR_cache = new DbEntry()
@@ -77,7 +77,7 @@ namespace Server.Config.Db
             Key = ADDR2EXTADDR,
             Retry = 1,
             RetryDelay = 0.1f,
-            ValidTime = 30,
+            ValidTime = 15,
             Type = "Redis"
         };
     }

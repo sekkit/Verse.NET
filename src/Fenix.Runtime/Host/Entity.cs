@@ -26,6 +26,9 @@ namespace Fenix
         public string UniqueName { get; set; }
 
         [IgnoreMember]
+        public bool IsAlive { get; set; } = true;
+
+        [IgnoreMember]
         [IgnoreDataMember]
         public ConcurrentDictionary<UInt64, RpcCommand> rpcDic     = new ConcurrentDictionary<UInt64, RpcCommand>();
 
@@ -158,7 +161,7 @@ namespace Fenix
             /*创建一个等待回调的rpc_command*/
             var cmd = RpcCommand.Create(
                 packet,
-                (data) => cb?.Invoke(data),
+                (data) => { RemoveRpc(packet.Id); cb?.Invoke(data);  },
                 this); 
 
             //如果是同进程，则本地调用
@@ -242,19 +245,27 @@ namespace Fenix
             Global.NetManager.Send(peer, packet);
         }
 
-        public void AddTimer(long delay, long interval, Action tickCallback)
+        public ulong AddTimer(long delay, long interval, Action tickCallback)
         {
             //实现timer
             var timer = Timer.Create(delay, interval, false, tickCallback);
-            this.mTimerDic.TryAdd(timer.Tid, timer);
+            if(this.mTimerDic.TryAdd(timer.Tid, timer))
+                return timer.Tid;
+            return 0;
         }
 
-        public void AddRepeatedTimer(long delay, long interval, Action tickCallback)
+        public ulong AddRepeatedTimer(long delay, long interval, Action tickCallback)
         {
             //实现timer
             var timer = Timer.Create(delay, interval, true, tickCallback);
-            //this.mTimerDic[timer.Tid] = timer;
-            this.mTimerDic.TryAdd(timer.Tid, timer);
+            if (this.mTimerDic.TryAdd(timer.Tid, timer))
+                return timer.Tid;
+            return 0;
+        }
+
+        public bool CancelTimer(ulong timerId)
+        {
+            return this.mTimerDic.TryRemove(timerId, out var _);
         }
 
         protected void CheckRpc()
@@ -264,7 +275,9 @@ namespace Fenix
             {
                 if(curTime - cmd.CallTime > 15000)
                 {
-                    Log.Info("CheckRpc->timeout");
+                    Log.Info("CheckRpc->timeout", cmd.ProtoCode);
+                    if (!IsAlive)
+                        return;
                     cmd.Callback(null);
                     RemoveRpc(cmd.Id);
                 }
@@ -292,11 +305,20 @@ namespace Fenix
 
         public virtual void Destroy()
         {
+            IsAlive = false;
             foreach (var t in mTimerDic.Values)
                 t.Dispose();
             this.mTimerDic.Clear();
         }
 
-        public abstract void Update(); 
+        public abstract void Update();
+
+        protected void EntityUpdate()
+        {
+            if (!IsAlive)
+                return;
+            CheckTimer();
+            CheckRpc();
+        }
     }
 }

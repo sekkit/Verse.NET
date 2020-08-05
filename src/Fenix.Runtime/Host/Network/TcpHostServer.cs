@@ -81,5 +81,10 @@ namespace Fenix
         //{
         //    peer.Send(bytes);
         //}
+
+        public void Stop()
+        {
+            server.Shutdown();
+        }
     }
 }

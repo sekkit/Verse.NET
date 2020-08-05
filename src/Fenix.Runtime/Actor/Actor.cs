@@ -74,7 +74,7 @@ namespace Fenix
 
         ~Actor()
         {
-            
+            //
         }
 
         public static Actor Create<T>(string name) where T: Actor, new()
@@ -90,22 +90,23 @@ namespace Fenix
         public sealed override void Update()
         {
             //Log.Info(string.Format("{0}:{1}", this.GetType().Name, rpcDic.Count)); 
+            base.EntityUpdate();
 
             this.onUpdate();
         }
 
-        public virtual void Pack()
-        {
-            Dictionary<string, byte[]> packData = new Dictionary<string, byte[]>();
-            packData["basic"] = RpcUtil.Serialize(this);
-            foreach(var kv in this.mPersistentDic) 
-                packData[kv.Key.Name] = RpcUtil.Serialize(kv.Value);
-        }
+        //public virtual void Pack()
+        //{
+        //    Dictionary<string, byte[]> packData = new Dictionary<string, byte[]>();
+        //    packData["basic"] = RpcUtil.Serialize(this);
+        //    foreach(var kv in this.mPersistentDic) 
+        //        packData[kv.Key.Name] = RpcUtil.Serialize(kv.Value);
+        //}
 
-        public virtual void Unpack()
-        {
+        //public virtual void Unpack()
+        //{
             
-        }
+        //}
 
         public void Restore()
         {
@@ -114,10 +115,10 @@ namespace Fenix
 
         public override void Destroy()
         {
-            base.Destroy();
-
             //actor api
             this.onDestroy();
+
+            base.Destroy(); 
         }
 
         public T GetService<T>(string name) where T : ActorRef
@@ -157,47 +158,50 @@ namespace Fenix
 #if !CLIENT
         [ServerOnly]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void OnClientEnable(string actorName)
+        public void OnClientEnable()
         { 
             var refType = Global.TypeManager.GetActorRefType("Client.Avatar");
             if(refType == null)
                 refType = Global.TypeManager.GetActorRefType(this.GetType().FullName);
 
             this.client = GetActorRef(refType, this.UniqueName);
-            Log.Info(string.Format("on_client_enable", actorName, this.UniqueName));
+            Log.Info(string.Format("on_client_enable", this.UniqueName, this.UniqueName));
 
             this.onClientEnable();
         }
 
         [ServerOnly]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void OnClientDisable(string actorName)
+        public void OnClientDisable()
         {
             //actorName == this.UniqueName 
             this.client = null;
-            Log.Info(string.Format("on_client_disable", actorName, this.UniqueName));
+            Log.Info(string.Format("on_client_disable", this.UniqueName, this.UniqueName));
 
             this.onClientDisable();
         }
 
-#endif
+#endif 
 
         public virtual void onLoad()
         {
 
         }
 
-        public virtual void onClientEnable()
-        {
+        [IgnoreMember]
+        protected ulong destroyTimerId = 0;
 
+        protected virtual void onClientEnable()
+        {
+            CancelTimer(destroyTimerId);
         }
 
-        public virtual void onClientDisable()
+        protected virtual void onClientDisable()
         {
-
+            AddTimer(0, 15000, Destroy); 
         }
 
-        public virtual void onRestore()
+        protected virtual void onRestore()
         {
 
         }

@@ -100,5 +100,10 @@ namespace Fenix
         //    int dataLen = buf.ReadableBytes;
         //    _ukcp.writeKcpMessage(buf);
         //}
+
+        public void Stop()
+        {
+            server?.stop();
+        }
     }
 }

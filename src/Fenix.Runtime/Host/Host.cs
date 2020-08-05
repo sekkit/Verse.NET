@@ -18,6 +18,8 @@ using Basic = Fenix.Common.Utils.Basic;
 using System.Text;
 using System.Linq; 
 using TimeUtil = Fenix.Common.Utils.TimeUtil;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Fenix
 {
@@ -26,45 +28,25 @@ namespace Fenix
 
     public partial class Host : Entity
     {
-        //public static Host Instance = null; 
-
         public string Tag { get; set; }
 
         public IPEndPoint LocalAddress { get; set; }
 
         public IPEndPoint ExternalAddress { get; set; }
-
-        protected KcpHostServer kcpServer { get; set; }
-
-        protected TcpHostServer tcpServer { get; set; } 
-
+        
         public bool IsClientMode { get; set; }
 
         protected ConcurrentDictionary<UInt32, Actor> actorDic = new ConcurrentDictionary<UInt32, Actor>();
         
-        public bool IsAlive = true;
-
-        private Thread heartbeatTh;
-
         protected Host(string name, string ip, string extIp, int port = 0, bool clientMode = false) : base()
         {
             this.IsClientMode = clientMode;
 
-            //Global.NetManager.OnConnect += (peer) => 
-            Global.NetManager.OnReceive += OnReceiveBuffer;
+            Global.NetManager.OnConnect += OnConnect;
+            Global.NetManager.OnReceive += OnReceive;
             Global.NetManager.OnClose += OnClose;
-            Global.NetManager.OnException += OnExcept; 
-            //Global.NetManager.OnPeerLost += (peer) =>
-            //{
-            //    Log.Info("OnPeerLost", peer.ConnId);
-            //    if(this.actorDic.Any(m=>m.Key == peer.ConnId && m.Value.GetType().Name == "Avatar"))
-            //    {
-            //        //客户端没了，就先删除actor吧（玩家avatar)
-
-            //        this.actorDic[peer.ConnId].Destroy();
-            //        this.actorDic.TryRemove(peer.ConnId, out var _);
-            //    }
-            //};
+            Global.NetManager.OnException += OnExcept;
+            Global.NetManager.OnHeartBeat += OnHeartBeat;
 
             //如果是客户端，则用本地连接做为id
             //如果是服务端，则从名称计算一个id, 方便路由查找
@@ -72,7 +54,7 @@ namespace Fenix
             {
                 string _ip = ip;
                 string _extIp = extIp;
-                int _port = port; 
+                int _port = port;
 
                 if (ip == "auto")
                     _ip = Basic.GetLocalIPv4(NetworkInterfaceType.Ethernet);
@@ -94,19 +76,18 @@ namespace Fenix
                     this.UniqueName = name;
 
                 this.Id = Basic.GenID32FromName(this.UniqueName);
-
-                this.RegisterGlobalManager(this);
-
-                this.SetupKcpServer();
-                this.SetupTcpServer();
+                this.RegisterGlobalManager(this);  
+                Global.NetManager.RegisterHost(this);
             }
             else
-            {  
+            {
                 if (name == null)
                     this.UniqueName = Basic.GenID64().ToString();
                 else
                     this.UniqueName = name;
-                this.Id = Basic.GenID32FromName(this.UniqueName); 
+                this.Id = Basic.GenID32FromName(this.UniqueName);
+
+                Global.NetManager.RegisterHost(this);
             }
 
             if (!this.IsClientMode)
@@ -117,9 +98,6 @@ namespace Fenix
             {
                 Log.Info(string.Format("{0}(ID:{1}) is running as ClientMode", this.UniqueName, this.Id));
             }
-
-            heartbeatTh = new Thread(new ThreadStart(Heartbeat));
-            heartbeatTh.Start();
 
             this.AddRepeatedTimer(3000, 10000, () =>
             {
@@ -163,7 +141,7 @@ namespace Fenix
 
         double lastTs = 0;
 
-        protected void OnReceiveBuffer(NetPeer peer, IByteBuffer buffer)
+        protected void OnReceive(NetPeer peer, IByteBuffer buffer)
         {
             if (!peer.IsActive)
                 return;
@@ -194,7 +172,9 @@ namespace Fenix
                 }
                 else if(opCode == (byte)OpCode.PONG)
                 {
+#if CLIENT
                     Log.Info("ping>>>" + (TimeUtil.GetTimeStampMS2() - lastTs).ToString());
+#endif
                     peer.lastTickTime = TimeUtil.GetTimeStampMS2();
                     Global.NetManager.OnPong(peer); 
                     return;
@@ -252,18 +232,59 @@ namespace Fenix
 
         protected void OnClose(NetPeer peer)
         {
-            Global.NetManager.Deregister(peer);
-        } 
+            Log.Info("OnClose", peer.ConnId, peer.IsRemoteClient);
+            //foreach (var kv in this.actorDic)
+            //{
+            //    Log.Info(kv.Key, kv.Value, Basic.GenID32FromName(kv.Value.UniqueName));
+            //}
+#if !CLIENT
+            if (peer.IsRemoteClient)
+            {
+                var aId = Global.IdManager.GetClientActorId(peer.ConnId);
+                Log.Info(aId);
+                //if(this.actorDic.TryRemove(aId, out var a))
+                //    a.Destroy();
+                if (this.actorDic.TryGetValue(aId, out var a))
+                    a.OnClientDisable();
+            }
+#endif
+        }
 
         protected void OnExcept(NetPeer peer, Exception ex)
         {
+            Log.Info("ONEXCEPT", peer.ConnId);
             Log.Error(ex);
-            Global.NetManager.Deregister(peer);
         }
 
         protected void OnConnect(NetPeer peer)
         {
 
+        }
+
+        protected void OnHeartBeat()
+        {
+            if (!IsAlive)
+                return;
+
+            if (IsClientMode) //客户端无法访问全局缓存
+            {
+                lastTs = TimeUtil.GetTimeStampMS2(); 
+            }
+            else
+            { 
+                this.RegisterGlobalManager(this);
+                var actorRemoveList = new List<uint>();
+                foreach (var kv in this.actorDic)
+                    if (kv.Value.IsAlive)
+                        this.RegisterGlobalManager(kv.Value);
+                    else
+                        actorRemoveList.Add(kv.Key);
+                foreach (var aId in actorRemoveList)
+                    actorDic.TryRemove(aId, out var _);
+            }
+#if !CLIENT
+            Global.IdManager.SyncWithCacheAsync();
+#endif
         }
 
         void ProcessRegisterProtocol(NetPeer peer, uint protoCode, IByteBuffer buffer)
@@ -322,136 +343,6 @@ namespace Fenix
             }
         }
 
-#region KCP
-
-        protected KcpHostServer SetupKcpServer()
-        {
-            kcpServer = KcpHostServer.Create(this.LocalAddress);
-            kcpServer.OnConnect += KcpServer_OnConnect;
-            kcpServer.OnReceive += KcpServer_OnReceive;
-            kcpServer.OnClose += KcpServer_OnClose;
-            kcpServer.OnException += KcpServer_OnException;
-
-            Log.Info(string.Format("KCP-Server@{0}", this.LocalAddress.ToIPv4String()));
-            return kcpServer;
-        }
-
-        protected void KcpServer_OnConnect(Ukcp ukcp)
-        {
-            //新连接
-            var peer = Global.NetManager.RegisterKcp(ukcp);
-            //ulong hostId = Global.IdManager.GetHostId(channel.RemoteAddress.ToIPv4String());
-            Log.Info(string.Format("kcp_client_connected {0} {1}", 
-                ukcp.GetUniqueId(), 
-                ukcp.user().RemoteAddress.ToIPv4String()));
-            OnConnect(peer);
-        }
-
-        private void KcpServer_OnReceive(Ukcp ukcp, IByteBuffer buffer)
-        {
-            var peer = Global.NetManager.GetPeer(ukcp);
-            OnReceiveBuffer(peer, buffer);
-        }
-
-        private void KcpServer_OnException(Ukcp ukcp, Exception ex)
-        { 
-            var peer = Global.NetManager.GetPeer(ukcp);
-            OnExcept(peer, ex);
-            //Global.NetManager.DeregisterKcp(ukcp);
-        }
-
-        private void KcpServer_OnClose(Ukcp ukcp)
-        {
-            var peer = Global.NetManager.GetPeer(ukcp);
-            OnClose(peer);
-            //Global.NetManager.DeregisterKcp(ukcp);
-        }
-#endregion
-
-#region TCP
-        protected TcpHostServer SetupTcpServer()
-        {
-            tcpServer = TcpHostServer.Create(this.LocalAddress);
-            tcpServer.OnConnect += OnTcpConnect;
-            tcpServer.OnReceive += OnTcpServerReceive;
-            tcpServer.OnClose += OnTcpServerClose;
-            tcpServer.OnException += OnTcpServerException;
-            Log.Info(string.Format("TCP-Server@{0}", this.LocalAddress.ToIPv4String()));
-            return tcpServer;
-        }
-         
-        void OnTcpConnect(IChannel channel)
-        {
-            //新连接
-            var peer = Global.NetManager.RegisterChannel(channel);
-            //ulong hostId = Global.IdManager.GetHostId(channel.RemoteAddress.ToIPv4String());
-            Log.Info("TcpConnect: " + channel.RemoteAddress.ToIPv4String());
-
-            OnConnect(peer);
-        }
-
-        void OnTcpServerReceive(IChannel channel, IByteBuffer buffer)
-        {
-            var peer = Global.NetManager.GetPeer(channel);
-            OnReceiveBuffer(peer, buffer);
-        }
-
-        void OnTcpServerClose(IChannel channel)
-        {
-            //Global.NetManager.DeregisterChannel(channel);
-            var peer = Global.NetManager.GetPeer(channel);
-            OnClose(peer);
-        }
-
-        void OnTcpServerException(IChannel channel, Exception ex)
-        {
-            //Global.NetManager.DeregisterChannel(channel);
-            var peer = Global.NetManager.GetPeer(channel);
-            OnExcept(peer, ex);
-        }
-
-#endregion
-
-        protected void Heartbeat()
-        {
-            while(true)
-            {
-                try
-                {
-                    //Log.Info(string.Format("Heartbeat:{0}", IsAlive));
-                    Global.NetManager?.PrintPeerInfo();
-                    if (!IsAlive)
-                        return;
-
-                    if (IsClientMode) //客户端无法访问全局缓存
-                    {
-                        lastTs = TimeUtil.GetTimeStampMS2();
-                        Global.NetManager.Ping(true);
-                    }
-                    else
-                    {
-                        Global.NetManager.Ping(true);
-                        this.RegisterGlobalManager(this);
-                        foreach (var kv in this.actorDic)
-                            this.RegisterGlobalManager(kv.Value);
-                    }
-#if !CLIENT
-                    Global.IdManager.SyncWithCacheAsync();
-#endif
-                }
-                catch(Exception ex)
-                {
-                    Log.Error(ex);
-                }
-                Thread.Sleep(5000);
-            }
-        }
-
-        protected void Ping(NetPeer clientPeer)
-        {
-            clientPeer?.Ping();
-        }
-
         protected void RegisterGlobalManager(Host host)
         {
             Global.IdManager.RegisterHost(host, this.LocalAddress.ToIPv4String(), this.ExternalAddress.ToIPv4String());
@@ -459,8 +350,11 @@ namespace Fenix
 
         protected void RegisterGlobalManager(Actor actor)
         {
-            Global.IdManager.RegisterActor(actor, this.Id);
-            Global.TypeManager.RegisterActorType(actor);
+            Task.Run(() =>
+            {
+                Global.IdManager.RegisterActor(actor, this.Id);
+                Global.TypeManager.RegisterActorType(actor);
+            });
         }
 
         public override void CallMethod(Packet packet)
@@ -602,7 +496,7 @@ namespace Fenix
 
             //Set actor.server's client property
             var a = Global.Host.GetActor(actorId);
-            a.OnClientEnable(actorName);
+            a.OnClientEnable();
         }
 #endif
         //调用Actor身上的方法
@@ -620,17 +514,17 @@ namespace Fenix
 
         public sealed override void Update()
         {
+            base.EntityUpdate();
+
             if (IsAlive == false)
                 return;
 
             //Log.Info(string.Format("{0}:{1}", this.GetType().Name, rpcDic.Count));
 
-            this.CheckTimer();
+            //this.CheckTimer();
 
-            foreach (var a in this.actorDic.Keys)
-            {
+            foreach (var a in this.actorDic.Keys) 
                 this.actorDic[a].Update();
-            }
 
             Global.NetManager?.Update();
 
@@ -684,9 +578,7 @@ namespace Fenix
 
             Global.NetManager.Destroy();
 
-            IsAlive = false;
-
-            heartbeatTh = null;
+            this.Destroy();
         }
     }
 }

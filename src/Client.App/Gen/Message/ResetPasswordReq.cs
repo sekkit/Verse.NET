@@ -26,6 +26,10 @@ namespace Shared.Message
         {
             return MessagePackSerializer.Serialize<ResetPasswordReq>(this);
         }
+        public new static ResetPasswordReq Deserialize(byte[] data)
+        {
+            return MessagePackSerializer.Deserialize<ResetPasswordReq>(data);
+        }
     }
 }
 

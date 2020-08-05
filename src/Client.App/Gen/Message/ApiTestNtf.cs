@@ -38,11 +38,19 @@ namespace Shared.Message
             {
                 return MessagePackSerializer.Serialize<Callback>(this);
             }
+            public new static Callback Deserialize(byte[] data)
+            {
+                return MessagePackSerializer.Deserialize<Callback>(data);
+            }
         }
 
         public override byte[] Pack()
         {
             return MessagePackSerializer.Serialize<ApiTestNtf>(this);
+        }
+        public new static ApiTestNtf Deserialize(byte[] data)
+        {
+            return MessagePackSerializer.Deserialize<ApiTestNtf>(data);
         }
     }
 }

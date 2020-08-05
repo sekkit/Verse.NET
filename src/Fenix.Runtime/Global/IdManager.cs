@@ -68,8 +68,7 @@ namespace Fenix
         }
 
         ~IdManager()
-        { 
-            
+        {
         }
 
 #else
@@ -81,7 +80,6 @@ namespace Fenix
 
         ~IdManager()
         {
-            
         }
 
 #endif
@@ -157,7 +155,9 @@ namespace Fenix
 
         public string GetHostAddr(uint hostId)
         {
-            var hostName = GetHostName(hostId); 
+            var hostName = GetHostName(hostId);
+            if (hostName == null)
+                return "";
             if (mHNAME2ADDR.ContainsKey(hostName))
                 return mHNAME2ADDR[hostName];
 #if !CLIENT
@@ -241,9 +241,9 @@ namespace Fenix
 
             mANAME2HNAME[aName] = hName;
             if (!mHNAME2ANAME.ContainsKey(aName))
-                mHNAME2ANAME[aName] = new List<string>();
+                mHNAME2ANAME[hName] = new List<string>();
             if (!mHNAME2ANAME.ContainsKey(aName))
-                mHNAME2ANAME[aName].Add(aName);
+                mHNAME2ANAME[hName].Add(aName);
      
             mANAME2TNAME[aName] = actor.GetType().Name;
 
