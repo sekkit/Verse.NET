@@ -17,7 +17,7 @@ With the power of .NetCore, Fenix can be run on MacOS/Linux/Windows.
 
 Fenix is in a early stage of development, but is also being used in commercial Game projects.
 
-[RELEASES] https://github.com/sekkit/Fenix/releases<br>
+#### [RELEASES] https://github.com/sekkit/Fenix/releases<br>
 
 ## Status
    
