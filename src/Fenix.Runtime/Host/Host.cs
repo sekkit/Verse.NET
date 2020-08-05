@@ -276,7 +276,7 @@ namespace Fenix
                 var actorRemoveList = new List<uint>();
                 foreach (var kv in this.actorDic)
                     if (kv.Value.IsAlive)
-                        this.RegisterGlobalManager(kv.Value);
+                        this.RegisterGlobalManagerAsync(kv.Value);
                     else
                         actorRemoveList.Add(kv.Key);
                 foreach (var aId in actorRemoveList)
@@ -348,13 +348,19 @@ namespace Fenix
             Global.IdManager.RegisterHost(host, this.LocalAddress.ToIPv4String(), this.ExternalAddress.ToIPv4String());
         }
 
-        protected void RegisterGlobalManager(Actor actor)
+        protected void RegisterGlobalManagerAsync(Actor actor)
         {
             Task.Run(() =>
             {
                 Global.IdManager.RegisterActor(actor, this.Id);
                 Global.TypeManager.RegisterActorType(actor);
             });
+        }
+
+        protected void RegisterGlobalManager(Actor actor)
+        { 
+            Global.IdManager.RegisterActor(actor, this.Id);
+            Global.TypeManager.RegisterActorType(actor); 
         }
 
         public override void CallMethod(Packet packet)
