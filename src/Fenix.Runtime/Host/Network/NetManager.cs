@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic; 
-using System.Net; 
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 using DotNetty.Buffers;
 using DotNetty.KCP;
 using DotNetty.Transport.Channels;
@@ -13,13 +15,15 @@ namespace Fenix
 {
     public class NetManager
     { 
-        protected static ConcurrentDictionary<uint, NetPeer> tcpPeers = new ConcurrentDictionary<uint, NetPeer>();
+        protected ConcurrentDictionary<uint, NetPeer> tcpPeers = new ConcurrentDictionary<uint, NetPeer>();
 
-        protected static ConcurrentDictionary<uint, NetPeer> kcpPeers = new ConcurrentDictionary<uint, NetPeer>();
+        protected ConcurrentDictionary<uint, NetPeer> kcpPeers = new ConcurrentDictionary<uint, NetPeer>();
 
-        protected static ConcurrentDictionary<uint, NetPeer> channelPeers = new ConcurrentDictionary<uint, NetPeer>(); 
+        protected ConcurrentDictionary<uint, NetPeer> channelPeers = new ConcurrentDictionary<uint, NetPeer>();
 
-        public static NetManager Instance = new NetManager();
+        public ConcurrentDictionary<ulong, byte[][]> PartialRpcDic = new ConcurrentDictionary<ulong, byte[][]>();
+
+        protected ConcurrentDictionary<ulong, long> partialRpcTimeDic = new ConcurrentDictionary<ulong, long>();
 
         public event Action<NetPeer> OnConnect;
         public event Action<NetPeer, IByteBuffer> OnReceive;
@@ -201,12 +205,12 @@ namespace Fenix
         public NetPeer CreatePeer(string ip, int port, NetworkType netType)
         {
 //#if !CLIENT
-            IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
+            var ep = new IPEndPoint(IPAddress.Parse(ip), port);
             var addr = ep.ToString();
 
             var hostId = Global.IdManager.GetHostId(addr);
             if (hostId != 0)
-                return NetManager.Instance.GetPeerById(hostId, netType);
+                return Global.NetManager.GetPeerById(hostId, netType);
 //#endif
 
             var peer = NetPeer.Create(ep, netType);
@@ -249,10 +253,86 @@ namespace Fenix
             Log.Info(string.Format("PONG({0}) {1} from {2}", peer.netType, peer.ConnId, peer.RemoteAddress?.ToString()));
         }
 
+        public void Send(NetPeer peer, Packet packet)
+        {
+            var bytes = packet.Pack();
+
+            if (bytes.Length > Global.Config.MAX_PACKET_SIZE)
+            {
+                PartialSendAsync(peer, bytes);
+                return;
+            }
+
+            peer.Send(bytes);
+        }
+
+        protected async Task PartialSendAsync(NetPeer peer, byte[] bytes)
+        {
+            var parts = DataUtil.SplitBytes(bytes, Global.Config.MAX_PACKET_SIZE);
+            var partialId = Basic.GenID64();
+            var totalPartNum = parts.Count();
+            if(totalPartNum > 256)
+            {
+                Log.Error("send_bytes_too_long", peer.ConnId, totalPartNum);
+                return;
+            }
+            for (short i = 0; i < parts.Count(); ++i)
+            {
+                var part = parts.ElementAt(i);
+                var partialBuf = Unpooled.DirectBuffer();
+                partialBuf.WriteIntLE((int)OpCode.PARTIAL);
+                partialBuf.WriteLongLE((long)partialId);
+                partialBuf.WriteByte(i);
+                partialBuf.WriteByte(parts.Count());
+                partialBuf.WriteBytes(part);
+                peer.Send(partialBuf);
+                await Task.Delay(10);
+                Log.Info("send_part", i, parts.Count(), part.Length);
+            }
+        }
+
+        public byte[] AddPartialRpc(ulong partialId, int partIndex, int totPartCount, byte[] payload)
+        {
+            if (!PartialRpcDic.ContainsKey(partialId))
+                PartialRpcDic[partialId] = new byte[totPartCount][];
+            PartialRpcDic[partialId][partIndex] = payload;
+            partialRpcTimeDic[partialId] = TimeUtil.GetTimeStampMS();
+            Log.Info("recv_part", partIndex, totPartCount, payload.Length);
+            if (PartialRpcDic[partialId].Count(m => m != null) == totPartCount)
+            {
+                byte[] finalBytes = DataUtil.ConcatBytes(PartialRpcDic[partialId]);
+                PartialRpcDic.TryRemove(partialId, out var _);
+                partialRpcTimeDic.TryRemove(partialId, out var _);
+                return finalBytes;
+            }
+
+            return null;
+        }
+
+        long lastTick = 0;
+
         public void Update()
         {
+            var curTime = TimeUtil.GetTimeStampMS();
+
+            if (curTime - lastTick < 5000)
+                return;
+
+            lastTick = curTime;
+
             CheckPeers(tcpPeers.Values);
-            CheckPeers(kcpPeers.Values); 
+            CheckPeers(kcpPeers.Values);
+            
+            foreach (var partialId in partialRpcTimeDic.Keys.ToArray())
+            {
+                var ts = partialRpcTimeDic[partialId];
+                if (curTime - ts > 15000)
+                {
+                    Log.Info("CheckPartialRpc->timeout");
+                    PartialRpcDic.TryRemove(partialId, out var _);
+                    partialRpcTimeDic.TryRemove(partialId, out var _);
+                }
+            }
         }
 
         void CheckPeers(ICollection<NetPeer> peers)
@@ -311,7 +391,7 @@ namespace Fenix
             this.OnReceive = null;
             this.OnSend = null;
             this.OnPeerLost = null;
-            NetManager.Instance = null;
+            Global.NetManager = null;
         }
     }
 }

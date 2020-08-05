@@ -60,7 +60,7 @@ namespace Client
                 Log.Info(string.Format("Register to server {0}: {1} {2} {3}", code, hostInfo.HostId,
                     hostInfo.HostName, hostInfo.HostAddr));
                 if (loginapp.toHostId != hostInfo.HostId)
-                    NetManager.Instance.ChangePeerId(loginapp.toHostId, hostInfo.HostId, hostInfo.HostName, hostInfo.HostAddr);
+                    Global.NetManager.ChangePeerId(loginapp.toHostId, hostInfo.HostId, hostInfo.HostName, hostInfo.HostAddr);
 
                 Global.IdManager.RegisterHostInfo(hostInfo);
                 //loginapp.Disconnect(); 
@@ -86,10 +86,10 @@ namespace Client
                         var ip = parts[0];
                         var port = int.Parse(parts[1]);
                         var avatarHost = host.GetHost(hostName, ip, port);
-                        NetManager.Instance.PrintPeerInfo("# Master.App: hostref created");
+                        Global.NetManager.PrintPeerInfo("# Master.App: hostref created");
                         avatarHost.BindClientActor(Game.Avatar.Uid, (code3) =>
                         {
-                            NetManager.Instance.PrintPeerInfo("# Master.App: BindClientActor called");
+                            Global.NetManager.PrintPeerInfo("# Master.App: BindClientActor called");
                             Log.Info("Avatar已经和服务端绑定");
                         });
                         loginapp.Disconnect();

@@ -89,10 +89,12 @@ namespace DotNetty.KCP
         /**
          * 同步关闭服务器
          */
-        public void stop() {
+        public void stop() 
+        {
             foreach (var channel in _localAddress)
             {
-                channel.CloseAsync().Wait();
+                //channel.CloseAsync().Wait();
+                Task.Run(() => channel.CloseAsync()).Wait();
             }
             foreach (var ukcp in _channelManager.getAll())
             {

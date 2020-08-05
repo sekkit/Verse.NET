@@ -42,7 +42,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Fenix.Runtime\Fenix.Runtime-Client.csproj" />
+    <ProjectReference Include="..\Fenix.Runtime\Fenix.Runtime.Client.csproj" />
     <ProjectReference Include="..\MessagePack\MessagePack.csproj" />
   </ItemGroup> 
 

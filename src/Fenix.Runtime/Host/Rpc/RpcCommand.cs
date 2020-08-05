@@ -85,7 +85,7 @@ namespace Fenix
 
             if (this.ProtoCode <= OpCode.CALL_ACTOR_METHOD)
             {
-                var peer = NetManager.Instance.GetPeerById(packet.FromHostId, this.netType);
+                var peer = Global.NetManager.GetPeerById(packet.FromHostId, this.netType);
                 var context = new RpcContext(this.packet, peer);
                 args.Add(context);
             }

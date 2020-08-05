@@ -30,7 +30,7 @@ namespace Client
                 var protoCode = ProtocolCode.API_TEST_NTF;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { uid, callback, context });
                 }
@@ -57,7 +57,7 @@ namespace Client
                 var protoCode = ProtocolCode.API_TEST2_NTF;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { uid, match_type, context });
                 }

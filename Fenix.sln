@@ -53,7 +53,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fenix.Runtime", "src\Fenix.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "src\Shared\Shared.csproj", "{48D26D71-9AD1-4E4C-A785-ADC9AE45C56C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fenix.Runtime-Client", "src\Fenix.Runtime\Fenix.Runtime-Client.csproj", "{4BE95471-F893-415E-838E-6A12FB4F09D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fenix.Runtime.Client", "src\Fenix.Runtime\Fenix.Runtime.Client.csproj", "{4BE95471-F893-415E-838E-6A12FB4F09D6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared.Client", "src\Shared\Shared.Client.csproj", "{E48B3616-EB4F-4529-B89D-78762C18CA64}"
 EndProject

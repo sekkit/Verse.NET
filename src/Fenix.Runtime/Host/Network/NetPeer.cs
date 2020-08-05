@@ -244,11 +244,15 @@ namespace Fenix
 
         public void Send(byte[] bytes)
         {
-            if (kcpChannel != null) { kcpChannel.write(Unpooled.WrappedBuffer(bytes)); Log.Debug("SEND_END:" + (Fenix.Common.Utils.TimeUtil.GetTimeStampMS2() - lastTickTime).ToString()); return; }
-            if (kcpClient != null) { kcpClient.Send(bytes); Log.Debug("SEND_END:" + (Fenix.Common.Utils.TimeUtil.GetTimeStampMS2() - lastTickTime).ToString()); return; }
-            if (tcpChannel != null) { tcpChannel.WriteAndFlushAsync(Unpooled.WrappedBuffer(bytes)); Log.Debug("SEND_END:" + (Fenix.Common.Utils.TimeUtil.GetTimeStampMS2() - lastTickTime).ToString()); return; }
-            if (tcpClient != null) { tcpClient.Send(bytes); Log.Debug("SEND_END:" + (Fenix.Common.Utils.TimeUtil.GetTimeStampMS2() - lastTickTime).ToString()); return; } 
-             
+            this.Send(Unpooled.WrappedBuffer(bytes));
+        }
+
+        public void Send(IByteBuffer buffer)
+        {
+            if (kcpChannel != null) { kcpChannel.write(buffer); Log.Debug("SEND_END:" + (Fenix.Common.Utils.TimeUtil.GetTimeStampMS2() - lastTickTime).ToString()); return; }
+            if (kcpClient != null) { kcpClient.Send(buffer); Log.Debug("SEND_END:" + (Fenix.Common.Utils.TimeUtil.GetTimeStampMS2() - lastTickTime).ToString()); return; }
+            if (tcpChannel != null) { tcpChannel.WriteAndFlushAsync(buffer); Log.Debug("SEND_END:" + (Fenix.Common.Utils.TimeUtil.GetTimeStampMS2() - lastTickTime).ToString()); return; }
+            if (tcpClient != null) { tcpClient.Send(buffer); Log.Debug("SEND_END:" + (Fenix.Common.Utils.TimeUtil.GetTimeStampMS2() - lastTickTime).ToString()); return; }
         }
 
         //public async Task SendAsync(byte[] bytes)
@@ -258,10 +262,10 @@ namespace Fenix
         //    });
         //}
 
-        public void Send(Packet packet)
-        { 
-            this.Send(packet.Pack());
-        }
+        //public void Send(Packet packet)
+        //{ 
+        //    this.Send(packet.Pack());
+        //}
 
         public void Stop()
         {

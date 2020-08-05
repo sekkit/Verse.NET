@@ -87,8 +87,8 @@ namespace Fenix
 
         public void Disconnect()
         {
-            var peer = NetManager.Instance.GetPeerById(this.toHostId, this.NetType);
-            NetManager.Instance.Deregister(peer);
+            var peer = Global.NetManager.GetPeerById(this.toHostId, this.NetType);
+            Global.NetManager.Deregister(peer);
         }
     }
 }

@@ -29,7 +29,7 @@ namespace Client
         [ClientApi]
         public void ApiTest(string uid, Action<ErrCode> callback)
         {
-            Log.Info("Call=>client_api:ClientApiTest");
+            Log.Info("Call=>client_api:ClientApiTest", uid);
             callback(ErrCode.OK);
         }
 

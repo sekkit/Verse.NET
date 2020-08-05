@@ -26,7 +26,7 @@
     <ProjectReference Include="..\DotNetty.TCP\DotNetty.TCP.csproj" />
     <ProjectReference Include="..\DotNetty.Transport.Libuv\DotNetty.Transport.Libuv.csproj" />
     <ProjectReference Include="..\DotNetty.Transport\DotNetty.Transport.csproj" />
-    <ProjectReference Include="..\Fenix.Runtime\Fenix.Runtime-Client.csproj" />
+    <ProjectReference Include="..\Fenix.Runtime\Fenix.Runtime.Client.csproj" />
     <ProjectReference Include="..\MessagePack.Annotations\MessagePack.Annotations.csproj" />
     <ProjectReference Include="..\MessagePack.UnityShims\MessagePack.UnityShims.csproj" />
     <ProjectReference Include="..\MessagePack\MessagePack.csproj" />

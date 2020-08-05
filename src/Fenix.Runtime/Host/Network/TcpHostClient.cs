@@ -106,15 +106,20 @@ namespace Fenix
             await clientChannel?.WriteAndFlushAsync(Unpooled.WrappedBuffer(bytes));
         }
 
-        public void Send(byte[] bytes)
-        {
-            clientChannel?.WriteAndFlushAsync(Unpooled.WrappedBuffer(bytes));
+        //public void Send(byte[] bytes)
+        //{
+        //    clientChannel?.WriteAndFlushAsync(Unpooled.WrappedBuffer(bytes));
     
-            //SendAsync(bytes);
-            //    /*
-            //var task = Task.Run(()=> SendAsync(bytes));
-            //task.Wait();
-            //    */
+        //    //SendAsync(bytes);
+        //    //    /*
+        //    //var task = Task.Run(()=> SendAsync(bytes));
+        //    //task.Wait();
+        //    //    */
+        //}
+
+        public void Send(IByteBuffer buffer)
+        {
+            clientChannel?.WriteAndFlushAsync(buffer); 
         }
 
         public void Stop()

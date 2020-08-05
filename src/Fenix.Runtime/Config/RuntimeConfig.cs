@@ -28,6 +28,9 @@ namespace Fenix.Config
         [Key(6)]
         public NetworkType ClientNetwork { get; set; }
 
+        [IgnoreMember]
+        public readonly int MAX_PACKET_SIZE = 64*1024;
+
         public static RuntimeConfig MakeDefaultConfig()
         {
             var obj = new RuntimeConfig();

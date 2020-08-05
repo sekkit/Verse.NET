@@ -10,6 +10,7 @@ namespace Fenix.Common
         public const uint NONE = 0x0;
         public const uint PING = 0x1;
         public const uint PONG = 0x2;
+        public const uint PARTIAL = 0x3;
         public const uint GOODBYE = 0x4;
         public const uint REGISTER_REQ = 0x5;
         public const uint CREATE_ACTOR_REQ = 0x10;

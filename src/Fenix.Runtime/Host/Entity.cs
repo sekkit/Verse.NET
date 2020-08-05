@@ -175,12 +175,12 @@ namespace Fenix
             }
 
             //否则通过网络调用
-            var peer = NetManager.Instance.GetPeerById(toHostId, netType);
+            var peer = Global.NetManager.GetPeerById(toHostId, netType);
             //Log.Info(string.Format("{0} {1} {2} {3} {4}", fromHostId, toHostId, fromActorId, toActorId, peer==null?"NULL":""));
             if (peer == null)
             {
                 Log.Warn(string.Format("Rpc:cannot_find_peer_and_create {0} => {1} ({2})", fromHostId, toHostId, netType));
-                peer = NetManager.Instance.CreatePeer(toHostId, toPeerAddr, netType);
+                peer = Global.NetManager.CreatePeer(toHostId, toPeerAddr, netType);
             }
   
             if (peer == null || !peer.IsActive)
@@ -188,9 +188,9 @@ namespace Fenix
                 Log.Error(string.Format("Rpc:peer disconnected {0}", toHostId));
                 //这里可以尝试把global以及redis状态清空
                 if (peer == null)
-                    NetManager.Instance.RemovePeerId(toHostId);
+                    Global.NetManager.RemovePeerId(toHostId);
                 else
-                    NetManager.Instance.Deregister(peer);
+                    Global.NetManager.Deregister(peer);
                 cb?.Invoke(null);
                 return;
             }
@@ -200,7 +200,7 @@ namespace Fenix
                 AddCallbackRpc(cmd);
             }
 
-            peer.Send(packet);
+            Global.NetManager.Send(peer, packet); 
         }
 
         public void RpcCallback(ulong protoId, uint protoCode, uint fromHostId, uint toHostId, uint fromActorId, uint toActorId, NetworkType netType, IMessage cbMsg)
@@ -216,12 +216,12 @@ namespace Fenix
             }
 
             //否则通过网络调用
-            var peer = NetManager.Instance.GetPeerById(toHostId, netType);
+            var peer = Global.NetManager.GetPeerById(toHostId, netType);
 
             if (peer == null)
             {
                 Log.Warn(string.Format("RpcCallback:cannot_find_peer_and_create {0} => {1} ({2}", fromHostId, toHostId, netType));
-                peer = NetManager.Instance.CreatePeer(toHostId, null, netType);
+                peer = Global.NetManager.CreatePeer(toHostId, null, netType);
             }
 
             if (peer == null || !peer.IsActive)
@@ -229,9 +229,9 @@ namespace Fenix
                 Log.Error(string.Format("RpcCallback:peer disconnected {0}", toHostId));
                 //这里可以尝试把global以及redis状态清空
                 if(peer == null)
-                    NetManager.Instance.RemovePeerId(toHostId);
+                    Global.NetManager.RemovePeerId(toHostId);
                 else
-                    NetManager.Instance.Deregister(peer);
+                    Global.NetManager.Deregister(peer);
                 return;
             }
 
@@ -239,7 +239,7 @@ namespace Fenix
             //    Global.TypeManager.GetActorType(fromActorId).Name, Global.TypeManager.GetActorType(toActorId).Name,
             //    peer == null ? "NULL" : ""));
 
-            peer.Send(packet);
+            Global.NetManager.Send(peer, packet);
         }
 
         public void AddTimer(long delay, long interval, Action tickCallback)
@@ -259,7 +259,6 @@ namespace Fenix
 
         protected void CheckRpc()
         {
-            
             var curTime = TimeUtil.GetTimeStampMS();
             foreach (var cmd in rpcDic.Values.ToArray())
             {

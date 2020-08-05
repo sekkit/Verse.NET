@@ -50,16 +50,16 @@ namespace Fenix
         {
             this.IsClientMode = clientMode; 
 
-            //NetManager.Instance.OnConnect += (peer) => 
-            NetManager.Instance.OnReceive += (peer, buffer) => OnReceiveBuffer(peer, buffer);
-            NetManager.Instance.OnClose += (peer) => NetManager.Instance.Deregister(peer);
-            NetManager.Instance.OnException += (peer, ex) =>
+            //Global.NetManager.OnConnect += (peer) => 
+            Global.NetManager.OnReceive += (peer, buffer) => OnReceiveBuffer(peer, buffer);
+            Global.NetManager.OnClose += (peer) => Global.NetManager.Deregister(peer);
+            Global.NetManager.OnException += (peer, ex) =>
             {
                 Log.Error(ex.ToString()); 
-                NetManager.Instance.Deregister(peer);
+                Global.NetManager.Deregister(peer);
             };
 
-            NetManager.Instance.OnPeerLost += (peer) =>
+            Global.NetManager.OnPeerLost += (peer) =>
             {
                 if(this.actorDic.Any(m=>m.Key == peer.ConnId && m.Value.GetType().Name == "Avatar"))
                 {
@@ -127,7 +127,7 @@ namespace Fenix
 
             this.AddRepeatedTimer(3000, 10000, () =>
             {
-                NetManager.Instance.PrintPeerInfo("All peers:");
+                Global.NetManager.PrintPeerInfo("All peers:");
 
                 foreach(var a in this.actorDic.Values)
                 {
@@ -174,8 +174,8 @@ namespace Fenix
             //Log.Debug(string.Format("RECV({0}) {1} {2} {3}", peer.netType, peer.ConnId, peer.RemoteAddress, StringUtil.ToHexString(buffer.ToArray())));
             if (buffer.ReadableBytes == 1)
             {
-                byte protoCode = buffer.ReadByte();
-                if (protoCode == (byte)OpCode.PING)
+                byte opCode = buffer.ReadByte();
+                if (opCode == (byte)OpCode.PING)
                 {
                     Log.Debug(string.Format("Ping({0}) {1} FROM {2}", peer.netType, peer.ConnId, peer.RemoteAddress));
                     
@@ -193,74 +193,120 @@ namespace Fenix
                     }
 #endif
 
-                    NetManager.Instance.OnPong(peer);
+                    Global.NetManager.OnPong(peer);
+                    return;
                 }
-                else if(protoCode == (byte)OpCode.PONG)
+                else if(opCode == (byte)OpCode.PONG)
                 {
                     Log.Info("ping>>>" + (TimeUtil.GetTimeStampMS2() - lastTs).ToString());
                     peer.lastTickTime = TimeUtil.GetTimeStampMS2();
-                    NetManager.Instance.OnPong(peer);
+                    Global.NetManager.OnPong(peer); 
+                    return;
                 }
-                else if (protoCode == (byte)OpCode.GOODBYE)
+                else if (opCode == (byte)OpCode.GOODBYE)
                 {
                     //删除这个连接
-                    NetManager.Instance.Deregister(peer);
+                    Global.NetManager.Deregister(peer); 
+                    return;
                 }
+            } 
+
+            uint protoCode = buffer.ReadUnsignedIntLE();
+            if (protoCode == OpCode.REGISTER_REQ)
+            {
+                var hostId = buffer.ReadUnsignedIntLE();
+                var nameBytes = new byte[buffer.ReadableBytes];
+                buffer.ReadBytes(nameBytes);
+                var hostName = Encoding.UTF8.GetString(nameBytes);
+
+                var context = new RpcContext(null, peer);
+
+                this.Register(hostId, hostName, context);
+
+                return; 
+            }
+
+            if (protoCode == OpCode.PARTIAL)
+            {
+                var partialId = (ulong)buffer.ReadLongLE();
+                var partIndex = buffer.ReadByte();
+                var totPartCount = buffer.ReadByte();
+                var payload = new byte[buffer.ReadableBytes];
+                buffer.ReadBytes(payload);
+
+                var finalBytes = Global.NetManager.AddPartialRpc(partialId, partIndex, totPartCount, payload);
+                if (finalBytes != null)
+                {
+                    var finalBuf = Unpooled.WrappedBuffer(finalBytes);
+                    var _protoCode = finalBuf.ReadUnsignedIntLE();
+                    if (_protoCode == OpCode.REGISTER_REQ)
+                    {
+                        ProcessRegisterProtocol(peer, _protoCode, finalBuf);
+                    }
+                    else
+                    {
+                        ProcessRpcProtocol(peer, _protoCode, finalBuf);
+                    }
+                }
+                return;
+            } 
+                
+            ProcessRpcProtocol(peer, protoCode, buffer); 
+        }
+
+        void ProcessRegisterProtocol(NetPeer peer, uint protoCode, IByteBuffer buffer)
+        {
+            if (protoCode == OpCode.REGISTER_REQ)
+            {
+                var hostId = buffer.ReadUnsignedIntLE();
+                var nameBytes = new byte[buffer.ReadableBytes];
+                buffer.ReadBytes(nameBytes);
+                var hostName = Encoding.UTF8.GetString(nameBytes);
+
+                var context = new RpcContext(null, peer);
+
+                this.Register(hostId, hostName, context);
 
                 return;
             }
+        }
+
+        void ProcessRpcProtocol(NetPeer peer, uint protoCode, IByteBuffer buffer)
+        {
+            ulong msgId = (ulong)buffer.ReadLongLE();
+            //uint fromHostId = buffer.ReadUnsignedIntLE();
+            uint fromActorId = buffer.ReadUnsignedIntLE();
+            uint toActorId = buffer.ReadUnsignedIntLE();
+            byte[] bytes = new byte[buffer.ReadableBytes];
+            buffer.ReadBytes(bytes);
+
+            var packet = Packet.Create(msgId,
+                protoCode,
+                peer.ConnId,
+                Global.Host.Id,
+                fromActorId,
+                toActorId,
+                peer.netType,
+                Global.TypeManager.GetMessageType(protoCode),
+                bytes);
+
+            Log.Debug(string.Format("RECV2({0}): {1} {2} => {3} {4} >= {5} {6} => {7}",
+                peer.netType,
+                protoCode,
+                packet.FromHostId,
+                packet.ToHostId,
+                packet.FromActorId,
+                packet.ToActorId,
+                peer.RemoteAddress.ToIPv4String(),
+                peer.LocalAddress.ToIPv4String()));
+
+            if (protoCode >= OpCode.CALL_ACTOR_METHOD && toActorId != 0)
+            {
+                this.CallActorMethod(packet);
+            }
             else
             {
-                uint protoCode = buffer.ReadUnsignedIntLE();
-                if (protoCode == OpCode.REGISTER_REQ)
-                {
-                    var hostId = buffer.ReadUnsignedIntLE();
-                    var nameBytes = new byte[buffer.ReadableBytes];
-                    buffer.ReadBytes(nameBytes);
-                    var hostName = Encoding.UTF8.GetString(nameBytes);
-
-                    var context = new RpcContext(null, peer);
-
-                    this.Register(hostId, hostName, context);
-
-                    return; 
-                }
-
-                ulong msgId = (ulong)buffer.ReadLongLE();
-                //uint fromHostId = buffer.ReadUnsignedIntLE();
-                uint fromActorId = buffer.ReadUnsignedIntLE();
-                uint toActorId = buffer.ReadUnsignedIntLE();
-                byte[] bytes = new byte[buffer.ReadableBytes];
-                buffer.ReadBytes(bytes); 
-                 
-                var packet = Packet.Create(msgId, 
-                    protoCode, 
-                    peer.ConnId, 
-                    Global.Host.Id,
-                    fromActorId, 
-                    toActorId, 
-                    peer.netType, 
-                    Global.TypeManager.GetMessageType(protoCode), 
-                    bytes);
-
-                Log.Debug(string.Format("RECV2({0}): {1} {2} => {3} {4} >= {5} {6} => {7}", 
-                    peer.netType, 
-                    protoCode, 
-                    packet.FromHostId, 
-                    packet.ToHostId,
-                    packet.FromActorId, 
-                    packet.ToActorId, 
-                    peer.RemoteAddress.ToIPv4String(), 
-                    peer.LocalAddress.ToIPv4String()));
-                 
-                if (protoCode >= OpCode.CALL_ACTOR_METHOD && toActorId != 0)
-                {
-                    this.CallActorMethod(packet);
-                }
-                else
-                {
-                    this.CallMethod(packet);
-                }
+                this.CallMethod(packet);
             }
         }
 
@@ -281,7 +327,7 @@ namespace Fenix
         protected void KcpServer_OnConnect(Ukcp ukcp)
         {
             //新连接
-            NetManager.Instance.RegisterKcp(ukcp);
+            Global.NetManager.RegisterKcp(ukcp);
             //ulong hostId = Global.IdManager.GetHostId(channel.RemoteAddress.ToIPv4String());
             Log.Info(string.Format("kcp_client_connected {0} {1}", 
                 ukcp.GetUniqueId(), 
@@ -290,7 +336,7 @@ namespace Fenix
 
         private void KcpServer_OnReceive(Ukcp ukcp, IByteBuffer buffer)
         {
-            var peer = NetManager.Instance.GetPeer(ukcp);
+            var peer = Global.NetManager.GetPeer(ukcp);
             OnReceiveBuffer(peer, buffer);
         }
 
@@ -298,12 +344,12 @@ namespace Fenix
         {
             Log.Error(ex.ToString());
 
-            NetManager.Instance.DeregisterKcp(ukcp);
+            Global.NetManager.DeregisterKcp(ukcp);
         }
 
         private void KcpServer_OnClose(Ukcp ukcp)
         {
-            NetManager.Instance.DeregisterKcp(ukcp);
+            Global.NetManager.DeregisterKcp(ukcp);
         }
 #endregion
 
@@ -322,26 +368,26 @@ namespace Fenix
         void OnTcpConnect(IChannel channel)
         {
             //新连接
-            NetManager.Instance.RegisterChannel(channel);
+            Global.NetManager.RegisterChannel(channel);
             //ulong hostId = Global.IdManager.GetHostId(channel.RemoteAddress.ToIPv4String());
             Log.Info("TcpConnect: " + channel.RemoteAddress.ToIPv4String());
         }
 
         void OnTcpServerReceive(IChannel channel, IByteBuffer buffer)
         {
-            var peer = NetManager.Instance.GetPeer(channel);
+            var peer = Global.NetManager.GetPeer(channel);
             OnReceiveBuffer(peer, buffer);
         }
 
         void OnTcpServerClose(IChannel channel)
         {
-            NetManager.Instance.DeregisterChannel(channel);
+            Global.NetManager.DeregisterChannel(channel);
         }
 
         void OnTcpServerException(IChannel channel, Exception ex)
         {
             Log.Error(ex.ToString());
-            NetManager.Instance.DeregisterChannel(channel);
+            Global.NetManager.DeregisterChannel(channel);
         } 
 
 #endregion
@@ -353,18 +399,18 @@ namespace Fenix
                 try
                 {
                     //Log.Info(string.Format("Heartbeat:{0}", IsAlive));
-                    NetManager.Instance?.PrintPeerInfo();
+                    Global.NetManager?.PrintPeerInfo();
                     if (!IsAlive)
                         return;
 
                     if (IsClientMode) //客户端无法访问全局缓存
                     {
                         lastTs = TimeUtil.GetTimeStampMS2();
-                        NetManager.Instance.Ping(true);
+                        Global.NetManager.Ping(true);
                     }
                     else
                     {
-                        NetManager.Instance.Ping(true);
+                        Global.NetManager.Ping(true);
                         this.RegisterGlobalManager(this);
                         foreach (var kv in this.actorDic)
                             this.RegisterGlobalManager(kv.Value);
@@ -383,7 +429,7 @@ namespace Fenix
 
         protected void Ping(NetPeer clientPeer)
         {
-            clientPeer?.Send(new byte[] { (byte)OpCode.PING });
+            clientPeer?.Ping();
         }
 
         protected void RegisterGlobalManager(Host host)
@@ -494,7 +540,7 @@ namespace Fenix
             if (__context.Peer.ConnId != hostId)
             {
                 //修正一下peer的id 
-                NetManager.Instance.ChangePeerId(__context.Peer.ConnId, hostId, hostName, __context.Peer.RemoteAddress.ToIPv4String()); 
+                Global.NetManager.ChangePeerId(__context.Peer.ConnId, hostId, hostName, __context.Peer.RemoteAddress.ToIPv4String()); 
             }
             else
             {
@@ -509,10 +555,10 @@ namespace Fenix
         {
             if (__context.Peer.ConnId != hostId)
             {
-                NetManager.Instance.ChangePeerId(__context.Peer.ConnId, hostId, hostName, __context.Peer.RemoteAddress.ToIPv4String());
+                Global.NetManager.ChangePeerId(__context.Peer.ConnId, hostId, hostName, __context.Peer.RemoteAddress.ToIPv4String());
             }
 
-            NetManager.Instance.RegisterClient(hostId, hostName, __context.Peer);
+            Global.NetManager.RegisterClient(hostId, hostName, __context.Peer);
 
             var hostInfo = Global.IdManager.GetHostInfo(this.Id);
 
@@ -566,7 +612,7 @@ namespace Fenix
                 this.actorDic[a].Update();
             }
 
-            NetManager.Instance?.Update();
+            Global.NetManager?.Update();
 
             //Log.Info(string.Format("C: {0}", rpcDic.Count));
         }
@@ -616,7 +662,7 @@ namespace Fenix
 
             this.actorDic.Clear();
 
-            NetManager.Instance.Destroy();
+            Global.NetManager.Destroy();
 
             IsAlive = false;
 

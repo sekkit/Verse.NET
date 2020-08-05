@@ -600,7 +600,7 @@ namespace Shared
                         .AppendLine($"                var protoCode = {pc_cls}.{proto_code};")
                         .AppendLine($"                if (protoCode < OpCode.CALL_ACTOR_METHOD)")
                         .AppendLine($"                {{")
-                        .AppendLine($"                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);")
+                        .AppendLine($"                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);")
                         .AppendLine($"                    var context = new RpcContext(null, peer);");
                         if (args.Trim().Length == 0)
                             builder.AppendLine($"                    Global.Host.CallMethodWithParams(protoCode, new object[] {{ context }});");
@@ -635,7 +635,7 @@ namespace Shared
                         .AppendLine($"                var protoCode = {pc_cls}.{proto_code};")
                         .AppendLine($"                if (protoCode < OpCode.CALL_ACTOR_METHOD)")
                         .AppendLine($"                {{")
-                        .AppendLine($"                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);")
+                        .AppendLine($"                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);")
                         .AppendLine($"                    var context = new RpcContext(null, peer);");
                         if (args.Trim().Length == 0)
                             builder.AppendLine($"                    Global.Host.CallMethodWithParams(protoCode, new object[] {{ context }});");

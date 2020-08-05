@@ -24,7 +24,7 @@ namespace Fenix
                 var protoCode = OpCode.BIND_CLIENT_ACTOR_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { actorName, callback, context });
                 }
@@ -51,7 +51,7 @@ namespace Fenix
                 var protoCode = OpCode.CREATE_ACTOR_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { typename, name, callback, context });
                 }
@@ -79,7 +79,7 @@ namespace Fenix
                 var protoCode = OpCode.MIGRATE_ACTOR_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { actorId, context });
                 }
@@ -102,7 +102,7 @@ namespace Fenix
                 var protoCode = OpCode.REGISTER_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { hostId, hostName, context });
                 }
@@ -126,7 +126,7 @@ namespace Fenix
                 var protoCode = OpCode.REGISTER_CLIENT_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { hostId, hostName, callback, context });
                 }
@@ -154,7 +154,7 @@ namespace Fenix
                 var protoCode = OpCode.REMOVE_ACTOR_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { actorId, context });
                 }
