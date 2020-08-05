@@ -11,6 +11,7 @@ Fenix is part of OpenCraft project, a distributed server designed for https://gi
 
 # Fenix Project
  
+[Download] https://github.com/sekkit/Fenix/releases
 A distributed game server featuring asynchronous event-driven networking, KCP/TCP/Websockets support.
 From MMORPG to small projects, Fenix is designed to be stable, simple, and super easy to scale.
 With the power of .NetCore, Fenix can be run on MacOS/Linux/Windows.
