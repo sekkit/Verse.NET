@@ -1,6 +1,8 @@
 ﻿using CSRedis;
 using Fenix.Common;
 using Fenix.Common.Db;
+using Fenix.Common.Rpc;
+using Fenix.Common.Utils;
 using Server.Config.Db;
 using System;
 using System.Collections.Generic;
@@ -35,17 +37,21 @@ namespace Fenix.Redis
             client = new CSRedisClient(connStr);
             helper = new RedisHelper();
             helper.Initialization(client);
-        }
-
-        public bool Set(string key, object value, int? expireSeconds=null)
+        } 
+        public bool Set(string key, object value, int? expireSec = null)
         { 
-            using (var lk = helper.Lock(key, 3))
-            {
-                if(expireSeconds!=null && expireSeconds.HasValue)
-                    return this.client.Set(key, value, expireSeconds: expireSeconds.Value);
-                else
-                    return this.client.Set(key, value, expireSeconds:conf.ValidTime);
+            if (value == null)
+                return false;
+            if(value is IMessage || value.GetType().IsSubclassOf(typeof(IMessage)))
+            { 
+                if(expireSec == null || !expireSec.HasValue)
+                    return this.client.Set(key, ((IMessage)value).Pack(), expireSeconds: this.conf.ValidTime);
+                return this.client.Set(key, ((IMessage)value).Pack(), expireSeconds: expireSec.Value);
             }
+
+            if (expireSec == null || !expireSec.HasValue)
+                return this.client.Set(key, value, expireSeconds: this.conf.ValidTime);
+            return this.client.Set(key, value, expireSeconds: expireSec.Value);
         }
 
         public bool HasKey(string key)
@@ -53,8 +59,17 @@ namespace Fenix.Redis
             return this.client.Exists(key);
         }
 
-        public T Get<T>(string key)
+        public T Get<T>(string key) where T: IMessage
         {
+            var t = typeof(T);
+            if(t == typeof(IMessage) || t.IsSubclassOf(typeof(IMessage)))
+            {
+                var bytes = this.client.GetBytes(key);
+                if (bytes == null)
+                    return null;
+                return RpcUtil.Deserialize<T>(bytes);
+            }
+
             return this.client.Get<T>(key);
         }
 
@@ -71,6 +86,11 @@ namespace Fenix.Redis
         public long Delete(string key)
         {
             return this.client.Del(key);
+        }
+
+        public long NewSeqId(string key)
+        {
+            return this.client.IncrBy(key);
         }
 
         public async Task<string[]> KeysAsync()

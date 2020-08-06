@@ -11,5 +11,10 @@ namespace Shared.DataModel
     {
         [Key(0)]
         public Dictionary<int, object> matchData;
+
+        public override byte[] Pack()
+        {
+            return MessagePackSerializer.Serialize<MatchData>(this);
+        }
     }
 }

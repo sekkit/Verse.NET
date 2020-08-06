@@ -38,7 +38,7 @@ namespace Fenix.Common.Message
             public String arg1 { get; set; }
 
             [Key(2)]
-            public UInt32 arg2 { get; set; }
+            public UInt64 arg2 { get; set; }
 
             public override byte[] Pack()
             {

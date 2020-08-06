@@ -100,7 +100,10 @@ namespace Fenix
             foreach (var argType in genericType.GetGenericArguments())
             {
                 if (!argType.IsGenericType)
-                    decl += argType.Name + ", ";
+                    if(argType.Namespace.StartsWith("Server"))
+                        decl += argType.FullName + ", ";
+                    else
+                        decl += argType.Name + ", ";
                 else
                     decl += ParseGenericDecl(argType);
             }
@@ -133,7 +136,10 @@ namespace Fenix
             if (type.IsGenericType)
                 decl = ParseGenericDecl(type);
             else
-                decl = type.Name;
+                if (type.Namespace.StartsWith("Server"))
+                    decl = type.FullName;
+                else 
+                    decl = type.Name;
             return decl;
         }
 
@@ -463,13 +469,13 @@ namespace Shared
                     if (type.Name == "Host")
                     {
                         var newList = new List<ParameterInfo>();
-                        for(var ii =0; ii < methodParameterList.Length;++ii) 
+                        for (var ii = 0; ii < methodParameterList.Length; ++ii)
                         {
                             if (ii == methodParameterList.Length - 1)
                                 continue;
                             newList.Add(methodParameterList[ii]);
                         }
-                        methodParameterList = newList.ToArray(); 
+                        methodParameterList = newList.ToArray();
                     }
 
                     uint code = Basic.GenID32FromName(method.Name);
@@ -508,6 +514,11 @@ namespace Shared
                         .AppendLine($"using Shared.DataModel;");
                     }
 
+                    //if(!isHost && isServer)
+                    //{
+                    //    msgBuilder.AppendLine($"using Server.DataModel;");
+                    //}
+
                     msgBuilder.AppendLine($"using System; ")
                         .AppendLine($"")
                         .AppendLine($"namespace {msg_ns}")
@@ -520,7 +531,7 @@ namespace Shared
 
                     if (callback_define != "")
                     {
-                        msgBuilder.AppendLine($"        [Key({methodParameterList.Length-1})]")
+                        msgBuilder.AppendLine($"        [Key({methodParameterList.Length - 1})]")
                             .AppendLine(@"
         public Callback callback
         {
@@ -550,11 +561,11 @@ namespace Shared
                             Directory.CreateDirectory(pPath);
 
                         //生成客户端msg时，判断一下actor类型的accesstype，如果是serveronly的就不写客户端msg
-                        if(!isHost && sharedPath == sharedCPath)
+                        if (!isHost && sharedPath == sharedCPath)
                         {
                             var al = GetAttribute<AccessLevelAttribute>(type);
-                            if (al == null) 
-                                continue; 
+                            if (al == null)
+                                continue;
                             if ((int)al.AccessLevel == (int)ALevel.SERVER)
                                 continue;
                         }
@@ -816,7 +827,7 @@ using Fenix.Common.Utils;
 using Fenix.Common.Message;
 
 ");
-            if(!isHost)
+            if (!isHost)
             {
                 refBuilder.AppendLine(@"using Shared;
 using Shared.DataModel;
@@ -825,11 +836,17 @@ using Shared.Message;
                     ");
             }
 
-refBuilder.AppendLine(@"//using MessagePack; 
+//            if (isServer && !isHost)
+//            {
+//                refBuilder.AppendLine(@"using Server.DataModel;
+//");
+//            }
+
+            refBuilder.AppendLine(@"//using MessagePack; 
 using System;
 ")
-.AppendLine($"namespace {root_ns}")
-.AppendLine(@"{
+            .AppendLine($"namespace {root_ns}")
+            .AppendLine(@"{
 ");
             if (type.Name != "Host")
             {
@@ -901,6 +918,11 @@ using Shared.DataModel;
 using Shared.Protocol; 
 using Shared.Message;");
             }
+            if (isServer && !isHost)
+            {
+                apiBuilder.AppendLine(@"using Server.DataModel;
+");
+            } 
             apiBuilder.AppendLine(@"
 using System;
 using System.Collections.Generic;
@@ -935,7 +957,7 @@ using System.Text;
             {
                 string output = isServer ? serverPath : clientPath;
 
-                var stubPath = Path.Combine(output, "Stub");
+                var stubPath = Path.Combine(output, "Gen", "Stub");
                 //if (Directory.Exists(stubPath))
                 //    Directory.Delete(stubPath, true);
 

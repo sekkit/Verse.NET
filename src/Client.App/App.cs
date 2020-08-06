@@ -68,11 +68,11 @@ namespace Client
                 {
                     //发起登陆请求，得到玩家entity所在host信息
                     var svc = host.GetService<LoginServiceRef>();
-                    svc.rpc_login("username", "password", (code2, uid, hostId, hostName, hostAddress) =>
+                    svc.rpc_login("sekkit", "password", (code2, uid, hostId, hostName, hostAddress) =>
                     {
                         if (code2 != ErrCode.OK)
                         {
-                            Log.Error("login_failed");
+                            Log.Error("login_failed",  code2);
                             loginapp.Disconnect();
                             return;
                         }

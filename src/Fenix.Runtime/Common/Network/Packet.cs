@@ -20,16 +20,16 @@ namespace Fenix
         public uint ProtoCode { get; set; }
 
         [Key(2)]
-        public uint FromHostId { get; set; }
+        public ulong FromHostId { get; set; }
         
         [Key(3)]
-        public uint ToHostId { get; set; }
+        public ulong ToHostId { get; set; }
 
         [Key(4)]
-        public uint FromActorId { get; set; }
+        public ulong FromActorId { get; set; }
 
         [Key(5)]
-        public uint ToActorId { get; set; }
+        public ulong ToActorId { get; set; }
  
         [IgnoreMember]
         public NetworkType NetType { get; set; }
@@ -65,7 +65,7 @@ namespace Fenix
         { 
         }
 
-        public static Packet Create(ulong id, uint protoCode, uint fromHostId, uint toHostId, uint fromActorId, uint toActorId, NetworkType netType, Type msgType, byte[] data)
+        public static Packet Create(ulong id, uint protoCode, ulong fromHostId, ulong toHostId, ulong fromActorId, ulong toActorId, NetworkType netType, Type msgType, byte[] data)
         {
             var obj = new Packet();
             obj.Id = id;
@@ -85,11 +85,12 @@ namespace Fenix
             var buf = Unpooled.DirectBuffer();
             buf.WriteIntLE((int)this.ProtoCode);
             buf.WriteLongLE((long)this.Id);
-            //buf.WriteIntLE((int)this.FromHostId);
-            buf.WriteIntLE((int)this.FromActorId);
-            buf.WriteIntLE((int)this.ToActorId);
+            buf.WriteLongLE((long)this.FromActorId);
+            buf.WriteLongLE((long)this.ToActorId); 
             buf.WriteBytes(this.Payload);
-            return buf.ToArray(); 
+            var bytes = buf.ToArray();
+            //buf.Release();
+            return bytes;
         }
 
         public void Unpack(byte[] bytes)

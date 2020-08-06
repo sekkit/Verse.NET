@@ -17,17 +17,8 @@ namespace Fenix
         {
         }
 
-        //public static DbManager Instance = new DbManager();
-
         public ConcurrentDictionary<string, RedisDb> DbDic = new ConcurrentDictionary<string, RedisDb>();
-
-        public string CreateUid()
-        {
-            string uid = fakeId.ToString();
-            fakeId++;
-            return uid;
-        }
-
+        
         public RedisDb LoadDb(DbEntry db)
         {
             DbDic[db.Name] = new RedisDb(db);

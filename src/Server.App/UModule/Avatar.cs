@@ -4,6 +4,7 @@ using Fenix.Common.Attributes;
 using Shared.Protocol;
 using System;
 using Shared.DataModel;
+using Server.DataModel;
 
 namespace Server.UModule
 {
@@ -24,7 +25,7 @@ namespace Server.UModule
 
         }
 
-        public override void onLoad()
+        protected override void onLoad()
         {
             
         }

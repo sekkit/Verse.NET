@@ -7,26 +7,26 @@ using System.Text;
 
 namespace Shared.DataModel
 {
-    public class UserAttr : IMessage
-    {
-        [Key(0)]
-        public int Coin;
+    //public class UserAttr : IMessage
+    //{
+    //    [Key(0)]
+    //    public int Coin;
 
-        [Key(1)]
-        public int BlueCoin;
+    //    [Key(1)]
+    //    public int BlueCoin;
 
-        [Key(2)]
-        public int RedCoin;
+    //    [Key(2)]
+    //    public int RedCoin;
 
-        [Key(3)]
-        public int Strength;
+    //    [Key(3)]
+    //    public int Strength;
 
-        [Key(4)]
-        public int Spirit;
+    //    [Key(4)]
+    //    public int Spirit;
 
-        [Key(5)]
-        public int Power;
-    }
+    //    [Key(5)]
+    //    public int Power;
+    //}
 
     [MessagePackObject]
     public class User : IMessage
@@ -55,5 +55,9 @@ namespace Shared.DataModel
         [Key(15)]
         public int Power;
 
+        public override byte[] Pack()
+        {
+            return MessagePackSerializer.Serialize<User>(this);
+        }
     }
 }

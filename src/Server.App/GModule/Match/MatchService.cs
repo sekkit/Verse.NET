@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Text;
 using Server.UModule;
 using Shared.DataModel;
+using Server.DataModel;
 
 namespace Server.GModule
 {

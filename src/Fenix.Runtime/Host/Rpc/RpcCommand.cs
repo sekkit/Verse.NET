@@ -19,13 +19,13 @@ namespace Fenix
     {
         public ulong Id => packet.Id;
 
-        public uint FromActorId => packet.FromActorId;
+        public ulong FromActorId => packet.FromActorId;
 
-        public uint ToActorId => packet.ToActorId;
+        public ulong ToActorId => packet.ToActorId;
 
-        public uint FromHostId => packet.FromHostId;
+        public ulong FromHostId => packet.FromHostId;
 
-        public uint ToHostId => packet.ToHostId;
+        public ulong ToHostId => packet.ToHostId;
 
         public IMessage Msg => packet.Msg;
 

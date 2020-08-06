@@ -43,17 +43,16 @@ namespace Fenix
 
         public static ActorRef GetActorRefByName(Type refType, string toActorName, Actor fromActor, Host fromHost)
         {
-            uint toActorId = Global.IdManager.GetActorId(toActorName);
+            ulong toActorId = Global.IdManager.GetActorId(toActorName);
 
             //if (toActorId == 0)
             //    return null;
 
             //即使找不到目标Actor，仍然创建
-            // 
 #if CLIENT
             if (toActorId == 0)
             {
-                toActorId = Basic.GenID32FromName(toActorName);
+                toActorId = Basic.GenID64FromName(toActorName);
             }
 #endif
             var rt = Global.TypeManager.GetRefType(refType);
@@ -65,7 +64,7 @@ namespace Fenix
 
         public static ActorRef GetActorRefByName(Type refType, string toHostName, string toActorName, Actor fromActor, Host fromHost)
         {
-            uint toActorId = Global.IdManager.GetActorId(toActorName);
+            ulong toActorId = Global.IdManager.GetActorId(toActorName);
 
             //if (toActorId == 0)
             //    return null;
@@ -74,7 +73,7 @@ namespace Fenix
             // 
 #if CLIENT
             if (toActorId == 0)
-                toActorId = Basic.GenID32FromName(toActorName);
+                toActorId = Basic.GenID64FromName(toActorName);
 #endif
             var rt = Global.TypeManager.GetRefType(refType);
             bool isClient = rt == RefType.CLIENT;
@@ -82,7 +81,7 @@ namespace Fenix
 
 #if CLIENT
             if (toHostId == 0)
-                toHostId = Basic.GenID32FromName(toHostName);
+                toHostId = Basic.GenID64FromName(toHostName);
 #endif
 
             return ActorRef.Create(toHostId, toActorId, refType, fromActor, fromHost, isClient);
@@ -90,7 +89,7 @@ namespace Fenix
 
         public static ActorRef GetActorRefByAddress(Type refType, IPEndPoint toPeerEP, string toHostName, string toActorName, Actor fromActor, Host fromHost)
         {
-            uint toActorId = Global.IdManager.GetActorId(toActorName);
+            ulong toActorId = Global.IdManager.GetActorId(toActorName);
             //if (toActorId == 0)
             //    return null;
 
@@ -98,7 +97,7 @@ namespace Fenix
             // 
 #if CLIENT
             if (toActorId == 0 && toActorName != "")
-                toActorId = Basic.GenID32FromName(toActorName);
+                toActorId = Basic.GenID64FromName(toActorName);
 #endif
 
             var rt = Global.TypeManager.GetRefType(refType);
@@ -106,7 +105,7 @@ namespace Fenix
 
             var toHostId = Global.IdManager.GetHostIdByActorId(toActorId, isClient);
             if (toHostId == 0)
-                toHostId = Basic.GenID32FromName(toHostName);
+                toHostId = Basic.GenID64FromName(toHostName);
 
             return ActorRef.Create(toHostId, toActorId, refType, fromActor, fromHost, isClient, toPeerEP);
         }

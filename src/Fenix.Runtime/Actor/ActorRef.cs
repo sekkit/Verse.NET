@@ -13,15 +13,15 @@ namespace Fenix
 {
     public partial class ActorRef
     {
-        public uint FromHostId => fromHost.Id;
+        public ulong FromHostId => fromHost.Id;
 
         public Host fromHost;
 
         public Actor fromActor;
 
-        public uint toHostId;
+        public ulong toHostId;
 
-        public uint toActorId;
+        public ulong toActorId;
 
         public IPEndPoint toAddr;
 
@@ -29,7 +29,7 @@ namespace Fenix
 
         public NetworkType NetType => ((isClient || Global.Host.IsClientMode)? Global.Config.ClientNetwork : NetworkType.TCP);
 
-        public static ActorRef Create(uint toHostId, uint toActorId, Type refType, Actor fromActor, Host fromHost, bool isClient, IPEndPoint toPeerEP=null)
+        public static ActorRef Create(ulong toHostId, ulong toActorId, Type refType, Actor fromActor, Host fromHost, bool isClient, IPEndPoint toPeerEP=null)
         {
 
             //要检测一下fromActor.HostId和fromHost.Id是不是相等
@@ -38,8 +38,6 @@ namespace Fenix
                 Log.Error(string.Format("actor_and_host_id_unmatch {0} {1}", fromActor.UniqueName, fromHost.UniqueName));
                 return null;
             }
-            //uint toActorId = Basic.GenID32FromName(toActorName);
-            //var refType = Global.TypeManager.GetRefType(toActorTypeName);
 
             IPEndPoint toAddr = null;
             if (toPeerEP != null)

@@ -16,7 +16,7 @@ namespace Fenix
 {
     public class NetPeer
     { 
-        public uint ConnId { get; set; }
+        public ulong ConnId { get; set; }
 
         public Ukcp kcpChannel { get; set; }
         
@@ -107,7 +107,7 @@ namespace Fenix
             }
         }
 
-        protected bool InitTcpClient(uint connId, IPEndPoint ep)
+        protected bool InitTcpClient(ulong connId, IPEndPoint ep)
         {
             if(ep != null)
                 Log.Info(string.Format("init_tcp_client {0} {1}", connId, ep.ToString()));
@@ -123,7 +123,7 @@ namespace Fenix
             return InitTcpClient(ep);
         }
 
-        protected bool InitKcpClient(uint connId, IPEndPoint ep)
+        protected bool InitKcpClient(ulong connId, IPEndPoint ep)
         {
             if (ep != null)
                 Log.Info(string.Format("init_kcp_client {0} {1}", connId, ep.ToString()));
@@ -180,7 +180,7 @@ namespace Fenix
             return true;
         }
 
-        public static NetPeer Create(uint connId, Ukcp kcpCh)
+        public static NetPeer Create(ulong connId, Ukcp kcpCh)
         {
             var obj = new NetPeer();
             obj.ConnId = connId;
@@ -189,7 +189,7 @@ namespace Fenix
             return obj;
         }
 
-        public static NetPeer Create(uint connId, IChannel tcpCh)
+        public static NetPeer Create(ulong connId, IChannel tcpCh)
         {
             var obj = new NetPeer();
             obj.ConnId = connId;
@@ -198,7 +198,7 @@ namespace Fenix
             return obj;
         }
 
-        public static NetPeer Create(uint connId, IPEndPoint addr, NetworkType netType)
+        public static NetPeer Create(ulong connId, IPEndPoint addr, NetworkType netType)
         {
             var obj = new NetPeer();
             obj.ConnId = connId;
@@ -219,7 +219,7 @@ namespace Fenix
         public static NetPeer Create(IPEndPoint ep, NetworkType netType)
         { 
             var obj = new NetPeer();
-            obj.ConnId = Basic.GenID32FromName(ep.ToString());
+            obj.ConnId = Basic.GenID64FromName(ep.ToString());
             obj.netType = netType;
             if (netType == NetworkType.TCP)
             {
@@ -249,10 +249,14 @@ namespace Fenix
 
         public void Send(IByteBuffer buffer)
         {
-            if (kcpChannel != null) { kcpChannel.write(buffer); Log.Debug("SEND_END:" + (Fenix.Common.Utils.TimeUtil.GetTimeStampMS2() - lastTickTime).ToString()); return; }
-            if (kcpClient != null) { kcpClient.Send(buffer); Log.Debug("SEND_END:" + (Fenix.Common.Utils.TimeUtil.GetTimeStampMS2() - lastTickTime).ToString()); return; }
-            if (tcpChannel != null) { tcpChannel.WriteAndFlushAsync(buffer); Log.Debug("SEND_END:" + (Fenix.Common.Utils.TimeUtil.GetTimeStampMS2() - lastTickTime).ToString()); return; }
-            if (tcpClient != null) { tcpClient.Send(buffer); Log.Debug("SEND_END:" + (Fenix.Common.Utils.TimeUtil.GetTimeStampMS2() - lastTickTime).ToString()); return; }
+            if (kcpChannel != null) 
+            { kcpChannel.write(buffer);  Log.Info("SEND_END:" + (Fenix.Common.Utils.TimeUtil.GetTimeStampMS2() - lastTickTime).ToString()); return; }
+            if (kcpClient != null) 
+            { kcpClient.Send(buffer);  Log.Info("SEND_END:" + (Fenix.Common.Utils.TimeUtil.GetTimeStampMS2() - lastTickTime).ToString()); return; }
+            if (tcpChannel != null) 
+            { tcpChannel.WriteAndFlushAsync(buffer); Log.Info("SEND_END:" + (Fenix.Common.Utils.TimeUtil.GetTimeStampMS2() - lastTickTime).ToString(), buffer.ToArray()); return; }
+            if (tcpClient != null) 
+            { tcpClient.Send(buffer);  Log.Info("SEND_END:" + (Fenix.Common.Utils.TimeUtil.GetTimeStampMS2() - lastTickTime).ToString()); return; }
         }
 
         //public async Task SendAsync(byte[] bytes)
@@ -310,9 +314,10 @@ namespace Fenix
         {
             var buffer = Unpooled.DirectBuffer();
             buffer.WriteIntLE((int)OpCode.REGISTER_REQ);
-            buffer.WriteIntLE((int)Global.Host.Id);
+            buffer.WriteLongLE((long)Global.Host.Id);
             buffer.WriteBytes(Encoding.UTF8.GetBytes(Global.Host.UniqueName)); 
-            this.Send(buffer.ToArray());
+            this.Send(buffer);
+            //buffer.Release();
         }
     }
 }

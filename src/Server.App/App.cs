@@ -98,7 +98,7 @@ namespace Server
                     sw.Write(content);
                 }
 
-                Environment.SetEnvironmentVariable("AppName", "Master.App");
+                Environment.SetEnvironmentVariable("AppName", "Login.App");
 
                 Bootstrap.Start(new Assembly[] { typeof(UModule.Avatar).Assembly}, cfgList, OnInit, isMultiProcess:true); //单进程模式
 
@@ -124,6 +124,7 @@ namespace Server
         static void OnInit()
         {
             Global.DbManager.LoadDb(DbConfig.account_db);
+            Global.DbManager.LoadDb(DbConfig.seq_db);
         }
     }
 }

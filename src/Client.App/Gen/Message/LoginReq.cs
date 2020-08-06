@@ -41,7 +41,7 @@ namespace Shared.Message
             public String arg1 { get; set; }
 
             [Key(2)]
-            public UInt32 arg2 { get; set; }
+            public UInt64 arg2 { get; set; }
 
             [Key(3)]
             public String arg3 { get; set; }

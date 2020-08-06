@@ -94,35 +94,35 @@ namespace Fenix
 
         [RpcMethod(OpCode.REGISTER_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_API_NATIVE_register(UInt32 hostId, String hostName, RpcContext context)
+        public void SERVER_API_NATIVE_register(UInt64 hostId, String hostName, RpcContext context)
         {
             this.Register(hostId, hostName, context);
         }
 
         [RpcMethod(OpCode.REGISTER_CLIENT_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_API_NATIVE_register_client(UInt32 hostId, String hostName, Action<DefaultErrCode, HostInfo> callback, RpcContext context)
+        public void SERVER_API_NATIVE_register_client(UInt64 hostId, String hostName, Action<DefaultErrCode, HostInfo> callback, RpcContext context)
         {
             this.RegisterClient(hostId, hostName, callback, context);
         }
 
         [RpcMethod(OpCode.CREATE_ACTOR_REQ, Api.ServerOnly)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_ONLY_NATIVE_create_actor(String typename, String name, Action<DefaultErrCode, String, UInt32> callback, RpcContext context)
+        public void SERVER_ONLY_NATIVE_create_actor(String typename, String name, Action<DefaultErrCode, String, UInt64> callback, RpcContext context)
         {
             this.CreateActor(typename, name, callback, context);
         }
 
         [RpcMethod(OpCode.MIGRATE_ACTOR_REQ, Api.ServerOnly)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_ONLY_NATIVE_migrate_actor(UInt32 actorId, RpcContext context)
+        public void SERVER_ONLY_NATIVE_migrate_actor(UInt64 actorId, RpcContext context)
         {
             this.MigrateActor(actorId, context);
         }
 
         [RpcMethod(OpCode.REMOVE_ACTOR_REQ, Api.ServerOnly)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_ONLY_NATIVE_remove_actor(UInt32 actorId, RpcContext context)
+        public void SERVER_ONLY_NATIVE_remove_actor(UInt64 actorId, RpcContext context)
         {
             this.RemoveActor(actorId, context);
         }

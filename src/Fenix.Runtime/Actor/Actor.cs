@@ -21,7 +21,7 @@ namespace Fenix
     {
         [IgnoreMember]
         [IgnoreDataMember]
-        public uint HostId => Global.Host.Id;
+        public ulong HostId => Global.Host.Id;
          
         [Key(3)]
         [DataMember]
@@ -50,7 +50,7 @@ namespace Fenix
         protected Actor(string name) : base()
         {
             this.UniqueName = name;
-            this.Id = Basic.GenID32FromName(this.UniqueName);
+            this.Id = Basic.GenID64FromName(this.UniqueName);
 
             this.Init();
         }
@@ -156,8 +156,8 @@ namespace Fenix
             return (T)Global.GetActorRefByAddr(typeof(T), ep, hostName, name, null, Global.Host);
         }
 #if !CLIENT
-        [ServerOnly]
-        [EditorBrowsable(EditorBrowsableState.Never)]
+        //[ServerOnly]
+        //[EditorBrowsable(EditorBrowsableState.Never)]
         public void OnClientEnable()
         { 
             var refType = Global.TypeManager.GetActorRefType("Client.Avatar");
@@ -170,8 +170,8 @@ namespace Fenix
             this.onClientEnable();
         }
 
-        [ServerOnly]
-        [EditorBrowsable(EditorBrowsableState.Never)]
+        //[ServerOnly]
+        //[EditorBrowsable(EditorBrowsableState.Never)]
         public void OnClientDisable()
         {
             //actorName == this.UniqueName 
@@ -179,11 +179,19 @@ namespace Fenix
             Log.Info(string.Format("on_client_disable", this.UniqueName, this.UniqueName));
 
             this.onClientDisable();
-        }
+        } 
 
 #endif 
+         
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void OnLoad()
+        {
+            Log.Info(string.Format("on_load", this.UniqueName, this.UniqueName));
 
-        public virtual void onLoad()
+            this.onLoad();
+        }
+
+        protected virtual void onLoad()
         {
 
         }
@@ -206,14 +214,19 @@ namespace Fenix
 
         }
 
-        public virtual void onUpdate()
+        protected virtual void onUpdate()
         {
 
         }
 
-        public virtual void onDestroy()
+        protected virtual void onDestroy()
         {
             
+        }
+
+        public override byte[] Pack()
+        {
+            return MessagePackSerializer.Serialize<Actor>(this);
         }
     }
 }

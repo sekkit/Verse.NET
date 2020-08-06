@@ -20,6 +20,7 @@ using System.Linq;
 using TimeUtil = Fenix.Common.Utils.TimeUtil;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MessagePack;
 
 namespace Fenix
 {
@@ -36,7 +37,7 @@ namespace Fenix
         
         public bool IsClientMode { get; set; }
 
-        protected ConcurrentDictionary<UInt32, Actor> actorDic = new ConcurrentDictionary<UInt32, Actor>();
+        protected ConcurrentDictionary<ulong, Actor> actorDic = new ConcurrentDictionary<ulong, Actor>();
         
         protected Host(string name, string ip, string extIp, int port = 0, bool clientMode = false) : base()
         {
@@ -75,7 +76,7 @@ namespace Fenix
                 else
                     this.UniqueName = name;
 
-                this.Id = Basic.GenID32FromName(this.UniqueName);
+                this.Id = Basic.GenID64FromName(this.UniqueName);
                 this.RegisterGlobalManager(this);  
                 Global.NetManager.RegisterHost(this);
             }
@@ -85,7 +86,7 @@ namespace Fenix
                     this.UniqueName = Basic.GenID64().ToString();
                 else
                     this.UniqueName = name;
-                this.Id = Basic.GenID32FromName(this.UniqueName);
+                this.Id = Basic.GenID64FromName(this.UniqueName);
 
                 Global.NetManager.RegisterHost(this);
             }
@@ -149,9 +150,11 @@ namespace Fenix
             if (buffer.ReadableBytes == 1)
             {
                 byte opCode = buffer.ReadByte();
+                //Log.Warn("RECV_PROTOCOL", opCode);
+
                 if (opCode == (byte)OpCode.PING)
                 {
-                    Log.Debug(string.Format("Ping({0}) {1} FROM {2}", peer.netType, peer.ConnId, peer.RemoteAddress));
+                    Log.Info(string.Format("Ping({0}) {1} FROM {2}", peer.netType, peer.ConnId, peer.RemoteAddress));
                     
                     peer.Pong();
 
@@ -190,7 +193,7 @@ namespace Fenix
             uint protoCode = buffer.ReadUnsignedIntLE();
             if (protoCode == OpCode.REGISTER_REQ)
             {
-                var hostId = buffer.ReadUnsignedIntLE();
+                var hostId = (ulong)buffer.ReadLongLE();
                 var nameBytes = new byte[buffer.ReadableBytes];
                 buffer.ReadBytes(nameBytes);
                 var hostName = Encoding.UTF8.GetString(nameBytes);
@@ -273,7 +276,7 @@ namespace Fenix
             else
             { 
                 this.RegisterGlobalManager(this);
-                var actorRemoveList = new List<uint>();
+                var actorRemoveList = new List<ulong>();
                 foreach (var kv in this.actorDic)
                     if (kv.Value.IsAlive)
                         this.RegisterGlobalManagerAsync(kv.Value);
@@ -291,7 +294,7 @@ namespace Fenix
         {
             if (protoCode == OpCode.REGISTER_REQ)
             {
-                var hostId = buffer.ReadUnsignedIntLE();
+                var hostId = (ulong)buffer.ReadLongLE();
                 var nameBytes = new byte[buffer.ReadableBytes];
                 buffer.ReadBytes(nameBytes);
                 var hostName = Encoding.UTF8.GetString(nameBytes);
@@ -306,11 +309,10 @@ namespace Fenix
 
         void ProcessRpcProtocol(NetPeer peer, uint protoCode, IByteBuffer buffer)
         {
-            ulong msgId = (ulong)buffer.ReadLongLE();
-            //uint fromHostId = buffer.ReadUnsignedIntLE();
-            uint fromActorId = buffer.ReadUnsignedIntLE();
-            uint toActorId = buffer.ReadUnsignedIntLE();
-            byte[] bytes = new byte[buffer.ReadableBytes];
+            var msgId = (ulong)buffer.ReadLongLE(); 
+            var fromActorId = (ulong)buffer.ReadLongLE();
+            var toActorId = (ulong)buffer.ReadLongLE();
+            var bytes = new byte[buffer.ReadableBytes];
             buffer.ReadBytes(bytes);
 
             var packet = Packet.Create(msgId,
@@ -323,7 +325,7 @@ namespace Fenix
                 Global.TypeManager.GetMessageType(protoCode),
                 bytes);
 
-            Log.Debug(string.Format("RECV2({0}): {1} {2} => {3} {4} >= {5} {6} => {7}",
+            Log.Info(string.Format("RECV2({0}): {1} {2} => {3} {4} >= {5} {6} => {7}",
                 peer.netType,
                 protoCode,
                 packet.FromHostId,
@@ -392,7 +394,7 @@ namespace Fenix
             }
         }
 
-        public Actor GetActor(uint actorId)
+        public Actor GetActor(ulong actorId)
         {
             if (this.actorDic.TryGetValue(actorId, out Actor a))
                 return a;
@@ -400,7 +402,7 @@ namespace Fenix
         }
 
         [ServerOnly]
-        public void CreateActor(string typename, string name, Action<DefaultErrCode, string, uint> callback, RpcContext __context)
+        public void CreateActor(string typename, string name, Action<DefaultErrCode, string, ulong> callback, RpcContext __context)
         {
             var a = CreateActor(typename, name);
 
@@ -412,50 +414,67 @@ namespace Fenix
 
         public T CreateActor<T>(string name) where T : Actor
         {
+            return (T)CreateActor(typeof(T), name);
+        }
+
+        protected Actor CreateActor(Type type, string name)
+        {
             if (name == "" || name == null)
                 return null;
-            var newActor = Actor.Create(typeof(T), name);
-            this.ActivateActor(newActor);
+            var actorId = Global.IdManager.GetActorId(name);
+            if (this.actorDic.TryGetValue(actorId, out var a))
+                return a;
+
+            var hostId = Global.IdManager.GetHostIdByActorId(actorId);
+            if(hostId != 0)
+            {
+                //Ç¨ÒÆactorµ½±¾µØ
+                var remoteHost = this.GetHost(hostId);
+                //remoteHost.MigrateActor(actorId, (actor) =>
+                //{
+                    
+                //});
+                //return;
+            }
+
+            var newActor = Actor.Create(type, name);
             Log.Info(string.Format("CreateActor:success {0} {1}", name, newActor.Id));
-            return (T)newActor;
+            this.ActivateActor(newActor);
+            return newActor;
         }
 
         public Actor CreateActor(string typename, string name)
         {
             if (name == "" || name == null)
-                return null;
-
+                return null; 
             var type = Global.TypeManager.Get(typename);
-            var newActor = Actor.Create(type, name);
-            Log.Info(string.Format("CreateActor:success {0} {1}", name, newActor.Id));
-            ActivateActor(newActor);
-            return newActor;
+            return CreateActor(type, name);
         }
 
         public Actor ActivateActor(Actor actor)
         {
             this.RegisterGlobalManager(actor);
-            actor.onLoad();
+            actor.OnLoad();
             actorDic[actor.Id] = actor;
             return actor;
         }
 
         //Ç¨ÒÆactor
         [ServerOnly]
-        public void MigrateActor(uint actorId, RpcContext __context)
+        public void MigrateActor(ulong actorId, RpcContext __context)
         {
 
         }
 
         [ServerOnly]
         //ÒÆ³ýactor
-        public void RemoveActor(uint actorId, RpcContext __context)
+        public void RemoveActor(ulong actorId, RpcContext __context)
         {
 
         }
 
         [ServerApi]
-        public void Register(uint hostId, string hostName, RpcContext __context)
+        public void Register(ulong hostId, string hostName, RpcContext __context)
         {
             if (__context.Peer.ConnId != hostId)
             {
@@ -471,7 +490,7 @@ namespace Fenix
 #if !CLIENT
 
         [ServerApi]
-        public void RegisterClient(uint hostId, string hostName, Action<DefaultErrCode, HostInfo> callback, RpcContext __context)
+        public void RegisterClient(ulong hostId, string hostName, Action<DefaultErrCode, HostInfo> callback, RpcContext __context)
         {
             if (__context.Peer.ConnId != hostId)
             {
@@ -570,7 +589,17 @@ namespace Fenix
         { 
             IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
             return Global.GetActorRefByAddr(typeof(ActorRef), ep, hostName, "", null, Global.Host);
-        } 
+        }
+
+        public ActorRef GetHost(ulong hostId)
+        {
+            var addr = Global.IdManager.GetHostAddr(hostId);
+            var hostName = Global.IdManager.GetHostName(hostId);
+            var ip = addr.Split(':')[0]; 
+            var port = int.Parse(addr.Split(':')[1]);
+
+            return GetHost(hostName, ip, port);
+        }
 
         public void Shutdown()
         {
@@ -585,6 +614,11 @@ namespace Fenix
             Global.NetManager.Destroy();
 
             this.Destroy();
+        }
+
+        public override byte[] Pack()
+        {
+            return MessagePackSerializer.Serialize<Host>(this);
         }
     }
 }

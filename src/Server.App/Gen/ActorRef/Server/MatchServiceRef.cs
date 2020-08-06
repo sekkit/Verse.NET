@@ -22,7 +22,7 @@ namespace Server
     [RefType("MatchService")]
     public partial class MatchServiceRef : ActorRef
     {
-        public void rpc_find_match(String uid, Action<ErrCode, Account> callback)
+        public void rpc_find_match(String uid, Action<ErrCode, Server.DataModel.Account> callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)

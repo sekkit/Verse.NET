@@ -12,5 +12,11 @@ namespace Shared.Protocol
     {
         OK = 0,
         ERROR = -1,
+
+        LOGIN_WRONG_USR_OR_PSW = -1000,
+        LOGIN_KICKOUT = -1001,
+        LOGIN_CREATE_ACCOUNT_FAIL = -1002,
+
+        MIN_CODE = -32768
     }
 }

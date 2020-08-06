@@ -2,11 +2,11 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.NetworkInformation;
+using System.Net; 
 using System.Threading;
 using System.Threading.Tasks;
 using DotNetty.Buffers;
+using DotNetty.Common.Utilities;
 using DotNetty.KCP;
 using DotNetty.Transport.Channels;
 using Fenix.Common;
@@ -17,11 +17,11 @@ namespace Fenix
 {
     public class NetManager
     { 
-        protected ConcurrentDictionary<uint, NetPeer> tcpPeers = new ConcurrentDictionary<uint, NetPeer>();
+        protected ConcurrentDictionary<ulong, NetPeer> tcpPeers = new ConcurrentDictionary<ulong, NetPeer>();
 
-        protected ConcurrentDictionary<uint, NetPeer> kcpPeers = new ConcurrentDictionary<uint, NetPeer>();
+        protected ConcurrentDictionary<ulong, NetPeer> kcpPeers = new ConcurrentDictionary<ulong, NetPeer>();
 
-        protected ConcurrentDictionary<uint, NetPeer> channelPeers = new ConcurrentDictionary<uint, NetPeer>();
+        protected ConcurrentDictionary<ulong, NetPeer> channelPeers = new ConcurrentDictionary<ulong, NetPeer>();
 
         public ConcurrentDictionary<ulong, byte[][]> PartialRpcDic = new ConcurrentDictionary<ulong, byte[][]>();
 
@@ -35,9 +35,9 @@ namespace Fenix
         public event Action OnHeartBeat;
         //public event Action<NetPeer> OnPeerLost;
 
-        protected ConcurrentDictionary<uint, KcpHostServer> kcpServerDic { get; set; } = new ConcurrentDictionary<uint, KcpHostServer>();
+        protected ConcurrentDictionary<ulong, KcpHostServer> kcpServerDic { get; set; } = new ConcurrentDictionary<ulong, KcpHostServer>();
 
-        protected ConcurrentDictionary<uint, TcpHostServer> tcpServerDic { get; set; } = new ConcurrentDictionary<uint, TcpHostServer>();
+        protected ConcurrentDictionary<ulong, TcpHostServer> tcpServerDic { get; set; } = new ConcurrentDictionary<ulong, TcpHostServer>();
          
         private Thread heartbeatTh;
 
@@ -171,7 +171,7 @@ namespace Fenix
         public NetPeer RegisterChannel(IChannel channel)
         { 
             var cid = channel.Id.AsLongText();
-            var id = Basic.GenID32FromName(cid);
+            var id = Basic.GenID64FromName(cid);
             var peer = NetPeer.Create(id, channel);
             channelPeers[id] = peer;
             return peer;
@@ -182,7 +182,7 @@ namespace Fenix
             this.Deregister(GetPeer(ch)); 
         }
 
-        public void ChangePeerId(uint oldHostId, uint newHostId, string hostName, string address)
+        public void ChangePeerId(ulong oldHostId, ulong newHostId, string hostName, string address)
         {
             Log.Info(string.Format("ChangePeer: {0}=>{1} {2} {3}", oldHostId, newHostId, hostName, address));
             if (tcpPeers.ContainsKey(oldHostId))
@@ -267,7 +267,7 @@ namespace Fenix
         }
 
 #if !CLIENT
-        public void RegisterClient(uint clientId, string uniqueName, NetPeer peer)
+        public void RegisterClient(ulong clientId, string uniqueName, NetPeer peer)
         {
             var addr = peer.RemoteAddress.ToIPv4String();
             if (peer.netType == NetworkType.KCP)
@@ -278,7 +278,7 @@ namespace Fenix
         }
 #endif
 
-        public void RemovePeerId(uint connId)
+        public void RemovePeerId(ulong connId)
         {
             tcpPeers.TryRemove(connId, out var _);
             kcpPeers.TryRemove(connId, out var _);
@@ -288,7 +288,7 @@ namespace Fenix
         public NetPeer GetPeer(IChannel ch)
         {
             var cid = ch.Id.AsLongText();
-            var id = Basic.GenID32FromName(cid);
+            var id = Basic.GenID64FromName(cid);
             return channelPeers[id];
         }
 
@@ -299,7 +299,7 @@ namespace Fenix
             return peer;
         }
 
-        public NetPeer GetPeerById(uint peerId, NetworkType netType)
+        public NetPeer GetPeerById(ulong peerId, NetworkType netType)
         {
             NetPeer peer;
             if (netType == NetworkType.TCP)
@@ -319,7 +319,7 @@ namespace Fenix
             return peer;
         }
 
-        public NetPeer CreatePeer(uint remoteHostId, IPEndPoint addr, NetworkType netType)
+        public NetPeer CreatePeer(ulong remoteHostId, IPEndPoint addr, NetworkType netType)
         { 
             var peer = GetPeerById(remoteHostId, netType);
             if (peer != null)
@@ -386,13 +386,15 @@ namespace Fenix
 
         public void OnPong(NetPeer peer)
         {
-            peer.lastTickTime = TimeUtil.GetTimeStampMS();
+            peer.lastTickTime = Fenix.Common.Utils.TimeUtil.GetTimeStampMS();
             Log.Info(string.Format("PONG({0}) {1} from {2}", peer.netType, peer.ConnId, peer.RemoteAddress?.ToString()));
         }
 
         public void Send(NetPeer peer, Packet packet)
         {
             var bytes = packet.Pack();
+
+            Log.Info("SEND_PROTOCOL", packet.ProtoCode, StringUtil.ToHexString(bytes));
 
             if (bytes.Length > Global.Config.MAX_PACKET_SIZE)
             {
@@ -423,6 +425,7 @@ namespace Fenix
                 partialBuf.WriteByte(parts.Count());
                 partialBuf.WriteBytes(part);
                 peer.Send(partialBuf);
+                //partialBuf.Release();
                 await Task.Delay(10);
                 Log.Info("send_part", i, parts.Count(), part.Length);
             }
@@ -433,7 +436,7 @@ namespace Fenix
             if (!PartialRpcDic.ContainsKey(partialId))
                 PartialRpcDic[partialId] = new byte[totPartCount][];
             PartialRpcDic[partialId][partIndex] = payload;
-            partialRpcTimeDic[partialId] = TimeUtil.GetTimeStampMS();
+            partialRpcTimeDic[partialId] = Fenix.Common.Utils.TimeUtil.GetTimeStampMS();
             Log.Info("recv_part", partIndex, totPartCount, payload.Length);
             if (PartialRpcDic[partialId].Count(m => m != null) == totPartCount)
             {
@@ -450,7 +453,7 @@ namespace Fenix
 
         public void Update()
         {
-            var curTime = TimeUtil.GetTimeStampMS();
+            var curTime = Fenix.Common.Utils.TimeUtil.GetTimeStampMS();
 
             if (curTime - lastTick < 5000)
                 return;
@@ -474,7 +477,7 @@ namespace Fenix
 
         void CheckPeers(ICollection<NetPeer> peers)
         {
-            var curTS = TimeUtil.GetTimeStampMS(); 
+            var curTS = Fenix.Common.Utils.TimeUtil.GetTimeStampMS(); 
             foreach (var p in peers)
             {
                 if (p.IsActive == false)

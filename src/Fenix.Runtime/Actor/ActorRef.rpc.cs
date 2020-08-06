@@ -43,7 +43,7 @@ namespace Fenix
             this.CallRemoteMethod(OpCode.BIND_CLIENT_ACTOR_REQ, msg, cb);
         }
 
-        public void CreateActor(String typename, String name, Action<DefaultErrCode, String, UInt32> callback)
+        public void CreateActor(String typename, String name, Action<DefaultErrCode, String, UInt64> callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -71,7 +71,7 @@ namespace Fenix
             this.CallRemoteMethod(OpCode.CREATE_ACTOR_REQ, msg, cb);
         }
 
-        public void MigrateActor(UInt32 actorId)
+        public void MigrateActor(UInt64 actorId)
         {
            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
            if (this.FromHostId == toHostId)
@@ -94,7 +94,7 @@ namespace Fenix
            this.CallRemoteMethod(OpCode.MIGRATE_ACTOR_REQ, msg, null);
         }
 
-        public void Register(UInt32 hostId, String hostName)
+        public void Register(UInt64 hostId, String hostName)
         {
            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
            if (this.FromHostId == toHostId)
@@ -118,7 +118,7 @@ namespace Fenix
            this.CallRemoteMethod(OpCode.REGISTER_REQ, msg, null);
         }
 
-        public void RegisterClient(UInt32 hostId, String hostName, Action<DefaultErrCode, HostInfo> callback)
+        public void RegisterClient(UInt64 hostId, String hostName, Action<DefaultErrCode, HostInfo> callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -146,7 +146,7 @@ namespace Fenix
             this.CallRemoteMethod(OpCode.REGISTER_CLIENT_REQ, msg, cb);
         }
 
-        public void RemoveActor(UInt32 actorId)
+        public void RemoveActor(UInt64 actorId)
         {
            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
            if (this.FromHostId == toHostId)

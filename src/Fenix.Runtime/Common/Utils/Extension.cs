@@ -68,9 +68,9 @@ namespace Fenix.Common.Utils
             return bytes;
         }
 
-        public static uint GetUniqueId(this Ukcp ukcp)
+        public static ulong GetUniqueId(this Ukcp ukcp)
         {
-            return Basic.GenID32FromName(ukcp.user().Channel.Id.AsLongText() +
+            return Basic.GenID64FromName(ukcp.user().Channel.Id.AsLongText() +
                 ukcp.user().Channel.LocalAddress.ToIPv4String() +
                 ukcp.user().RemoteAddress.ToIPv4String() + ukcp.getConv().ToString());
         }

@@ -33,8 +33,8 @@ namespace Fenix
 
         protected ConcurrentDictionary<string, string> mANAME2TNAME = new ConcurrentDictionary<string, string>();
 
-        protected ConcurrentDictionary<uint, string>   mId2Name       = new ConcurrentDictionary<uint, string>();
-        protected ConcurrentDictionary<string, uint>   mName2Id       = new ConcurrentDictionary<string, uint>();
+        protected ConcurrentDictionary<ulong, string>   mId2Name       = new ConcurrentDictionary<ulong, string>();
+        protected ConcurrentDictionary<string, ulong>   mName2Id       = new ConcurrentDictionary<string, ulong>();
 
         //protected ConcurrentDictionary<string, string> mCNAME2ADDR = new ConcurrentDictionary<string, string>();
         //protected ConcurrentDictionary<string, string> mCADDR2NAME = new ConcurrentDictionary<string, string>();
@@ -43,7 +43,7 @@ namespace Fenix
         //客户端一个Host只有一个actor，所以...
         protected ConcurrentDictionary<string, string> mCNAME2ANAME = new ConcurrentDictionary<string, string>();
 
-        protected ConcurrentDictionary<ulong, uint> mRpcId2EntityId = new ConcurrentDictionary<ulong, uint>();
+        protected ConcurrentDictionary<ulong, ulong> mRpcId2EntityId = new ConcurrentDictionary<ulong, ulong>();
 
 #if !CLIENT
 
@@ -90,7 +90,7 @@ namespace Fenix
             return RegisterHost(host.Id, host.UniqueName, address, extAddress);
         }
 
-        public bool RegisterHost(uint hostId, string hostName, string address, string extAddress)
+        public bool RegisterHost(ulong hostId, string hostName, string address, string extAddress)
         {
             mHNAME2ADDR[hostName] = address;
             mADDR2HNAME[address] = hostName;
@@ -105,12 +105,12 @@ namespace Fenix
 #endif
         }
 
-        public async Task<bool> ReregisterHostAsync(uint hostId, string address)
+        public async Task<bool> ReregisterHostAsync(ulong hostId, string address)
         {
             return await Task.Run(() => ReregisterHost(hostId, address));
         }
 
-        public bool ReregisterHost(uint hostId, string address)
+        public bool ReregisterHost(ulong hostId, string address)
         {
             var hostName = GetName(hostId);
             if (hostName == "" || hostName == null)
@@ -129,7 +129,7 @@ namespace Fenix
 
 #if !CLIENT
 
-        public void RegisterClientHost(uint clientId, string clientName, string address)
+        public void RegisterClientHost(ulong clientId, string clientName, string address)
         { 
             AddNameId(clientName, clientId);
 
@@ -139,7 +139,7 @@ namespace Fenix
             CacheHNAME2ADDR.Set(clientName, address);
         } 
 
-        public void RegisterClientActor(uint actorId, string actorName, uint clientId, string address)
+        public void RegisterClientActor(ulong actorId, string actorName, ulong clientId, string address)
         { 
             AddNameId(actorName, actorId);
             var cName = GetHostName(clientId);
@@ -153,7 +153,7 @@ namespace Fenix
 
 #endif
 
-        public string GetHostAddr(uint hostId)
+        public string GetHostAddr(ulong hostId)
         {
             var hostName = GetHostName(hostId);
             if (hostName == null)
@@ -167,23 +167,23 @@ namespace Fenix
 #endif
         } 
 
-        public string GetHostName(uint hostId)
+        public string GetHostName(ulong hostId)
         {
             return GetName(hostId);
         }
 
-        public uint GetHostId(string addr)
+        public ulong GetHostId(string addr)
         {
             mADDR2HNAME.TryGetValue(addr, out var result);
             return GetId(result);
         }
 
-        uint GetId(string name)
+        ulong GetId(string name)
         {
             if(mName2Id.TryGetValue(name, out var result))
                 return result;
 #if !CLIENT
-            var tempId = Basic.GenID32FromName(name);
+            var tempId = Basic.GenID64FromName(name);
             if (CacheID2NAME.HasKey(tempId.ToString()))
             {
                 AddNameId(name);
@@ -195,7 +195,7 @@ namespace Fenix
 #endif
         }
 
-        string GetName(uint id)
+        string GetName(ulong id)
         {
             if(mId2Name.TryGetValue(id, out var result))
                 return result;
@@ -206,15 +206,15 @@ namespace Fenix
 #endif
         }
 
-        void AddNameId(string name, uint? id=null)
+        void AddNameId(string name, ulong? id=null)
         {
-            var newId = Basic.GenID32FromName(name);
+            var newId = Basic.GenID64FromName(name);
             if(id.HasValue && id != null && newId != id)
             {
                 Log.Error("add_name_id_error", name, id, newId);
                 return;
             }
-
+            //Log.Error("ADDNAMEID", name, newId, id);
             mId2Name[newId] = name;
             mName2Id[name] = newId;
 
@@ -233,7 +233,7 @@ namespace Fenix
 #endif
         }
 
-        public bool RegisterActor(Actor actor, uint hostId)
+        public bool RegisterActor(Actor actor, ulong hostId)
         {
             var aName = actor.UniqueName;
             var hName = GetName(hostId);
@@ -256,7 +256,7 @@ namespace Fenix
 #endif
         } 
 
-        public void RemoveActorId(uint actorId)
+        public void RemoveActorId(ulong actorId)
         {
             var aName = GetName(actorId);  
             this.mANAME2HNAME.TryRemove(aName, out var hName); 
@@ -273,7 +273,7 @@ namespace Fenix
 #endif
         }
 
-        public void RemoveHostId(uint hostId)
+        public void RemoveHostId(ulong hostId)
         {
             var hName = GetName(hostId);
             if (this.mHNAME2ADDR.TryRemove(hName, out var addr))
@@ -306,17 +306,17 @@ namespace Fenix
 #endif
         }
 
-        public uint GetActorId(string name)
+        public ulong GetActorId(string name)
         {
             return GetId(name);
         }
 
-        public string GetActorName(uint actorId)
+        public string GetActorName(ulong actorId)
         {
             return GetName(actorId);
         }
 
-        public string GetActorTypename(uint actorId)
+        public string GetActorTypename(ulong actorId)
         {
             var aName = GetName(actorId);
             if (mANAME2TNAME.ContainsKey(aName))
@@ -328,7 +328,7 @@ namespace Fenix
 #endif
         }
 
-        public uint GetHostIdByActorId(uint actorId, bool isClient=false) 
+        public ulong GetHostIdByActorId(ulong actorId, bool isClient=false) 
         {
             var aName = GetName(actorId);
             if (aName == null)
@@ -355,7 +355,7 @@ namespace Fenix
             } 
         }
 
-        public uint GetClientActorId(uint clientHostId)
+        public ulong GetClientActorId(ulong clientHostId)
         {
             var cName = GetName(clientHostId);
             if (mCNAME2ANAME.TryGetValue(cName, out var aName))
@@ -363,7 +363,7 @@ namespace Fenix
             return 0;
         }
 
-        public string GetHostAddrByActorId(uint actorId, bool isClient=false)
+        public string GetHostAddrByActorId(ulong actorId, bool isClient=false)
         { 
             var hostId = GetHostIdByActorId(actorId, isClient);
             return GetHostAddr(hostId); 
@@ -376,24 +376,24 @@ namespace Fenix
         }
 #endif
 
-        public void RegisterRpcId(ulong rpcId, uint actorId)
+        public void RegisterRpcId(ulong rpcId, ulong actorId)
         {
             this.mRpcId2EntityId[rpcId] = actorId;
         }
 
-        public uint RemoveRpcId(ulong rpcId)
+        public ulong RemoveRpcId(ulong rpcId)
         {
             this.mRpcId2EntityId.TryRemove(rpcId, out var result);
             return result;
         }
 
-        public uint GetRpcId(ulong rpcId)
+        public ulong GetRpcId(ulong rpcId)
         {
             this.mRpcId2EntityId.TryGetValue(rpcId, out var result);
             return result;
         }
 
-        public HostInfo GetHostInfo(uint hostId)
+        public HostInfo GetHostInfo(ulong hostId)
         {
             var hostInfo = new HostInfo();
             //该host包含的所有service的id
@@ -477,7 +477,7 @@ namespace Fenix
 
             foreach(var key in CacheID2NAME.Keys())
             {
-                var id = uint.Parse(key);
+                var id = ulong.Parse(key);
                 var name = CacheID2NAME.Get(key);
                 if (name == null)
                     continue;
@@ -532,7 +532,7 @@ namespace Fenix
 
             foreach (var key in await CacheID2NAME.KeysAsync())
             {
-                var id = uint.Parse(key);
+                var id = ulong.Parse(key);
                 var name = await CacheID2NAME.GetAsync(key);
                 if (name == null)
                     continue;

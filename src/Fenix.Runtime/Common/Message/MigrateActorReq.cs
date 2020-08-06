@@ -14,7 +14,7 @@ namespace Fenix.Common.Message
     public class MigrateActorReq : IMessage
     {
         [Key(0)]
-        public UInt32 actorId { get; set; }
+        public UInt64 actorId { get; set; }
 
         public override byte[] Pack()
         {

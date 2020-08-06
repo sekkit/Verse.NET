@@ -87,7 +87,7 @@ namespace Fenix
 
         public void RegisterActorType(Actor actor)
         {
-            uint actorId = actor.Id;
+            ulong actorId = actor.Id;
             string actorName = actor.UniqueName;
             Type type = actor.GetType(); 
             if(!mTypeDic.ContainsKey(type.Name))
@@ -102,7 +102,7 @@ namespace Fenix
             return result;
         }
 
-        public Type GetActorType(uint actorId)
+        public Type GetActorType(ulong actorId)
         {
             var tname = Global.IdManager.GetActorTypename(actorId);
 
@@ -111,6 +111,10 @@ namespace Fenix
 
         public Type GetMessageType(uint protocolId)
         {
+            if(!mMessageTypeDic.ContainsKey(protocolId))
+            {
+
+            }
             return mMessageTypeDic[protocolId];
         }
 

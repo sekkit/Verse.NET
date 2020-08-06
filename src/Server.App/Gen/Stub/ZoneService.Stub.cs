@@ -11,6 +11,8 @@ using Shared;
 using Shared.DataModel;
 using Shared.Protocol; 
 using Shared.Message;
+using Server.DataModel;
+
 
 using System;
 using System.Collections.Generic;
@@ -18,9 +20,9 @@ using System.ComponentModel;
 using System.Text;
 
 
-namespace Server.GModule.Master
+namespace Server.GModule
 {
-    public partial class MasterService
+    public partial class ZoneService
     {
 
    }

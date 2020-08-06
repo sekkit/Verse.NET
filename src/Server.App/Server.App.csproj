@@ -18,8 +18,11 @@
 
   <ItemGroup>
     <Compile Remove="Model\**" />
+    <Compile Remove="Stub\**" />
     <EmbeddedResource Remove="Model\**" />
+    <EmbeddedResource Remove="Stub\**" />
     <None Remove="Model\**" />
+    <None Remove="Stub\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,7 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Stub\" />
     <Folder Include="UModule\Item\" />
     <Folder Include="UModule\Reward\" />
   </ItemGroup>

@@ -35,7 +35,7 @@ namespace Shared.Message
             public ErrCode code { get; set; } = ErrCode.ERROR;
 
             [Key(1)]
-            public Account user { get; set; }
+            public Server.DataModel.Account user { get; set; }
 
             public override byte[] Pack()
             {

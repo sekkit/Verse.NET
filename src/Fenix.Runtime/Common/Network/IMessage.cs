@@ -6,17 +6,32 @@ using System.Text;
 namespace Fenix.Common.Rpc
 {
     [MessagePackObject]
-    public class IMessage
+    public abstract class IMessage
     {
-        public virtual byte[] Pack()
-        {
-            return MessagePackSerializer.Serialize(this);
-        }
+        public IMessage()
+        { }
+
+        public abstract byte[] Pack();
+
+        //public virtual byte[] Pack()
+        //{
+        //    return MessagePackSerializer.Serialize(this);
+        //}
 
         public virtual void UnPack(byte[] data)
         {
             
         }
+
+        public virtual string ToJson()
+        {
+           return MessagePackSerializer.SerializeToJson(this);
+        }
+
+        //public virtual void FromJson(string json)
+        //{
+        //    MessagePackSerializer.ConvertFromJson(json, ref this);
+        //}
 
         public static IMessage Deserialize(byte[] data)
         {
@@ -48,6 +63,11 @@ namespace Fenix.Common.Rpc
         public override object GetCallbackMsg()
         {
             return _callback;
+        }
+
+        public override byte[] Pack()
+        {
+            return MessagePackSerializer.Serialize(this);
         }
     }
 }

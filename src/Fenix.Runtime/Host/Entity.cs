@@ -19,7 +19,7 @@ namespace Fenix
     {
         [Key(0)]
         [DataMember]
-        public uint Id { get; set; }
+        public ulong Id { get; set; }
 
         [Key(2)]
         [DataMember]
@@ -153,7 +153,7 @@ namespace Fenix
             }
         }
 
-        public void Rpc(uint protoCode, uint fromHostId, uint fromActorId, uint toHostId, uint toActorId, 
+        public void Rpc(uint protoCode, ulong fromHostId, ulong fromActorId, ulong toHostId, ulong toActorId, 
             IPEndPoint toPeerAddr, NetworkType netType, IMessage msg, Action<byte[]> cb)
         { 
             var packet = Packet.Create(Basic.GenID64(), protoCode, fromHostId, toHostId, fromActorId, toActorId, netType, msg.GetType(), RpcUtil.Serialize(msg));
@@ -206,7 +206,7 @@ namespace Fenix
             Global.NetManager.Send(peer, packet); 
         }
 
-        public void RpcCallback(ulong protoId, uint protoCode, uint fromHostId, uint toHostId, uint fromActorId, uint toActorId, NetworkType netType, IMessage cbMsg)
+        public void RpcCallback(ulong protoId, uint protoCode, ulong fromHostId, ulong toHostId, ulong fromActorId, ulong toActorId, NetworkType netType, IMessage cbMsg)
         {  
             var packet = Packet.Create(protoId, protoCode, fromHostId, toHostId, fromActorId, toActorId, netType, cbMsg.GetType(), RpcUtil.Serialize(cbMsg));
 

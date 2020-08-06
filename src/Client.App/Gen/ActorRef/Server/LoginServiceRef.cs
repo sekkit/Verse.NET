@@ -78,7 +78,7 @@ namespace Server
             this.CallRemoteMethod(ProtocolCode.DELETE_ACCOUNT_REQ, msg, cb);
         }
 
-        public void rpc_login(String username, String password, Action<ErrCode, String, UInt32, String, String> callback)
+        public void rpc_login(String username, String password, Action<ErrCode, String, UInt64, String, String> callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)

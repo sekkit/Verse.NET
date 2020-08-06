@@ -69,8 +69,8 @@ namespace Fenix.Common.Utils
                 return hashBytes;
             }
         }
-         
-        public static UInt32 GenID32FromName(string name)
+
+        public static uint GenID32FromName(string name)
         {
             var src = GenMd5(name);
 
@@ -108,7 +108,52 @@ namespace Fenix.Common.Utils
 
             return (uint)(((h >> r) & 0xffffffff) ^ (h & 0xffffffff));
         }
-        
+
+        public static ulong GenID64FromName(string name)
+        {
+            if(name.StartsWith("U") && name.Length == 20)
+            {
+                //UID
+                return ulong.Parse(name.Substring(1));
+            }
+
+            var src = GenMd5(name);
+
+            var buffer = new byte[8];
+            Array.Copy(src, 0, buffer, 0, 8);
+            ulong long1 = BitConverter.ToUInt64(buffer, 0);
+            Array.Copy(src, 8, buffer, 0, 8);
+            ulong long2 = BitConverter.ToUInt64(buffer, 0);
+
+            ulong m = 0xc6a4a7935bd1e995;
+            ulong h = m >> 4;
+            const int r = 47;
+
+            ulong k = long1;
+
+            k *= m;
+            k ^= k >> r;
+            k *= m;
+
+            h ^= k;
+            h *= m;
+
+            k = long2;
+
+            k *= m;
+            k ^= k >> r;
+            k *= m;
+
+            h ^= k;
+            h *= m;
+
+            h ^= h >> r;
+            h *= m;
+            h ^= h >> r;
+
+            return h;
+        }
+
         public static string GetLocalIPv4(NetworkInterfaceType _type)
         {  
             // Checks your IP adress from the local network connected to a gateway. This to avoid issues with double network cards
