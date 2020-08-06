@@ -540,7 +540,7 @@ namespace Fenix
             //this.OnPeerLost = null;
             Global.NetManager = null;
 
-            heartbeatTh.Join();
+            //heartbeatTh.Join();
             heartbeatTh = null;
         }
     }
