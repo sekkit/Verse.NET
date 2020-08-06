@@ -19,7 +19,7 @@ namespace Fenix
             Assembly asmServerApp = Assembly.LoadFrom(Path.Combine(rootFolder, "../../../../../bin/netcoreapp3.1/Server.App.dll"));
             //Assembly asmServerApp = typeof(Server.UModule.Avatar).Assembly;// Assembly.Load(serverDll);
 
-            //Assembly asmRuntime = typeof(Host).Assembly;
+            Assembly asmRuntime = Assembly.LoadFrom(Path.Combine(rootFolder, "../../../../../bin/netcoreapp3.1/Fenix.Runtime.dll"));
             //Assembly asmServerApp = typeof(Server.UModule.Avatar).Assembly;
             //Assembly asmClientApp = typeof(Client.Avatar).Assembly;
 
@@ -32,7 +32,7 @@ namespace Fenix
             string sharedClientPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../Client.App/Gen"));
             string sharedServerPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../Server.App/Gen"));
 
-            Gen.AutogenHost(asmServerApp, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../Fenix.Runtime/Common"),
+            Gen.AutogenHost(asmRuntime, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../Fenix.Runtime/Common"),
                 Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../Client.App"),
                 Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../Server.App"));
 

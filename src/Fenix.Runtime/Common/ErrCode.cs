@@ -11,6 +11,11 @@ namespace Fenix.Common
     public enum DefaultErrCode: Int16
     {
         OK = 0,
-        ERROR = -1
+        ERROR = -1, 
+
+        migrate_actor_not_exists = -100,
+        create_actor_already_exists = -101,
+        create_actor_remote_exists = -102,
+
     }
 }

@@ -422,6 +422,7 @@ namespace Shared
         static void GenFromActorType(Type type, string sharedCPath, string sharedSPath, string clientPath, string serverPath)
         {
             var rpcDefineDic = new SortedDictionary<string, string>();
+            var rpcTypeDic = new SortedDictionary<string, string>();
             var apiDefineDic = new SortedDictionary<string, string>();
             var apiNativeDefineDic = new SortedDictionary<string, string>();
 
@@ -667,10 +668,6 @@ namespace Shared
                         .AppendLine($"        }}");
                     }
 
-                    var rpcDefineCode = builder.ToString();
-                    rpcDefineDic[rpc_name] = rpcDefineCode;
-
-
                     string api_rpc_args = ParseArgs(methodParameterList, "_msg.", "callback");
                     string api_type = "ServerApi";
                     string api_name = "SERVER_API_" + NameToApi(method.Name);
@@ -684,6 +681,11 @@ namespace Shared
                         api_name = "SERVER_ONLY_" + NameToApi(method.Name);
                         api_type = "ServerOnly";
                     }
+
+                    var rpcDefineCode = builder.ToString();
+                    rpcDefineDic[rpc_name] = rpcDefineCode;
+                    rpcTypeDic[rpc_name] = api_type;
+                    
                     builder = new StringBuilder()
                         .AppendLine($"        [RpcMethod({pc_cls}.{proto_code}, Api.{api_type})]")
                         .AppendLine($"        [EditorBrowsable(EditorBrowsableState.Never)]");
@@ -796,6 +798,10 @@ namespace Shared
             }
 
             string refCode = string.Join("\n", rpcDefineDic.Values);
+
+            string clientRefCode = string.Join("\n", rpcDefineDic.Where(m => rpcTypeDic[m.Key].StartsWith("ServerApi")).Select(m => m.Value).ToList());
+            string serverRefCode = string.Join("\n", rpcDefineDic.Values);
+
             string tname = type.Name;
             string ns = type.Namespace;
 
@@ -857,22 +863,13 @@ using System;
             {
                 refBuilder.AppendLine($"    public partial class ActorRef");
             }
-            refBuilder.AppendLine($"    {{")
-            .AppendLine($"{refCode}    }}")
-            .AppendLine($"}}");
-            var result = refBuilder.ToString();
 
-            if (isHost)
+            if(!isHost)
             {
-                if (!Directory.Exists(Path.Combine(sharedCPath, "../Actor")))
-                    Directory.CreateDirectory(Path.Combine(sharedCPath, "../Actor"));
-                using (var sw = new StreamWriter(Path.Combine(sharedCPath, "../Actor", "ActorRef.rpc.cs"), false, Encoding.UTF8))
-                {
-                    sw.WriteLine(result);
-                }
-            }
-            else
-            {
+                refBuilder.AppendLine($"    {{")
+                    .AppendLine($"{refCode}    }}")
+                    .AppendLine($"}}");
+                var result = refBuilder.ToString();
                 foreach (var sharedPath in new List<string>() { sharedCPath, sharedSPath })
                 {
                     var pPath = Path.Combine(sharedPath, "ActorRef", root_ns);
@@ -896,6 +893,25 @@ using System;
                     }
                 }
             }
+            else
+            {
+                var preludePart = refBuilder.ToString();
+                var clientCode = "#if CLIENT\n"+preludePart + string.Format("    {{\n{0}    }}\n}}", clientRefCode)+"\n#endif\n";
+                var serverCode = "#if !CLIENT\n" + preludePart + string.Format("    {{\n{0}    }}\n}}", serverRefCode) + "\n#endif\n";
+
+                if (!Directory.Exists(Path.Combine(sharedCPath, "../Actor")))
+                    Directory.CreateDirectory(Path.Combine(sharedCPath, "../Actor"));
+
+                using (var sw = new StreamWriter(Path.Combine(sharedCPath, "../Actor", "ActorRef.Client.cs"), false, Encoding.UTF8))
+                {
+                    sw.WriteLine(clientCode);
+                }
+
+                using (var sw = new StreamWriter(Path.Combine(sharedCPath, "../Actor", "ActorRef.Server.cs"), false, Encoding.UTF8))
+                {
+                    sw.WriteLine(serverCode);
+                }
+            } 
 
 
             string internalApiCode = string.Join("\n", apiDefineDic.Values);

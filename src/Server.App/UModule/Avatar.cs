@@ -13,7 +13,7 @@ namespace Server.UModule
     [RuntimeData(typeof(Account))]
     public partial class Avatar : Actor
     {
-        public Client.AvatarRef Client => (Client.AvatarRef)this.client;
+        public new Client.AvatarRef Client => (Client.AvatarRef)this.client;
 
         public Avatar()
         {

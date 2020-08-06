@@ -77,7 +77,7 @@ namespace Client
                             return;
                         }
                         Log.Info(string.Format("ServerAvatar host: {0}@{1} {2} {3}", uid, hostId, hostName, hostAddress));
-                        Game.Avatar = host.CreateActor<Client.Avatar>(uid);
+                        Game.Avatar = host.CreateActorLocally<Client.Avatar>(uid);
 
                         Global.IdManager.RegisterHost(hostId, hostName, hostAddress, hostAddress);
                         Global.IdManager.RegisterActor(Game.Avatar, hostId);

@@ -142,6 +142,40 @@ namespace Fenix
 
         double lastTs = 0;
 
+        public override byte[] Pack()
+        {
+            return MessagePackSerializer.Serialize<Host>(this);
+        }
+
+        public sealed override void Update()
+        {
+            base.EntityUpdate();
+
+            if (IsAlive == false)
+                return;
+
+            foreach (var a in this.actorDic.Keys)
+                this.actorDic[a].Update();
+
+            Global.NetManager?.Update();
+        }
+
+        public void Shutdown()
+        {
+            //先销毁所有的actor, netpeer
+            //再销毁自己
+
+            foreach (var a in this.actorDic.Values)
+                a.Destroy();
+
+            this.actorDic.Clear();
+
+            Global.NetManager.Destroy();
+
+            this.Destroy();
+        }
+
+
         protected void OnReceive(NetPeer peer, IByteBuffer buffer)
         {
             if (!peer.IsActive)
@@ -191,6 +225,8 @@ namespace Fenix
             } 
 
             uint protoCode = buffer.ReadUnsignedIntLE();
+
+#if !CLIENT
             if (protoCode == OpCode.REGISTER_REQ)
             {
                 var hostId = (ulong)buffer.ReadLongLE();
@@ -204,6 +240,7 @@ namespace Fenix
 
                 return; 
             }
+#endif
 
             if (protoCode == OpCode.PARTIAL)
             {
@@ -218,6 +255,7 @@ namespace Fenix
                 {
                     var finalBuf = Unpooled.WrappedBuffer(finalBytes);
                     var _protoCode = finalBuf.ReadUnsignedIntLE();
+#if !CLIENT
                     if (_protoCode == OpCode.REGISTER_REQ)
                     {
                         ProcessRegisterProtocol(peer, _protoCode, finalBuf);
@@ -226,6 +264,9 @@ namespace Fenix
                     {
                         ProcessRpcProtocol(peer, _protoCode, finalBuf);
                     }
+#else
+                    ProcessRpcProtocol(peer, _protoCode, finalBuf);
+#endif
                 }
                 return;
             } 
@@ -236,17 +277,11 @@ namespace Fenix
         protected void OnClose(NetPeer peer)
         {
             Log.Info("OnClose", peer.ConnId, peer.IsRemoteClient);
-            //foreach (var kv in this.actorDic)
-            //{
-            //    Log.Info(kv.Key, kv.Value, Basic.GenID32FromName(kv.Value.UniqueName));
-            //}
 #if !CLIENT
             if (peer.IsRemoteClient)
             {
                 var aId = Global.IdManager.GetClientActorId(peer.ConnId);
-                Log.Info(aId);
-                //if(this.actorDic.TryRemove(aId, out var a))
-                //    a.Destroy();
+                Log.Info(aId); 
                 if (this.actorDic.TryGetValue(aId, out var a))
                     a.OnClientDisable();
             }
@@ -290,6 +325,7 @@ namespace Fenix
 #endif
         }
 
+#if !CLIENT
         void ProcessRegisterProtocol(NetPeer peer, uint protoCode, IByteBuffer buffer)
         {
             if (protoCode == OpCode.REGISTER_REQ)
@@ -306,6 +342,7 @@ namespace Fenix
                 return;
             }
         }
+#endif
 
         void ProcessRpcProtocol(NetPeer peer, uint protoCode, IByteBuffer buffer)
         {
@@ -394,17 +431,58 @@ namespace Fenix
             }
         }
 
-        public Actor GetActor(ulong actorId)
+        //调用Actor身上的方法
+        protected void CallActorMethod(Packet packet)
         {
-            if (this.actorDic.TryGetValue(actorId, out Actor a))
-                return a;
-            return null;
+            if (packet.ToActorId == 0)
+            {
+                this.CallMethod(packet);
+                return;
+            }
+
+            var actor = this.actorDic[packet.ToActorId];
+            actor.CallMethod(packet);
         }
+
+
+
+#if !CLIENT
 
         [ServerOnly]
         public void CreateActor(string typename, string name, Action<DefaultErrCode, string, ulong> callback, RpcContext __context)
         {
-            var a = CreateActor(typename, name);
+            if (name == "" || name == null)
+            {
+                callback(DefaultErrCode.ERROR, "", 0);
+                return;
+            }
+
+            var actorId = Global.IdManager.GetActorId(name);
+            if (this.actorDic.TryGetValue(actorId, out var a))
+            {
+                callback(DefaultErrCode.create_actor_already_exists, a.UniqueName, a.Id);
+                return;
+            }
+#if !CLIENT
+            var hostId = Global.IdManager.GetHostIdByActorId(actorId);
+            if (hostId != 0)
+            {
+                //callback(DefaultErrCode.create_actor_remote_exists, name, actorId);
+                //return;
+                //迁移actor到本地
+                var remoteHost = this.GetHost(hostId);
+                remoteHost.MigrateActor(actorId, (code, actorData) =>
+                {
+                    var actor = CreateActorLocally(typename, actorData);
+                    if (actor != null)
+                        callback(DefaultErrCode.OK, actor.UniqueName, actor.Id);
+                    else
+                        callback(DefaultErrCode.ERROR, "", 0);
+                });
+                return;
+            }
+#endif
+            a = CreateActorLocally(typename, name);
 
             if (a != null)
                 callback(DefaultErrCode.OK, a.UniqueName, a.Id);
@@ -412,68 +490,62 @@ namespace Fenix
                 callback(DefaultErrCode.ERROR, "", 0);
         }
 
-        public T CreateActor<T>(string name) where T : Actor
-        {
-            return (T)CreateActor(typeof(T), name);
-        }
-
-        protected Actor CreateActor(Type type, string name)
-        {
-            if (name == "" || name == null)
-                return null;
-            var actorId = Global.IdManager.GetActorId(name);
-            if (this.actorDic.TryGetValue(actorId, out var a))
-                return a;
-
-            var hostId = Global.IdManager.GetHostIdByActorId(actorId);
-            if(hostId != 0)
-            {
-                //迁移actor到本地
-                var remoteHost = this.GetHost(hostId);
-                //remoteHost.MigrateActor(actorId, (actor) =>
-                //{
-                    
-                //});
-                //return;
-            }
-
-            var newActor = Actor.Create(type, name);
-            Log.Info(string.Format("CreateActor:success {0} {1}", name, newActor.Id));
-            this.ActivateActor(newActor);
-            return newActor;
-        }
-
-        public Actor CreateActor(string typename, string name)
-        {
-            if (name == "" || name == null)
-                return null; 
-            var type = Global.TypeManager.Get(typename);
-            return CreateActor(type, name);
-        }
-
-        public Actor ActivateActor(Actor actor)
-        {
-            this.RegisterGlobalManager(actor);
-            actor.OnLoad();
-            actorDic[actor.Id] = actor;
-            return actor;
-        }
-
         //迁移actor
         [ServerOnly]
-        public void MigrateActor(ulong actorId, RpcContext __context)
+        public void MigrateActor(ulong actorId, Action<DefaultErrCode, byte[]> callback, RpcContext __context)
         {
+            if(!this.actorDic.ContainsKey(actorId))
+            {
+                callback(DefaultErrCode.migrate_actor_not_exists, null);
+                return;
+            }
 
+            this.actorDic.TryRemove(actorId, out var a);
+            var actorData = a.Pack();
+            if (a.Client != null)
+            {
+                var clientId = Global.IdManager.GetHostIdByActorId(actorId, isClient:true);
+                if(clientId != 0)
+                {
+                    var peer = Global.NetManager.GetPeerById(clientId, Global.Config.ClientNetwork);
+                    Global.NetManager.Deregister(peer);
+                }
+
+                //通知client端，重新连接server actor
+                //ulong hostId = __context.Peer.ConnId;
+                //var addr = __context.Peer.RemoteAddress.ToIPv4String();
+                //var ip = addr.Split(':')[0];
+                //var port = int.Parse(addr.Split(':')[1]);
+                //a.Client.ReconnectServerActor(hostId,
+                //    Global.IdManager.GetHostName(hostId),
+                //    ip, port, a.Id, a.UniqueName, a.GetType().Name, (code) =>
+                //    {
+                //        if(code != DefaultErrCode.OK)
+                //        {
+                //            //直接把客户端销毁吧
+                            
+                //        }
+                //    });
+
+                /* if a client's actor is created somewhere else
+                 * it means the client is kicked out by another client
+                 * so the old client shall be destroyed.
+                 * IN SHORT: a client actor cannot migrate with server actor
+                 */
+            }
+
+            a.Destroy();
+            callback(DefaultErrCode.OK, actorData);
         }
 
         [ServerOnly]
         //移除actor
-        public void RemoveActor(ulong actorId, RpcContext __context)
+        public void RemoveActor(ulong actorId, Action<DefaultErrCode> callback, RpcContext __context)
         {
-
+            var a = this.actorDic[actorId];
         }
 
-        [ServerApi]
+        [ServerOnly]
         public void Register(ulong hostId, string hostName, RpcContext __context)
         {
             if (__context.Peer.ConnId != hostId)
@@ -485,9 +557,7 @@ namespace Fenix
             {
                 Global.IdManager.RegisterHost(hostId, hostName, __context.Peer.RemoteAddress.ToIPv4String(), __context.Peer.RemoteAddress.ToIPv4String());
             }
-        }
-
-#if !CLIENT
+        } 
 
         [ServerApi]
         public void RegisterClient(ulong hostId, string hostName, Action<DefaultErrCode, HostInfo> callback, RpcContext __context)
@@ -524,101 +594,25 @@ namespace Fenix
             a.OnClientEnable();
         }
 #endif
-        //调用Actor身上的方法
-        protected void CallActorMethod(Packet packet)  
+
+        [ClientApi]
+        public void ReconnectServerActor(ulong hostId, string hostName, string hostIP, int hostPort, 
+            ulong actorId, string actorName, string aTypeName,
+            Action<DefaultErrCode> callback, RpcContext __context)
         {
-            if(packet.ToActorId == 0)
+            IPEndPoint ep = new IPEndPoint(IPAddress.Parse(hostIP), hostPort);
+            string hostAddr = ep.ToIPv4String();
+
+            Global.IdManager.RegisterHost(hostId, hostName, hostAddr, hostAddr);
+            Global.IdManager.RegisterActor(actorId, actorName, aTypeName, hostId);
+             
+            var avatarHost = GetHost(hostName, hostIP, hostPort);
+            Global.NetManager.PrintPeerInfo("# Master.App: hostref created");
+            avatarHost.BindClientActor(actorName, (code3) =>
             {
-                this.CallMethod(packet);
-                return;
-            }
-
-            var actor = this.actorDic[packet.ToActorId]; 
-            actor.CallMethod(packet);
-        } 
-
-        public sealed override void Update()
-        {
-            base.EntityUpdate();
-
-            if (IsAlive == false)
-                return;
-
-            //Log.Info(string.Format("{0}:{1}", this.GetType().Name, rpcDic.Count));
-
-            //this.CheckTimer();
-
-            foreach (var a in this.actorDic.Keys) 
-                this.actorDic[a].Update();
-
-            Global.NetManager?.Update();
-
-            //Log.Info(string.Format("C: {0}", rpcDic.Count));
-        }
-
-        public T GetService<T>(string name) where T : ActorRef
-        {
-            return (T)Global.GetActorRef(typeof(T), name, null, Global.Host);
-        }
-
-        public T GetAvatar<T>(string uid) where T : ActorRef
-        {
-            return (T)Global.GetActorRef(typeof(T), uid, null, Global.Host);
-        } 
-        public T GetActorRef<T>(string name) where T: ActorRef
-        {
-            return (T)Global.GetActorRef(typeof(T), name, null, Global.Host);
-        }
-
-        public T GetService<T>() where T : ActorRef
-        {
-            var refTypeName = typeof(T).Name;
-            string name = refTypeName.Substring(0, refTypeName.Length - 3); 
-            return (T)Global.GetActorRef(typeof(T), name, null, Global.Host);
-        }
-
-        //public T GetService<T>(string hostName, string ip, int port) where T : ActorRef
-        //{
-        //    var refTypeName = typeof(T).Name;
-        //    string name = refTypeName.Substring(0, refTypeName.Length - 3);
-        //    IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
-        //    return (T)Global.GetActorRefByAddr(typeof(T), ep, hostName, name,  null, Global.Host);
-        //}
-
-        public ActorRef GetHost(string hostName, string ip, int port)
-        { 
-            IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
-            return Global.GetActorRefByAddr(typeof(ActorRef), ep, hostName, "", null, Global.Host);
-        }
-
-        public ActorRef GetHost(ulong hostId)
-        {
-            var addr = Global.IdManager.GetHostAddr(hostId);
-            var hostName = Global.IdManager.GetHostName(hostId);
-            var ip = addr.Split(':')[0]; 
-            var port = int.Parse(addr.Split(':')[1]);
-
-            return GetHost(hostName, ip, port);
-        }
-
-        public void Shutdown()
-        {
-            //先销毁所有的actor, netpeer
-            //再销毁自己
-
-            foreach(var a in this.actorDic.Values) 
-                a.Destroy();
-
-            this.actorDic.Clear();
-
-            Global.NetManager.Destroy();
-
-            this.Destroy();
-        }
-
-        public override byte[] Pack()
-        {
-            return MessagePackSerializer.Serialize<Host>(this);
+                Global.NetManager.PrintPeerInfo("# Master.App: BindClientActor called");
+                Log.Info("Avatar已经重新和服务端绑定");
+            });
         }
     }
 }

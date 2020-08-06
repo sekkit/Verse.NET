@@ -235,9 +235,14 @@ namespace Fenix
 
         public bool RegisterActor(Actor actor, ulong hostId)
         {
-            var aName = actor.UniqueName;
+            return RegisterActor(actor.Id, actor.UniqueName, actor.GetType().Name, hostId);
+        }
+
+        public bool RegisterActor(ulong actorId, string actorName, string aTypeName, ulong hostId)
+        {
+            var aName = actorName;
             var hName = GetName(hostId);
-            AddNameId(aName, actor.Id);
+            AddNameId(aName, actorId);
 
             mANAME2HNAME[aName] = hName;
             if (!mHNAME2ANAME.ContainsKey(aName))
@@ -245,10 +250,10 @@ namespace Fenix
             if (!mHNAME2ANAME.ContainsKey(aName))
                 mHNAME2ANAME[hName].Add(aName);
      
-            mANAME2TNAME[aName] = actor.GetType().Name;
+            mANAME2TNAME[aName] = aTypeName;
 
 #if !CLIENT
-            var ret = CacheANAME2TNAME.Set(aName, actor.GetType().Name); 
+            var ret = CacheANAME2TNAME.Set(aName, aTypeName); 
             return CacheANAME2HNAME.Set(aName, hName) && ret;
 
 #else

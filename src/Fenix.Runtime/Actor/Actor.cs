@@ -28,8 +28,12 @@ namespace Fenix
         public bool CanTransfer { get; set; }
 
 #if !CLIENT
+
         [EditorBrowsable(EditorBrowsableState.Never)]
         protected ActorRef client;
+
+        public virtual ActorRef Client => client;
+
 #endif
 
         [IgnoreMember]
@@ -107,6 +111,11 @@ namespace Fenix
         //{
             
         //}
+
+        public new static Actor Deserialize(byte[] data)
+        {
+            return MessagePackSerializer.Deserialize<Actor>(data);
+        }
 
         public void Restore()
         {

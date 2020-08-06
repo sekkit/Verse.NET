@@ -81,6 +81,13 @@ namespace Server.GModule
             if (hostId != 0)
             {
                 var hostAddr = Global.IdManager.GetHostAddrByActorId(actorId);
+                var clientId = Global.IdManager.GetHostIdByActorId(actorId, true);
+                if(clientId != 0)
+                {
+                    //踢掉之前的客户端
+                    var peer = Global.NetManager.GetPeerById(clientId, Global.Config.ClientNetwork);
+                    Global.NetManager.Deregister(peer);
+                }
 
                 Log.Info(string.Format("login.get_actor@Master.App {0} {1} {2} {3}", account.uid, actorId,
                     Global.IdManager.GetHostName(hostId), hostAddr));
@@ -100,6 +107,12 @@ namespace Server.GModule
             var svc = GetService<MasterServiceRef>();
             svc.CreateActor(nameof(Avatar), account.uid, (code, actorName, actorId) =>
             {
+                if(code != DefaultErrCode.OK)
+                {
+                    callback(ErrCode.ERROR, actorName, 0, null, null);
+                    return;
+                }
+
                 var hostId = Global.IdManager.GetHostIdByActorId(actorId);//, false); 
                 //创建成功后，把客户端的avatar注册到服务端
                 var hostAddr = Global.IdManager.GetHostAddrByActorId(actorId);
