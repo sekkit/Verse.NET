@@ -1,16 +1,7 @@
-﻿using Client;
-using DotNetty.KCP;
-using Fenix;
-using Fenix.Common;
-using Fenix.Common.Utils;
-using Server;
+﻿
 using Shared.Protocol;
 using System;
-using System.Net;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using UnityEditor;
+using System.Threading.Tasks; 
 using UnityEngine;
 
 namespace Client
@@ -18,7 +9,8 @@ namespace Client
     public class ClientApp : MonoBehaviour
     {
         public void Start()
-        { 
+        {
+            DontDestroyOnLoad(this.gameObject);
             App.Instance.Init(threaded:false);
         }
 
