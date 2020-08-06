@@ -30,7 +30,7 @@ namespace Server
                 var protoCode = ProtocolCode.CHANGE_NAME_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { name, callback, context });
                 }
@@ -57,7 +57,7 @@ namespace Server
                 var protoCode = ProtocolCode.ON_MATCH_OK_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { context });
                 }

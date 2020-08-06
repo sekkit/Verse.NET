@@ -30,7 +30,7 @@ namespace Server
                 var protoCode = ProtocolCode.CREATE_ACCOUNT_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { username, password, callback, context });
                 }
@@ -58,7 +58,7 @@ namespace Server
                 var protoCode = ProtocolCode.DELETE_ACCOUNT_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { username, password, callback, context });
                 }
@@ -86,7 +86,7 @@ namespace Server
                 var protoCode = ProtocolCode.LOGIN_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { username, password, callback, context });
                 }
@@ -114,7 +114,7 @@ namespace Server
                 var protoCode = ProtocolCode.RESET_PASSWORD_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = NetManager.Instance.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { username, email, context });
                 }
