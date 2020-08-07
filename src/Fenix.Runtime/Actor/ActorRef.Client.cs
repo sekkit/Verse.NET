@@ -44,30 +44,6 @@ namespace Fenix
             this.CallRemoteMethod(OpCode.BIND_CLIENT_ACTOR_REQ, msg, cb);
         }
 
-        public void Register(UInt64 hostId, String hostName)
-        {
-           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
-           if (this.FromHostId == toHostId)
-           {
-                var protoCode = OpCode.REGISTER_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
-                {
-                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
-                    var context = new RpcContext(null, peer);
-                    Global.Host.CallMethodWithParams(protoCode, new object[] { hostId, hostName, context });
-                }
-                else
-                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { hostId, hostName }); 
-               return;
-           }
-           var msg = new RegisterReq()
-           {
-                hostId=hostId,
-                hostName=hostName
-           };
-           this.CallRemoteMethod(OpCode.REGISTER_REQ, msg, null);
-        }
-
         public void RegisterClient(UInt64 hostId, String hostName, Action<DefaultErrCode, HostInfo> callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
