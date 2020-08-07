@@ -11,35 +11,10 @@ namespace Fenix.Common.Message
 {
     [MessageType(OpCode.REMOVE_ACTOR_REQ)]
     [MessagePackObject]
-    public class RemoveActorReq : IMessageWithCallback
+    public class RemoveActorReq : IMessage
     {
         [Key(0)]
         public UInt64 actorId { get; set; }
-
-        [Key(1)]
-
-        public Callback callback
-        {
-            get => _callback as Callback;
-            set => _callback = value;
-        } 
-
-        [MessagePackObject]
-        public class Callback : IMessage
-        {
-            [Key(0)]
-            [DefaultValue(DefaultErrCode.ERROR)]
-            public DefaultErrCode code { get; set; } = DefaultErrCode.ERROR;
-
-            public override byte[] Pack()
-            {
-                return MessagePackSerializer.Serialize<Callback>(this);
-            }
-            public new static Callback Deserialize(byte[] data)
-            {
-                return MessagePackSerializer.Deserialize<Callback>(data);
-            }
-        }
 
         public override byte[] Pack()
         {

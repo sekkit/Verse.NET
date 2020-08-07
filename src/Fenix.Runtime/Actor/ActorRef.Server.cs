@@ -72,64 +72,27 @@ namespace Fenix
             this.CallRemoteMethod(OpCode.CREATE_ACTOR_REQ, msg, cb);
         }
 
-        public void MigrateActor(UInt64 actorId, Action<DefaultErrCode, Byte[]> callback)
+        public void MigrateActor(UInt64 actorId)
         {
-            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
-            if (this.FromHostId == toHostId)
-            {
+           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
+           if (this.FromHostId == toHostId)
+           {
                 var protoCode = OpCode.MIGRATE_ACTOR_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
-                    Global.Host.CallMethodWithParams(protoCode, new object[] { actorId, callback, context });
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { actorId, context });
                 }
                 else
-                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { actorId, callback });
-                return;
-            }
-            var msg = new MigrateActorReq()
-            {
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { actorId }); 
+               return;
+           }
+           var msg = new MigrateActorReq()
+           {
                 actorId=actorId
-            };
-            var cb = new Action<byte[]>((cbData) => {
-                var cbMsg = cbData==null?new MigrateActorReq.Callback():RpcUtil.Deserialize<MigrateActorReq.Callback>(cbData);
-                callback?.Invoke(cbMsg.code, cbMsg.arg1);
-            });
-            this.CallRemoteMethod(OpCode.MIGRATE_ACTOR_REQ, msg, cb);
-        }
-
-        public void ReconnectServerActor(UInt64 hostId, String hostName, String hostIP, Int32 hostPort, UInt64 actorId, String actorName, String aTypeName, Action<DefaultErrCode> callback)
-        {
-            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
-            if (this.FromHostId == toHostId)
-            {
-                var protoCode = OpCode.RECONNECT_SERVER_ACTOR_NTF;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
-                {
-                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
-                    var context = new RpcContext(null, peer);
-                    Global.Host.CallMethodWithParams(protoCode, new object[] { hostId, hostName, hostIP, hostPort, actorId, actorName, aTypeName, callback, context });
-                }
-                else
-                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { hostId, hostName, hostIP, hostPort, actorId, actorName, aTypeName, callback });
-                return;
-            }
-            var msg = new ReconnectServerActorNtf()
-            {
-                hostId=hostId,
-                hostName=hostName,
-                hostIP=hostIP,
-                hostPort=hostPort,
-                actorId=actorId,
-                actorName=actorName,
-                aTypeName=aTypeName
-            };
-            var cb = new Action<byte[]>((cbData) => {
-                var cbMsg = cbData==null?new ReconnectServerActorNtf.Callback():RpcUtil.Deserialize<ReconnectServerActorNtf.Callback>(cbData);
-                callback?.Invoke(cbMsg.code);
-            });
-            this.CallRemoteMethod(OpCode.RECONNECT_SERVER_ACTOR_NTF, msg, cb);
+           };
+           this.CallRemoteMethod(OpCode.MIGRATE_ACTOR_REQ, msg, null);
         }
 
         public void Register(UInt64 hostId, String hostName)
@@ -184,31 +147,27 @@ namespace Fenix
             this.CallRemoteMethod(OpCode.REGISTER_CLIENT_REQ, msg, cb);
         }
 
-        public void RemoveActor(UInt64 actorId, Action<DefaultErrCode> callback)
+        public void RemoveActor(UInt64 actorId)
         {
-            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
-            if (this.FromHostId == toHostId)
-            {
+           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
+           if (this.FromHostId == toHostId)
+           {
                 var protoCode = OpCode.REMOVE_ACTOR_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
-                    Global.Host.CallMethodWithParams(protoCode, new object[] { actorId, callback, context });
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { actorId, context });
                 }
                 else
-                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { actorId, callback });
-                return;
-            }
-            var msg = new RemoveActorReq()
-            {
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { actorId }); 
+               return;
+           }
+           var msg = new RemoveActorReq()
+           {
                 actorId=actorId
-            };
-            var cb = new Action<byte[]>((cbData) => {
-                var cbMsg = cbData==null?new RemoveActorReq.Callback():RpcUtil.Deserialize<RemoveActorReq.Callback>(cbData);
-                callback?.Invoke(cbMsg.code);
-            });
-            this.CallRemoteMethod(OpCode.REMOVE_ACTOR_REQ, msg, cb);
+           };
+           this.CallRemoteMethod(OpCode.REMOVE_ACTOR_REQ, msg, null);
         }
     }
 }
