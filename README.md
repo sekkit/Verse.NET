@@ -8,7 +8,7 @@ this project is for you. Targeting Next Generation RTS games while learning from
 
 Fenix is part of OpenCraft project, a distributed server designed for https://github.com/sekkit/OpenCraft
 
-### QQ Group: 1150593832
+##### QQ Group: 1150593832
 
 # Fenix Project
 
