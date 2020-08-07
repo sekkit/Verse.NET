@@ -24,6 +24,11 @@ namespace Server.GModule
 {
     public partial class MatchService
     {
+#if CLIENT
+
+
+#endif
+#if !CLIENT
         [RpcMethod(ProtocolCode.JOIN_MATCH_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API_join_match(IMessage msg, Action<IMessage> cb)
@@ -64,6 +69,8 @@ namespace Server.GModule
         {
             this.FindMatch(uid, callback);
         }
-   }
+
+#endif
+    }
 }
 

@@ -22,6 +22,7 @@ namespace Client
 {
     public partial class Avatar
     {
+#if CLIENT
         [RpcMethod(ProtocolCode.API_TEST_NTF, Api.ClientApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void CLIENT_API_api_test(IMessage msg, Action<IMessage> cb)
@@ -56,6 +57,12 @@ namespace Client
         {
             this.ApiTest2(uid, match_type);
         }
-   }
+
+#endif
+#if !CLIENT
+
+
+#endif
+    }
 }
 

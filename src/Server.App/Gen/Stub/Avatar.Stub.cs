@@ -24,6 +24,11 @@ namespace Server.UModule
 {
     public partial class Avatar
     {
+#if CLIENT
+
+
+#endif
+#if !CLIENT
         [RpcMethod(ProtocolCode.CHANGE_NAME_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API_change_name(IMessage msg, Action<IMessage> cb)
@@ -58,6 +63,8 @@ namespace Server.UModule
         {
             this.OnMatchOk();
         }
-   }
+
+#endif
+    }
 }
 

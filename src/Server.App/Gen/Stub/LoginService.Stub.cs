@@ -24,6 +24,11 @@ namespace Server.GModule
 {
     public partial class LoginService
     {
+#if CLIENT
+
+
+#endif
+#if !CLIENT
         [RpcMethod(ProtocolCode.CREATE_ACCOUNT_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API_create_account(IMessage msg, Action<IMessage> cb)
@@ -102,6 +107,8 @@ namespace Server.GModule
         {
             this.ResetPassword(username, email);
         }
-   }
+
+#endif
+    }
 }
 

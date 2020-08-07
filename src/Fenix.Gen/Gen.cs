@@ -1058,8 +1058,11 @@ using System.Threading.Tasks;
             } 
 
 
-            string internalApiCode = string.Join("\n", apiDefineDic.Values);
-            string internalNativeApiCode = string.Join("\n", apiNativeDefineDic.Values);
+            string internalClientApiCode = string.Join("\n", apiDefineDic.Where(m=>m.Key.StartsWith("CLIENT_API")).Select(m=>m.Value).ToList());
+            string internalClientNativeApiCode = string.Join("\n", apiNativeDefineDic.Where(m => m.Key.StartsWith("CLIENT_API")).Select(m => m.Value).ToList());
+
+            string internalServerApiCode = string.Join("\n", apiDefineDic.Where(m => !m.Key.StartsWith("CLIENT_API")).Select(m => m.Value).ToList());
+            string internalServerNativeApiCode = string.Join("\n", apiNativeDefineDic.Where(m => !m.Key.StartsWith("CLIENT_API")).Select(m => m.Value).ToList());
 
             var apiBuilder = new StringBuilder()
                 .AppendLine(@"
@@ -1082,27 +1085,32 @@ using Shared.Message;");
             {
                 apiBuilder.AppendLine(@"using Server.DataModel;
 ");
-            } 
+            }
             apiBuilder.AppendLine(@"
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 
-")
-                .AppendLine($"namespace {ns}")
-.AppendLine("{")
-.AppendLine($"    public partial class {tname}")
-.AppendLine($"    {{")
-.AppendLine($"{internalApiCode}")
-.AppendLine($"{internalNativeApiCode}   }}")
-.AppendLine($"}}");
+");
 
-
+            apiBuilder.AppendLine($"namespace {ns}")
+            .AppendLine($"{{")
+            .AppendLine($"    public partial class {tname}")
+            .AppendLine($"    {{")
+            .AppendLine(@"#if CLIENT")
+            .AppendLine($"{internalClientApiCode}")
+            .AppendLine($"{internalClientNativeApiCode}")
+            .AppendLine(@"#endif")
+            .AppendLine(@"#if !CLIENT")
+            .AppendLine($"{internalServerApiCode}")
+            .AppendLine($"{internalServerNativeApiCode}")
+            .AppendLine(@"#endif")
+            .AppendLine($"    }}")
+            .AppendLine($"}}");
             var apiResultCode = apiBuilder.ToString();
-             
-            if(isHost)
-            {
+            if (isHost)
+            {  
                 var stubPath = Path.Combine(sharedCPath, "Stub");
                 //if(Directory.Exists(stubPath))
                 //    Directory.Delete(stubPath, true);
@@ -1110,7 +1118,7 @@ using System.Text;
                     Directory.CreateDirectory(stubPath);
                 using (var sw = new StreamWriter(Path.Combine(stubPath, type.Name + ".Stub.cs"), false, Encoding.UTF8))
                 {
-                    sw.WriteLine("\n#if !CLIENT\n"+apiResultCode+"\n#endif");
+                    sw.WriteLine(apiResultCode);
                 }
             }
             else

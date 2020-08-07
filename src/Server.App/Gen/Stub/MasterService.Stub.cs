@@ -24,7 +24,14 @@ namespace Server.GModule.Master
 {
     public partial class MasterService
     {
+#if CLIENT
 
-   }
+
+#endif
+#if !CLIENT
+
+
+#endif
+    }
 }
 

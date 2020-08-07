@@ -24,7 +24,14 @@ namespace Server.GModule
 {
     public partial class ZoneService
     {
+#if CLIENT
 
-   }
+
+#endif
+#if !CLIENT
+
+
+#endif
+    }
 }
 

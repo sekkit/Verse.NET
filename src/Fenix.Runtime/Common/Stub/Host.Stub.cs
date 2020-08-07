@@ -1,6 +1,4 @@
 ﻿
-#if !CLIENT
-
 //AUTOGEN, do not modify it!
 
 using Fenix.Common;
@@ -19,6 +17,7 @@ namespace Fenix
 {
     public partial class Host
     {
+#if CLIENT
         [RpcMethod(OpCode.ON_BEFORE_DISCONNECT_NTF, Api.ClientApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void CLIENT_API_on_before_disconnect(IMessage msg, Action<IMessage> cb, RpcContext context)
@@ -51,6 +50,24 @@ namespace Fenix
             }, context);
         }
 
+        public event Action<DisconnectReason, Action> on_before_disconnect;
+        [RpcMethod(OpCode.ON_BEFORE_DISCONNECT_NTF, Api.ClientApi)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void CLIENT_API_NATIVE_on_before_disconnect(DisconnectReason reason, Action callback, RpcContext context)
+        {
+            on_before_disconnect?.Invoke(reason, callback);
+            this.OnBeforeDisconnect(reason, callback, context);
+        }
+
+        [RpcMethod(OpCode.RECONNECT_SERVER_ACTOR_NTF, Api.ClientApi)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void CLIENT_API_NATIVE_reconnect_server_actor(UInt64 hostId, String hostName, String hostIP, Int32 hostPort, UInt64 actorId, String actorName, String aTypeName, Action<DefaultErrCode> callback, RpcContext context)
+        {
+            this.ReconnectServerActor(hostId, hostName, hostIP, hostPort, actorId, actorName, aTypeName, callback, context);
+        }
+
+#endif
+#if !CLIENT
         [RpcMethod(OpCode.BIND_CLIENT_ACTOR_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API_bind_client_actor(IMessage msg, Action<IMessage> cb, RpcContext context)
@@ -141,22 +158,6 @@ namespace Fenix
             }, context);
         }
 
-        public event Action<DisconnectReason, Action> on_before_disconnect;
-        [RpcMethod(OpCode.ON_BEFORE_DISCONNECT_NTF, Api.ClientApi)]
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public void CLIENT_API_NATIVE_on_before_disconnect(DisconnectReason reason, Action callback, RpcContext context)
-        {
-            on_before_disconnect?.Invoke(reason, callback);
-            this.OnBeforeDisconnect(reason, callback, context);
-        }
-
-        [RpcMethod(OpCode.RECONNECT_SERVER_ACTOR_NTF, Api.ClientApi)]
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public void CLIENT_API_NATIVE_reconnect_server_actor(UInt64 hostId, String hostName, String hostIP, Int32 hostPort, UInt64 actorId, String actorName, String aTypeName, Action<DefaultErrCode> callback, RpcContext context)
-        {
-            this.ReconnectServerActor(hostId, hostName, hostIP, hostPort, actorId, actorName, aTypeName, callback, context);
-        }
-
         [RpcMethod(OpCode.BIND_CLIENT_ACTOR_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API_NATIVE_bind_client_actor(String actorName, Action<DefaultErrCode> callback, RpcContext context)
@@ -205,7 +206,8 @@ namespace Fenix
         {
             this.RemoveActor(actorId, callback, context);
         }
-   }
-}
 
 #endif
+    }
+}
+
