@@ -593,6 +593,30 @@ namespace Fenix
             var a = Global.Host.GetActor(actorId);
             a.OnClientEnable();
         }
+
+        [ServerApi]
+        public void RemoveClientActor(ulong actorId, Action<DefaultErrCode> callback, RpcContext __context)
+        {
+            var hostId = Global.IdManager.GetHostIdByActorId(actorId);
+            var clientId = Global.IdManager.GetHostIdByActorId(actorId, true);
+
+            if(hostId != this.Id)
+            {
+                //call remote host
+                this.GetHost(hostId).RemoveClientActor(actorId, callback);
+                return;
+            }
+
+            var peer = Global.NetManager.GetPeerById(actorId, Global.Config.ClientNetwork);
+            if(!Global.NetManager.Deregister(peer))
+            {
+                callback(DefaultErrCode.ERROR);
+                return;
+            }
+
+            callback(DefaultErrCode.OK);
+        }
+
 #endif
 
         [ClientApi]

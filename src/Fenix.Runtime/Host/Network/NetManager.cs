@@ -177,9 +177,9 @@ namespace Fenix
             return peer;
         }
 
-        public void DeregisterChannel(IChannel ch)
+        public bool DeregisterChannel(IChannel ch)
         { 
-            this.Deregister(GetPeer(ch)); 
+            return this.Deregister(GetPeer(ch)); 
         }
 
         public void ChangePeerId(ulong oldHostId, ulong newHostId, string hostName, string address)
@@ -237,16 +237,16 @@ namespace Fenix
             return peer;
         }  
 
-        public void DeregisterKcp(Ukcp ukcp)
+        public bool DeregisterKcp(Ukcp ukcp)
         { 
             var peer = GetPeer(ukcp);
-            this.Deregister(peer);
+            return this.Deregister(peer);
         }
 
-        public void Deregister(NetPeer peer)
+        public bool Deregister(NetPeer peer)
         {
             if (peer == null)
-                return; 
+                return false; 
             
             peer.Stop();
 
@@ -264,6 +264,8 @@ namespace Fenix
                 channelPeers.TryRemove(peer.ConnId, out var _);
 
             Log.Info(string.Format("DeregisterPeer: {0} {1} {2}", peer.ConnId, peer.RemoteAddress, peer.netType));
+
+            return true;
         }
 
 #if !CLIENT

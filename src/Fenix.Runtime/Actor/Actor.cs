@@ -140,10 +140,15 @@ namespace Fenix
             return (T)Global.GetActorRef(typeof(T), uid, this, Global.Host);
         }
 
+        public virtual ActorRef ActorRef()
+        {
+            return Global.GetActorRef(GetType(), this.UniqueName, this, Global.Host);
+        }
+
         public T GetActorRef<T>(string actorName) where T: ActorRef
         {
             return (T)Global.GetActorRef(typeof(T), actorName, this, Global.Host);
-        } 
+        }
 
         public ActorRef GetActorRef(Type refType, string actorName)
         {

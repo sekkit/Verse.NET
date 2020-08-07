@@ -13,8 +13,9 @@ using Shared.DataModel;
 using Shared.Protocol; 
 using Shared.Message;
                     
-//using MessagePack; 
+//using MessagePack;
 using System;
+using System.Threading.Tasks;
 
 namespace Client
 {
@@ -22,6 +23,42 @@ namespace Client
     [RefType("Client.Avatar")]
     public partial class AvatarRef : ActorRef
     {
+        public async Task<ApiTestNtf.Callback> client_on_api_testAsync(String uid, Action<ErrCode> callback=null)
+        {
+            var t = new TaskCompletionSource<ApiTestNtf.Callback>();
+            Action<ApiTestNtf.Callback> _cb = (cbMsg) =>
+            {
+                t.TrySetResult(cbMsg);
+                callback?.Invoke(cbMsg.code);
+            };
+            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
+            if (this.FromHostId == toHostId)
+            {
+                var protoCode = ProtocolCode.API_TEST_NTF;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { uid, _cb, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { uid, _cb });
+            }
+            else
+            {
+                var msg = new ApiTestNtf()
+                {
+                uid=uid
+                };
+                var cb = new Action<byte[]>((cbData) => {
+                    var cbMsg = cbData==null ? new ApiTestNtf.Callback() : RpcUtil.Deserialize<ApiTestNtf.Callback>(cbData);
+                    _cb?.Invoke(cbMsg);
+                });
+                this.CallRemoteMethod(ProtocolCode.API_TEST_NTF, msg, cb);
+             }
+             return await t.Task;
+        }
+
         public void client_on_api_test(String uid, Action<ErrCode> callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
@@ -48,6 +85,7 @@ namespace Client
             });
             this.CallRemoteMethod(ProtocolCode.API_TEST_NTF, msg, cb);
         }
+
 
         public void client_on_api_test2(String uid, Int32 match_type)
         {

@@ -114,13 +114,16 @@ namespace Fenix
             return decl;
         }
 
-        static string ParseArgsDecl(ParameterInfo[] paramInfos)
+        static string ParseArgsDecl(ParameterInfo[] paramInfos, bool ignoreCallback)
         {
             List<string> paramList = new List<string>();
             foreach (var p in paramInfos)
             {
                 if (p.Name.StartsWith("__"))
                     continue;
+                if (ignoreCallback)
+                    if (p.Name == "callback")
+                        continue;
                 if (p.HasDefaultValue)
                     paramList.Add(string.Format("{0} {1}={2}", ParseTypeName(p.ParameterType), p.Name, p.DefaultValue));
                 else
@@ -577,6 +580,8 @@ namespace Shared
                         }
                     }
 
+
+#region GenActorRef
                     //现在生成actor_ref定义 
                     var rpc_name = "rpc_" + NameToApi(method.Name);
                     if (api == Api.ClientApi)
@@ -587,7 +592,8 @@ namespace Shared
                     if (type.Name == "Host")
                         rpc_name = method.Name;
 
-                    string args_decl = ParseArgsDecl(methodParameterList);
+                    string args_decl = ParseArgsDecl(methodParameterList, ignoreCallback:false);
+                    string args_decl_no_cb = ParseArgsDecl(methodParameterList, ignoreCallback: false);
 
                     string typename = type.Name;
                     string args = ParseArgs(methodParameterList);
@@ -596,6 +602,9 @@ namespace Shared
                     //string msg_type = method.Name + GetApiMessagePostfix(api);
                     string msg_assign = ParseArgsMsgAssign(methodParameterList, "                ");
 
+                    /******************************************************************************
+                     * Gen Synchronous Version of ActorRef API
+                     ******************************************************************************/
                     StringBuilder builder;
 
                     if (callback_define != "")
@@ -668,6 +677,96 @@ namespace Shared
                         .AppendLine($"        }}");
                     }
 
+                    var rpcSyncDefineCode = builder.ToString();
+
+                    /******************************************************************************
+                     * Gen Asynchronous Version of ActorRef API
+                     ******************************************************************************/
+                    if (callback_define != "")
+                    {
+                        var cbType = methodParameterList.Where(m => m.Name == "callback").First().ParameterType;
+                        string cb_args = GenCbArgs(cbType.GetGenericArguments(), GetCallbackArgs(method), "cbMsg.");
+                        var async_args = args.Replace("callback", "_cb");
+                        var async_msg_assign = ParseArgsMsgAssign(methodParameterList, "                     ");
+                        builder = new StringBuilder()
+                        .AppendLine($"        public async Task<{message_type}.Callback> {rpc_name}Async({args_decl}=null)")
+                        .AppendLine($"        {{")
+                        .AppendLine($"            var t = new TaskCompletionSource<{message_type}.Callback>();")
+                        .AppendLine($"            Action<{message_type}.Callback> _cb = (cbMsg) =>")
+                        .AppendLine($"            {{")
+                        .AppendLine($"                t.TrySetResult(cbMsg);")
+                        .AppendLine($"                callback?.Invoke({cb_args});")
+                        .AppendLine($"            }};")
+                        .AppendLine($"            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);")
+                        .AppendLine($"            if (this.FromHostId == toHostId)")
+                        .AppendLine($"            {{")
+                        .AppendLine($"                var protoCode = {pc_cls}.{proto_code};")
+                        .AppendLine($"                if (protoCode < OpCode.CALL_ACTOR_METHOD)")
+                        .AppendLine($"                {{")
+                        .AppendLine($"                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);")
+                        .AppendLine($"                    var context = new RpcContext(null, peer);");
+                        if (async_args.Trim().Length == 0)
+                            builder.AppendLine($"                    Global.Host.CallMethodWithParams(protoCode, new object[] {{ context }});");
+                        else
+                            builder.AppendLine($"                    Global.Host.CallMethodWithParams(protoCode, new object[] {{ {async_args}, context }});");
+                        builder.AppendLine($"                }}")
+                        .AppendLine($"                else")
+                        .AppendLine($"                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] {{ {async_args} }});")
+                        .AppendLine($"            }}")
+                        .AppendLine($"            else")
+                        .AppendLine($"            {{")
+                        .AppendLine($"                var msg = new {message_type}()")
+                        .AppendLine($"                {{")
+                        .AppendLine($"{msg_assign}")
+                        .AppendLine($"                }};")
+                        .AppendLine($"                var cb = new Action<byte[]>((cbData) => {{")
+                        .AppendLine($"                    var cbMsg = cbData==null ? new {message_type}.Callback() : RpcUtil.Deserialize<{message_type}.Callback>(cbData);")
+                        .AppendLine($"                    _cb?.Invoke(cbMsg);")
+                        .AppendLine($"                }});")
+                        .AppendLine($"                this.CallRemoteMethod({pc_cls}.{proto_code}, msg, cb);")
+                        .AppendLine($"             }}")
+                        .AppendLine($"             return await t.Task;")
+                        .AppendLine($"        }}");
+                    }
+                    else
+                    {
+                        builder = new StringBuilder();
+                    }
+                    //else
+                    //{
+                    //    builder = new StringBuilder()
+                    //    .AppendLine($"        public async Task {rpc_name}Async({args_decl})")
+                    //    .AppendLine($"        {{")
+                    //    .AppendLine($"           var t = new TaskCompletionSource();")
+                    //    .AppendLine($"           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);")
+                    //    .AppendLine($"           if (this.FromHostId == toHostId)")
+                    //    .AppendLine($"           {{")
+                    //    .AppendLine($"                var protoCode = {pc_cls}.{proto_code};")
+                    //    .AppendLine($"                if (protoCode < OpCode.CALL_ACTOR_METHOD)")
+                    //    .AppendLine($"                {{")
+                    //    .AppendLine($"                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);")
+                    //    .AppendLine($"                    var context = new RpcContext(null, peer);");
+                    //    if (args.Trim().Length == 0)
+                    //        builder.AppendLine($"                    Global.Host.CallMethodWithParams(protoCode, new object[] {{ context }});");
+                    //    else
+                    //        builder.AppendLine($"                    Global.Host.CallMethodWithParams(protoCode, new object[] {{ {args}, context }});");
+                    //    builder.AppendLine($"                }}")
+                    //    .AppendLine($"                else")
+                    //    .AppendLine($"                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] {{ {args} }}); ")
+                    //    //.AppendLine($"                Global.Host.GetActor(this.toActorId).CallLocalMethod({pc_cls}.{proto_code}, new object[] {{ {args} }});")
+                    //    //.AppendLine($"                (({typename})Global.Host.GetActor(this.toActorId)).{method_name}({args});")
+                    //    .AppendLine($"               return;")
+                    //    .AppendLine($"           }}")
+                    //    .AppendLine($"           var msg = new {message_type}()")
+                    //    .AppendLine($"           {{")
+                    //    .AppendLine($"{msg_assign}")
+                    //    .AppendLine($"           }};")
+                    //    .AppendLine($"           this.CallRemoteMethod({pc_cls}.{proto_code}, msg, null);")
+                    //    .AppendLine($"        }}");
+                    //}
+
+                    var rpcAsyncDefineCode = builder.ToString();
+
                     string api_rpc_args = ParseArgs(methodParameterList, "_msg.", "callback");
                     string api_type = "ServerApi";
                     string api_name = "SERVER_API_" + NameToApi(method.Name);
@@ -682,10 +781,10 @@ namespace Shared
                         api_type = "ServerOnly";
                     }
 
-                    var rpcDefineCode = builder.ToString();
-                    rpcDefineDic[rpc_name] = rpcDefineCode;
+                    rpcDefineDic[rpc_name] = rpcAsyncDefineCode + "\n" + rpcSyncDefineCode;
                     rpcTypeDic[rpc_name] = api_type;
-                    
+#endregion
+
                     builder = new StringBuilder()
                         .AppendLine($"        [RpcMethod({pc_cls}.{proto_code}, Api.{api_type})]")
                         .AppendLine($"        [EditorBrowsable(EditorBrowsableState.Never)]");
@@ -848,8 +947,9 @@ using Shared.Message;
 //");
 //            }
 
-            refBuilder.AppendLine(@"//using MessagePack; 
+            refBuilder.AppendLine(@"//using MessagePack;
 using System;
+using System.Threading.Tasks;
 ")
             .AppendLine($"namespace {root_ns}")
             .AppendLine(@"{

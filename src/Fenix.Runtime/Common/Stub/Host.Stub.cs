@@ -59,6 +59,19 @@ namespace Fenix
             }, context);
         }
 
+        [RpcMethod(OpCode.REMOVE_CLIENT_ACTOR_REQ, Api.ServerApi)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SERVER_API_remove_client_actor(IMessage msg, Action<IMessage> cb, RpcContext context)
+        {
+            var _msg = (RemoveClientActorReq)msg;
+            this.RemoveClientActor(_msg.actorId, (code) =>
+            {
+                var cbMsg = new RemoveClientActorReq.Callback();
+                cbMsg.code=code;
+                cb.Invoke(cbMsg);
+            }, context);
+        }
+
         [RpcMethod(OpCode.CREATE_ACTOR_REQ, Api.ServerOnly)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_ONLY_create_actor(IMessage msg, Action<IMessage> cb, RpcContext context)
@@ -128,6 +141,13 @@ namespace Fenix
         public void SERVER_API_NATIVE_register_client(UInt64 hostId, String hostName, Action<DefaultErrCode, HostInfo> callback, RpcContext context)
         {
             this.RegisterClient(hostId, hostName, callback, context);
+        }
+
+        [RpcMethod(OpCode.REMOVE_CLIENT_ACTOR_REQ, Api.ServerApi)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SERVER_API_NATIVE_remove_client_actor(UInt64 actorId, Action<DefaultErrCode> callback, RpcContext context)
+        {
+            this.RemoveClientActor(actorId, callback, context);
         }
 
         [RpcMethod(OpCode.CREATE_ACTOR_REQ, Api.ServerOnly)]

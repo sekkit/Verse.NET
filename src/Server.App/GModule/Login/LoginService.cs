@@ -11,6 +11,7 @@ using Server.UModule;
 using Shared.DataModel;
 using Shared.Protocol;
 using System;
+using System.Threading.Tasks;
 
 namespace Server.GModule
 {
@@ -42,7 +43,7 @@ namespace Server.GModule
 
         //callback: code, actorName, actorHostId, actorHostName, actorHostAddress, 
         [ServerApi]
-        public void Login(string username, string password, Action<ErrCode, string, ulong, string, string> callback)
+        public async Task Login(string username, string password, Action<ErrCode, string, ulong, string, string> callback)
         {
             Console.WriteLine(string.Format("login {0} {1}", username, password));
 
@@ -77,7 +78,7 @@ namespace Server.GModule
 
             //如果已经存在了该actor，则直接找到它
             var actorId = Global.IdManager.GetActorId(account.uid);
-            var hostId = Global.IdManager.GetHostIdByActorId(actorId);
+            var hostId  = Global.IdManager.GetHostIdByActorId(actorId);
             if (hostId != 0)
             {
                 var hostAddr = Global.IdManager.GetHostAddrByActorId(actorId);
@@ -85,8 +86,17 @@ namespace Server.GModule
                 if(clientId != 0)
                 {
                     //踢掉之前的客户端
-                    var peer = Global.NetManager.GetPeerById(clientId, Global.Config.ClientNetwork);
-                    Global.NetManager.Deregister(peer);
+                    var result = await this.ActorRef().RemoveClientActorAsync(actorId);
+                    if(result.code != DefaultErrCode.OK)
+                    {
+                        callback(
+                            ErrCode.ERROR,
+                            account.uid,
+                            hostId,
+                            Global.IdManager.GetHostName(hostId),
+                            Global.IdManager.GetExtAddress(hostAddr));
+                        return;
+                    }
                 }
 
                 Log.Info(string.Format("login.get_actor@Master.App {0} {1} {2} {3}", account.uid, actorId,

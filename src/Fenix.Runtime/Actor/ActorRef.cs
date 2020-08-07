@@ -27,7 +27,7 @@ namespace Fenix
 
         public bool isClient;
 
-        public NetworkType NetType => ((isClient || Global.Host.IsClientMode)? Global.Config.ClientNetwork : NetworkType.TCP);
+        public NetworkType NetType => (isClient || Global.Host.IsClientMode)? Global.Config.ClientNetwork : NetworkType.TCP;
 
         public static ActorRef Create(ulong toHostId, ulong toActorId, Type refType, Actor fromActor, Host fromHost, bool isClient, IPEndPoint toPeerEP=null)
         {
@@ -81,9 +81,9 @@ namespace Fenix
             //    netType = NetworkType.KCP;
 
             if (fromActor != null)
-                fromActor.Rpc(protocolCode, FromHostId, fromActor.Id, toHostId, this.toActorId, toAddr, this.NetType, msg, cb);
+                fromActor.Rpc(protocolCode, FromHostId, fromActor.Id, toHostId, toActorId, toAddr, this.NetType, msg, cb);
             else
-                fromHost.Rpc(protocolCode, FromHostId, 0, toHostId, this.toActorId, toAddr, this.NetType, msg, cb);
+                fromHost.Rpc(protocolCode, FromHostId, 0, toHostId, toActorId, toAddr, this.NetType, msg, cb);
         }
 
         public void Disconnect()
