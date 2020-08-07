@@ -261,7 +261,7 @@ namespace Fenix
                 tcpPeers.TryRemove(peer.ConnId, out var _); 
 
             if (channelPeers.ContainsKey(peer.ConnId))
-                channelPeers.TryRemove(peer.ConnId, out var _);
+                channelPeers.TryRemove(peer.ConnId, out var _); 
 
             Log.Info(string.Format("DeregisterPeer: {0} {1} {2}", peer.ConnId, peer.RemoteAddress, peer.netType));
 

@@ -19,6 +19,25 @@ namespace Fenix
 {
     public partial class Host
     {
+        [RpcMethod(OpCode.ON_BEFORE_DISCONNECT_NTF, Api.ClientApi)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void CLIENT_API_on_before_disconnect(IMessage msg, Action<IMessage> cb, RpcContext context)
+        {
+            var _msg = (OnBeforeDisconnectNtf)msg;
+            on_before_disconnect?.Invoke(_msg.reason, () =>
+            {
+                var cbMsg = new OnBeforeDisconnectNtf.Callback();
+
+                cb.Invoke(cbMsg);
+            });
+            this.OnBeforeDisconnect(_msg.reason, () =>
+            {
+                var cbMsg = new OnBeforeDisconnectNtf.Callback();
+
+                cb.Invoke(cbMsg);
+            }, context);
+        }
+
         [RpcMethod(OpCode.RECONNECT_SERVER_ACTOR_NTF, Api.ClientApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void CLIENT_API_reconnect_server_actor(IMessage msg, Action<IMessage> cb, RpcContext context)
@@ -64,7 +83,7 @@ namespace Fenix
         public void SERVER_API_remove_client_actor(IMessage msg, Action<IMessage> cb, RpcContext context)
         {
             var _msg = (RemoveClientActorReq)msg;
-            this.RemoveClientActor(_msg.actorId, (code) =>
+            this.RemoveClientActor(_msg.actorId, _msg.reason, (code) =>
             {
                 var cbMsg = new RemoveClientActorReq.Callback();
                 cbMsg.code=code;
@@ -122,6 +141,15 @@ namespace Fenix
             }, context);
         }
 
+        public event Action<DisconnectReason, Action> on_before_disconnect;
+        [RpcMethod(OpCode.ON_BEFORE_DISCONNECT_NTF, Api.ClientApi)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void CLIENT_API_NATIVE_on_before_disconnect(DisconnectReason reason, Action callback, RpcContext context)
+        {
+            on_before_disconnect?.Invoke(reason, callback);
+            this.OnBeforeDisconnect(reason, callback, context);
+        }
+
         [RpcMethod(OpCode.RECONNECT_SERVER_ACTOR_NTF, Api.ClientApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void CLIENT_API_NATIVE_reconnect_server_actor(UInt64 hostId, String hostName, String hostIP, Int32 hostPort, UInt64 actorId, String actorName, String aTypeName, Action<DefaultErrCode> callback, RpcContext context)
@@ -145,9 +173,9 @@ namespace Fenix
 
         [RpcMethod(OpCode.REMOVE_CLIENT_ACTOR_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_API_NATIVE_remove_client_actor(UInt64 actorId, Action<DefaultErrCode> callback, RpcContext context)
+        public void SERVER_API_NATIVE_remove_client_actor(UInt64 actorId, DisconnectReason reason, Action<DefaultErrCode> callback, RpcContext context)
         {
-            this.RemoveClientActor(actorId, callback, context);
+            this.RemoveClientActor(actorId, reason, callback, context);
         }
 
         [RpcMethod(OpCode.CREATE_ACTOR_REQ, Api.ServerOnly)]

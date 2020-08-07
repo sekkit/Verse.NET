@@ -21,14 +21,16 @@ namespace Fenix
         public async Task<BindClientActorReq.Callback> BindClientActorAsync(String actorName, Action<DefaultErrCode> callback=null)
         {
             var t = new TaskCompletionSource<BindClientActorReq.Callback>();
-            Action<BindClientActorReq.Callback> _cb = (cbMsg) =>
-            {
-                t.TrySetResult(cbMsg);
-                callback?.Invoke(cbMsg.code);
-            };
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
+                Action<DefaultErrCode> _cb = (code) =>
+                {
+                     var cbMsg = new BindClientActorReq.Callback();
+                     cbMsg.code=code;
+                     callback?.Invoke(cbMsg.code);
+                     t.TrySetResult(cbMsg);
+                }; 
                 var protoCode = OpCode.BIND_CLIENT_ACTOR_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
@@ -41,6 +43,11 @@ namespace Fenix
             }
             else
             {
+                Action<BindClientActorReq.Callback> _cb = (cbMsg) =>
+                {
+                    callback?.Invoke(cbMsg.code);
+                    t.TrySetResult(cbMsg);
+                };
                 var msg = new BindClientActorReq()
                 {
                 actorName=actorName
@@ -84,14 +91,17 @@ namespace Fenix
         public async Task<RegisterClientReq.Callback> RegisterClientAsync(UInt64 hostId, String hostName, Action<DefaultErrCode, HostInfo> callback=null)
         {
             var t = new TaskCompletionSource<RegisterClientReq.Callback>();
-            Action<RegisterClientReq.Callback> _cb = (cbMsg) =>
-            {
-                t.TrySetResult(cbMsg);
-                callback?.Invoke(cbMsg.code, cbMsg.arg1);
-            };
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
+                Action<DefaultErrCode, HostInfo> _cb = (code, arg1) =>
+                {
+                     var cbMsg = new RegisterClientReq.Callback();
+                     cbMsg.code=code;
+                     cbMsg.arg1=arg1;
+                     callback?.Invoke(cbMsg.code, cbMsg.arg1);
+                     t.TrySetResult(cbMsg);
+                }; 
                 var protoCode = OpCode.REGISTER_CLIENT_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
@@ -104,6 +114,11 @@ namespace Fenix
             }
             else
             {
+                Action<RegisterClientReq.Callback> _cb = (cbMsg) =>
+                {
+                    callback?.Invoke(cbMsg.code, cbMsg.arg1);
+                    t.TrySetResult(cbMsg);
+                };
                 var msg = new RegisterClientReq()
                 {
                 hostId=hostId,
@@ -146,32 +161,40 @@ namespace Fenix
             this.CallRemoteMethod(OpCode.REGISTER_CLIENT_REQ, msg, cb);
         }
 
-        public async Task<RemoveClientActorReq.Callback> RemoveClientActorAsync(UInt64 actorId, Action<DefaultErrCode> callback=null)
+        public async Task<RemoveClientActorReq.Callback> RemoveClientActorAsync(UInt64 actorId, DisconnectReason reason, Action<DefaultErrCode> callback=null)
         {
             var t = new TaskCompletionSource<RemoveClientActorReq.Callback>();
-            Action<RemoveClientActorReq.Callback> _cb = (cbMsg) =>
-            {
-                t.TrySetResult(cbMsg);
-                callback?.Invoke(cbMsg.code);
-            };
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
+                Action<DefaultErrCode> _cb = (code) =>
+                {
+                     var cbMsg = new RemoveClientActorReq.Callback();
+                     cbMsg.code=code;
+                     callback?.Invoke(cbMsg.code);
+                     t.TrySetResult(cbMsg);
+                }; 
                 var protoCode = OpCode.REMOVE_CLIENT_ACTOR_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
-                    Global.Host.CallMethodWithParams(protoCode, new object[] { actorId, _cb, context });
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { actorId, reason, _cb, context });
                 }
                 else
-                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { actorId, _cb });
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { actorId, reason, _cb });
             }
             else
             {
+                Action<RemoveClientActorReq.Callback> _cb = (cbMsg) =>
+                {
+                    callback?.Invoke(cbMsg.code);
+                    t.TrySetResult(cbMsg);
+                };
                 var msg = new RemoveClientActorReq()
                 {
-                actorId=actorId
+                actorId=actorId,
+                reason=reason
                 };
                 var cb = new Action<byte[]>((cbData) => {
                     var cbMsg = cbData==null ? new RemoveClientActorReq.Callback() : RpcUtil.Deserialize<RemoveClientActorReq.Callback>(cbData);
@@ -182,7 +205,7 @@ namespace Fenix
              return await t.Task;
         }
 
-        public void RemoveClientActor(UInt64 actorId, Action<DefaultErrCode> callback)
+        public void RemoveClientActor(UInt64 actorId, DisconnectReason reason, Action<DefaultErrCode> callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -192,15 +215,16 @@ namespace Fenix
                 {
                     var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
-                    Global.Host.CallMethodWithParams(protoCode, new object[] { actorId, callback, context });
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { actorId, reason, callback, context });
                 }
                 else
-                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { actorId, callback });
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { actorId, reason, callback });
                 return;
             }
             var msg = new RemoveClientActorReq()
             {
-                actorId=actorId
+                actorId=actorId,
+                reason=reason
             };
             var cb = new Action<byte[]>((cbData) => {
                 var cbMsg = cbData==null?new RemoveClientActorReq.Callback():RpcUtil.Deserialize<RemoveClientActorReq.Callback>(cbData);

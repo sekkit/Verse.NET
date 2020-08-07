@@ -103,10 +103,11 @@ namespace Fenix
         public ActorRef GetHost(ulong hostId)
         {
             var addr = Global.IdManager.GetHostAddr(hostId);
+            if (addr == null || addr == "")
+                return null;
             var hostName = Global.IdManager.GetHostName(hostId);
             var ip = addr.Split(':')[0];
             var port = int.Parse(addr.Split(':')[1]);
-
             return GetHost(hostName, ip, port);
         }  
     }

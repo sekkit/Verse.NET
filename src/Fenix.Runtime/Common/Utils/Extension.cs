@@ -36,6 +36,8 @@ namespace Fenix.Common.Utils
 
         public static string ToIPv4String(this IPEndPoint ep)
         {
+            if (ep == null)
+                return "";
             return string.Format("{0}:{1}", ep.Address.MapToIPv4().ToString(), ep.Port);
         }
 

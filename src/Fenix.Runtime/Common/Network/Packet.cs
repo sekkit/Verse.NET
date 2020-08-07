@@ -11,7 +11,7 @@ using System.Net;
 namespace Fenix
 {  
     [MessagePackObject]
-    public class Packet
+    public class Packet : IMessage
     {
         [Key(0)]
         public ulong Id { get; set; }
@@ -46,8 +46,12 @@ namespace Fenix
                     return _msg;
                 try
                 {
-                    _msg = RpcUtil.Deserialize(MsgType, this.Payload);
-                }catch(Exception ex)
+                    if (this.Payload == null)
+                        _msg = (IMessage)Activator.CreateInstance(MsgType);
+                    else 
+                        _msg = RpcUtil.Deserialize(MsgType, this.Payload);
+                }
+                catch(Exception ex)
                 {
                     Log.Error(ex.ToString());
                 }
@@ -80,7 +84,7 @@ namespace Fenix
             return obj;
         }
 
-        public byte[] Pack()
+        public override byte[] Pack()
         {
             var buf = Unpooled.DirectBuffer();
             buf.WriteIntLE((int)this.ProtoCode);

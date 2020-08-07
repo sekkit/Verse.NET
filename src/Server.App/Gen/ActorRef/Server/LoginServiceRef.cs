@@ -26,14 +26,16 @@ namespace Server
         public async Task<CreateAccountReq.Callback> rpc_create_accountAsync(String username, String password, Action<ErrCode> callback=null)
         {
             var t = new TaskCompletionSource<CreateAccountReq.Callback>();
-            Action<CreateAccountReq.Callback> _cb = (cbMsg) =>
-            {
-                t.TrySetResult(cbMsg);
-                callback?.Invoke(cbMsg.code);
-            };
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
+                Action<ErrCode> _cb = (code) =>
+                {
+                     var cbMsg = new CreateAccountReq.Callback();
+                     cbMsg.code=code;
+                     callback?.Invoke(cbMsg.code);
+                     t.TrySetResult(cbMsg);
+                }; 
                 var protoCode = ProtocolCode.CREATE_ACCOUNT_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
@@ -46,6 +48,11 @@ namespace Server
             }
             else
             {
+                Action<CreateAccountReq.Callback> _cb = (cbMsg) =>
+                {
+                    callback?.Invoke(cbMsg.code);
+                    t.TrySetResult(cbMsg);
+                };
                 var msg = new CreateAccountReq()
                 {
                 username=username,
@@ -91,14 +98,16 @@ namespace Server
         public async Task<DeleteAccountReq.Callback> rpc_delete_accountAsync(String username, String password, Action<ErrCode> callback=null)
         {
             var t = new TaskCompletionSource<DeleteAccountReq.Callback>();
-            Action<DeleteAccountReq.Callback> _cb = (cbMsg) =>
-            {
-                t.TrySetResult(cbMsg);
-                callback?.Invoke(cbMsg.code);
-            };
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
+                Action<ErrCode> _cb = (code) =>
+                {
+                     var cbMsg = new DeleteAccountReq.Callback();
+                     cbMsg.code=code;
+                     callback?.Invoke(cbMsg.code);
+                     t.TrySetResult(cbMsg);
+                }; 
                 var protoCode = ProtocolCode.DELETE_ACCOUNT_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
@@ -111,6 +120,11 @@ namespace Server
             }
             else
             {
+                Action<DeleteAccountReq.Callback> _cb = (cbMsg) =>
+                {
+                    callback?.Invoke(cbMsg.code);
+                    t.TrySetResult(cbMsg);
+                };
                 var msg = new DeleteAccountReq()
                 {
                 username=username,
@@ -156,14 +170,20 @@ namespace Server
         public async Task<LoginReq.Callback> rpc_loginAsync(String username, String password, Action<ErrCode, String, UInt64, String, String> callback=null)
         {
             var t = new TaskCompletionSource<LoginReq.Callback>();
-            Action<LoginReq.Callback> _cb = (cbMsg) =>
-            {
-                t.TrySetResult(cbMsg);
-                callback?.Invoke(cbMsg.code, cbMsg.arg1, cbMsg.arg2, cbMsg.arg3, cbMsg.arg4);
-            };
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
+                Action<ErrCode, String, UInt64, String, String> _cb = (code, arg1, arg2, arg3, arg4) =>
+                {
+                     var cbMsg = new LoginReq.Callback();
+                     cbMsg.code=code;
+                     cbMsg.arg1=arg1;
+                     cbMsg.arg2=arg2;
+                     cbMsg.arg3=arg3;
+                     cbMsg.arg4=arg4;
+                     callback?.Invoke(cbMsg.code, cbMsg.arg1, cbMsg.arg2, cbMsg.arg3, cbMsg.arg4);
+                     t.TrySetResult(cbMsg);
+                }; 
                 var protoCode = ProtocolCode.LOGIN_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
@@ -176,6 +196,11 @@ namespace Server
             }
             else
             {
+                Action<LoginReq.Callback> _cb = (cbMsg) =>
+                {
+                    callback?.Invoke(cbMsg.code, cbMsg.arg1, cbMsg.arg2, cbMsg.arg3, cbMsg.arg4);
+                    t.TrySetResult(cbMsg);
+                };
                 var msg = new LoginReq()
                 {
                 username=username,

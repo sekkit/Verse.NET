@@ -133,6 +133,22 @@ namespace Fenix
             return string.Join(", ", paramList);
         }
 
+        static string ParseArgsType(ParameterInfo[] paramInfos, bool ignoreCallback)
+        {
+            List<string> paramList = new List<string>();
+            foreach (var p in paramInfos)
+            {
+                if (p.Name.StartsWith("__"))
+                    continue;
+                if (ignoreCallback)
+                    if (p.Name == "callback")
+                        continue; 
+                paramList.Add(string.Format("{0}", ParseTypeName(p.ParameterType), p.Name));
+            }
+
+            return string.Join(", ", paramList);
+        }
+
         static string ParseTypeName(Type type)
         {
             string decl = string.Empty;
@@ -493,8 +509,10 @@ namespace Shared
                         GetCallbackArgs(method),
                         "        ");
 
+                    bool hasCallback = methodParameterList.Any(m => m.Name == "callback");
+
                     string itype = "IMessage";
-                    if (callback_define != "")
+                    if (hasCallback)
                         itype = "IMessageWithCallback";
 
                     string proto_code = NameToProtoCode(method.Name) + "_" + GetApiMessagePostfix(api).ToUpper();
@@ -533,7 +551,7 @@ namespace Shared
                         .AppendLine($"    {{")
                         .AppendLine($"{message_fields}");
 
-                    if (callback_define != "")
+                    if (hasCallback)
                     {
                         msgBuilder.AppendLine($"        [Key({methodParameterList.Length - 1})]")
                             .AppendLine(@"
@@ -593,7 +611,8 @@ namespace Shared
                         rpc_name = method.Name;
 
                     string args_decl = ParseArgsDecl(methodParameterList, ignoreCallback:false);
-                    string args_decl_no_cb = ParseArgsDecl(methodParameterList, ignoreCallback: false);
+                    string args_type = ParseArgsType(methodParameterList, ignoreCallback: false);
+                    //string args_decl_no_cb = ParseArgsDecl(methodParameterList, ignoreCallback: false);
 
                     string typename = type.Name;
                     string args = ParseArgs(methodParameterList);
@@ -607,7 +626,7 @@ namespace Shared
                      ******************************************************************************/
                     StringBuilder builder;
 
-                    if (callback_define != "")
+                    if (hasCallback)
                     {
                         var cbType = methodParameterList.Where(m => m.Name == "callback").First().ParameterType;
                         string cb_args = GenCbArgs(cbType.GetGenericArguments(), GetCallbackArgs(method), "cbMsg.");
@@ -682,24 +701,33 @@ namespace Shared
                     /******************************************************************************
                      * Gen Asynchronous Version of ActorRef API
                      ******************************************************************************/
-                    if (callback_define != "")
+                    if (hasCallback)
                     {
                         var cbType = methodParameterList.Where(m => m.Name == "callback").First().ParameterType;
                         string cb_args = GenCbArgs(cbType.GetGenericArguments(), GetCallbackArgs(method), "cbMsg.");
+                        string cb_pure_args = GenCbArgs(cbType.GetGenericArguments(), GetCallbackArgs(method), "");
+                        string cb_types = ParseTypeName(cbType);
+                        string api_cb_assign = ParseArgsMsgAssign(cbType.GetGenericArguments(),
+                                                        GetCallbackArgs(method),
+                                                        "                     ",
+                                                        "cbMsg.");
                         var async_args = args.Replace("callback", "_cb");
                         var async_msg_assign = ParseArgsMsgAssign(methodParameterList, "                     ");
                         builder = new StringBuilder()
                         .AppendLine($"        public async Task<{message_type}.Callback> {rpc_name}Async({args_decl}=null)")
                         .AppendLine($"        {{")
                         .AppendLine($"            var t = new TaskCompletionSource<{message_type}.Callback>();")
-                        .AppendLine($"            Action<{message_type}.Callback> _cb = (cbMsg) =>")
-                        .AppendLine($"            {{")
-                        .AppendLine($"                t.TrySetResult(cbMsg);")
-                        .AppendLine($"                callback?.Invoke({cb_args});")
-                        .AppendLine($"            }};")
+
                         .AppendLine($"            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);")
                         .AppendLine($"            if (this.FromHostId == toHostId)")
                         .AppendLine($"            {{")
+                        .AppendLine($"                {cb_types} _cb = ({cb_pure_args}) =>")
+                        .AppendLine($"                {{")
+                        .AppendLine($"                     var cbMsg = new {message_type}.Callback();")
+                        .AppendLine($"{api_cb_assign}")
+                        .AppendLine($"                     callback?.Invoke({cb_args});")
+                        .AppendLine($"                     t.TrySetResult(cbMsg);")
+                        .AppendLine($"                }}; ")
                         .AppendLine($"                var protoCode = {pc_cls}.{proto_code};")
                         .AppendLine($"                if (protoCode < OpCode.CALL_ACTOR_METHOD)")
                         .AppendLine($"                {{")
@@ -714,7 +742,12 @@ namespace Shared
                         .AppendLine($"                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] {{ {async_args} }});")
                         .AppendLine($"            }}")
                         .AppendLine($"            else")
-                        .AppendLine($"            {{")
+                        .AppendLine($"            {{")                        
+                        .AppendLine($"                Action<{message_type}.Callback> _cb = (cbMsg) =>")
+                        .AppendLine($"                {{")
+                        .AppendLine($"                    callback?.Invoke({cb_args});")
+                        .AppendLine($"                    t.TrySetResult(cbMsg);")
+                        .AppendLine($"                }};")
                         .AppendLine($"                var msg = new {message_type}()")
                         .AppendLine($"                {{")
                         .AppendLine($"{msg_assign}")
@@ -732,38 +765,6 @@ namespace Shared
                     {
                         builder = new StringBuilder();
                     }
-                    //else
-                    //{
-                    //    builder = new StringBuilder()
-                    //    .AppendLine($"        public async Task {rpc_name}Async({args_decl})")
-                    //    .AppendLine($"        {{")
-                    //    .AppendLine($"           var t = new TaskCompletionSource();")
-                    //    .AppendLine($"           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);")
-                    //    .AppendLine($"           if (this.FromHostId == toHostId)")
-                    //    .AppendLine($"           {{")
-                    //    .AppendLine($"                var protoCode = {pc_cls}.{proto_code};")
-                    //    .AppendLine($"                if (protoCode < OpCode.CALL_ACTOR_METHOD)")
-                    //    .AppendLine($"                {{")
-                    //    .AppendLine($"                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);")
-                    //    .AppendLine($"                    var context = new RpcContext(null, peer);");
-                    //    if (args.Trim().Length == 0)
-                    //        builder.AppendLine($"                    Global.Host.CallMethodWithParams(protoCode, new object[] {{ context }});");
-                    //    else
-                    //        builder.AppendLine($"                    Global.Host.CallMethodWithParams(protoCode, new object[] {{ {args}, context }});");
-                    //    builder.AppendLine($"                }}")
-                    //    .AppendLine($"                else")
-                    //    .AppendLine($"                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] {{ {args} }}); ")
-                    //    //.AppendLine($"                Global.Host.GetActor(this.toActorId).CallLocalMethod({pc_cls}.{proto_code}, new object[] {{ {args} }});")
-                    //    //.AppendLine($"                (({typename})Global.Host.GetActor(this.toActorId)).{method_name}({args});")
-                    //    .AppendLine($"               return;")
-                    //    .AppendLine($"           }}")
-                    //    .AppendLine($"           var msg = new {message_type}()")
-                    //    .AppendLine($"           {{")
-                    //    .AppendLine($"{msg_assign}")
-                    //    .AppendLine($"           }};")
-                    //    .AppendLine($"           this.CallRemoteMethod({pc_cls}.{proto_code}, msg, null);")
-                    //    .AppendLine($"        }}");
-                    //}
 
                     var rpcAsyncDefineCode = builder.ToString();
 
@@ -785,19 +786,21 @@ namespace Shared
                     rpcTypeDic[rpc_name] = api_type;
 #endregion
 
+                    bool hasEvent = api_type == "ClientApi" && method.Name.ToLower().StartsWith("on") && method.Name.Length > 2 && method.Name[3] >= 'A';
+                    
                     builder = new StringBuilder()
                         .AppendLine($"        [RpcMethod({pc_cls}.{proto_code}, Api.{api_type})]")
                         .AppendLine($"        [EditorBrowsable(EditorBrowsableState.Never)]");
                     if (type.Name == "Host")
                     {
-                        if (callback_define != "")
+                        if (hasCallback)
                             builder.AppendLine($"        public void {api_name}(IMessage msg, Action<IMessage> cb, RpcContext context)");
                         else
                             builder.AppendLine($"        public void {api_name}(IMessage msg, RpcContext context)");
                     }
                     else
                     {
-                        if (callback_define != "")
+                        if (hasCallback)
                             builder.AppendLine($"        public void {api_name}(IMessage msg, Action<IMessage> cb)");
                         else
                             builder.AppendLine($"        public void {api_name}(IMessage msg)");
@@ -806,9 +809,8 @@ namespace Shared
 
                     builder.AppendLine($"        {{")
                         .AppendLine($"            var _msg = ({message_type})msg;");
-
-
-                    if (callback_define != "")
+                     
+                    if (hasCallback)
                     {
                         var cbType2 = methodParameterList.Where(m => m.Name == "callback").First().ParameterType;
                         string api_cb_args = GenCbArgs(cbType2.GetGenericArguments(), GetCallbackArgs(method), "");
@@ -816,11 +818,23 @@ namespace Shared
                                                         GetCallbackArgs(method),
                                                         "                ",
                                                         "cbMsg.");
+
+                        if(hasEvent)
+                        {
+                            builder.AppendLine($"            {NameToApi(method.Name)}?.Invoke({api_rpc_args}, ({api_cb_args}) =>")
+                            .AppendLine($"            {{")
+                            .AppendLine($"                var cbMsg = new {message_type}.Callback();")
+                            .AppendLine($"{api_cb_assign}")
+                            .AppendLine($"                cb.Invoke(cbMsg);")
+                            .AppendLine($"            }});");
+                        }
+
                         builder.AppendLine($"            this.{method.Name}({api_rpc_args}, ({api_cb_args}) =>")
                         .AppendLine($"            {{")
                         .AppendLine($"                var cbMsg = new {message_type}.Callback();")
                         .AppendLine($"{api_cb_assign}")
                         .AppendLine($"                cb.Invoke(cbMsg);");
+
                         if (type.Name == "Host")
                             builder.AppendLine($"            }}, context);");
                         else
@@ -828,6 +842,10 @@ namespace Shared
                     }
                     else
                     {
+                        if (hasEvent)
+                        {
+                            builder.AppendLine($"            {NameToApi(method.Name)}?.Invoke({api_rpc_args});");
+                        }
 
                         if (type.Name == "Host")
                             builder.AppendLine($"            this.{method.Name}({api_rpc_args}, context);");
@@ -853,40 +871,66 @@ namespace Shared
                         api_type = "ServerOnly";
                     }
 
-                    builder = new StringBuilder()
-                        .AppendLine($"        [RpcMethod({pc_cls}.{proto_code}, Api.{api_type})]")
+                    builder = new StringBuilder();
+
+                    if (hasEvent)
+                    {
+                        //if (hasCallback)
+                        //{
+                        //    var cbType = methodParameterList.Where(m => m.Name == "callback").First().ParameterType; 
+                        //    string cb_types = ParseTypeName(cbType);
+                        //    builder.AppendLine($"        public event {args_decl} {NameToApi(method.Name)};");
+                        //}
+                        //else
+                        //{
+                            builder.AppendLine($"        public event Action<{args_type}> {NameToApi(method.Name)};");
+                        //}
+                    }
+
+                    builder.AppendLine($"        [RpcMethod({pc_cls}.{proto_code}, Api.{api_type})]")
                         .AppendLine($"        [EditorBrowsable(EditorBrowsableState.Never)]");
+
                     if (type.Name == "Host")
                     {
-                        if (callback_define != "")
+                        if (hasCallback)
                             builder.AppendLine($"        public void {api_name}({args_decl}, RpcContext context)");
                         else
                             builder.AppendLine($"        public void {api_name}({args_decl}, RpcContext context)");
                     }
                     else
                     {
-                        if (callback_define != "")
+                        if (hasCallback)
                             builder.AppendLine($"        public void {api_name}({args_decl})");
                         else
                             builder.AppendLine($"        public void {api_name}({args_decl})");
                     }
 
-                    if (callback_define != "")
+                    if (hasCallback)
                     {
-                        var cbType2 = methodParameterList.Where(m => m.Name == "callback").First().ParameterType;
+                        //var cbType2 = methodParameterList.Where(m => m.Name == "callback").First().ParameterType;
                         //string api_cb_args = GenCbArgs(cbType2.GetGenericArguments(), GetCallbackArgs(method), "");
-                        if (type.Name == "Host")
-                            builder.AppendLine($"        {{\n            this.{method.Name}({args}, context);");
-                        else
-                            builder.AppendLine($"        {{\n            this.{method.Name}({args});");
-                    }
-                    else
-                    {
+
+                        builder.AppendLine($"        {{");
+
+                        if (hasEvent)
+                            builder.AppendLine($"            {NameToApi(method.Name)}?.Invoke({args});");
 
                         if (type.Name == "Host")
-                            builder.AppendLine($"        {{\n            this.{method.Name}({args}, context);");
+                            builder.AppendLine($"            this.{method.Name}({args}, context);");
                         else
-                            builder.AppendLine($"        {{\n            this.{method.Name}({args});");
+                            builder.AppendLine($"            this.{method.Name}({args});");
+                    }
+                    else
+                    { 
+
+                        builder.AppendLine($"        {{");
+                        if (hasEvent)
+                            builder.AppendLine($"            {NameToApi(method.Name)}?.Invoke({args});");
+
+                        if (type.Name == "Host")
+                            builder.AppendLine($"            this.{method.Name}({args}, context);");
+                        else
+                            builder.AppendLine($"            this.{method.Name}({args});");
                     }
 
                     builder.AppendLine($"        }}");

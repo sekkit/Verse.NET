@@ -35,7 +35,7 @@ namespace Fenix
             //要检测一下fromActor.HostId和fromHost.Id是不是相等
             if(fromActor!=null && fromActor.HostId != fromHost.Id)
             {
-                Log.Error(string.Format("actor_and_host_id_unmatch {0} {1}", fromActor.UniqueName, fromHost.UniqueName));
+                Log.Error(string.Format("actor_host_id_unmatch {0} {1}", fromActor.UniqueName, fromHost.UniqueName));
                 return null;
             }
 
@@ -86,10 +86,10 @@ namespace Fenix
                 fromHost.Rpc(protocolCode, FromHostId, 0, toHostId, toActorId, toAddr, this.NetType, msg, cb);
         }
 
-        public void Disconnect()
+        public bool Disconnect()
         {
             var peer = Global.NetManager.GetPeerById(this.toHostId, this.NetType);
-            Global.NetManager.Deregister(peer);
+            return Global.NetManager.Deregister(peer);
         }
     }
 }

@@ -299,12 +299,15 @@ namespace Fenix
 #if !CLIENT
             if(CacheHNAME2ADDR.HasKey(hName))
                 CacheHNAME2ADDR.Delete(hName);
-            foreach (var aName in aNames)
+            if (aNames != null)
             {
-                if (CacheANAME2HNAME.HasKey(aName))
-                    CacheANAME2HNAME.Delete(aName);
-                if (CacheANAME2TNAME.HasKey(aName))
-                    CacheANAME2TNAME.Delete(aName);
+                foreach (var aName in aNames)
+                {
+                    if (CacheANAME2HNAME.HasKey(aName))
+                        CacheANAME2HNAME.Delete(aName);
+                    if (CacheANAME2TNAME.HasKey(aName))
+                        CacheANAME2TNAME.Delete(aName);
+                }
             }
 #else
 

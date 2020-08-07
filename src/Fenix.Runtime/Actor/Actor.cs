@@ -142,7 +142,7 @@ namespace Fenix
 
         public virtual ActorRef ActorRef()
         {
-            return Global.GetActorRef(GetType(), this.UniqueName, this, Global.Host);
+            return Global.GetActorRef(Global.TypeManager.GetActorRefType(this.GetType().Name), this.UniqueName, this, Global.Host);
         }
 
         public T GetActorRef<T>(string actorName) where T: ActorRef

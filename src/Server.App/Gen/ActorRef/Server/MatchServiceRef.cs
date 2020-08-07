@@ -26,14 +26,17 @@ namespace Server
         public async Task<FindMatchReq.Callback> rpc_find_matchAsync(String uid, Action<ErrCode, Server.DataModel.Account> callback=null)
         {
             var t = new TaskCompletionSource<FindMatchReq.Callback>();
-            Action<FindMatchReq.Callback> _cb = (cbMsg) =>
-            {
-                t.TrySetResult(cbMsg);
-                callback?.Invoke(cbMsg.code, cbMsg.user);
-            };
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
+                Action<ErrCode, Server.DataModel.Account> _cb = (code, user) =>
+                {
+                     var cbMsg = new FindMatchReq.Callback();
+                     cbMsg.code=code;
+                     cbMsg.user=user;
+                     callback?.Invoke(cbMsg.code, cbMsg.user);
+                     t.TrySetResult(cbMsg);
+                }; 
                 var protoCode = ProtocolCode.FIND_MATCH_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
@@ -46,6 +49,11 @@ namespace Server
             }
             else
             {
+                Action<FindMatchReq.Callback> _cb = (cbMsg) =>
+                {
+                    callback?.Invoke(cbMsg.code, cbMsg.user);
+                    t.TrySetResult(cbMsg);
+                };
                 var msg = new FindMatchReq()
                 {
                 uid=uid
@@ -89,14 +97,16 @@ namespace Server
         public async Task<JoinMatchReq.Callback> rpc_join_matchAsync(String uid, Int32 match_type, Action<ErrCode> callback=null)
         {
             var t = new TaskCompletionSource<JoinMatchReq.Callback>();
-            Action<JoinMatchReq.Callback> _cb = (cbMsg) =>
-            {
-                t.TrySetResult(cbMsg);
-                callback?.Invoke(cbMsg.code);
-            };
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
+                Action<ErrCode> _cb = (code) =>
+                {
+                     var cbMsg = new JoinMatchReq.Callback();
+                     cbMsg.code=code;
+                     callback?.Invoke(cbMsg.code);
+                     t.TrySetResult(cbMsg);
+                }; 
                 var protoCode = ProtocolCode.JOIN_MATCH_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
@@ -109,6 +119,11 @@ namespace Server
             }
             else
             {
+                Action<JoinMatchReq.Callback> _cb = (cbMsg) =>
+                {
+                    callback?.Invoke(cbMsg.code);
+                    t.TrySetResult(cbMsg);
+                };
                 var msg = new JoinMatchReq()
                 {
                 uid=uid,

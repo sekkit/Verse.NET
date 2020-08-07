@@ -26,14 +26,16 @@ namespace Client
         public async Task<ApiTestNtf.Callback> client_on_api_testAsync(String uid, Action<ErrCode> callback=null)
         {
             var t = new TaskCompletionSource<ApiTestNtf.Callback>();
-            Action<ApiTestNtf.Callback> _cb = (cbMsg) =>
-            {
-                t.TrySetResult(cbMsg);
-                callback?.Invoke(cbMsg.code);
-            };
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
+                Action<ErrCode> _cb = (code) =>
+                {
+                     var cbMsg = new ApiTestNtf.Callback();
+                     cbMsg.code=code;
+                     callback?.Invoke(cbMsg.code);
+                     t.TrySetResult(cbMsg);
+                }; 
                 var protoCode = ProtocolCode.API_TEST_NTF;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
@@ -46,6 +48,11 @@ namespace Client
             }
             else
             {
+                Action<ApiTestNtf.Callback> _cb = (cbMsg) =>
+                {
+                    callback?.Invoke(cbMsg.code);
+                    t.TrySetResult(cbMsg);
+                };
                 var msg = new ApiTestNtf()
                 {
                 uid=uid

@@ -17,6 +17,9 @@ namespace Fenix.Common.Message
         public UInt64 actorId { get; set; }
 
         [Key(1)]
+        public DisconnectReason reason { get; set; }
+
+        [Key(2)]
 
         public Callback callback
         {

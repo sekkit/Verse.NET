@@ -160,7 +160,7 @@ namespace Fenix
             Global.NetManager?.Update();
         }
 
-        public void Shutdown()
+        public override void Destroy()
         {
             //先销毁所有的actor, netpeer
             //再销毁自己
@@ -172,7 +172,7 @@ namespace Fenix
 
             Global.NetManager.Destroy();
 
-            this.Destroy();
+            base.Destroy();
         }
 
 
@@ -511,22 +511,6 @@ namespace Fenix
                     Global.NetManager.Deregister(peer);
                 }
 
-                //通知client端，重新连接server actor
-                //ulong hostId = __context.Peer.ConnId;
-                //var addr = __context.Peer.RemoteAddress.ToIPv4String();
-                //var ip = addr.Split(':')[0];
-                //var port = int.Parse(addr.Split(':')[1]);
-                //a.Client.ReconnectServerActor(hostId,
-                //    Global.IdManager.GetHostName(hostId),
-                //    ip, port, a.Id, a.UniqueName, a.GetType().Name, (code) =>
-                //    {
-                //        if(code != DefaultErrCode.OK)
-                //        {
-                //            //直接把客户端销毁吧
-                            
-                //        }
-                //    });
-
                 /* if a client's actor is created somewhere else
                  * it means the client is kicked out by another client
                  * so the old client shall be destroyed.
@@ -595,7 +579,7 @@ namespace Fenix
         }
 
         [ServerApi]
-        public void RemoveClientActor(ulong actorId, Action<DefaultErrCode> callback, RpcContext __context)
+        public async Task RemoveClientActor(ulong actorId, DisconnectReason reason, Action<DefaultErrCode> callback, RpcContext __context)
         {
             var hostId = Global.IdManager.GetHostIdByActorId(actorId);
             var clientId = Global.IdManager.GetHostIdByActorId(actorId, true);
@@ -603,16 +587,25 @@ namespace Fenix
             if(hostId != this.Id)
             {
                 //call remote host
-                this.GetHost(hostId).RemoveClientActor(actorId, callback);
+                this.GetHost(hostId)?.RemoveClientActor(actorId, reason, callback);
                 return;
             }
 
-            var peer = Global.NetManager.GetPeerById(actorId, Global.Config.ClientNetwork);
-            if(!Global.NetManager.Deregister(peer))
+            Log.Info(await this.GetHost(clientId)?.OnBeforeDisconnectAsync(reason));
+
+            var peer = Global.NetManager.GetPeerById(clientId, Global.Config.ClientNetwork); 
+            if (!Global.NetManager.Deregister(peer))
             {
                 callback(DefaultErrCode.ERROR);
                 return;
             }
+
+            //if(IsClientMode)
+            //{
+            //    foreach (var kv in this.actorDic)
+            //        kv.Value.Destroy();
+            //    actorDic.Clear();
+            //}
 
             callback(DefaultErrCode.OK);
         }
@@ -637,6 +630,14 @@ namespace Fenix
                 Global.NetManager.PrintPeerInfo("# Master.App: BindClientActor called");
                 Log.Info("Avatar已经重新和服务端绑定");
             });
+        }
+
+        [ClientApi]
+        public void OnBeforeDisconnect(DisconnectReason reason, Action callback, RpcContext __context)
+        {
+            Log.Info("OnBeforeDisconnect", reason); 
+            callback();
+            this.Destroy();
         }
     }
 }

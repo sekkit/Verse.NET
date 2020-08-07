@@ -26,14 +26,16 @@ namespace Server
         public async Task<ChangeNameReq.Callback> rpc_change_nameAsync(String name, Action<ErrCode> callback=null)
         {
             var t = new TaskCompletionSource<ChangeNameReq.Callback>();
-            Action<ChangeNameReq.Callback> _cb = (cbMsg) =>
-            {
-                t.TrySetResult(cbMsg);
-                callback?.Invoke(cbMsg.code);
-            };
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
+                Action<ErrCode> _cb = (code) =>
+                {
+                     var cbMsg = new ChangeNameReq.Callback();
+                     cbMsg.code=code;
+                     callback?.Invoke(cbMsg.code);
+                     t.TrySetResult(cbMsg);
+                }; 
                 var protoCode = ProtocolCode.CHANGE_NAME_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
@@ -46,6 +48,11 @@ namespace Server
             }
             else
             {
+                Action<ChangeNameReq.Callback> _cb = (cbMsg) =>
+                {
+                    callback?.Invoke(cbMsg.code);
+                    t.TrySetResult(cbMsg);
+                };
                 var msg = new ChangeNameReq()
                 {
                 name=name

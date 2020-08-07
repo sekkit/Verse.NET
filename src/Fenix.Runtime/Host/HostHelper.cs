@@ -53,7 +53,7 @@ namespace Fenix
 
         public static void Stop(Host host)
         { 
-            host.Shutdown();
+            host.Destroy();
             host = null;
             th = null;
         }
