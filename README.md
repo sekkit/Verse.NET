@@ -60,10 +60,14 @@ Fenix is in a early stage of development, but is also being used in commercial G
         //public new string UniqueName => nameof(MatchService);
 
         [ServerApi] 
-        public void JoinMatch(string uid, int match_type, Action<ErrCode> callback)
+        public async Task JoinMatch(string uid, int match_type, Action<ErrCode> callback)
         {
             Log.Info("Call=>server_api:JoinMatch");
-            callback(ErrCode.OK);
+            var result = await JoinMatchAsync(uid, match_type);
+            if(result == true)
+               callback(ErrCode.OK);
+            else
+               callback(ErrCode.ERROR);
         } 
 
         [ServerOnly]
