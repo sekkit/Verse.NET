@@ -591,10 +591,12 @@ namespace Fenix
                 return;
             }
 
-            Log.Info(await this.GetHost(clientId)?.OnBeforeDisconnectAsync(reason));
+            var clientHost = this.GetHost(clientId);
+            if(clientHost != null)
+                Log.Info(await clientHost.OnBeforeDisconnectAsync(reason));
 
             var peer = Global.NetManager.GetPeerById(clientId, Global.Config.ClientNetwork); 
-            if (!Global.NetManager.Deregister(peer))
+            if (peer != null && !Global.NetManager.Deregister(peer))
             {
                 callback(DefaultErrCode.ERROR);
                 return;
@@ -637,7 +639,11 @@ namespace Fenix
         {
             Log.Info("OnBeforeDisconnect", reason); 
             callback();
-            this.Destroy();
+
+            foreach (var kv in actorDic)
+                kv.Value.Destroy();
+            actorDic.Clear();
+            //this.Destroy();
         }
     }
 }
