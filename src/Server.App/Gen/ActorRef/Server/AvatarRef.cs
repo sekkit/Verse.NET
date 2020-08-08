@@ -23,7 +23,7 @@ namespace Server
     [RefType("Server.UModule.Avatar")]
     public partial class AvatarRef : ActorRef
     {
-        public async Task<ChangeNameReq.Callback> rpc_change_nameAsync(String name, Action<ErrCode> callback=null)
+        public async Task<ChangeNameReq.Callback> rpc_change_name_async(String name, Action<ErrCode> callback=null)
         {
             var t = new TaskCompletionSource<ChangeNameReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);

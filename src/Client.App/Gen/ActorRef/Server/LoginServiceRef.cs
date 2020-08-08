@@ -23,7 +23,7 @@ namespace Server
     [RefType("LoginService")]
     public partial class LoginServiceRef : ActorRef
     {
-        public async Task<CreateAccountReq.Callback> rpc_create_accountAsync(String username, String password, Action<ErrCode> callback=null)
+        public async Task<CreateAccountReq.Callback> rpc_create_account_async(String username, String password, Action<ErrCode> callback=null)
         {
             var t = new TaskCompletionSource<CreateAccountReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
@@ -95,7 +95,7 @@ namespace Server
             this.CallRemoteMethod(ProtocolCode.CREATE_ACCOUNT_REQ, msg, cb);
         }
 
-        public async Task<DeleteAccountReq.Callback> rpc_delete_accountAsync(String username, String password, Action<ErrCode> callback=null)
+        public async Task<DeleteAccountReq.Callback> rpc_delete_account_async(String username, String password, Action<ErrCode> callback=null)
         {
             var t = new TaskCompletionSource<DeleteAccountReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
@@ -167,7 +167,7 @@ namespace Server
             this.CallRemoteMethod(ProtocolCode.DELETE_ACCOUNT_REQ, msg, cb);
         }
 
-        public async Task<LoginReq.Callback> rpc_loginAsync(String username, String password, Action<ErrCode, String, UInt64, String, String> callback=null)
+        public async Task<LoginReq.Callback> rpc_login_async(String username, String password, Action<ErrCode, String, UInt64, String, String> callback=null)
         {
             var t = new TaskCompletionSource<LoginReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);

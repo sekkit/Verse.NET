@@ -23,7 +23,7 @@ namespace Server
     [RefType("MatchService")]
     public partial class MatchServiceRef : ActorRef
     {
-        public async Task<FindMatchReq.Callback> rpc_find_matchAsync(String uid, Action<ErrCode, Server.DataModel.Account> callback=null)
+        public async Task<FindMatchReq.Callback> rpc_find_match_async(String uid, Action<ErrCode, Server.DataModel.Account> callback=null)
         {
             var t = new TaskCompletionSource<FindMatchReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
@@ -94,7 +94,7 @@ namespace Server
             this.CallRemoteMethod(ProtocolCode.FIND_MATCH_REQ, msg, cb);
         }
 
-        public async Task<JoinMatchReq.Callback> rpc_join_matchAsync(String uid, Int32 match_type, Action<ErrCode> callback=null)
+        public async Task<JoinMatchReq.Callback> rpc_join_match_async(String uid, Int32 match_type, Action<ErrCode> callback=null)
         {
             var t = new TaskCompletionSource<JoinMatchReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);

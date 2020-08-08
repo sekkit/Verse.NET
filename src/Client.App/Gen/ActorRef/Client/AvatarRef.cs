@@ -23,7 +23,7 @@ namespace Client
     [RefType("Client.Avatar")]
     public partial class AvatarRef : ActorRef
     {
-        public async Task<ApiTestNtf.Callback> client_on_api_testAsync(String uid, Action<ErrCode> callback=null)
+        public async Task<ApiTestNtf.Callback> client_on_api_test_async(String uid, Action<ErrCode> callback=null)
         {
             var t = new TaskCompletionSource<ApiTestNtf.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);

@@ -713,9 +713,12 @@ namespace Shared
                                                         "cbMsg.");
                         var async_args = args.Replace("callback", "_cb");
                         var async_msg_assign = ParseArgsMsgAssign(methodParameterList, "                     ");
-                        builder = new StringBuilder()
-                        .AppendLine($"        public async Task<{message_type}.Callback> {rpc_name}Async({args_decl}=null)")
-                        .AppendLine($"        {{")
+                        builder = new StringBuilder();
+                        if (isHost)
+                            builder.AppendLine($"        public async Task<{message_type}.Callback> {rpc_name}Async({args_decl}=null)");
+                        else
+                            builder.AppendLine($"        public async Task<{message_type}.Callback> {rpc_name}_async({args_decl}=null)");
+                        builder.AppendLine($"        {{")
                         .AppendLine($"            var t = new TaskCompletionSource<{message_type}.Callback>();")
 
                         .AppendLine($"            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);")
