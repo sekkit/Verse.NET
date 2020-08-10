@@ -1,5 +1,6 @@
 ﻿//AUTOGEN, do not modify it!
 
+using Fenix.Common.Utils;
 using Fenix.Common;
 using Fenix.Common.Attributes;
 using Fenix.Common.Rpc;
@@ -21,11 +22,11 @@ namespace Fenix.Common.Message
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<RegisterReq>(this);
+            return MessagePackSerializer.Serialize<RegisterReq>(this, RpcUtil.lz4Options);
         }
         public new static RegisterReq Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<RegisterReq>(data);
+            return MessagePackSerializer.Deserialize<RegisterReq>(data, RpcUtil.lz4Options);
         }
     }
 }

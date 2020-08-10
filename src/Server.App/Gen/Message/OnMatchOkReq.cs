@@ -1,5 +1,6 @@
 ﻿//AUTOGEN, do not modify it!
 
+using Fenix.Common.Utils;
 using Fenix.Common;
 using Fenix.Common.Attributes;
 using Fenix.Common.Rpc;
@@ -19,11 +20,11 @@ namespace Shared.Message
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<OnMatchOkReq>(this);
+            return MessagePackSerializer.Serialize<OnMatchOkReq>(this, RpcUtil.lz4Options);
         }
         public new static OnMatchOkReq Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<OnMatchOkReq>(data);
+            return MessagePackSerializer.Deserialize<OnMatchOkReq>(data, RpcUtil.lz4Options);
         }
     }
 }

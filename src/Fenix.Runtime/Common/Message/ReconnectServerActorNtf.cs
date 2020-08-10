@@ -1,5 +1,6 @@
 ﻿//AUTOGEN, do not modify it!
 
+using Fenix.Common.Utils;
 using Fenix.Common;
 using Fenix.Common.Attributes;
 using Fenix.Common.Rpc;
@@ -51,21 +52,21 @@ namespace Fenix.Common.Message
 
             public override byte[] Pack()
             {
-                return MessagePackSerializer.Serialize<Callback>(this);
+                return MessagePackSerializer.Serialize<Callback>(this, RpcUtil.lz4Options);
             }
             public new static Callback Deserialize(byte[] data)
             {
-                return MessagePackSerializer.Deserialize<Callback>(data);
+                return MessagePackSerializer.Deserialize<Callback>(data, RpcUtil.lz4Options);
             }
         }
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<ReconnectServerActorNtf>(this);
+            return MessagePackSerializer.Serialize<ReconnectServerActorNtf>(this, RpcUtil.lz4Options);
         }
         public new static ReconnectServerActorNtf Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<ReconnectServerActorNtf>(data);
+            return MessagePackSerializer.Deserialize<ReconnectServerActorNtf>(data, RpcUtil.lz4Options);
         }
     }
 }

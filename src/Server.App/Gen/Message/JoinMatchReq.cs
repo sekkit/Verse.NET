@@ -1,5 +1,6 @@
 ﻿//AUTOGEN, do not modify it!
 
+using Fenix.Common.Utils;
 using Fenix.Common;
 using Fenix.Common.Attributes;
 using Fenix.Common.Rpc;
@@ -39,21 +40,21 @@ namespace Shared.Message
 
             public override byte[] Pack()
             {
-                return MessagePackSerializer.Serialize<Callback>(this);
+                return MessagePackSerializer.Serialize<Callback>(this, RpcUtil.lz4Options);
             }
             public new static Callback Deserialize(byte[] data)
             {
-                return MessagePackSerializer.Deserialize<Callback>(data);
+                return MessagePackSerializer.Deserialize<Callback>(data, RpcUtil.lz4Options);
             }
         }
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<JoinMatchReq>(this);
+            return MessagePackSerializer.Serialize<JoinMatchReq>(this, RpcUtil.lz4Options);
         }
         public new static JoinMatchReq Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<JoinMatchReq>(data);
+            return MessagePackSerializer.Deserialize<JoinMatchReq>(data, RpcUtil.lz4Options);
         }
     }
 }

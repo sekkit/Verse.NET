@@ -13,6 +13,8 @@ namespace Fenix.Common.Utils
         //Optimization one
         //cache IMessage instance
 
+        public static MessagePackSerializerOptions lz4Options = MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4BlockArray);
+
         public delegate IMessage MsgDeserialize(byte[] data);
 
 #if ENABLE_IL2CPP
@@ -27,7 +29,7 @@ namespace Fenix.Common.Utils
         public static T Deserialize<T>(byte[] bytes)
         { 
             //Log.Info("D1", typeof(T).Name, MessagePackSerializer.ConvertToJson(bytes));
-            return MessagePackSerializer.Deserialize<T>(bytes);
+            return MessagePackSerializer.Deserialize<T>(bytes, RpcUtil.lz4Options);
         }
 
         public static IMessage Deserialize(Type type, byte[] bytes)
@@ -46,7 +48,7 @@ namespace Fenix.Common.Utils
 #else
             //Log.Info("D2", type.Name, MessagePackSerializer.ConvertToJson(bytes));
             //return (IMessage)type.GetMethod("Deserialize").Invoke(null, new object[] { bytes});
-            return (IMessage)MessagePackSerializer.Deserialize(type, bytes);
+            return (IMessage)MessagePackSerializer.Deserialize(type, bytes, RpcUtil.lz4Options);
 #endif
         }
 

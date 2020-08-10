@@ -1,5 +1,6 @@
 ﻿//AUTOGEN, do not modify it!
 
+using Fenix.Common.Utils;
 using Fenix.Common;
 using Fenix.Common.Attributes;
 using Fenix.Common.Rpc;
@@ -36,21 +37,21 @@ namespace Shared.Message
 
             public override byte[] Pack()
             {
-                return MessagePackSerializer.Serialize<Callback>(this);
+                return MessagePackSerializer.Serialize<Callback>(this, RpcUtil.lz4Options);
             }
             public new static Callback Deserialize(byte[] data)
             {
-                return MessagePackSerializer.Deserialize<Callback>(data);
+                return MessagePackSerializer.Deserialize<Callback>(data, RpcUtil.lz4Options);
             }
         }
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<ApiTestNtf>(this);
+            return MessagePackSerializer.Serialize<ApiTestNtf>(this, RpcUtil.lz4Options);
         }
         public new static ApiTestNtf Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<ApiTestNtf>(data);
+            return MessagePackSerializer.Deserialize<ApiTestNtf>(data, RpcUtil.lz4Options);
         }
     }
 }

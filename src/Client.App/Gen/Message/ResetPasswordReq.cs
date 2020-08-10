@@ -1,5 +1,6 @@
 ﻿//AUTOGEN, do not modify it!
 
+using Fenix.Common.Utils;
 using Fenix.Common;
 using Fenix.Common.Attributes;
 using Fenix.Common.Rpc;
@@ -24,11 +25,11 @@ namespace Shared.Message
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<ResetPasswordReq>(this);
+            return MessagePackSerializer.Serialize<ResetPasswordReq>(this, RpcUtil.lz4Options);
         }
         public new static ResetPasswordReq Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<ResetPasswordReq>(data);
+            return MessagePackSerializer.Deserialize<ResetPasswordReq>(data, RpcUtil.lz4Options);
         }
     }
 }

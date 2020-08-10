@@ -117,6 +117,7 @@ namespace Fenix.Common
 			else
 				NLogger = NLog.LogManager.GetLogger(appName);
 #else
+	#if ENABLE_NLOG
 			string logFolder = Path.Combine(Unity.Common.IOUtil.persistentDataPath, "logs");
 			if (!Directory.Exists(logFolder))
 				Directory.CreateDirectory(logFolder);
@@ -174,31 +175,52 @@ namespace Fenix.Common
 					cfg.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, wrapper);
 				});
 			}
+	#endif
 #endif
 		}
 
 		public void Warning(params object[] args)
 		{
+#if ENABLE_NLOG
 			NLogger.Warn(string.Join(" ", args.Select(m => m?.ToString()))); 
-        }
+#else
+			Console.WriteLine(string.Join(" ", args.Select(m => m?.ToString())));
+#endif
+		}
 
         public void Info(params object[] args)
 		{
+#if ENABLE_NLOG
 			NLogger.Info(string.Join(" ", args.Select(m => m?.ToString())));
+#else
+			Console.WriteLine(string.Join(" ", args.Select(m => m?.ToString())));
+#endif
 		}
 
-        public void Debug(params object[] args)
+		public void Debug(params object[] args)
 		{
-			NLogger.Debug(string.Join(" ", args.Select(m => m?.ToString()))); 
+#if ENABLE_NLOG
+			NLogger.Debug(string.Join(" ", args.Select(m => m?.ToString())));
+#else
+			Console.WriteLine(string.Join(" ", args.Select(m => m?.ToString())));
+#endif
 		}
 
-        public void Error(params object[] args)
+		public void Error(params object[] args)
 		{
-			NLogger.Error(string.Join(" ", args.Select(m => m?.ToString()))); 
+#if ENABLE_NLOG
+			NLogger.Error(string.Join(" ", args.Select(m => m?.ToString())));
+#else
+			Console.WriteLine(string.Join(" ", args.Select(m => m?.ToString())));
+#endif
 		}
-        public void Fatal(params object[] args)
+		public void Fatal(params object[] args)
 		{
-			NLogger.Fatal(string.Join(" ", args.Select(m => m?.ToString()))); 
+#if ENABLE_NLOG
+			NLogger.Fatal(string.Join(" ", args.Select(m => m?.ToString())));
+#else
+			Console.WriteLine(string.Join(" ", args.Select(m => m?.ToString())));
+#endif
 		}
 	}
 }

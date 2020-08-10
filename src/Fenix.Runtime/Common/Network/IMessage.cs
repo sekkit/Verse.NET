@@ -4,19 +4,19 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace Fenix.Common.Rpc
-{
+{ 
     [MessagePackObject]
-    public abstract class IMessage
+    public class IMessage
     {
         public IMessage()
         { }
 
-        public abstract byte[] Pack();
+        //public abstract byte[] Pack();
 
-        //public virtual byte[] Pack()
-        //{
-        //    return MessagePackSerializer.Serialize(this);
-        //}
+        public virtual byte[] Pack()
+        {
+            return MessagePackSerializer.Serialize(this, Utils.RpcUtil.lz4Options);
+        }
 
         public virtual void UnPack(byte[] data)
         {

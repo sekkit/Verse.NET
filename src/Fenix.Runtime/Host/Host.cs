@@ -3,20 +3,14 @@
 
 using System;
 using System.Net;
-using System.Net.NetworkInformation;
-using DotNetty.KCP;
-using DotNetty.Buffers; 
-using DotNetty.Common.Utilities; 
-using DotNetty.Transport.Channels;
-using System.Collections.Concurrent;
-using Fenix;
+using System.Net.NetworkInformation; 
+using DotNetty.Buffers;  
+using System.Collections.Concurrent; 
 using Fenix.Common;
 using Fenix.Common.Utils; 
-using Fenix.Common.Attributes;
-using System.Threading;  
+using Fenix.Common.Attributes; 
 using Basic = Fenix.Common.Utils.Basic; 
-using System.Text;
-using System.Linq; 
+using System.Text; 
 using TimeUtil = Fenix.Common.Utils.TimeUtil;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -602,13 +596,6 @@ namespace Fenix
                 return;
             }
 
-            //if(IsClientMode)
-            //{
-            //    foreach (var kv in this.actorDic)
-            //        kv.Value.Destroy();
-            //    actorDic.Clear();
-            //}
-
             callback(DefaultErrCode.OK);
         }
 
@@ -642,8 +629,7 @@ namespace Fenix
 
             foreach (var kv in actorDic)
                 kv.Value.Destroy();
-            actorDic.Clear();
-            //this.Destroy();
+            actorDic.Clear(); 
         }
     }
 }

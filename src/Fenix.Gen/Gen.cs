@@ -289,11 +289,11 @@ namespace Fenix
                     .AppendLine($"{code}")
                     .AppendLine($"            public override byte[] Pack()")
                     .AppendLine($"            {{")
-                    .AppendLine($"                return MessagePackSerializer.Serialize<Callback>(this);")
+                    .AppendLine($"                return MessagePackSerializer.Serialize<Callback>(this, RpcUtil.lz4Options);")
                     .AppendLine($"            }}")
                      .AppendLine($"            public new static Callback Deserialize(byte[] data)")
                     .AppendLine($"            {{")
-                    .AppendLine($"                return MessagePackSerializer.Deserialize<Callback>(data);")
+                    .AppendLine($"                return MessagePackSerializer.Deserialize<Callback>(data, RpcUtil.lz4Options);")
                     .AppendLine($"            }}")
                     .AppendLine($"        }}");
                 return builder.ToString();
@@ -523,6 +523,7 @@ namespace Shared
 
                     var msgBuilder = new StringBuilder()
                         .AppendLine($"//AUTOGEN, do not modify it!\n")
+                        .AppendLine($"using Fenix.Common.Utils;")
                         .AppendLine($"using Fenix.Common;")
                         .AppendLine($"using Fenix.Common.Attributes;")
                         .AppendLine($"using Fenix.Common.Rpc;")
@@ -564,11 +565,11 @@ namespace Shared
                     }
                     msgBuilder.AppendLine($"        public override byte[] Pack()")
                     .AppendLine($"        {{")
-                    .AppendLine($"            return MessagePackSerializer.Serialize<{message_type}>(this);")
+                    .AppendLine($"            return MessagePackSerializer.Serialize<{message_type}>(this, RpcUtil.lz4Options);")
                     .AppendLine($"        }}");
                     msgBuilder.AppendLine($"        public new static {message_type} Deserialize(byte[] data)")
                     .AppendLine($"        {{")
-                    .AppendLine($"            return MessagePackSerializer.Deserialize<{message_type}>(data);")
+                    .AppendLine($"            return MessagePackSerializer.Deserialize<{message_type}>(data, RpcUtil.lz4Options);")
                     .AppendLine($"        }}");
                     msgBuilder.AppendLine($"    }}")
                         .AppendLine($"}}");
