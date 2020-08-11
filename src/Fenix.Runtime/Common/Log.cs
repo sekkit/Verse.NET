@@ -8,18 +8,17 @@ using System.IO;
 using NLog.Targets.Wrappers;
 using NLog.Targets;
 
-//#if !UNITY_5_3_OR_NEWER 
-//using globalLog = Serilog.Log;
-//#endif
-
-
-
 namespace Fenix.Common
 {
 	public class Log
 	{
+#if ENABLE_NLOG
 		static NLog.Logger _logger = new Logger(false).InternalLogger;
 
+#else
+		static Logger _logger = new Logger(false);
+
+#endif
 		private Log()
         {
 		}
@@ -28,12 +27,7 @@ namespace Fenix.Common
         {
 			var obj = new Logger();
 			return obj;
-        } 
-		 
-		//public static void Verbose(params object[] args)
-		//{
-		//	Logger.Instance.Verbose(args);
-		//}
+        }
 
 		public static void Warn(params object[] args)
 		{
@@ -117,7 +111,7 @@ namespace Fenix.Common
 			else
 				NLogger = NLog.LogManager.GetLogger(appName);
 #else
-	#if ENABLE_NLOG
+#if ENABLE_NLOG
 			string logFolder = Path.Combine(Unity.Common.IOUtil.persistentDataPath, "logs");
 			if (!Directory.Exists(logFolder))
 				Directory.CreateDirectory(logFolder);
@@ -140,46 +134,81 @@ namespace Fenix.Common
 				logfile.Layout = new NLog.Layouts.SimpleLayout("${longdate} [${level:uppercase=true}] [${threadid}] ${logger} - ${message}");
 			}
 
-			AsyncTargetWrapper wrapper = new AsyncTargetWrapper();
-			wrapper.WrappedTarget = logfile;
-			wrapper.QueueLimit = 5000;
-			wrapper.OverflowAction = AsyncTargetWrapperOverflowAction.Grow;  
+            Unity.Common.UnityConsoleTarget logconsole;// = new NLog.Targets.ColoredConsoleTarget("logconsole");
 
-			AsyncTargetWrapper wrapperUnity = new AsyncTargetWrapper();
-			if(isClassLogger)
-				wrapperUnity.WrappedTarget = Unity.Common.LogUtil.CreateUnityConsoleTarget("unityconsole", "${longdate} [${level:uppercase=true}] [${threadid}] ${callsite} - ${message}");
-			else
-				wrapperUnity.WrappedTarget = Unity.Common.LogUtil.CreateUnityConsoleTarget("unityconsole", "${longdate} [${level:uppercase=true}] [${threadid}] ${logger} - ${message}");
-			wrapperUnity.QueueLimit = 5000;
-			wrapperUnity.OverflowAction = AsyncTargetWrapperOverflowAction.Grow;
+            if (isClassLogger)
+				logconsole = Unity.Common.LogUtil.CreateUnityConsoleTarget("unityconsole", "${longdate} [${level:uppercase=true}] [${threadid}] ${callsite} - ${message}");
+            else
+				logconsole = Unity.Common.LogUtil.CreateUnityConsoleTarget("unityconsole", "${longdate} [${level:uppercase=true}] [${threadid}] ${logger} - ${message}");
 
-			if (isClassLogger)
+            if (isClassLogger)
 			{
 				NLogger = Unity.Common.LogUtil.GetLogger(null, (cfg) =>
-				{ 
-					cfg.AddTarget("asyncFile", wrapper);
-					cfg.AddTarget("asyncConsole", wrapperUnity);
+				{
+					cfg.AddTarget("logfile", logfile);
+					cfg.AddTarget("logconsole", logconsole);
 
-					cfg.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, wrapperUnity);
-					cfg.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, wrapper);
+					cfg.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, logconsole);
+					cfg.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, logfile);
 				});
 			}
 			else
 			{
 				NLogger = Unity.Common.LogUtil.GetLogger(appName, (cfg) =>
-				{ 
-					cfg.AddTarget("asyncFile", wrapper);
-					cfg.AddTarget("asyncConsole", wrapperUnity);
+				{
+					cfg.AddTarget("logfile", logfile);
+					cfg.AddTarget("logconsole", logconsole); 
 
-					cfg.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, wrapperUnity);
-					cfg.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, wrapper);
+					cfg.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, logconsole);
+					cfg.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, logfile);
 				});
 			}
-	#endif
+
+			//AsyncTargetWrapper wrapper = new AsyncTargetWrapper();
+			//wrapper.WrappedTarget = logfile;
+			//wrapper.QueueLimit = 5000;
+			//wrapper.OverflowAction = AsyncTargetWrapperOverflowAction.Grow;  
+
+			//AsyncTargetWrapper wrapperUnity = new AsyncTargetWrapper();
+			//if(isClassLogger)
+			//	wrapperUnity.WrappedTarget = Unity.Common.LogUtil.CreateUnityConsoleTarget("unityconsole", "${longdate} [${level:uppercase=true}] [${threadid}] ${callsite} - ${message}");
+			//else
+			//	wrapperUnity.WrappedTarget = Unity.Common.LogUtil.CreateUnityConsoleTarget("unityconsole", "${longdate} [${level:uppercase=true}] [${threadid}] ${logger} - ${message}");
+			//wrapperUnity.QueueLimit = 5000;
+			//wrapperUnity.OverflowAction = AsyncTargetWrapperOverflowAction.Grow;
+
+			//if (isClassLogger)
+			//{
+			//	NLogger = Unity.Common.LogUtil.GetLogger(null, (cfg) =>
+			//	{ 
+			//		cfg.AddTarget("asyncFile", wrapper);
+			//		cfg.AddTarget("asyncConsole", wrapperUnity);
+
+			//		cfg.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, wrapperUnity);
+			//		cfg.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, wrapper);
+			//	});
+			//}
+			//else
+			//{
+			//	NLogger = Unity.Common.LogUtil.GetLogger(appName, (cfg) =>
+			//	{ 
+			//		cfg.AddTarget("asyncFile", wrapper);
+			//		cfg.AddTarget("asyncConsole", wrapperUnity);
+
+			//		cfg.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, wrapperUnity);
+			//		cfg.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, wrapper);
+			//	});
+			//}
+#else
+			//if (isClassLogger)
+			//	NLogger = NLog.LogManager.GetCurrentClassLogger();
+			//else
+			//	NLogger = NLog.LogManager.GetLogger(appName);
+#endif
 #endif
 		}
 
-		public void Warning(params object[] args)
+		public void Warn(params object[] args)
 		{
 #if ENABLE_NLOG
 			NLogger.Warn(string.Join(" ", args.Select(m => m?.ToString()))); 

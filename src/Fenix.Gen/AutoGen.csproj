@@ -1,4 +1,4 @@
- <Project>
+﻿ <Project>
     <PropertyGroup>
       <BaseIntermediateOutputPath>obj\$(MSBuildProjectName)</BaseIntermediateOutputPath>
     </PropertyGroup>
@@ -19,7 +19,7 @@
     </ItemGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;NET_3_5_GREATER;SIGNED;CLIENT;GEN;UNITY_5_3_OR_NEWER;</DefineConstants>
+    <DefineConstants>TRACE;NET_3_5_GREATER;SIGNED;CLIENT;GEN;</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -31,5 +31,9 @@
       <HintPath>..\..\Libs\Unity\MessagePack.dll</HintPath>
     </Reference>
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="dotnet-mpc -i $(SolutionDir)src\Client.App\Client.App.csproj -o $(SolutionDir)src\Client.App\Gen\Message\Generated\ClientAppMsg.g.cs -r ClientAppResolver&#xA;&#xD;&#xA;dotnet-mpc -i $(SolutionDir)src\Fenix.Runtime\Common -o $(SolutionDir)src\Client.App\Gen\Message\Generated\FenixRuntimeMsg.g.cs -r FenixRuntimeResolver&#xD;&#xA;&#xA;dotnet-mpc -i $(SolutionDir)src\Shared\ -o $(SolutionDir)src\Client.App\Gen\Message\Generated\SharedMsg.g.cs -r SharedResolver&#xD;&#xA;&#xD;&#xA;dotnet-mpc -i $(SolutionDir)src\Client.App\Client.App.csproj -o $(SolutionDir)src\Server.App\Gen\Message\Generated\ClientAppMsg.g.cs -r ClientAppResolver&#xA;&#xD;&#xA;dotnet-mpc -i $(SolutionDir)src\Fenix.Runtime\Common -o $(SolutionDir)src\Server.App\Gen\Message\Generated\FenixRuntimeMsg.g.cs -r FenixRuntimeResolver&#xD;&#xA;&#xA;dotnet-mpc -i $(SolutionDir)src\Shared\ -o $(SolutionDir)src\Server.App\Gen\Message\Generated\SharedMsg.g.cs -r SharedResolver" />
+  </Target>
 
 </Project>

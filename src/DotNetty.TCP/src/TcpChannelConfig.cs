@@ -7,7 +7,7 @@ namespace DotNetty.TCP
 { 
     public class TcpChannelConfig
     {
-#if !UNITY_5_3_OR_NEWER
+#if !CLIENT
         public bool UseLibuv = false;
 #endif
 

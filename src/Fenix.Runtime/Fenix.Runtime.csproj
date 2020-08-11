@@ -24,8 +24,12 @@
   </PropertyGroup> 
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;NET_3_5_GREATER;SIGNED;RUNTIME</DefineConstants>
+    <DefineConstants>TRACE;NET_3_5_GREATER;SIGNED;RUNTIME;ENABLE_NLOG;</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup> 
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;NET_3_5_GREATER;SIGNED;RUNTIME;ENABLE_NLOG;</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

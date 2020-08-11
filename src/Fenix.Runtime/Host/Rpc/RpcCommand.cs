@@ -99,7 +99,7 @@ namespace Fenix
             //}
             //else
             //{
-            if (RpcType == Api.ClientApi)
+            else if (RpcType == Api.ClientApi)
                 this.mInvoker.CallMethodWithMsg(this.ProtoCode, args.ToArray());
             //}
         }

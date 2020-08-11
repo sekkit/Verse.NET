@@ -1,17 +1,9 @@
-﻿
-#if !UNITY_5_3_OR_NEWER
-using Serilog;
-#endif
-
+﻿ 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
-#if !UNITY_5_3_OR_NEWER 
-using globalLog = Serilog.Log;
-using System.IO;
-#endif
+ 
 namespace Fenix.Common
 {
 	public class Log
@@ -66,21 +58,7 @@ namespace Fenix.Common
 				Name = appname;
 			else
 				Name = name;
-
-#if !UNITY_5_3_OR_NEWER
-			 
-			globalLog.Logger = new LoggerConfiguration() 
-			.MinimumLevel.Information()
-			.WriteTo.Console(
-				outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u4}]{Message:lj}{NewLine}{Exception}"
-				)
-			.WriteTo.Async(a => a.File(
-				string.Format("{0}logs/{1}.log", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../"), Name +"."), 
-				outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u4}]{Message:lj}{NewLine}{Exception}",
-				rollingInterval: RollingInterval.Day,
-				rollOnFileSizeLimit: true))
-			.CreateLogger();
-#endif
+ 
         }
 
         string Name = null;
@@ -111,62 +89,38 @@ namespace Fenix.Common
 		public void Verbose(params object[] args)
 		{
 			var message = Format(args, "VERB");
-
-#if !UNITY_5_3_OR_NEWER
-			globalLog.Verbose(message); 
-#else
-            Console.WriteLine(message);
-#endif
+			 
+            Console.WriteLine(message); 
         }
 
         public void Warning(params object[] args)
 		{
-			var message = Format(args, "WARN");
-#if !UNITY_5_3_OR_NEWER
-			globalLog.Warning(message); 
-#else
-            Console.WriteLine(message);
-#endif
+			var message = Format(args, "WARN"); 
+            Console.WriteLine(message); 
         }
 
         public void Info(params object[] args)
 		{
-			var message = Format(args, "INFO");
-#if !UNITY_5_3_OR_NEWER
-			globalLog.Information(message); 
-#else
-            Console.WriteLine(message);
-#endif
+			var message = Format(args, "INFO");  
+            Console.WriteLine(message); 
 
         }
 
         public void Debug(params object[] args)
 		{
-			var message = Format(args, "DEBUG");
-#if !UNITY_5_3_OR_NEWER
-			globalLog.Debug(message); 
-#else
-            Console.WriteLine(message);
-#endif
+			var message = Format(args, "DEBUG"); 
+            Console.WriteLine(message); 
         }
 
         public void Error(params object[] args)
 		{
-			var message = Format(args, "ERROR");
-#if !UNITY_5_3_OR_NEWER
-			globalLog.Error(message); 
-#else
-            Console.WriteLine(message);
-#endif
+			var message = Format(args, "ERROR"); 
+            Console.WriteLine(message); 
         }
         public void Fatal(params object[] args)
 		{
-			var message = Format(args, "FATAL");
-#if !UNITY_5_3_OR_NEWER
-			globalLog.Fatal(message); 
-#else
-            Console.WriteLine(message);
-#endif
+			var message = Format(args, "FATAL"); 
+            Console.WriteLine(message); 
         }
 	}
 }

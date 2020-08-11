@@ -47,15 +47,15 @@ namespace Fenix
         public void ScanAssemblies(Assembly[] asmList)
         {
             //扫描一下
-            foreach(var asm in asmList)
+            foreach (var asm in asmList) 
                 foreach (var t in asm.GetTypes())
                 {
-                    if(RpcUtil.IsHeritedType(t, "Actor"))
+                    if (RpcUtil.IsHeritedType(t, "Actor"))
                         RegisterType(t.Name, t);
-                }
+                } 
 
-            foreach(var asm in asmList)
-                foreach(var t in asm.GetTypes())
+            foreach (var asm in asmList)
+                foreach (var t in asm.GetTypes())
                 {
                     var refTypeAttrs = t.GetCustomAttributes(typeof(RefTypeAttribute));
                     if (refTypeAttrs.Count() > 0)
@@ -71,7 +71,7 @@ namespace Fenix
                         var mta = (MessageTypeAttribute)msgTypeAttrs.First();
                         Global.TypeManager.RegisterMessageType(mta.ProtoCode, t);
                     }
-                }
+                } 
         }  
 
         public void RegisterRefType(Type refType, string targetTypeName)

@@ -1,6 +1,6 @@
 ﻿using Fenix;
 using Fenix.Redis;
-using Server.Config.Db;
+using Server.Config; 
 using System;
 using System.Collections.Generic;
 using System.Text;

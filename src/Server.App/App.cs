@@ -14,7 +14,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using Server.Config.Db;
+using Server.Config;
 using CommandLine;
 
 namespace Server
@@ -123,6 +123,8 @@ namespace Server
 
         static void OnInit()
         {
+            DbConfig.Init();
+
             Global.DbManager.LoadDb(DbConfig.account_db);
             Global.DbManager.LoadDb(DbConfig.seq_db);
         }

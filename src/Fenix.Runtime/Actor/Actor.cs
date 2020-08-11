@@ -36,6 +36,7 @@ namespace Fenix
         protected ActorRef serverActor;
 
         public virtual ActorRef Server => serverActor;
+
 #endif
 
         [IgnoreMember] 

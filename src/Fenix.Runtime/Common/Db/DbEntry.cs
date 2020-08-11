@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Fenix.Common.Db
+namespace Server.Config
 {
     public class DbEntry
     {

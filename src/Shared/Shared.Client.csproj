@@ -18,8 +18,7 @@
     <Compile Include="obj\$(MSBuildProjectName)\**\$(MSBuildProjectName).AssemblyInfo.cs" />
   </ItemGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\..\Libs</OutputPath>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'"> 
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <DefineConstants>TRACE;SIGNED;NETSTANDARD;NET_4_0_GREATER;NET_4_5_GREATER;NET_4_6_GREATER;CLIENT</DefineConstants>
   </PropertyGroup>
@@ -43,7 +42,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Fenix.Runtime\Fenix.Runtime.Client.csproj" />
-    <ProjectReference Include="..\MessagePack\MessagePack.csproj" />
-  </ItemGroup> 
-
+  </ItemGroup>
+  <!--<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(OS)' == 'Windows_NT' ">
+    <Exec Command="xcopy /K /D /H /Y $(TargetPath) $(SolutionDir)Unity\Assets\Plugins\Fenix\&#xD;&#xA;xcopy /K /D /H /Y $(TargetPath) $(SolutionDir)Libs\Unity\" />
+  </Target>-->
 </Project>

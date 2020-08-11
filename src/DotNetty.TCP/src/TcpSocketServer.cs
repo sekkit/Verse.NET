@@ -5,7 +5,7 @@ using DotNetty.Handlers.Tls;
 using DotNetty.Transport.Bootstrapping;
 using DotNetty.Transport.Channels;
 using DotNetty.Transport.Channels.Sockets;
-#if !UNITY_5_3_OR_NEWER 
+#if !CLIENT 
 using DotNetty.Transport.Libuv;
 #endif
 using System;
@@ -25,7 +25,7 @@ namespace DotNetty.TCP
 
         public bool Start(TcpChannelConfig channelConfig, ITcpListener listener)
         {
-#if !UNITY_5_3_OR_NEWER
+#if !CLIENT
             if (channelConfig.UseLibuv)
             {
                 ResourceLeakDetector.Level = ResourceLeakDetector.DetectionLevel.Disabled;
@@ -52,7 +52,7 @@ namespace DotNetty.TCP
             {
                 bootstrap = new ServerBootstrap();
                 bootstrap.Group(bossGroup, workerGroup);
-#if !UNITY_5_3_OR_NEWER
+#if !CLIENT
                 if (channelConfig.UseLibuv)
                 {
                     bootstrap.Channel<TcpServerChannel>();

@@ -69,17 +69,24 @@ namespace Fenix.Common.Utils
 
         public static bool IsHeritedType(Type type, string baseTypeName)
         {
-            if (type.Name == baseTypeName)
+            try
             {
-                return true;
-            }
+                if (type.Name == baseTypeName)
+                {
+                    return true;
+                }
 
-            if (type.Name == "Object" || type.BaseType == null || type.BaseType.Name == "Object")
+                if (type.Name == "Object" || type.BaseType == null || type.BaseType.Name == "Object")
+                {
+                    return false;
+                }
+
+                return IsHeritedType(type.BaseType, baseTypeName);
+            }
+            catch(Exception ex)
             {
                 return false;
             }
-
-            return IsHeritedType(type.BaseType, baseTypeName);
         }
     }
 }

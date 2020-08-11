@@ -30,7 +30,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>TRACE;NET_3_5_GREATER;SIGNED;UNITY_5_3_OR_NEWER;CLIENT;ENABLE_IL2CPP;</DefineConstants>
+    <DefineConstants>TRACE;NET_3_5_GREATER;SIGNED;UNITY_5_3_OR_NEWER;CLIENT;ENABLE_IL2CPP</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -71,9 +71,6 @@
     </Reference>
     <Reference Include="MessagePack">
       <HintPath>..\..\Libs\Unity\MessagePack.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Common">
-      <HintPath>..\..\Unity\Library\ScriptAssemblies\Unity.Common.dll</HintPath>
     </Reference>
   </ItemGroup>
 

@@ -9,7 +9,7 @@ using Fenix.Common.Utils;
 
 #if !CLIENT
 using Fenix.Redis;
-using Server.Config.Db;
+using Server.Config; 
 #endif
 
 //路由表的ID
@@ -56,12 +56,12 @@ namespace Fenix
         
         public IdManager()
         {
-            Global.DbManager.LoadDb(CacheConfig.HNAME2ADDR_cache);
-            Global.DbManager.LoadDb(CacheConfig.ANAME2CNAME_cache);
-            Global.DbManager.LoadDb(CacheConfig.ANAME2HNAME_cache);
-            Global.DbManager.LoadDb(CacheConfig.ANAME2TNAME_cache);
-            Global.DbManager.LoadDb(CacheConfig.ID2NAME_cache);
-            Global.DbManager.LoadDb(CacheConfig.ADDR2EXTADDR_cache);
+            Global.DbManager.LoadDb(CacheConfig.Get(CacheConfig.HNAME2ADDR));
+            Global.DbManager.LoadDb(CacheConfig.Get(CacheConfig.ANAME2CNAME));
+            Global.DbManager.LoadDb(CacheConfig.Get(CacheConfig.ANAME2HNAME));
+            Global.DbManager.LoadDb(CacheConfig.Get(CacheConfig.ANAME2TNAME));
+            Global.DbManager.LoadDb(CacheConfig.Get(CacheConfig.ID2NAME));
+            Global.DbManager.LoadDb(CacheConfig.Get(CacheConfig.ADDR2EXTADDR));
 
             var assembly = typeof(Global).Assembly;
             Log.Info(assembly.FullName.Replace("Server.App", "Fenix.Runtime").Replace("Client.App", "Fenix.Runtime"));

@@ -34,6 +34,12 @@ namespace Shared.DataModel
         //[Key(0)]
         //public UserAttr Attr;
 
+        [Key(0)]
+        public string uid;
+
+        [Key(1)]
+        public string Name; 
+
         [Key(5)]
         public int Exp;
 

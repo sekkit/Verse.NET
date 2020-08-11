@@ -68,7 +68,7 @@ namespace Fenix
             var channelConfig = new TcpChannelConfig();
             channelConfig.Address = ep;// ip;// "0.0.0.0";
             //channelConfig.Port = port;
-#if !UNITY_5_3_OR_NEWER
+#if !CLIENT
             channelConfig.UseLibuv = true;
 #endif
             var obj = new TcpHostServer(); 

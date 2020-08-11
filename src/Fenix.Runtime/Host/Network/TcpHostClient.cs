@@ -91,7 +91,7 @@ namespace Fenix
             channelConfig.Address = ep;
             //channelConfig.Address = ep.Address.ToIPv4String();
             //channelConfig.Port = ep.Port;
-#if !UNITY_5_3_OR_NEWER
+#if !CLIENT
             channelConfig.UseLibuv = false;
 #endif
 

@@ -1,6 +1,9 @@
 ﻿
 using Fenix.Common.Utils;
 using Fenix.Config;
+#if !CLIENT
+using Server.Config;
+#endif
 using System;
 using System.Net;
 using System.Reflection; 
@@ -112,6 +115,10 @@ namespace Fenix
 
         public static void Init(Assembly[] asmList)
         {
+#if !CLIENT
+            CacheConfig.Init(); 
+#endif
+
             Global.TypeManager.ScanAssemblies(asmList);
             Global.TypeManager.ScanAssemblies(new Assembly[] { typeof(Global).Assembly });
         }
