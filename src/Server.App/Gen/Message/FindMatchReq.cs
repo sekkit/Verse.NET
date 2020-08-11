@@ -18,7 +18,7 @@ namespace Shared.Message
     public class FindMatchReq : IMessageWithCallback
     {
         [Key(0)]
-        public String uid { get; set; }
+        public global::System.String uid { get; set; }
 
         [Key(1)]
 
@@ -32,11 +32,10 @@ namespace Shared.Message
         public class Callback : IMessage
         {
             [Key(0)]
-            [DefaultValue(ErrCode.ERROR)]
-            public ErrCode code { get; set; } = ErrCode.ERROR;
+            public global::Shared.Protocol.ErrCode code { get; set; } = ErrCode.ERROR;
 
             [Key(1)]
-            public Server.DataModel.Account user { get; set; }
+            public global::Server.DataModel.Account user { get; set; }
 
             public override byte[] Pack()
             {

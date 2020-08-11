@@ -18,10 +18,10 @@ namespace Shared.Message
     public class JoinMatchReq : IMessageWithCallback
     {
         [Key(0)]
-        public String uid { get; set; }
+        public global::System.String uid { get; set; }
 
         [Key(1)]
-        public Int32 match_type { get; set; }
+        public global::System.Int32 match_type { get; set; }
 
         [Key(2)]
 
@@ -35,8 +35,7 @@ namespace Shared.Message
         public class Callback : IMessage
         {
             [Key(0)]
-            [DefaultValue(ErrCode.ERROR)]
-            public ErrCode code { get; set; } = ErrCode.ERROR;
+            public global::Shared.Protocol.ErrCode code { get; set; } = ErrCode.ERROR;
 
             public override byte[] Pack()
             {

@@ -15,7 +15,7 @@ namespace Fenix.Common.Message
     public class BindClientActorReq : IMessageWithCallback
     {
         [Key(0)]
-        public String actorName { get; set; }
+        public global::System.String actorName { get; set; }
 
         [Key(1)]
 
@@ -29,8 +29,7 @@ namespace Fenix.Common.Message
         public class Callback : IMessage
         {
             [Key(0)]
-            [DefaultValue(DefaultErrCode.ERROR)]
-            public DefaultErrCode code { get; set; } = DefaultErrCode.ERROR;
+            public global::Fenix.Common.DefaultErrCode code { get; set; } = DefaultErrCode.ERROR;
 
             public override byte[] Pack()
             {

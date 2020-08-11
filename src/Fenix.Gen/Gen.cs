@@ -54,7 +54,7 @@ namespace Fenix
                     continue;
 
                 if (type.FullName == "Fenix.Host")
-                {
+                { 
                     GenFromActorType(type, sharedPath, sharedPath, clientPath, serverPath);
                 }
             }
@@ -95,15 +95,15 @@ namespace Fenix
 
         static string ParseGenericDecl(Type genericType)
         {
-            string decl = genericType.Name.Split('`')[0] + "<";
+            string decl = "global::"+genericType.FullName.Split('`')[0] + "<"; 
 
             foreach (var argType in genericType.GetGenericArguments())
             {
                 if (!argType.IsGenericType)
                     if(argType.Namespace.StartsWith("Server"))
-                        decl += argType.FullName + ", ";
+                        decl += "global::" + argType.FullName + ", ";
                     else
-                        decl += argType.Name + ", ";
+                        decl += "global::" + argType.FullName + ", ";
                 else
                     decl += ParseGenericDecl(argType);
             }
@@ -130,7 +130,10 @@ namespace Fenix
                     paramList.Add(string.Format("{0} {1}", ParseTypeName(p.ParameterType), p.Name));
             }
 
-            return string.Join(", ", paramList);
+            var result = string.Join(", ", paramList);
+            if (result.EndsWith(", "))
+                result = result.Substring(0, result.Length - 2);
+            return result;
         }
 
         static string ParseArgsType(ParameterInfo[] paramInfos, bool ignoreCallback)
@@ -146,7 +149,10 @@ namespace Fenix
                 paramList.Add(string.Format("{0}", ParseTypeName(p.ParameterType), p.Name));
             }
 
-            return string.Join(", ", paramList);
+            var result = string.Join(", ", paramList);
+            if (result.EndsWith(", "))
+                result = result.Substring(0, result.Length - 2);
+            return result;
         }
 
         static string ParseTypeName(Type type)
@@ -156,9 +162,9 @@ namespace Fenix
                 decl = ParseGenericDecl(type);
             else
                 if (type.Namespace.StartsWith("Server"))
-                    decl = type.FullName;
+                    decl = "global::" + type.FullName;
                 else 
-                    decl = type.Name;
+                    decl = "global::" + type.FullName;
             return decl;
         }
 
@@ -177,7 +183,10 @@ namespace Fenix
                     paramList.Add(string.Format("{0}{1}", tarInstanceName, p.Name));
             }
 
-            return string.Join(", ", paramList);
+            var result = string.Join(", ", paramList);
+            if (result.EndsWith(", "))
+                result = result.Substring(0, result.Length - 2);
+            return result;
         }
 
         static string ParseArgsMsgAssign(ParameterInfo[] paramInfos, string prefix, string tarInstanceName = "")
@@ -234,7 +243,8 @@ namespace Fenix
                 if (attr2 != null)
                 {
                     var v = attr2.Value.GetType().IsEnum ? (attr2.Value.GetType().Name + "." + attr2.Value.ToString()) : attr2.Value;
-                    lines.Add($"{prefix}[Key({position})]\n{prefix}[DefaultValue({attr2.Value})]\n{prefix}public {pType} {pName} {{ get; set; }} = {v};\n");
+                    lines.Add($"{prefix}[Key({position})]\n{prefix}public {pType} {pName} {{ get; set; }} = {v};\n");
+                    //lines.Add($"{prefix}[Key({position})]\n{prefix}[DefaultValue({attr2.Value})]\n{prefix}public {pType} {pName} {{ get; set; }} = {v};\n");
                 }
 
                 else
@@ -264,7 +274,8 @@ namespace Fenix
                 if (attr2 != null)
                 {
                     var v = attr2.Value.GetType().IsEnum ? (attr2.Value.GetType().Name + "." + attr2.Value.ToString()) : attr2.Value;
-                    lines.Add($"{prefix}[Key({position})]\n{prefix}[DefaultValue({v})]\n{prefix}public {pType} {pName} {{ get; set; }} = {v};\n");
+                    lines.Add($"{prefix}[Key({position})]\n{prefix}public {pType} {pName} {{ get; set; }} = {v};\n");
+                    //lines.Add($"{prefix}[Key({position})]\n{prefix}[DefaultValue({v})]\n{prefix}public {pType} {pName} {{ get; set; }} = {v};\n");
                 }
                 else
                     lines.Add($"{prefix}[Key({position})]\n{prefix}public {pType} {pName} {{ get; set; }}\n");
@@ -446,7 +457,7 @@ namespace Shared
             var apiNativeDefineDic = new SortedDictionary<string, string>();
 
             if (GetAttribute<ActorTypeAttribute>(type) == null && type.Name != "Host")
-                return;
+                return; 
 
             bool isServer = type.Name == "Host" ? true : ((int)GetAttribute<ActorTypeAttribute>(type).AType == (int)AType.SERVER);
 
@@ -456,6 +467,9 @@ namespace Shared
             for (int i = 0; i < methods.Length; ++i)
             {
                 MethodInfo method = methods[i];
+
+                //Console.WriteLine(method.Name);
+
                 var attr = GetAttribute<ServerApiAttribute>(method);
                 Api api = Api.NoneApi;
                 if (attr != null)
@@ -813,7 +827,9 @@ namespace Shared
 
                     builder.AppendLine($"        {{")
                         .AppendLine($"            var _msg = ({message_type})msg;");
-                     
+
+                    var fileterArgs = api_rpc_args != "" ? api_rpc_args + "," : "";
+
                     if (hasCallback)
                     {
                         var cbType2 = methodParameterList.Where(m => m.Name == "callback").First().ParameterType;
@@ -821,23 +837,22 @@ namespace Shared
                         string api_cb_assign = ParseArgsMsgAssign(cbType2.GetGenericArguments(),
                                                         GetCallbackArgs(method),
                                                         "                ",
-                                                        "cbMsg.");
+                                                        "cbMsg."); 
 
-                        if(hasEvent)
+                        if (hasEvent)
                         {
-                            builder.AppendLine($"            {NameToApi(method.Name)}?.Invoke({api_rpc_args}, ({api_cb_args}) =>")
+                            builder.AppendLine($"            {NameToApi(method.Name)}?.Invoke({fileterArgs} ({api_cb_args}) =>")
                             .AppendLine($"            {{")
                             .AppendLine($"                var cbMsg = new {message_type}.Callback();")
                             .AppendLine($"{api_cb_assign}")
                             .AppendLine($"                cb.Invoke(cbMsg);")
                             .AppendLine($"            }});");
-                        }
-
-                        builder.AppendLine($"            this.{method.Name}({api_rpc_args}, ({api_cb_args}) =>")
-                        .AppendLine($"            {{")
-                        .AppendLine($"                var cbMsg = new {message_type}.Callback();")
-                        .AppendLine($"{api_cb_assign}")
-                        .AppendLine($"                cb.Invoke(cbMsg);");
+                        } 
+                        builder.AppendLine($"            this.{method.Name}({fileterArgs} ({api_cb_args}) =>")
+                            .AppendLine($"            {{")
+                            .AppendLine($"                var cbMsg = new {message_type}.Callback();")
+                            .AppendLine($"{api_cb_assign}")
+                            .AppendLine($"                cb.Invoke(cbMsg);"); 
 
                         if (type.Name == "Host")
                             builder.AppendLine($"            }}, context);");
@@ -852,7 +867,7 @@ namespace Shared
                         }
 
                         if (type.Name == "Host")
-                            builder.AppendLine($"            this.{method.Name}({api_rpc_args}, context);");
+                            builder.AppendLine($"            this.{method.Name}({fileterArgs} context);");
                         else
                             builder.AppendLine($"            this.{method.Name}({api_rpc_args});");
                     }
@@ -887,7 +902,10 @@ namespace Shared
                         //}
                         //else
                         //{
+                        if(args_type != "")
                             builder.AppendLine($"        public event Action<{args_type}> {NameToApi(method.Name)};");
+                        else
+                            builder.AppendLine($"        public event Action {NameToApi(method.Name)};");
                         //}
                     }
 
@@ -907,7 +925,7 @@ namespace Shared
                             builder.AppendLine($"        public void {api_name}({args_decl})");
                         else
                             builder.AppendLine($"        public void {api_name}({args_decl})");
-                    }
+                    } 
 
                     if (hasCallback)
                     {
@@ -1059,8 +1077,7 @@ using System.Threading.Tasks;
                 {
                     sw.WriteLine(serverCode);
                 }
-            } 
-
+            }
 
             string internalClientApiCode = string.Join("\n", apiDefineDic.Where(m=>m.Key.StartsWith("CLIENT_API")).Select(m=>m.Value).ToList());
             string internalClientNativeApiCode = string.Join("\n", apiNativeDefineDic.Where(m => m.Key.StartsWith("CLIENT_API")).Select(m => m.Value).ToList());

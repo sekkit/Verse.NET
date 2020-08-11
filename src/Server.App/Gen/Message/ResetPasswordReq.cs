@@ -18,10 +18,10 @@ namespace Shared.Message
     public class ResetPasswordReq : IMessage
     {
         [Key(0)]
-        public String username { get; set; }
+        public global::System.String username { get; set; }
 
         [Key(1)]
-        public String email { get; set; }
+        public global::System.String email { get; set; }
 
         public override byte[] Pack()
         {

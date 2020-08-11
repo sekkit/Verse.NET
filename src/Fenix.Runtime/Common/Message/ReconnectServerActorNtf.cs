@@ -15,25 +15,25 @@ namespace Fenix.Common.Message
     public class ReconnectServerActorNtf : IMessageWithCallback
     {
         [Key(0)]
-        public UInt64 hostId { get; set; }
+        public global::System.UInt64 hostId { get; set; }
 
         [Key(1)]
-        public String hostName { get; set; }
+        public global::System.String hostName { get; set; }
 
         [Key(2)]
-        public String hostIP { get; set; }
+        public global::System.String hostIP { get; set; }
 
         [Key(3)]
-        public Int32 hostPort { get; set; }
+        public global::System.Int32 hostPort { get; set; }
 
         [Key(4)]
-        public UInt64 actorId { get; set; }
+        public global::System.UInt64 actorId { get; set; }
 
         [Key(5)]
-        public String actorName { get; set; }
+        public global::System.String actorName { get; set; }
 
         [Key(6)]
-        public String aTypeName { get; set; }
+        public global::System.String aTypeName { get; set; }
 
         [Key(7)]
 
@@ -47,8 +47,7 @@ namespace Fenix.Common.Message
         public class Callback : IMessage
         {
             [Key(0)]
-            [DefaultValue(DefaultErrCode.ERROR)]
-            public DefaultErrCode code { get; set; } = DefaultErrCode.ERROR;
+            public global::Fenix.Common.DefaultErrCode code { get; set; } = DefaultErrCode.ERROR;
 
             public override byte[] Pack()
             {

@@ -15,10 +15,10 @@ namespace Fenix.Common.Message
     public class RegisterClientReq : IMessageWithCallback
     {
         [Key(0)]
-        public UInt64 hostId { get; set; }
+        public global::System.UInt64 hostId { get; set; }
 
         [Key(1)]
-        public String hostName { get; set; }
+        public global::System.String hostName { get; set; }
 
         [Key(2)]
 
@@ -32,11 +32,10 @@ namespace Fenix.Common.Message
         public class Callback : IMessage
         {
             [Key(0)]
-            [DefaultValue(DefaultErrCode.ERROR)]
-            public DefaultErrCode code { get; set; } = DefaultErrCode.ERROR;
+            public global::Fenix.Common.DefaultErrCode code { get; set; } = DefaultErrCode.ERROR;
 
             [Key(1)]
-            public HostInfo arg1 { get; set; }
+            public global::Fenix.HostInfo arg1 { get; set; }
 
             public override byte[] Pack()
             {

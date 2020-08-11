@@ -18,7 +18,7 @@ namespace Shared.Message
     public class ChangeNameReq : IMessageWithCallback
     {
         [Key(0)]
-        public String name { get; set; }
+        public global::System.String name { get; set; }
 
         [Key(1)]
 
@@ -32,8 +32,7 @@ namespace Shared.Message
         public class Callback : IMessage
         {
             [Key(0)]
-            [DefaultValue(ErrCode.ERROR)]
-            public ErrCode code { get; set; } = ErrCode.ERROR;
+            public global::Shared.Protocol.ErrCode code { get; set; } = ErrCode.ERROR;
 
             public override byte[] Pack()
             {

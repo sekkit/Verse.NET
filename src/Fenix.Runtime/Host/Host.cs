@@ -438,8 +438,6 @@ namespace Fenix
             actor.CallMethod(packet);
         }
 
-
-
 #if !CLIENT
 
         [ServerOnly]
@@ -630,6 +628,17 @@ namespace Fenix
             foreach (var kv in actorDic)
                 kv.Value.Destroy();
             actorDic.Clear(); 
+        }
+
+        [ClientApi]
+        public void OnServerActorEnable(string actorName, RpcContext __context)
+        {
+#if CLIENT
+            var actorId = Global.IdManager.GetActorId(actorName);
+            //Set actor.server's client property
+            var a = Global.Host.GetActor(actorId);
+            a.OnServerEnable();
+#endif
         }
     }
 }

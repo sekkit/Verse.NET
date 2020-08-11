@@ -10,10 +10,10 @@ namespace Server.UModule
 {
     [ActorType(AType.SERVER)] 
     [AccessLevel(ALevel.CLIENT_AND_SERVER)]
-    [RuntimeData(typeof(Account))]
+    [PersistentData(typeof(User))]
     public partial class Avatar : Actor
     {
-        public new Client.AvatarRef Client => (Client.AvatarRef)this.client;
+        public new Client.AvatarRef Client => (Client.AvatarRef)this.clientActor;
 
         public Avatar()
         {

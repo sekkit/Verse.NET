@@ -23,13 +23,13 @@ namespace Server
     [RefType("MatchService")]
     public partial class MatchServiceRef : ActorRef
     {
-        public async Task<FindMatchReq.Callback> rpc_find_match_async(String uid, Action<ErrCode, Server.DataModel.Account> callback=null)
+        public async Task<FindMatchReq.Callback> rpc_find_match_async(global::System.String uid, global::System.Action<global::Shared.Protocol.ErrCode, global::Server.DataModel.Account> callback=null)
         {
             var t = new TaskCompletionSource<FindMatchReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Action<ErrCode, Server.DataModel.Account> _cb = (code, user) =>
+                global::System.Action<global::Shared.Protocol.ErrCode, global::Server.DataModel.Account> _cb = (code, user) =>
                 {
                      var cbMsg = new FindMatchReq.Callback();
                      cbMsg.code=code;
@@ -67,7 +67,7 @@ namespace Server
              return await t.Task;
         }
 
-        public void rpc_find_match(String uid, Action<ErrCode, Server.DataModel.Account> callback)
+        public void rpc_find_match(global::System.String uid, global::System.Action<global::Shared.Protocol.ErrCode, global::Server.DataModel.Account> callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -94,13 +94,13 @@ namespace Server
             this.CallRemoteMethod(ProtocolCode.FIND_MATCH_REQ, msg, cb);
         }
 
-        public async Task<JoinMatchReq.Callback> rpc_join_match_async(String uid, Int32 match_type, Action<ErrCode> callback=null)
+        public async Task<JoinMatchReq.Callback> rpc_join_match_async(global::System.String uid, global::System.Int32 match_type, global::System.Action<global::Shared.Protocol.ErrCode> callback=null)
         {
             var t = new TaskCompletionSource<JoinMatchReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Action<ErrCode> _cb = (code) =>
+                global::System.Action<global::Shared.Protocol.ErrCode> _cb = (code) =>
                 {
                      var cbMsg = new JoinMatchReq.Callback();
                      cbMsg.code=code;
@@ -138,7 +138,7 @@ namespace Server
              return await t.Task;
         }
 
-        public void rpc_join_match(String uid, Int32 match_type, Action<ErrCode> callback)
+        public void rpc_join_match(global::System.String uid, global::System.Int32 match_type, global::System.Action<global::Shared.Protocol.ErrCode> callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)

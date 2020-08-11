@@ -23,13 +23,13 @@ namespace Server
     [RefType("LoginService")]
     public partial class LoginServiceRef : ActorRef
     {
-        public async Task<CreateAccountReq.Callback> rpc_create_account_async(String username, String password, Action<ErrCode> callback=null)
+        public async Task<CreateAccountReq.Callback> rpc_create_account_async(global::System.String username, global::System.String password, global::System.Action<global::Shared.Protocol.ErrCode> callback=null)
         {
             var t = new TaskCompletionSource<CreateAccountReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Action<ErrCode> _cb = (code) =>
+                global::System.Action<global::Shared.Protocol.ErrCode> _cb = (code) =>
                 {
                      var cbMsg = new CreateAccountReq.Callback();
                      cbMsg.code=code;
@@ -67,7 +67,7 @@ namespace Server
              return await t.Task;
         }
 
-        public void rpc_create_account(String username, String password, Action<ErrCode> callback)
+        public void rpc_create_account(global::System.String username, global::System.String password, global::System.Action<global::Shared.Protocol.ErrCode> callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -95,13 +95,13 @@ namespace Server
             this.CallRemoteMethod(ProtocolCode.CREATE_ACCOUNT_REQ, msg, cb);
         }
 
-        public async Task<DeleteAccountReq.Callback> rpc_delete_account_async(String username, String password, Action<ErrCode> callback=null)
+        public async Task<DeleteAccountReq.Callback> rpc_delete_account_async(global::System.String username, global::System.String password, global::System.Action<global::Shared.Protocol.ErrCode> callback=null)
         {
             var t = new TaskCompletionSource<DeleteAccountReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Action<ErrCode> _cb = (code) =>
+                global::System.Action<global::Shared.Protocol.ErrCode> _cb = (code) =>
                 {
                      var cbMsg = new DeleteAccountReq.Callback();
                      cbMsg.code=code;
@@ -139,7 +139,7 @@ namespace Server
              return await t.Task;
         }
 
-        public void rpc_delete_account(String username, String password, Action<ErrCode> callback)
+        public void rpc_delete_account(global::System.String username, global::System.String password, global::System.Action<global::Shared.Protocol.ErrCode> callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -167,13 +167,13 @@ namespace Server
             this.CallRemoteMethod(ProtocolCode.DELETE_ACCOUNT_REQ, msg, cb);
         }
 
-        public async Task<LoginReq.Callback> rpc_login_async(String username, String password, Action<ErrCode, String, UInt64, String, String> callback=null)
+        public async Task<LoginReq.Callback> rpc_login_async(global::System.String username, global::System.String password, global::System.Action<global::Shared.Protocol.ErrCode, global::System.String, global::System.UInt64, global::System.String, global::System.String> callback=null)
         {
             var t = new TaskCompletionSource<LoginReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Action<ErrCode, String, UInt64, String, String> _cb = (code, arg1, arg2, arg3, arg4) =>
+                global::System.Action<global::Shared.Protocol.ErrCode, global::System.String, global::System.UInt64, global::System.String, global::System.String> _cb = (code, arg1, arg2, arg3, arg4) =>
                 {
                      var cbMsg = new LoginReq.Callback();
                      cbMsg.code=code;
@@ -215,7 +215,7 @@ namespace Server
              return await t.Task;
         }
 
-        public void rpc_login(String username, String password, Action<ErrCode, String, UInt64, String, String> callback)
+        public void rpc_login(global::System.String username, global::System.String password, global::System.Action<global::Shared.Protocol.ErrCode, global::System.String, global::System.UInt64, global::System.String, global::System.String> callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -244,7 +244,7 @@ namespace Server
         }
 
 
-        public void rpc_reset_password(String username, String email)
+        public void rpc_reset_password(global::System.String username, global::System.String email)
         {
            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
            if (this.FromHostId == toHostId)

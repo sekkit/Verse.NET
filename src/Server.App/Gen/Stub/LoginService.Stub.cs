@@ -82,28 +82,28 @@ namespace Server.GModule
 
         [RpcMethod(ProtocolCode.CREATE_ACCOUNT_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_API_NATIVE_create_account(String username, String password, Action<ErrCode> callback)
+        public void SERVER_API_NATIVE_create_account(global::System.String username, global::System.String password, global::System.Action<global::Shared.Protocol.ErrCode> callback)
         {
             this.CreateAccount(username, password, callback);
         }
 
         [RpcMethod(ProtocolCode.DELETE_ACCOUNT_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_API_NATIVE_delete_account(String username, String password, Action<ErrCode> callback)
+        public void SERVER_API_NATIVE_delete_account(global::System.String username, global::System.String password, global::System.Action<global::Shared.Protocol.ErrCode> callback)
         {
             this.DeleteAccount(username, password, callback);
         }
 
         [RpcMethod(ProtocolCode.LOGIN_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_API_NATIVE_login(String username, String password, Action<ErrCode, String, UInt64, String, String> callback)
+        public void SERVER_API_NATIVE_login(global::System.String username, global::System.String password, global::System.Action<global::Shared.Protocol.ErrCode, global::System.String, global::System.UInt64, global::System.String, global::System.String> callback)
         {
             this.Login(username, password, callback);
         }
 
         [RpcMethod(ProtocolCode.RESET_PASSWORD_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_API_NATIVE_reset_password(String username, String email)
+        public void SERVER_API_NATIVE_reset_password(global::System.String username, global::System.String email)
         {
             this.ResetPassword(username, email);
         }

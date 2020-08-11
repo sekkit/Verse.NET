@@ -17,24 +17,25 @@ namespace Fenix.Common.Utils
 
         public delegate IMessage MsgDeserialize(byte[] data);
 
-#if ENABLE_IL2CPP
+//#if ENABLE_IL2CPP
         public volatile static ConcurrentDictionary<Type, MsgDeserialize> _msgCache = new ConcurrentDictionary<Type, MsgDeserialize>();
-#endif
+//#endif
 
         public static byte[] Serialize(IMessage msg)
         {
             return msg.Pack();
         }
 
-        public static T Deserialize<T>(byte[] bytes)
-        { 
+        public static T Deserialize<T>(byte[] bytes) where T: IMessage
+        {
             //Log.Info("D1", typeof(T).Name, MessagePackSerializer.ConvertToJson(bytes));
-            return MessagePackSerializer.Deserialize<T>(bytes, RpcUtil.lz4Options);
+            //return MessagePackSerializer.Deserialize<T>(bytes, RpcUtil.lz4Options);
+            return (T)Deserialize(typeof(T), bytes);
         }
 
         public static IMessage Deserialize(Type type, byte[] bytes)
         {
-#if ENABLE_IL2CPP
+//#if ENABLE_IL2CPP
             if(_msgCache.ContainsKey(type))
             {
                 return _msgCache[type](bytes);
@@ -45,11 +46,11 @@ namespace Fenix.Common.Utils
                 _msgCache[type] = d;
                 return d(bytes);
             }
-#else
-            //Log.Info("D2", type.Name, MessagePackSerializer.ConvertToJson(bytes));
-            //return (IMessage)type.GetMethod("Deserialize").Invoke(null, new object[] { bytes});
-            return (IMessage)MessagePackSerializer.Deserialize(type, bytes, RpcUtil.lz4Options);
-#endif
+//#else
+//            //Log.Info("D2", type.Name, MessagePackSerializer.ConvertToJson(bytes));
+//            //return (IMessage)type.GetMethod("Deserialize").Invoke(null, new object[] { bytes});
+//            return (IMessage)MessagePackSerializer.Deserialize(type, bytes, RpcUtil.lz4Options);
+//#endif
         }
 
         public static Type GetBaseType(Type type)

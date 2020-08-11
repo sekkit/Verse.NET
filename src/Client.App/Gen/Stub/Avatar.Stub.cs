@@ -46,14 +46,14 @@ namespace Client
 
         [RpcMethod(ProtocolCode.API_TEST_NTF, Api.ClientApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void CLIENT_API_NATIVE_api_test(String uid, Action<ErrCode> callback)
+        public void CLIENT_API_NATIVE_api_test(global::System.String uid, global::System.Action<global::Shared.Protocol.ErrCode> callback)
         {
             this.ApiTest(uid, callback);
         }
 
         [RpcMethod(ProtocolCode.API_TEST2_NTF, Api.ClientApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void CLIENT_API_NATIVE_api_test2(String uid, Int32 match_type)
+        public void CLIENT_API_NATIVE_api_test2(global::System.String uid, global::System.Int32 match_type)
         {
             this.ApiTest2(uid, match_type);
         }

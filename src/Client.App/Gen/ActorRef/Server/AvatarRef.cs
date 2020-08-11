@@ -23,13 +23,13 @@ namespace Server
     [RefType("Server.UModule.Avatar")]
     public partial class AvatarRef : ActorRef
     {
-        public async Task<ChangeNameReq.Callback> rpc_change_name_async(String name, Action<ErrCode> callback=null)
+        public async Task<ChangeNameReq.Callback> rpc_change_name_async(global::System.String name, global::System.Action<global::Shared.Protocol.ErrCode> callback=null)
         {
             var t = new TaskCompletionSource<ChangeNameReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Action<ErrCode> _cb = (code) =>
+                global::System.Action<global::Shared.Protocol.ErrCode> _cb = (code) =>
                 {
                      var cbMsg = new ChangeNameReq.Callback();
                      cbMsg.code=code;
@@ -66,7 +66,7 @@ namespace Server
              return await t.Task;
         }
 
-        public void rpc_change_name(String name, Action<ErrCode> callback)
+        public void rpc_change_name(global::System.String name, global::System.Action<global::Shared.Protocol.ErrCode> callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)

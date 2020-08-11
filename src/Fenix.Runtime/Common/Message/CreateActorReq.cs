@@ -15,10 +15,10 @@ namespace Fenix.Common.Message
     public class CreateActorReq : IMessageWithCallback
     {
         [Key(0)]
-        public String typename { get; set; }
+        public global::System.String typename { get; set; }
 
         [Key(1)]
-        public String name { get; set; }
+        public global::System.String name { get; set; }
 
         [Key(2)]
 
@@ -32,14 +32,13 @@ namespace Fenix.Common.Message
         public class Callback : IMessage
         {
             [Key(0)]
-            [DefaultValue(DefaultErrCode.ERROR)]
-            public DefaultErrCode code { get; set; } = DefaultErrCode.ERROR;
+            public global::Fenix.Common.DefaultErrCode code { get; set; } = DefaultErrCode.ERROR;
 
             [Key(1)]
-            public String arg1 { get; set; }
+            public global::System.String arg1 { get; set; }
 
             [Key(2)]
-            public UInt64 arg2 { get; set; }
+            public global::System.UInt64 arg2 { get; set; }
 
             public override byte[] Pack()
             {

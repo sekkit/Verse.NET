@@ -1,10 +1,11 @@
-﻿using MessagePack;
+﻿using Fenix.Common.Utils;
+using MessagePack;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Fenix.Common.Rpc
-{ 
+{
     [MessagePackObject]
     public class IMessage
     {
@@ -18,10 +19,10 @@ namespace Fenix.Common.Rpc
             return MessagePackSerializer.Serialize(this, Utils.RpcUtil.lz4Options);
         }
 
-        public virtual void UnPack(byte[] data)
-        {
+        //public virtual void UnPack(byte[] data)
+        //{
             
-        }
+        //}
 
         public virtual string ToJson()
         {
@@ -35,7 +36,7 @@ namespace Fenix.Common.Rpc
 
         public static IMessage Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<IMessage>(data);
+            return MessagePackSerializer.Deserialize<IMessage>(data, RpcUtil.lz4Options);
         }
 
         public virtual bool HasCallback()
@@ -67,7 +68,7 @@ namespace Fenix.Common.Rpc
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize(this);
+            return MessagePackSerializer.Serialize(this, RpcUtil.lz4Options);
         }
     }
 }

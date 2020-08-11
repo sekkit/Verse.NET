@@ -37,6 +37,15 @@ namespace Fenix
             }, context);
         }
 
+        [RpcMethod(OpCode.ON_SERVER_ACTOR_ENABLE_NTF, Api.ClientApi)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void CLIENT_API_on_server_actor_enable(IMessage msg, RpcContext context)
+        {
+            var _msg = (OnServerActorEnableNtf)msg;
+            on_server_actor_enable?.Invoke(_msg.actorName);
+            this.OnServerActorEnable(_msg.actorName, context);
+        }
+
         [RpcMethod(OpCode.RECONNECT_SERVER_ACTOR_NTF, Api.ClientApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void CLIENT_API_reconnect_server_actor(IMessage msg, Action<IMessage> cb, RpcContext context)
@@ -50,18 +59,27 @@ namespace Fenix
             }, context);
         }
 
-        public event Action<DisconnectReason, Action> on_before_disconnect;
+        public event Action<global::Fenix.Common.DisconnectReason, global::System.Action> on_before_disconnect;
         [RpcMethod(OpCode.ON_BEFORE_DISCONNECT_NTF, Api.ClientApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void CLIENT_API_NATIVE_on_before_disconnect(DisconnectReason reason, Action callback, RpcContext context)
+        public void CLIENT_API_NATIVE_on_before_disconnect(global::Fenix.Common.DisconnectReason reason, global::System.Action callback, RpcContext context)
         {
             on_before_disconnect?.Invoke(reason, callback);
             this.OnBeforeDisconnect(reason, callback, context);
         }
 
+        public event Action<global::System.String> on_server_actor_enable;
+        [RpcMethod(OpCode.ON_SERVER_ACTOR_ENABLE_NTF, Api.ClientApi)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void CLIENT_API_NATIVE_on_server_actor_enable(global::System.String actorName, RpcContext context)
+        {
+            on_server_actor_enable?.Invoke(actorName);
+            this.OnServerActorEnable(actorName, context);
+        }
+
         [RpcMethod(OpCode.RECONNECT_SERVER_ACTOR_NTF, Api.ClientApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void CLIENT_API_NATIVE_reconnect_server_actor(UInt64 hostId, String hostName, String hostIP, Int32 hostPort, UInt64 actorId, String actorName, String aTypeName, Action<DefaultErrCode> callback, RpcContext context)
+        public void CLIENT_API_NATIVE_reconnect_server_actor(global::System.UInt64 hostId, global::System.String hostName, global::System.String hostIP, global::System.Int32 hostPort, global::System.UInt64 actorId, global::System.String actorName, global::System.String aTypeName, global::System.Action<global::Fenix.Common.DefaultErrCode> callback, RpcContext context)
         {
             this.ReconnectServerActor(hostId, hostName, hostIP, hostPort, actorId, actorName, aTypeName, callback, context);
         }
@@ -160,49 +178,49 @@ namespace Fenix
 
         [RpcMethod(OpCode.BIND_CLIENT_ACTOR_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_API_NATIVE_bind_client_actor(String actorName, Action<DefaultErrCode> callback, RpcContext context)
+        public void SERVER_API_NATIVE_bind_client_actor(global::System.String actorName, global::System.Action<global::Fenix.Common.DefaultErrCode> callback, RpcContext context)
         {
             this.BindClientActor(actorName, callback, context);
         }
 
         [RpcMethod(OpCode.REGISTER_CLIENT_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_API_NATIVE_register_client(UInt64 hostId, String hostName, Action<DefaultErrCode, HostInfo> callback, RpcContext context)
+        public void SERVER_API_NATIVE_register_client(global::System.UInt64 hostId, global::System.String hostName, global::System.Action<global::Fenix.Common.DefaultErrCode, global::Fenix.HostInfo> callback, RpcContext context)
         {
             this.RegisterClient(hostId, hostName, callback, context);
         }
 
         [RpcMethod(OpCode.REMOVE_CLIENT_ACTOR_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_API_NATIVE_remove_client_actor(UInt64 actorId, DisconnectReason reason, Action<DefaultErrCode> callback, RpcContext context)
+        public void SERVER_API_NATIVE_remove_client_actor(global::System.UInt64 actorId, global::Fenix.Common.DisconnectReason reason, global::System.Action<global::Fenix.Common.DefaultErrCode> callback, RpcContext context)
         {
             this.RemoveClientActor(actorId, reason, callback, context);
         }
 
         [RpcMethod(OpCode.CREATE_ACTOR_REQ, Api.ServerOnly)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_ONLY_NATIVE_create_actor(String typename, String name, Action<DefaultErrCode, String, UInt64> callback, RpcContext context)
+        public void SERVER_ONLY_NATIVE_create_actor(global::System.String typename, global::System.String name, global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.String, global::System.UInt64> callback, RpcContext context)
         {
             this.CreateActor(typename, name, callback, context);
         }
 
         [RpcMethod(OpCode.MIGRATE_ACTOR_REQ, Api.ServerOnly)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_ONLY_NATIVE_migrate_actor(UInt64 actorId, Action<DefaultErrCode, Byte[]> callback, RpcContext context)
+        public void SERVER_ONLY_NATIVE_migrate_actor(global::System.UInt64 actorId, global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.Byte[]> callback, RpcContext context)
         {
             this.MigrateActor(actorId, callback, context);
         }
 
         [RpcMethod(OpCode.REGISTER_REQ, Api.ServerOnly)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_ONLY_NATIVE_register(UInt64 hostId, String hostName, RpcContext context)
+        public void SERVER_ONLY_NATIVE_register(global::System.UInt64 hostId, global::System.String hostName, RpcContext context)
         {
             this.Register(hostId, hostName, context);
         }
 
         [RpcMethod(OpCode.REMOVE_ACTOR_REQ, Api.ServerOnly)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_ONLY_NATIVE_remove_actor(UInt64 actorId, Action<DefaultErrCode> callback, RpcContext context)
+        public void SERVER_ONLY_NATIVE_remove_actor(global::System.UInt64 actorId, global::System.Action<global::Fenix.Common.DefaultErrCode> callback, RpcContext context)
         {
             this.RemoveActor(actorId, callback, context);
         }

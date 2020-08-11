@@ -18,10 +18,10 @@ namespace Shared.Message
     public class ApiTest2Ntf : IMessage
     {
         [Key(0)]
-        public String uid { get; set; }
+        public global::System.String uid { get; set; }
 
         [Key(1)]
-        public Int32 match_type { get; set; }
+        public global::System.Int32 match_type { get; set; }
 
         public override byte[] Pack()
         {

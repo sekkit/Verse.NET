@@ -23,13 +23,13 @@ namespace Client
     [RefType("Client.Avatar")]
     public partial class AvatarRef : ActorRef
     {
-        public async Task<ApiTestNtf.Callback> client_on_api_test_async(String uid, Action<ErrCode> callback=null)
+        public async Task<ApiTestNtf.Callback> client_on_api_test_async(global::System.String uid, global::System.Action<global::Shared.Protocol.ErrCode> callback=null)
         {
             var t = new TaskCompletionSource<ApiTestNtf.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Action<ErrCode> _cb = (code) =>
+                global::System.Action<global::Shared.Protocol.ErrCode> _cb = (code) =>
                 {
                      var cbMsg = new ApiTestNtf.Callback();
                      cbMsg.code=code;
@@ -66,7 +66,7 @@ namespace Client
              return await t.Task;
         }
 
-        public void client_on_api_test(String uid, Action<ErrCode> callback)
+        public void client_on_api_test(global::System.String uid, global::System.Action<global::Shared.Protocol.ErrCode> callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -94,7 +94,7 @@ namespace Client
         }
 
 
-        public void client_on_api_test2(String uid, Int32 match_type)
+        public void client_on_api_test2(global::System.String uid, global::System.Int32 match_type)
         {
            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
            if (this.FromHostId == toHostId)

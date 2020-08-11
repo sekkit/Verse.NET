@@ -52,7 +52,7 @@ namespace Server.UModule
 
         [RpcMethod(ProtocolCode.CHANGE_NAME_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_API_NATIVE_change_name(String name, Action<ErrCode> callback)
+        public void SERVER_API_NATIVE_change_name(global::System.String name, global::System.Action<global::Shared.Protocol.ErrCode> callback)
         {
             this.ChangeName(name, callback);
         }

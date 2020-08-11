@@ -18,10 +18,10 @@ namespace Shared.Message
     public class LoginReq : IMessageWithCallback
     {
         [Key(0)]
-        public String username { get; set; }
+        public global::System.String username { get; set; }
 
         [Key(1)]
-        public String password { get; set; }
+        public global::System.String password { get; set; }
 
         [Key(2)]
 
@@ -35,20 +35,19 @@ namespace Shared.Message
         public class Callback : IMessage
         {
             [Key(0)]
-            [DefaultValue(ErrCode.ERROR)]
-            public ErrCode code { get; set; } = ErrCode.ERROR;
+            public global::Shared.Protocol.ErrCode code { get; set; } = ErrCode.ERROR;
 
             [Key(1)]
-            public String arg1 { get; set; }
+            public global::System.String arg1 { get; set; }
 
             [Key(2)]
-            public UInt64 arg2 { get; set; }
+            public global::System.UInt64 arg2 { get; set; }
 
             [Key(3)]
-            public String arg3 { get; set; }
+            public global::System.String arg3 { get; set; }
 
             [Key(4)]
-            public String arg4 { get; set; }
+            public global::System.String arg4 { get; set; }
 
             public override byte[] Pack()
             {

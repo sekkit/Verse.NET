@@ -15,7 +15,7 @@ namespace Fenix.Common.Message
     public class MigrateActorReq : IMessageWithCallback
     {
         [Key(0)]
-        public UInt64 actorId { get; set; }
+        public global::System.UInt64 actorId { get; set; }
 
         [Key(1)]
 
@@ -29,11 +29,10 @@ namespace Fenix.Common.Message
         public class Callback : IMessage
         {
             [Key(0)]
-            [DefaultValue(DefaultErrCode.ERROR)]
-            public DefaultErrCode code { get; set; } = DefaultErrCode.ERROR;
+            public global::Fenix.Common.DefaultErrCode code { get; set; } = DefaultErrCode.ERROR;
 
             [Key(1)]
-            public Byte[] arg1 { get; set; }
+            public global::System.Byte[] arg1 { get; set; }
 
             public override byte[] Pack()
             {

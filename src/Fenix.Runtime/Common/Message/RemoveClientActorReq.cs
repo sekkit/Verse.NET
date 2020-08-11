@@ -15,10 +15,10 @@ namespace Fenix.Common.Message
     public class RemoveClientActorReq : IMessageWithCallback
     {
         [Key(0)]
-        public UInt64 actorId { get; set; }
+        public global::System.UInt64 actorId { get; set; }
 
         [Key(1)]
-        public DisconnectReason reason { get; set; }
+        public global::Fenix.Common.DisconnectReason reason { get; set; }
 
         [Key(2)]
 
@@ -32,8 +32,7 @@ namespace Fenix.Common.Message
         public class Callback : IMessage
         {
             [Key(0)]
-            [DefaultValue(DefaultErrCode.ERROR)]
-            public DefaultErrCode code { get; set; } = DefaultErrCode.ERROR;
+            public global::Fenix.Common.DefaultErrCode code { get; set; } = DefaultErrCode.ERROR;
 
             public override byte[] Pack()
             {

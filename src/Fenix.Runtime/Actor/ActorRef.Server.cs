@@ -18,13 +18,13 @@ namespace Fenix
 
     public partial class ActorRef
     {
-        public async Task<BindClientActorReq.Callback> BindClientActorAsync(String actorName, Action<DefaultErrCode> callback=null)
+        public async Task<BindClientActorReq.Callback> BindClientActorAsync(global::System.String actorName, global::System.Action<global::Fenix.Common.DefaultErrCode> callback=null)
         {
             var t = new TaskCompletionSource<BindClientActorReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Action<DefaultErrCode> _cb = (code) =>
+                global::System.Action<global::Fenix.Common.DefaultErrCode> _cb = (code) =>
                 {
                      var cbMsg = new BindClientActorReq.Callback();
                      cbMsg.code=code;
@@ -61,7 +61,7 @@ namespace Fenix
              return await t.Task;
         }
 
-        public void BindClientActor(String actorName, Action<DefaultErrCode> callback)
+        public void BindClientActor(global::System.String actorName, global::System.Action<global::Fenix.Common.DefaultErrCode> callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -88,13 +88,13 @@ namespace Fenix
             this.CallRemoteMethod(OpCode.BIND_CLIENT_ACTOR_REQ, msg, cb);
         }
 
-        public async Task<CreateActorReq.Callback> CreateActorAsync(String typename, String name, Action<DefaultErrCode, String, UInt64> callback=null)
+        public async Task<CreateActorReq.Callback> CreateActorAsync(global::System.String typename, global::System.String name, global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.String, global::System.UInt64> callback=null)
         {
             var t = new TaskCompletionSource<CreateActorReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Action<DefaultErrCode, String, UInt64> _cb = (code, arg1, arg2) =>
+                global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.String, global::System.UInt64> _cb = (code, arg1, arg2) =>
                 {
                      var cbMsg = new CreateActorReq.Callback();
                      cbMsg.code=code;
@@ -134,7 +134,7 @@ namespace Fenix
              return await t.Task;
         }
 
-        public void CreateActor(String typename, String name, Action<DefaultErrCode, String, UInt64> callback)
+        public void CreateActor(global::System.String typename, global::System.String name, global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.String, global::System.UInt64> callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -162,13 +162,13 @@ namespace Fenix
             this.CallRemoteMethod(OpCode.CREATE_ACTOR_REQ, msg, cb);
         }
 
-        public async Task<MigrateActorReq.Callback> MigrateActorAsync(UInt64 actorId, Action<DefaultErrCode, Byte[]> callback=null)
+        public async Task<MigrateActorReq.Callback> MigrateActorAsync(global::System.UInt64 actorId, global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.Byte[]> callback=null)
         {
             var t = new TaskCompletionSource<MigrateActorReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Action<DefaultErrCode, Byte[]> _cb = (code, arg1) =>
+                global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.Byte[]> _cb = (code, arg1) =>
                 {
                      var cbMsg = new MigrateActorReq.Callback();
                      cbMsg.code=code;
@@ -206,7 +206,7 @@ namespace Fenix
              return await t.Task;
         }
 
-        public void MigrateActor(UInt64 actorId, Action<DefaultErrCode, Byte[]> callback)
+        public void MigrateActor(global::System.UInt64 actorId, global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.Byte[]> callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -233,13 +233,13 @@ namespace Fenix
             this.CallRemoteMethod(OpCode.MIGRATE_ACTOR_REQ, msg, cb);
         }
 
-        public async Task<OnBeforeDisconnectNtf.Callback> OnBeforeDisconnectAsync(DisconnectReason reason, Action callback=null)
+        public async Task<OnBeforeDisconnectNtf.Callback> OnBeforeDisconnectAsync(global::Fenix.Common.DisconnectReason reason, global::System.Action callback=null)
         {
             var t = new TaskCompletionSource<OnBeforeDisconnectNtf.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Action _cb = () =>
+                global::System.Action _cb = () =>
                 {
                      var cbMsg = new OnBeforeDisconnectNtf.Callback();
 
@@ -276,7 +276,7 @@ namespace Fenix
              return await t.Task;
         }
 
-        public void OnBeforeDisconnect(DisconnectReason reason, Action callback)
+        public void OnBeforeDisconnect(global::Fenix.Common.DisconnectReason reason, global::System.Action callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -303,13 +303,37 @@ namespace Fenix
             this.CallRemoteMethod(OpCode.ON_BEFORE_DISCONNECT_NTF, msg, cb);
         }
 
-        public async Task<ReconnectServerActorNtf.Callback> ReconnectServerActorAsync(UInt64 hostId, String hostName, String hostIP, Int32 hostPort, UInt64 actorId, String actorName, String aTypeName, Action<DefaultErrCode> callback=null)
+
+        public void OnServerActorEnable(global::System.String actorName)
+        {
+           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
+           if (this.FromHostId == toHostId)
+           {
+                var protoCode = OpCode.ON_SERVER_ACTOR_ENABLE_NTF;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { actorName, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { actorName }); 
+               return;
+           }
+           var msg = new OnServerActorEnableNtf()
+           {
+                actorName=actorName
+           };
+           this.CallRemoteMethod(OpCode.ON_SERVER_ACTOR_ENABLE_NTF, msg, null);
+        }
+
+        public async Task<ReconnectServerActorNtf.Callback> ReconnectServerActorAsync(global::System.UInt64 hostId, global::System.String hostName, global::System.String hostIP, global::System.Int32 hostPort, global::System.UInt64 actorId, global::System.String actorName, global::System.String aTypeName, global::System.Action<global::Fenix.Common.DefaultErrCode> callback=null)
         {
             var t = new TaskCompletionSource<ReconnectServerActorNtf.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Action<DefaultErrCode> _cb = (code) =>
+                global::System.Action<global::Fenix.Common.DefaultErrCode> _cb = (code) =>
                 {
                      var cbMsg = new ReconnectServerActorNtf.Callback();
                      cbMsg.code=code;
@@ -352,7 +376,7 @@ namespace Fenix
              return await t.Task;
         }
 
-        public void ReconnectServerActor(UInt64 hostId, String hostName, String hostIP, Int32 hostPort, UInt64 actorId, String actorName, String aTypeName, Action<DefaultErrCode> callback)
+        public void ReconnectServerActor(global::System.UInt64 hostId, global::System.String hostName, global::System.String hostIP, global::System.Int32 hostPort, global::System.UInt64 actorId, global::System.String actorName, global::System.String aTypeName, global::System.Action<global::Fenix.Common.DefaultErrCode> callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -386,7 +410,7 @@ namespace Fenix
         }
 
 
-        public void Register(UInt64 hostId, String hostName)
+        public void Register(global::System.UInt64 hostId, global::System.String hostName)
         {
            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
            if (this.FromHostId == toHostId)
@@ -410,13 +434,13 @@ namespace Fenix
            this.CallRemoteMethod(OpCode.REGISTER_REQ, msg, null);
         }
 
-        public async Task<RegisterClientReq.Callback> RegisterClientAsync(UInt64 hostId, String hostName, Action<DefaultErrCode, HostInfo> callback=null)
+        public async Task<RegisterClientReq.Callback> RegisterClientAsync(global::System.UInt64 hostId, global::System.String hostName, global::System.Action<global::Fenix.Common.DefaultErrCode, global::Fenix.HostInfo> callback=null)
         {
             var t = new TaskCompletionSource<RegisterClientReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Action<DefaultErrCode, HostInfo> _cb = (code, arg1) =>
+                global::System.Action<global::Fenix.Common.DefaultErrCode, global::Fenix.HostInfo> _cb = (code, arg1) =>
                 {
                      var cbMsg = new RegisterClientReq.Callback();
                      cbMsg.code=code;
@@ -455,7 +479,7 @@ namespace Fenix
              return await t.Task;
         }
 
-        public void RegisterClient(UInt64 hostId, String hostName, Action<DefaultErrCode, HostInfo> callback)
+        public void RegisterClient(global::System.UInt64 hostId, global::System.String hostName, global::System.Action<global::Fenix.Common.DefaultErrCode, global::Fenix.HostInfo> callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -483,13 +507,13 @@ namespace Fenix
             this.CallRemoteMethod(OpCode.REGISTER_CLIENT_REQ, msg, cb);
         }
 
-        public async Task<RemoveActorReq.Callback> RemoveActorAsync(UInt64 actorId, Action<DefaultErrCode> callback=null)
+        public async Task<RemoveActorReq.Callback> RemoveActorAsync(global::System.UInt64 actorId, global::System.Action<global::Fenix.Common.DefaultErrCode> callback=null)
         {
             var t = new TaskCompletionSource<RemoveActorReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Action<DefaultErrCode> _cb = (code) =>
+                global::System.Action<global::Fenix.Common.DefaultErrCode> _cb = (code) =>
                 {
                      var cbMsg = new RemoveActorReq.Callback();
                      cbMsg.code=code;
@@ -526,7 +550,7 @@ namespace Fenix
              return await t.Task;
         }
 
-        public void RemoveActor(UInt64 actorId, Action<DefaultErrCode> callback)
+        public void RemoveActor(global::System.UInt64 actorId, global::System.Action<global::Fenix.Common.DefaultErrCode> callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -553,13 +577,13 @@ namespace Fenix
             this.CallRemoteMethod(OpCode.REMOVE_ACTOR_REQ, msg, cb);
         }
 
-        public async Task<RemoveClientActorReq.Callback> RemoveClientActorAsync(UInt64 actorId, DisconnectReason reason, Action<DefaultErrCode> callback=null)
+        public async Task<RemoveClientActorReq.Callback> RemoveClientActorAsync(global::System.UInt64 actorId, global::Fenix.Common.DisconnectReason reason, global::System.Action<global::Fenix.Common.DefaultErrCode> callback=null)
         {
             var t = new TaskCompletionSource<RemoveClientActorReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                Action<DefaultErrCode> _cb = (code) =>
+                global::System.Action<global::Fenix.Common.DefaultErrCode> _cb = (code) =>
                 {
                      var cbMsg = new RemoveClientActorReq.Callback();
                      cbMsg.code=code;
@@ -597,7 +621,7 @@ namespace Fenix
              return await t.Task;
         }
 
-        public void RemoveClientActor(UInt64 actorId, DisconnectReason reason, Action<DefaultErrCode> callback)
+        public void RemoveClientActor(global::System.UInt64 actorId, global::Fenix.Common.DisconnectReason reason, global::System.Action<global::Fenix.Common.DefaultErrCode> callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)

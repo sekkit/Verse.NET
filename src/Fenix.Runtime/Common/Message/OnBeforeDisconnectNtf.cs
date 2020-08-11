@@ -15,7 +15,7 @@ namespace Fenix.Common.Message
     public class OnBeforeDisconnectNtf : IMessageWithCallback
     {
         [Key(0)]
-        public DisconnectReason reason { get; set; }
+        public global::Fenix.Common.DisconnectReason reason { get; set; }
 
         [Key(1)]
 

@@ -58,14 +58,14 @@ namespace Server.GModule
 
         [RpcMethod(ProtocolCode.JOIN_MATCH_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_API_NATIVE_join_match(String uid, Int32 match_type, Action<ErrCode> callback)
+        public void SERVER_API_NATIVE_join_match(global::System.String uid, global::System.Int32 match_type, global::System.Action<global::Shared.Protocol.ErrCode> callback)
         {
             this.JoinMatch(uid, match_type, callback);
         }
 
         [RpcMethod(ProtocolCode.FIND_MATCH_REQ, Api.ServerOnly)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_ONLY_NATIVE_find_match(String uid, Action<ErrCode, Server.DataModel.Account> callback)
+        public void SERVER_ONLY_NATIVE_find_match(global::System.String uid, global::System.Action<global::Shared.Protocol.ErrCode, global::Server.DataModel.Account> callback)
         {
             this.FindMatch(uid, callback);
         }

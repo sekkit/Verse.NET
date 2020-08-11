@@ -16,11 +16,9 @@ using System.Runtime.Serialization;
 namespace Fenix
 {
     [MessagePackObject]
-    [Serializable]
     public class Actor: Entity
     {
         [IgnoreMember]
-        [IgnoreDataMember]
         public ulong HostId => Global.Host.Id;
          
         [Key(3)]
@@ -28,18 +26,25 @@ namespace Fenix
         public bool CanTransfer { get; set; }
 
 #if !CLIENT
+        
+        protected ActorRef clientActor;
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        protected ActorRef client;
+        public virtual ActorRef Client => clientActor;
 
-        public virtual ActorRef Client => client;
+#else
 
+        protected ActorRef serverActor;
+
+        public virtual ActorRef Server => serverActor;
 #endif
 
-        [IgnoreMember]
-        [IgnoreDataMember]
+        [IgnoreMember] 
         protected Dictionary<Type, IMessage> mPersistentDic = new Dictionary<Type, IMessage>();
- 
+
+        [IgnoreMember]
+        protected Dictionary<Type, object> mRuntimeDic = new Dictionary<Type, object>();
+
+
         public T Get<T>() where T: IMessage
         {
             IMessage value;
@@ -169,34 +174,55 @@ namespace Fenix
             IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
             return (T)Global.GetActorRefByAddr(typeof(T), ep, hostName, name, null, Global.Host);
         }
+
 #if !CLIENT
+
         //[ServerOnly]
         //[EditorBrowsable(EditorBrowsableState.Never)]
         public void OnClientEnable()
         { 
-            var refType = Global.TypeManager.GetActorRefType("Client.Avatar");
+            string actorTypeName = this.GetType().Name;
+
+            var refType = Global.TypeManager.GetActorRefType("Client."+actorTypeName);
             if(refType == null)
                 refType = Global.TypeManager.GetActorRefType(this.GetType().FullName);
 
-            this.client = GetActorRef(refType, this.UniqueName);
+            this.clientActor = GetActorRef(refType, this.UniqueName);
             Log.Info(string.Format("on_client_enable", this.UniqueName, this.UniqueName));
 
             this.onClientEnable();
+
+            //this.clientActor.OnServerActorEnable(this.UniqueName);
         }
 
         //[ServerOnly]
         //[EditorBrowsable(EditorBrowsableState.Never)]
         public void OnClientDisable()
         {
-            //actorName == this.UniqueName 
-            this.client = null;
+            //actorName == this.UniqueName
+            this.clientActor = null;
             Log.Info(string.Format("on_client_disable", this.UniqueName, this.UniqueName));
 
             this.onClientDisable();
-        } 
+        }
+#else 
 
-#endif 
-         
+        public void OnServerEnable()
+        {
+            string actorTypeName = this.GetType().Name;
+
+            var refType = Global.TypeManager.GetActorRefType("Server.UModule." + actorTypeName);
+            if (refType == null)
+                refType = Global.TypeManager.GetActorRefType(this.GetType().FullName);
+
+            this.serverActor = GetActorRef(refType, this.UniqueName);
+            Log.Info(string.Format("on_client_enable", this.UniqueName, this.UniqueName));
+
+            this.onServerEnable();
+        }
+
+#endif
+
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void OnLoad()
         {
@@ -213,6 +239,7 @@ namespace Fenix
         [IgnoreMember]
         protected ulong destroyTimerId = 0;
 
+#if !CLIENT
         protected virtual void onClientEnable()
         {
             CancelTimer(destroyTimerId);
@@ -221,8 +248,13 @@ namespace Fenix
         protected virtual void onClientDisable()
         {
             AddTimer(0, 15000, Destroy); 
-        }
+        } 
+#else
+        protected virtual void onServerEnable()
+        {
 
+        }
+#endif
         protected virtual void onRestore()
         {
 
