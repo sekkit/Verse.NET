@@ -1,4 +1,5 @@
 ﻿using Fenix.Common.Rpc;
+using Fenix.Common.Utils;
 using MessagePack;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,11 @@ namespace Server.DataModel
         public override byte[] Pack()
         {
             return MessagePackSerializer.Serialize<Account>(this);
+        }
+
+        public new static IMessage Deserialize(byte[] data)
+        {
+            return MessagePackSerializer.Deserialize<Account>(data, RpcUtil.lz4Options);
         }
     }
 }
