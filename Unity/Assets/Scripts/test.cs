@@ -17,9 +17,9 @@ public class test : MonoBehaviour
 
     void OnLogin()
     {
-        app.Login("", "", (code) =>
+        app.Login("", "", (code, avatar) =>
         {
-            Log.Info("login_result", code);
+            Log.Info("login_result", code, avatar.Uid);
         });
     }
 

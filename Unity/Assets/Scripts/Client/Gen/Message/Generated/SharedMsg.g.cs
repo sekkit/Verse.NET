@@ -52,8 +52,8 @@ namespace MessagePack.Resolvers
             lookup = new global::System.Collections.Generic.Dictionary<Type, int>(3)
             {
                 { typeof(global::System.Collections.Generic.Dictionary<int, object>), 0 },
-                { typeof(global::Shared.DataModel.Account), 1 },
-                { typeof(global::Shared.DataModel.MatchData), 2 },
+                { typeof(global::Shared.DataModel.MatchData), 1 },
+                { typeof(global::Shared.DataModel.User), 2 },
             };
         }
 
@@ -68,8 +68,8 @@ namespace MessagePack.Resolvers
             switch (key)
             {
                 case 0: return new global::MessagePack.Formatters.DictionaryFormatter<int, object>();
-                case 1: return new MessagePack.Formatters.Shared.DataModel.AccountFormatter();
-                case 2: return new MessagePack.Formatters.Shared.DataModel.MatchDataFormatter();
+                case 1: return new MessagePack.Formatters.Shared.DataModel.MatchDataFormatter();
+                case 2: return new MessagePack.Formatters.Shared.DataModel.UserFormatter();
                 default: return null;
             }
         }
@@ -109,57 +109,6 @@ namespace MessagePack.Formatters.Shared.DataModel
     using System;
     using System.Buffers;
     using MessagePack;
-
-    public sealed class AccountFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.DataModel.Account>
-    {
-
-
-        public void Serialize(ref MessagePackWriter writer, global::Shared.DataModel.Account value, global::MessagePack.MessagePackSerializerOptions options)
-        {
-            if (value == null)
-            {
-                writer.WriteNil();
-                return;
-            }
-
-            IFormatterResolver formatterResolver = options.Resolver;
-            writer.WriteArrayHeader(1);
-            formatterResolver.GetFormatterWithVerify<string>().Serialize(ref writer, value.uid, options);
-        }
-
-        public global::Shared.DataModel.Account Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
-        {
-            if (reader.TryReadNil())
-            {
-                return null;
-            }
-
-            options.Security.DepthStep(ref reader);
-            IFormatterResolver formatterResolver = options.Resolver;
-            var length = reader.ReadArrayHeader();
-            var __uid__ = default(string);
-
-            for (int i = 0; i < length; i++)
-            {
-                var key = i;
-
-                switch (key)
-                {
-                    case 0:
-                        __uid__ = formatterResolver.GetFormatterWithVerify<string>().Deserialize(ref reader, options);
-                        break;
-                    default:
-                        reader.Skip();
-                        break;
-                }
-            }
-
-            var ____result = new global::Shared.DataModel.Account();
-            ____result.uid = __uid__;
-            reader.Depth--;
-            return ____result;
-        }
-    }
 
     public sealed class MatchDataFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.DataModel.MatchData>
     {
@@ -207,6 +156,102 @@ namespace MessagePack.Formatters.Shared.DataModel
 
             var ____result = new global::Shared.DataModel.MatchData();
             ____result.matchData = __matchData__;
+            reader.Depth--;
+            return ____result;
+        }
+    }
+
+    public sealed class UserFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.DataModel.User>
+    {
+
+
+        public void Serialize(ref MessagePackWriter writer, global::Shared.DataModel.User value, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (value == null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
+            IFormatterResolver formatterResolver = options.Resolver;
+            writer.WriteArrayHeader(16);
+            writer.WriteNil();
+            writer.WriteNil();
+            writer.WriteNil();
+            writer.WriteNil();
+            writer.WriteNil();
+            writer.Write(value.Exp);
+            writer.WriteNil();
+            writer.WriteNil();
+            writer.WriteNil();
+            writer.WriteNil();
+            writer.Write(value.Coin);
+            writer.Write(value.BlueCoin);
+            writer.Write(value.RedCoin);
+            writer.Write(value.Strength);
+            writer.Write(value.Spirit);
+            writer.Write(value.Power);
+        }
+
+        public global::Shared.DataModel.User Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (reader.TryReadNil())
+            {
+                return null;
+            }
+
+            options.Security.DepthStep(ref reader);
+            IFormatterResolver formatterResolver = options.Resolver;
+            var length = reader.ReadArrayHeader();
+            var __Exp__ = default(int);
+            var __Coin__ = default(int);
+            var __BlueCoin__ = default(int);
+            var __RedCoin__ = default(int);
+            var __Strength__ = default(int);
+            var __Spirit__ = default(int);
+            var __Power__ = default(int);
+
+            for (int i = 0; i < length; i++)
+            {
+                var key = i;
+
+                switch (key)
+                {
+                    case 5:
+                        __Exp__ = reader.ReadInt32();
+                        break;
+                    case 10:
+                        __Coin__ = reader.ReadInt32();
+                        break;
+                    case 11:
+                        __BlueCoin__ = reader.ReadInt32();
+                        break;
+                    case 12:
+                        __RedCoin__ = reader.ReadInt32();
+                        break;
+                    case 13:
+                        __Strength__ = reader.ReadInt32();
+                        break;
+                    case 14:
+                        __Spirit__ = reader.ReadInt32();
+                        break;
+                    case 15:
+                        __Power__ = reader.ReadInt32();
+                        break;
+                    default:
+                        reader.Skip();
+                        break;
+                }
+            }
+
+            var ____result = new global::Shared.DataModel.User();
+            ____result.Exp = __Exp__;
+            ____result.Coin = __Coin__;
+            ____result.BlueCoin = __BlueCoin__;
+            ____result.RedCoin = __RedCoin__;
+            ____result.Strength = __Strength__;
+            ____result.Spirit = __Spirit__;
+            ____result.Power = __Power__;
             reader.Depth--;
             return ____result;
         }

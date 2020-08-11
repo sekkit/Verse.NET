@@ -1,4 +1,4 @@
-﻿using DotNetty.KCP;
+﻿
 using Fenix;
 using Fenix.Common;
 using Fenix.Common.Utils;
@@ -27,7 +27,7 @@ namespace Client
             this.Init();
         }
 #endif
-        public void Init(bool threaded=true)
+        public void Init(bool threaded = true)
         {
             Environment.SetEnvironmentVariable("AppName", "Client.App");
             Global.Init(new Assembly[] { typeof(App).Assembly });
@@ -39,13 +39,13 @@ namespace Client
 #if !UNITY_5_3_OR_NEWER
                 HostHelper.Run(host);
 #else
-                
+
 #endif
             }
         }
 
-        public void Login(string userName, string password, Action<ErrCode> callback)
-        { 
+        public void Login(string userName, string password, Action<ErrCode, Avatar> callback)
+        {
             var localAddr = Basic.GetLocalIPv4(System.Net.NetworkInformation.NetworkInterfaceType.Ethernet);
             //localAddr = "182.254.179.250"; 
 
@@ -58,17 +58,17 @@ namespace Client
                 {
                     Log.Error("register_client_error, plz try again later");
                     loginapp.Disconnect();
-                    callback?.Invoke(ErrCode.ERROR);
+                    callback?.Invoke(ErrCode.ERROR, null);
                     return;
                 }
 
-                Log.Info(string.Format("Register to server {0}: {1} {2} {3}", code, 
+                Log.Info(string.Format("Register to server {0}: {1} {2} {3}", code,
                     hostInfo.HostId, hostInfo.HostName, hostInfo.HostAddr));
 
                 if (loginapp.toHostId != hostInfo.HostId)
                     Global.NetManager.ChangePeerId(loginapp.toHostId, hostInfo.HostId, hostInfo.HostName, hostInfo.HostAddr);
 
-                Global.IdManager.RegisterHostInfo(hostInfo); 
+                Global.IdManager.RegisterHostInfo(hostInfo);
 
                 if (code == 0)
                 {
@@ -80,27 +80,27 @@ namespace Client
                         {
                             Log.Error("login_failed");
                             loginapp.Disconnect();
-                            callback?.Invoke(code2);
+                            callback?.Invoke(code2, null);
                             return;
                         }
 
                         Log.Info(string.Format("ServerAvatar host: {0}@{1} {2} {3}", uid, hostId, hostName, hostAddress));
-                        Game.Avatar = host.CreateActor<Client.Avatar>(uid);
+                        var avatar = host.CreateActorLocally<Client.Avatar>(uid);
 
                         Global.IdManager.RegisterHost(hostId, hostName, hostAddress, hostAddress);
-                        Global.IdManager.RegisterActor(Game.Avatar, hostId);
+                        Global.IdManager.RegisterActor(avatar, hostId);
 
                         var parts = hostAddress.Split(':');
                         var ip = parts[0];
                         var port = int.Parse(parts[1]);
                         var avatarHost = host.GetHost(hostName, ip, port);
                         Global.NetManager.PrintPeerInfo("# Master.App: hostref created");
-                        avatarHost.BindClientActor(Game.Avatar.Uid, (code3) =>
+                        avatarHost.BindClientActor(avatar.Uid, (code3) =>
                         {
                             Global.NetManager.PrintPeerInfo("# Master.App: BindClientActor called");
                             Log.Info("Avatar已经和服务端绑定");
 
-                            callback?.Invoke((ErrCode)code3);
+                            callback?.Invoke((ErrCode)code3, avatar);
                         });
                         loginapp.Disconnect();
                     });

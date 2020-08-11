@@ -24,9 +24,9 @@ namespace Client
             App.Instance.OnDestroy();
         }
 
-        public void Login(string userName, string password, Action<ErrCode> callback)
+        public void Login(string userName, string password, Action<ErrCode, Avatar> callback)
         {
-            Task.Run(() => App.Instance.Login(userName, password, callback));
+            App.Instance.Login(userName, password, callback);
         }
 
         public void Register(string userName, string password, bool isGuest, Action<ErrCode> callback)

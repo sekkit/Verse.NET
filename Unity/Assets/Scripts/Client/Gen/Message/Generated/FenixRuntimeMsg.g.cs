@@ -49,23 +49,33 @@ namespace MessagePack.Resolvers
 
         static FenixRuntimeResolverGetFormatterHelper()
         {
-            lookup = new global::System.Collections.Generic.Dictionary<Type, int>(15)
+            lookup = new global::System.Collections.Generic.Dictionary<Type, int>(25)
             {
-                { typeof(global::System.Collections.Generic.Dictionary<uint, string>), 0 },
+                { typeof(global::System.Collections.Generic.Dictionary<ulong, string>), 0 },
                 { typeof(global::Fenix.Common.DefaultErrCode), 1 },
-                { typeof(global::Fenix.Common.Message.BindClientActorReq), 2 },
-                { typeof(global::Fenix.Common.Message.BindClientActorReq.Callback), 3 },
-                { typeof(global::Fenix.Common.Message.CreateActorReq), 4 },
-                { typeof(global::Fenix.Common.Message.CreateActorReq.Callback), 5 },
-                { typeof(global::Fenix.Common.Message.MigrateActorReq), 6 },
-                { typeof(global::Fenix.Common.Message.RegisterClientReq), 7 },
-                { typeof(global::Fenix.Common.Message.RegisterClientReq.Callback), 8 },
-                { typeof(global::Fenix.Common.Message.RegisterReq), 9 },
-                { typeof(global::Fenix.Common.Message.RemoveActorReq), 10 },
-                { typeof(global::Fenix.Common.Rpc.IMessage), 11 },
-                { typeof(global::Fenix.Common.Rpc.IMessageWithCallback), 12 },
-                { typeof(global::Fenix.HostInfo), 13 },
-                { typeof(global::Fenix.Packet), 14 },
+                { typeof(global::Fenix.Common.DisconnectReason), 2 },
+                { typeof(global::Fenix.Common.Message.BindClientActorReq), 3 },
+                { typeof(global::Fenix.Common.Message.BindClientActorReq.Callback), 4 },
+                { typeof(global::Fenix.Common.Message.CreateActorReq), 5 },
+                { typeof(global::Fenix.Common.Message.CreateActorReq.Callback), 6 },
+                { typeof(global::Fenix.Common.Message.MigrateActorReq), 7 },
+                { typeof(global::Fenix.Common.Message.MigrateActorReq.Callback), 8 },
+                { typeof(global::Fenix.Common.Message.OnBeforeDisconnectNtf), 9 },
+                { typeof(global::Fenix.Common.Message.OnBeforeDisconnectNtf.Callback), 10 },
+                { typeof(global::Fenix.Common.Message.OnServerActorEnableNtf), 11 },
+                { typeof(global::Fenix.Common.Message.ReconnectServerActorNtf), 12 },
+                { typeof(global::Fenix.Common.Message.ReconnectServerActorNtf.Callback), 13 },
+                { typeof(global::Fenix.Common.Message.RegisterClientReq), 14 },
+                { typeof(global::Fenix.Common.Message.RegisterClientReq.Callback), 15 },
+                { typeof(global::Fenix.Common.Message.RegisterReq), 16 },
+                { typeof(global::Fenix.Common.Message.RemoveActorReq), 17 },
+                { typeof(global::Fenix.Common.Message.RemoveActorReq.Callback), 18 },
+                { typeof(global::Fenix.Common.Message.RemoveClientActorReq), 19 },
+                { typeof(global::Fenix.Common.Message.RemoveClientActorReq.Callback), 20 },
+                { typeof(global::Fenix.Common.Rpc.IMessage), 21 },
+                { typeof(global::Fenix.Common.Rpc.IMessageWithCallback), 22 },
+                { typeof(global::Fenix.HostInfo), 23 },
+                { typeof(global::Fenix.Packet), 24 },
             };
         }
 
@@ -79,21 +89,31 @@ namespace MessagePack.Resolvers
 
             switch (key)
             {
-                case 0: return new global::MessagePack.Formatters.DictionaryFormatter<uint, string>();
+                case 0: return new global::MessagePack.Formatters.DictionaryFormatter<ulong, string>();
                 case 1: return new MessagePack.Formatters.Fenix.Common.DefaultErrCodeFormatter();
-                case 2: return new MessagePack.Formatters.Fenix.Common.Message.BindClientActorReqFormatter();
-                case 3: return new MessagePack.Formatters.Fenix.Common.Message.BindClientActorReq_CallbackFormatter();
-                case 4: return new MessagePack.Formatters.Fenix.Common.Message.CreateActorReqFormatter();
-                case 5: return new MessagePack.Formatters.Fenix.Common.Message.CreateActorReq_CallbackFormatter();
-                case 6: return new MessagePack.Formatters.Fenix.Common.Message.MigrateActorReqFormatter();
-                case 7: return new MessagePack.Formatters.Fenix.Common.Message.RegisterClientReqFormatter();
-                case 8: return new MessagePack.Formatters.Fenix.Common.Message.RegisterClientReq_CallbackFormatter();
-                case 9: return new MessagePack.Formatters.Fenix.Common.Message.RegisterReqFormatter();
-                case 10: return new MessagePack.Formatters.Fenix.Common.Message.RemoveActorReqFormatter();
-                case 11: return new MessagePack.Formatters.Fenix.Common.Rpc.IMessageFormatter();
-                case 12: return new MessagePack.Formatters.Fenix.Common.Rpc.IMessageWithCallbackFormatter();
-                case 13: return new MessagePack.Formatters.Fenix.HostInfoFormatter();
-                case 14: return new MessagePack.Formatters.Fenix.PacketFormatter();
+                case 2: return new MessagePack.Formatters.Fenix.Common.DisconnectReasonFormatter();
+                case 3: return new MessagePack.Formatters.Fenix.Common.Message.BindClientActorReqFormatter();
+                case 4: return new MessagePack.Formatters.Fenix.Common.Message.BindClientActorReq_CallbackFormatter();
+                case 5: return new MessagePack.Formatters.Fenix.Common.Message.CreateActorReqFormatter();
+                case 6: return new MessagePack.Formatters.Fenix.Common.Message.CreateActorReq_CallbackFormatter();
+                case 7: return new MessagePack.Formatters.Fenix.Common.Message.MigrateActorReqFormatter();
+                case 8: return new MessagePack.Formatters.Fenix.Common.Message.MigrateActorReq_CallbackFormatter();
+                case 9: return new MessagePack.Formatters.Fenix.Common.Message.OnBeforeDisconnectNtfFormatter();
+                case 10: return new MessagePack.Formatters.Fenix.Common.Message.OnBeforeDisconnectNtf_CallbackFormatter();
+                case 11: return new MessagePack.Formatters.Fenix.Common.Message.OnServerActorEnableNtfFormatter();
+                case 12: return new MessagePack.Formatters.Fenix.Common.Message.ReconnectServerActorNtfFormatter();
+                case 13: return new MessagePack.Formatters.Fenix.Common.Message.ReconnectServerActorNtf_CallbackFormatter();
+                case 14: return new MessagePack.Formatters.Fenix.Common.Message.RegisterClientReqFormatter();
+                case 15: return new MessagePack.Formatters.Fenix.Common.Message.RegisterClientReq_CallbackFormatter();
+                case 16: return new MessagePack.Formatters.Fenix.Common.Message.RegisterReqFormatter();
+                case 17: return new MessagePack.Formatters.Fenix.Common.Message.RemoveActorReqFormatter();
+                case 18: return new MessagePack.Formatters.Fenix.Common.Message.RemoveActorReq_CallbackFormatter();
+                case 19: return new MessagePack.Formatters.Fenix.Common.Message.RemoveClientActorReqFormatter();
+                case 20: return new MessagePack.Formatters.Fenix.Common.Message.RemoveClientActorReq_CallbackFormatter();
+                case 21: return new MessagePack.Formatters.Fenix.Common.Rpc.IMessageFormatter();
+                case 22: return new MessagePack.Formatters.Fenix.Common.Rpc.IMessageWithCallbackFormatter();
+                case 23: return new MessagePack.Formatters.Fenix.HostInfoFormatter();
+                case 24: return new MessagePack.Formatters.Fenix.PacketFormatter();
                 default: return null;
             }
         }
@@ -139,6 +159,19 @@ namespace MessagePack.Formatters.Fenix.Common
         public global::Fenix.Common.DefaultErrCode Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
         {
             return (global::Fenix.Common.DefaultErrCode)reader.ReadInt16();
+        }
+    }
+
+    public sealed class DisconnectReasonFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Fenix.Common.DisconnectReason>
+    {
+        public void Serialize(ref MessagePackWriter writer, global::Fenix.Common.DisconnectReason value, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            writer.Write((Int32)value);
+        }
+
+        public global::Fenix.Common.DisconnectReason Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            return (global::Fenix.Common.DisconnectReason)reader.ReadInt32();
         }
     }
 }
@@ -378,7 +411,7 @@ namespace MessagePack.Formatters.Fenix.Common.Message
             var length = reader.ReadArrayHeader();
             var __code__ = default(global::Fenix.Common.DefaultErrCode);
             var __arg1__ = default(string);
-            var __arg2__ = default(uint);
+            var __arg2__ = default(ulong);
 
             for (int i = 0; i < length; i++)
             {
@@ -393,7 +426,7 @@ namespace MessagePack.Formatters.Fenix.Common.Message
                         __arg1__ = formatterResolver.GetFormatterWithVerify<string>().Deserialize(ref reader, options);
                         break;
                     case 2:
-                        __arg2__ = reader.ReadUInt32();
+                        __arg2__ = reader.ReadUInt64();
                         break;
                     default:
                         reader.Skip();
@@ -423,8 +456,9 @@ namespace MessagePack.Formatters.Fenix.Common.Message
             }
 
             IFormatterResolver formatterResolver = options.Resolver;
-            writer.WriteArrayHeader(1);
+            writer.WriteArrayHeader(2);
             writer.Write(value.actorId);
+            formatterResolver.GetFormatterWithVerify<global::Fenix.Common.Message.MigrateActorReq.Callback>().Serialize(ref writer, value.callback, options);
         }
 
         public global::Fenix.Common.Message.MigrateActorReq Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
@@ -437,7 +471,8 @@ namespace MessagePack.Formatters.Fenix.Common.Message
             options.Security.DepthStep(ref reader);
             IFormatterResolver formatterResolver = options.Resolver;
             var length = reader.ReadArrayHeader();
-            var __actorId__ = default(uint);
+            var __actorId__ = default(ulong);
+            var __callback__ = default(global::Fenix.Common.Message.MigrateActorReq.Callback);
 
             for (int i = 0; i < length; i++)
             {
@@ -446,7 +481,10 @@ namespace MessagePack.Formatters.Fenix.Common.Message
                 switch (key)
                 {
                     case 0:
-                        __actorId__ = reader.ReadUInt32();
+                        __actorId__ = reader.ReadUInt64();
+                        break;
+                    case 1:
+                        __callback__ = formatterResolver.GetFormatterWithVerify<global::Fenix.Common.Message.MigrateActorReq.Callback>().Deserialize(ref reader, options);
                         break;
                     default:
                         reader.Skip();
@@ -456,6 +494,361 @@ namespace MessagePack.Formatters.Fenix.Common.Message
 
             var ____result = new global::Fenix.Common.Message.MigrateActorReq();
             ____result.actorId = __actorId__;
+            ____result.callback = __callback__;
+            reader.Depth--;
+            return ____result;
+        }
+    }
+
+    public sealed class MigrateActorReq_CallbackFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Fenix.Common.Message.MigrateActorReq.Callback>
+    {
+
+
+        public void Serialize(ref MessagePackWriter writer, global::Fenix.Common.Message.MigrateActorReq.Callback value, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (value == null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
+            IFormatterResolver formatterResolver = options.Resolver;
+            writer.WriteArrayHeader(2);
+            formatterResolver.GetFormatterWithVerify<global::Fenix.Common.DefaultErrCode>().Serialize(ref writer, value.code, options);
+            formatterResolver.GetFormatterWithVerify<byte[]>().Serialize(ref writer, value.arg1, options);
+        }
+
+        public global::Fenix.Common.Message.MigrateActorReq.Callback Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (reader.TryReadNil())
+            {
+                return null;
+            }
+
+            options.Security.DepthStep(ref reader);
+            IFormatterResolver formatterResolver = options.Resolver;
+            var length = reader.ReadArrayHeader();
+            var __code__ = default(global::Fenix.Common.DefaultErrCode);
+            var __arg1__ = default(byte[]);
+
+            for (int i = 0; i < length; i++)
+            {
+                var key = i;
+
+                switch (key)
+                {
+                    case 0:
+                        __code__ = formatterResolver.GetFormatterWithVerify<global::Fenix.Common.DefaultErrCode>().Deserialize(ref reader, options);
+                        break;
+                    case 1:
+                        __arg1__ = formatterResolver.GetFormatterWithVerify<byte[]>().Deserialize(ref reader, options);
+                        break;
+                    default:
+                        reader.Skip();
+                        break;
+                }
+            }
+
+            var ____result = new global::Fenix.Common.Message.MigrateActorReq.Callback();
+            ____result.code = __code__;
+            ____result.arg1 = __arg1__;
+            reader.Depth--;
+            return ____result;
+        }
+    }
+
+    public sealed class OnBeforeDisconnectNtfFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Fenix.Common.Message.OnBeforeDisconnectNtf>
+    {
+
+
+        public void Serialize(ref MessagePackWriter writer, global::Fenix.Common.Message.OnBeforeDisconnectNtf value, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (value == null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
+            IFormatterResolver formatterResolver = options.Resolver;
+            writer.WriteArrayHeader(2);
+            formatterResolver.GetFormatterWithVerify<global::Fenix.Common.DisconnectReason>().Serialize(ref writer, value.reason, options);
+            formatterResolver.GetFormatterWithVerify<global::Fenix.Common.Message.OnBeforeDisconnectNtf.Callback>().Serialize(ref writer, value.callback, options);
+        }
+
+        public global::Fenix.Common.Message.OnBeforeDisconnectNtf Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (reader.TryReadNil())
+            {
+                return null;
+            }
+
+            options.Security.DepthStep(ref reader);
+            IFormatterResolver formatterResolver = options.Resolver;
+            var length = reader.ReadArrayHeader();
+            var __reason__ = default(global::Fenix.Common.DisconnectReason);
+            var __callback__ = default(global::Fenix.Common.Message.OnBeforeDisconnectNtf.Callback);
+
+            for (int i = 0; i < length; i++)
+            {
+                var key = i;
+
+                switch (key)
+                {
+                    case 0:
+                        __reason__ = formatterResolver.GetFormatterWithVerify<global::Fenix.Common.DisconnectReason>().Deserialize(ref reader, options);
+                        break;
+                    case 1:
+                        __callback__ = formatterResolver.GetFormatterWithVerify<global::Fenix.Common.Message.OnBeforeDisconnectNtf.Callback>().Deserialize(ref reader, options);
+                        break;
+                    default:
+                        reader.Skip();
+                        break;
+                }
+            }
+
+            var ____result = new global::Fenix.Common.Message.OnBeforeDisconnectNtf();
+            ____result.reason = __reason__;
+            ____result.callback = __callback__;
+            reader.Depth--;
+            return ____result;
+        }
+    }
+
+    public sealed class OnBeforeDisconnectNtf_CallbackFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Fenix.Common.Message.OnBeforeDisconnectNtf.Callback>
+    {
+
+
+        public void Serialize(ref MessagePackWriter writer, global::Fenix.Common.Message.OnBeforeDisconnectNtf.Callback value, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (value == null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
+            IFormatterResolver formatterResolver = options.Resolver;
+            writer.WriteArrayHeader(0);
+        }
+
+        public global::Fenix.Common.Message.OnBeforeDisconnectNtf.Callback Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (reader.TryReadNil())
+            {
+                return null;
+            }
+
+            options.Security.DepthStep(ref reader);
+            IFormatterResolver formatterResolver = options.Resolver;
+            var length = reader.ReadArrayHeader();
+
+            for (int i = 0; i < length; i++)
+            {
+                var key = i;
+
+                switch (key)
+                {
+                    default:
+                        reader.Skip();
+                        break;
+                }
+            }
+
+            var ____result = new global::Fenix.Common.Message.OnBeforeDisconnectNtf.Callback();
+            reader.Depth--;
+            return ____result;
+        }
+    }
+
+    public sealed class OnServerActorEnableNtfFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Fenix.Common.Message.OnServerActorEnableNtf>
+    {
+
+
+        public void Serialize(ref MessagePackWriter writer, global::Fenix.Common.Message.OnServerActorEnableNtf value, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (value == null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
+            IFormatterResolver formatterResolver = options.Resolver;
+            writer.WriteArrayHeader(1);
+            formatterResolver.GetFormatterWithVerify<string>().Serialize(ref writer, value.actorName, options);
+        }
+
+        public global::Fenix.Common.Message.OnServerActorEnableNtf Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (reader.TryReadNil())
+            {
+                return null;
+            }
+
+            options.Security.DepthStep(ref reader);
+            IFormatterResolver formatterResolver = options.Resolver;
+            var length = reader.ReadArrayHeader();
+            var __actorName__ = default(string);
+
+            for (int i = 0; i < length; i++)
+            {
+                var key = i;
+
+                switch (key)
+                {
+                    case 0:
+                        __actorName__ = formatterResolver.GetFormatterWithVerify<string>().Deserialize(ref reader, options);
+                        break;
+                    default:
+                        reader.Skip();
+                        break;
+                }
+            }
+
+            var ____result = new global::Fenix.Common.Message.OnServerActorEnableNtf();
+            ____result.actorName = __actorName__;
+            reader.Depth--;
+            return ____result;
+        }
+    }
+
+    public sealed class ReconnectServerActorNtfFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Fenix.Common.Message.ReconnectServerActorNtf>
+    {
+
+
+        public void Serialize(ref MessagePackWriter writer, global::Fenix.Common.Message.ReconnectServerActorNtf value, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (value == null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
+            IFormatterResolver formatterResolver = options.Resolver;
+            writer.WriteArrayHeader(8);
+            writer.Write(value.hostId);
+            formatterResolver.GetFormatterWithVerify<string>().Serialize(ref writer, value.hostName, options);
+            formatterResolver.GetFormatterWithVerify<string>().Serialize(ref writer, value.hostIP, options);
+            writer.Write(value.hostPort);
+            writer.Write(value.actorId);
+            formatterResolver.GetFormatterWithVerify<string>().Serialize(ref writer, value.actorName, options);
+            formatterResolver.GetFormatterWithVerify<string>().Serialize(ref writer, value.aTypeName, options);
+            formatterResolver.GetFormatterWithVerify<global::Fenix.Common.Message.ReconnectServerActorNtf.Callback>().Serialize(ref writer, value.callback, options);
+        }
+
+        public global::Fenix.Common.Message.ReconnectServerActorNtf Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (reader.TryReadNil())
+            {
+                return null;
+            }
+
+            options.Security.DepthStep(ref reader);
+            IFormatterResolver formatterResolver = options.Resolver;
+            var length = reader.ReadArrayHeader();
+            var __hostId__ = default(ulong);
+            var __hostName__ = default(string);
+            var __hostIP__ = default(string);
+            var __hostPort__ = default(int);
+            var __actorId__ = default(ulong);
+            var __actorName__ = default(string);
+            var __aTypeName__ = default(string);
+            var __callback__ = default(global::Fenix.Common.Message.ReconnectServerActorNtf.Callback);
+
+            for (int i = 0; i < length; i++)
+            {
+                var key = i;
+
+                switch (key)
+                {
+                    case 0:
+                        __hostId__ = reader.ReadUInt64();
+                        break;
+                    case 1:
+                        __hostName__ = formatterResolver.GetFormatterWithVerify<string>().Deserialize(ref reader, options);
+                        break;
+                    case 2:
+                        __hostIP__ = formatterResolver.GetFormatterWithVerify<string>().Deserialize(ref reader, options);
+                        break;
+                    case 3:
+                        __hostPort__ = reader.ReadInt32();
+                        break;
+                    case 4:
+                        __actorId__ = reader.ReadUInt64();
+                        break;
+                    case 5:
+                        __actorName__ = formatterResolver.GetFormatterWithVerify<string>().Deserialize(ref reader, options);
+                        break;
+                    case 6:
+                        __aTypeName__ = formatterResolver.GetFormatterWithVerify<string>().Deserialize(ref reader, options);
+                        break;
+                    case 7:
+                        __callback__ = formatterResolver.GetFormatterWithVerify<global::Fenix.Common.Message.ReconnectServerActorNtf.Callback>().Deserialize(ref reader, options);
+                        break;
+                    default:
+                        reader.Skip();
+                        break;
+                }
+            }
+
+            var ____result = new global::Fenix.Common.Message.ReconnectServerActorNtf();
+            ____result.hostId = __hostId__;
+            ____result.hostName = __hostName__;
+            ____result.hostIP = __hostIP__;
+            ____result.hostPort = __hostPort__;
+            ____result.actorId = __actorId__;
+            ____result.actorName = __actorName__;
+            ____result.aTypeName = __aTypeName__;
+            ____result.callback = __callback__;
+            reader.Depth--;
+            return ____result;
+        }
+    }
+
+    public sealed class ReconnectServerActorNtf_CallbackFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Fenix.Common.Message.ReconnectServerActorNtf.Callback>
+    {
+
+
+        public void Serialize(ref MessagePackWriter writer, global::Fenix.Common.Message.ReconnectServerActorNtf.Callback value, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (value == null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
+            IFormatterResolver formatterResolver = options.Resolver;
+            writer.WriteArrayHeader(1);
+            formatterResolver.GetFormatterWithVerify<global::Fenix.Common.DefaultErrCode>().Serialize(ref writer, value.code, options);
+        }
+
+        public global::Fenix.Common.Message.ReconnectServerActorNtf.Callback Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (reader.TryReadNil())
+            {
+                return null;
+            }
+
+            options.Security.DepthStep(ref reader);
+            IFormatterResolver formatterResolver = options.Resolver;
+            var length = reader.ReadArrayHeader();
+            var __code__ = default(global::Fenix.Common.DefaultErrCode);
+
+            for (int i = 0; i < length; i++)
+            {
+                var key = i;
+
+                switch (key)
+                {
+                    case 0:
+                        __code__ = formatterResolver.GetFormatterWithVerify<global::Fenix.Common.DefaultErrCode>().Deserialize(ref reader, options);
+                        break;
+                    default:
+                        reader.Skip();
+                        break;
+                }
+            }
+
+            var ____result = new global::Fenix.Common.Message.ReconnectServerActorNtf.Callback();
+            ____result.code = __code__;
             reader.Depth--;
             return ____result;
         }
@@ -490,7 +883,7 @@ namespace MessagePack.Formatters.Fenix.Common.Message
             options.Security.DepthStep(ref reader);
             IFormatterResolver formatterResolver = options.Resolver;
             var length = reader.ReadArrayHeader();
-            var __hostId__ = default(uint);
+            var __hostId__ = default(ulong);
             var __hostName__ = default(string);
             var __callback__ = default(global::Fenix.Common.Message.RegisterClientReq.Callback);
 
@@ -501,7 +894,7 @@ namespace MessagePack.Formatters.Fenix.Common.Message
                 switch (key)
                 {
                     case 0:
-                        __hostId__ = reader.ReadUInt32();
+                        __hostId__ = reader.ReadUInt64();
                         break;
                     case 1:
                         __hostName__ = formatterResolver.GetFormatterWithVerify<string>().Deserialize(ref reader, options);
@@ -609,7 +1002,7 @@ namespace MessagePack.Formatters.Fenix.Common.Message
             options.Security.DepthStep(ref reader);
             IFormatterResolver formatterResolver = options.Resolver;
             var length = reader.ReadArrayHeader();
-            var __hostId__ = default(uint);
+            var __hostId__ = default(ulong);
             var __hostName__ = default(string);
 
             for (int i = 0; i < length; i++)
@@ -619,7 +1012,7 @@ namespace MessagePack.Formatters.Fenix.Common.Message
                 switch (key)
                 {
                     case 0:
-                        __hostId__ = reader.ReadUInt32();
+                        __hostId__ = reader.ReadUInt64();
                         break;
                     case 1:
                         __hostName__ = formatterResolver.GetFormatterWithVerify<string>().Deserialize(ref reader, options);
@@ -651,8 +1044,9 @@ namespace MessagePack.Formatters.Fenix.Common.Message
             }
 
             IFormatterResolver formatterResolver = options.Resolver;
-            writer.WriteArrayHeader(1);
+            writer.WriteArrayHeader(2);
             writer.Write(value.actorId);
+            formatterResolver.GetFormatterWithVerify<global::Fenix.Common.Message.RemoveActorReq.Callback>().Serialize(ref writer, value.callback, options);
         }
 
         public global::Fenix.Common.Message.RemoveActorReq Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
@@ -665,7 +1059,8 @@ namespace MessagePack.Formatters.Fenix.Common.Message
             options.Security.DepthStep(ref reader);
             IFormatterResolver formatterResolver = options.Resolver;
             var length = reader.ReadArrayHeader();
-            var __actorId__ = default(uint);
+            var __actorId__ = default(ulong);
+            var __callback__ = default(global::Fenix.Common.Message.RemoveActorReq.Callback);
 
             for (int i = 0; i < length; i++)
             {
@@ -674,7 +1069,10 @@ namespace MessagePack.Formatters.Fenix.Common.Message
                 switch (key)
                 {
                     case 0:
-                        __actorId__ = reader.ReadUInt32();
+                        __actorId__ = reader.ReadUInt64();
+                        break;
+                    case 1:
+                        __callback__ = formatterResolver.GetFormatterWithVerify<global::Fenix.Common.Message.RemoveActorReq.Callback>().Deserialize(ref reader, options);
                         break;
                     default:
                         reader.Skip();
@@ -684,6 +1082,172 @@ namespace MessagePack.Formatters.Fenix.Common.Message
 
             var ____result = new global::Fenix.Common.Message.RemoveActorReq();
             ____result.actorId = __actorId__;
+            ____result.callback = __callback__;
+            reader.Depth--;
+            return ____result;
+        }
+    }
+
+    public sealed class RemoveActorReq_CallbackFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Fenix.Common.Message.RemoveActorReq.Callback>
+    {
+
+
+        public void Serialize(ref MessagePackWriter writer, global::Fenix.Common.Message.RemoveActorReq.Callback value, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (value == null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
+            IFormatterResolver formatterResolver = options.Resolver;
+            writer.WriteArrayHeader(1);
+            formatterResolver.GetFormatterWithVerify<global::Fenix.Common.DefaultErrCode>().Serialize(ref writer, value.code, options);
+        }
+
+        public global::Fenix.Common.Message.RemoveActorReq.Callback Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (reader.TryReadNil())
+            {
+                return null;
+            }
+
+            options.Security.DepthStep(ref reader);
+            IFormatterResolver formatterResolver = options.Resolver;
+            var length = reader.ReadArrayHeader();
+            var __code__ = default(global::Fenix.Common.DefaultErrCode);
+
+            for (int i = 0; i < length; i++)
+            {
+                var key = i;
+
+                switch (key)
+                {
+                    case 0:
+                        __code__ = formatterResolver.GetFormatterWithVerify<global::Fenix.Common.DefaultErrCode>().Deserialize(ref reader, options);
+                        break;
+                    default:
+                        reader.Skip();
+                        break;
+                }
+            }
+
+            var ____result = new global::Fenix.Common.Message.RemoveActorReq.Callback();
+            ____result.code = __code__;
+            reader.Depth--;
+            return ____result;
+        }
+    }
+
+    public sealed class RemoveClientActorReqFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Fenix.Common.Message.RemoveClientActorReq>
+    {
+
+
+        public void Serialize(ref MessagePackWriter writer, global::Fenix.Common.Message.RemoveClientActorReq value, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (value == null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
+            IFormatterResolver formatterResolver = options.Resolver;
+            writer.WriteArrayHeader(3);
+            writer.Write(value.actorId);
+            formatterResolver.GetFormatterWithVerify<global::Fenix.Common.DisconnectReason>().Serialize(ref writer, value.reason, options);
+            formatterResolver.GetFormatterWithVerify<global::Fenix.Common.Message.RemoveClientActorReq.Callback>().Serialize(ref writer, value.callback, options);
+        }
+
+        public global::Fenix.Common.Message.RemoveClientActorReq Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (reader.TryReadNil())
+            {
+                return null;
+            }
+
+            options.Security.DepthStep(ref reader);
+            IFormatterResolver formatterResolver = options.Resolver;
+            var length = reader.ReadArrayHeader();
+            var __actorId__ = default(ulong);
+            var __reason__ = default(global::Fenix.Common.DisconnectReason);
+            var __callback__ = default(global::Fenix.Common.Message.RemoveClientActorReq.Callback);
+
+            for (int i = 0; i < length; i++)
+            {
+                var key = i;
+
+                switch (key)
+                {
+                    case 0:
+                        __actorId__ = reader.ReadUInt64();
+                        break;
+                    case 1:
+                        __reason__ = formatterResolver.GetFormatterWithVerify<global::Fenix.Common.DisconnectReason>().Deserialize(ref reader, options);
+                        break;
+                    case 2:
+                        __callback__ = formatterResolver.GetFormatterWithVerify<global::Fenix.Common.Message.RemoveClientActorReq.Callback>().Deserialize(ref reader, options);
+                        break;
+                    default:
+                        reader.Skip();
+                        break;
+                }
+            }
+
+            var ____result = new global::Fenix.Common.Message.RemoveClientActorReq();
+            ____result.actorId = __actorId__;
+            ____result.reason = __reason__;
+            ____result.callback = __callback__;
+            reader.Depth--;
+            return ____result;
+        }
+    }
+
+    public sealed class RemoveClientActorReq_CallbackFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Fenix.Common.Message.RemoveClientActorReq.Callback>
+    {
+
+
+        public void Serialize(ref MessagePackWriter writer, global::Fenix.Common.Message.RemoveClientActorReq.Callback value, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (value == null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
+            IFormatterResolver formatterResolver = options.Resolver;
+            writer.WriteArrayHeader(1);
+            formatterResolver.GetFormatterWithVerify<global::Fenix.Common.DefaultErrCode>().Serialize(ref writer, value.code, options);
+        }
+
+        public global::Fenix.Common.Message.RemoveClientActorReq.Callback Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (reader.TryReadNil())
+            {
+                return null;
+            }
+
+            options.Security.DepthStep(ref reader);
+            IFormatterResolver formatterResolver = options.Resolver;
+            var length = reader.ReadArrayHeader();
+            var __code__ = default(global::Fenix.Common.DefaultErrCode);
+
+            for (int i = 0; i < length; i++)
+            {
+                var key = i;
+
+                switch (key)
+                {
+                    case 0:
+                        __code__ = formatterResolver.GetFormatterWithVerify<global::Fenix.Common.DefaultErrCode>().Deserialize(ref reader, options);
+                        break;
+                    default:
+                        reader.Skip();
+                        break;
+                }
+            }
+
+            var ____result = new global::Fenix.Common.Message.RemoveClientActorReq.Callback();
+            ____result.code = __code__;
             reader.Depth--;
             return ____result;
         }
@@ -866,8 +1430,8 @@ namespace MessagePack.Formatters.Fenix
             writer.Write(value.HostId);
             formatterResolver.GetFormatterWithVerify<string>().Serialize(ref writer, value.HostName, options);
             formatterResolver.GetFormatterWithVerify<string>().Serialize(ref writer, value.HostAddr, options);
-            formatterResolver.GetFormatterWithVerify<global::System.Collections.Generic.Dictionary<uint, string>>().Serialize(ref writer, value.ServiceId2Name, options);
-            formatterResolver.GetFormatterWithVerify<global::System.Collections.Generic.Dictionary<uint, string>>().Serialize(ref writer, value.ServiceId2TName, options);
+            formatterResolver.GetFormatterWithVerify<global::System.Collections.Generic.Dictionary<ulong, string>>().Serialize(ref writer, value.ServiceId2Name, options);
+            formatterResolver.GetFormatterWithVerify<global::System.Collections.Generic.Dictionary<ulong, string>>().Serialize(ref writer, value.ServiceId2TName, options);
         }
 
         public global::Fenix.HostInfo Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
@@ -880,11 +1444,11 @@ namespace MessagePack.Formatters.Fenix
             options.Security.DepthStep(ref reader);
             IFormatterResolver formatterResolver = options.Resolver;
             var length = reader.ReadArrayHeader();
-            var __HostId__ = default(uint);
+            var __HostId__ = default(ulong);
             var __HostName__ = default(string);
             var __HostAddr__ = default(string);
-            var __ServiceId2Name__ = default(global::System.Collections.Generic.Dictionary<uint, string>);
-            var __ServiceId2TName__ = default(global::System.Collections.Generic.Dictionary<uint, string>);
+            var __ServiceId2Name__ = default(global::System.Collections.Generic.Dictionary<ulong, string>);
+            var __ServiceId2TName__ = default(global::System.Collections.Generic.Dictionary<ulong, string>);
 
             for (int i = 0; i < length; i++)
             {
@@ -893,7 +1457,7 @@ namespace MessagePack.Formatters.Fenix
                 switch (key)
                 {
                     case 0:
-                        __HostId__ = reader.ReadUInt32();
+                        __HostId__ = reader.ReadUInt64();
                         break;
                     case 1:
                         __HostName__ = formatterResolver.GetFormatterWithVerify<string>().Deserialize(ref reader, options);
@@ -902,10 +1466,10 @@ namespace MessagePack.Formatters.Fenix
                         __HostAddr__ = formatterResolver.GetFormatterWithVerify<string>().Deserialize(ref reader, options);
                         break;
                     case 3:
-                        __ServiceId2Name__ = formatterResolver.GetFormatterWithVerify<global::System.Collections.Generic.Dictionary<uint, string>>().Deserialize(ref reader, options);
+                        __ServiceId2Name__ = formatterResolver.GetFormatterWithVerify<global::System.Collections.Generic.Dictionary<ulong, string>>().Deserialize(ref reader, options);
                         break;
                     case 4:
-                        __ServiceId2TName__ = formatterResolver.GetFormatterWithVerify<global::System.Collections.Generic.Dictionary<uint, string>>().Deserialize(ref reader, options);
+                        __ServiceId2TName__ = formatterResolver.GetFormatterWithVerify<global::System.Collections.Generic.Dictionary<ulong, string>>().Deserialize(ref reader, options);
                         break;
                     default:
                         reader.Skip();
@@ -959,10 +1523,10 @@ namespace MessagePack.Formatters.Fenix
             var length = reader.ReadArrayHeader();
             var __Id__ = default(ulong);
             var __ProtoCode__ = default(uint);
-            var __FromHostId__ = default(uint);
-            var __ToHostId__ = default(uint);
-            var __FromActorId__ = default(uint);
-            var __ToActorId__ = default(uint);
+            var __FromHostId__ = default(ulong);
+            var __ToHostId__ = default(ulong);
+            var __FromActorId__ = default(ulong);
+            var __ToActorId__ = default(ulong);
             var __Payload__ = default(byte[]);
 
             for (int i = 0; i < length; i++)
@@ -978,16 +1542,16 @@ namespace MessagePack.Formatters.Fenix
                         __ProtoCode__ = reader.ReadUInt32();
                         break;
                     case 2:
-                        __FromHostId__ = reader.ReadUInt32();
+                        __FromHostId__ = reader.ReadUInt64();
                         break;
                     case 3:
-                        __ToHostId__ = reader.ReadUInt32();
+                        __ToHostId__ = reader.ReadUInt64();
                         break;
                     case 4:
-                        __FromActorId__ = reader.ReadUInt32();
+                        __FromActorId__ = reader.ReadUInt64();
                         break;
                     case 5:
-                        __ToActorId__ = reader.ReadUInt32();
+                        __ToActorId__ = reader.ReadUInt64();
                         break;
                     case 6:
                         __Payload__ = formatterResolver.GetFormatterWithVerify<byte[]>().Deserialize(ref reader, options);
