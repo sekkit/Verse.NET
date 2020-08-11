@@ -19,9 +19,9 @@ public class test : MonoBehaviour
     {
         app.Login("", "", (code, avatar) =>
         {
-            Log.Info("login_result", code, avatar.Uid);
+            Log.Info("login_result", code);
         });
-    }
+    } 
 
     // Update is called once per frame
     void Update()

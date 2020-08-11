@@ -19,9 +19,9 @@ public class Startup
         if (!serializerRegistered)
         { 
             StaticCompositeResolver.Instance.Register(
-                 MessagePack.Resolvers.ClientAppResolver.Instance,
-                 MessagePack.Resolvers.FenixRuntimeResolver.Instance,
-                 MessagePack.Resolvers.SharedResolver.Instance,
+                 //MessagePack.Resolvers.ClientAppResolver.Instance,
+                 //MessagePack.Resolvers.FenixRuntimeResolver.Instance,
+                 //MessagePack.Resolvers.SharedResolver.Instance,
                  MessagePack.Unity.UnityResolver.Instance,
                  MessagePack.Unity.Extension.UnityBlitResolver.Instance,
                  MessagePack.Unity.Extension.UnityBlitWithPrimitiveArrayResolver.Instance,
