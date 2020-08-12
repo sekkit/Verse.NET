@@ -53,16 +53,18 @@ namespace Server
                     callback?.Invoke(cbMsg.code);
                     t.TrySetResult(cbMsg);
                 };
-                var msg = new CreateAccountReq()
-                {
-                username=username,
-                password=password
-                };
-                var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null ? new CreateAccountReq.Callback() : RpcUtil.Deserialize<CreateAccountReq.Callback>(cbData);
-                    _cb?.Invoke(cbMsg);
-                });
-                this.CallRemoteMethod(ProtocolCode.CREATE_ACCOUNT_REQ, msg, cb);
+                await Task.Run(() => {
+                    var msg = new CreateAccountReq()
+                    {
+                         username=username,
+                         password=password
+                    };
+                    var cb = new Action<byte[]>((cbData) => {
+                        var cbMsg = cbData==null ? new CreateAccountReq.Callback() : RpcUtil.Deserialize<CreateAccountReq.Callback>(cbData);
+                        _cb?.Invoke(cbMsg);
+                    });
+                    this.CallRemoteMethod(ProtocolCode.CREATE_ACCOUNT_REQ, msg, cb);
+                 });
              }
              return await t.Task;
         }
@@ -83,16 +85,18 @@ namespace Server
                     Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { username, password, callback });
                 return;
             }
-            var msg = new CreateAccountReq()
-            {
-                username=username,
-                password=password
-            };
-            var cb = new Action<byte[]>((cbData) => {
-                var cbMsg = cbData==null?new CreateAccountReq.Callback():RpcUtil.Deserialize<CreateAccountReq.Callback>(cbData);
-                callback?.Invoke(cbMsg.code);
+            Task.Run(() => {
+                var msg = new CreateAccountReq()
+                {
+                    username=username,
+                    password=password
+                };
+                var cb = new Action<byte[]>((cbData) => {
+                    var cbMsg = cbData==null?new CreateAccountReq.Callback():RpcUtil.Deserialize<CreateAccountReq.Callback>(cbData);
+                    callback?.Invoke(cbMsg.code);
+                });
+                this.CallRemoteMethod(ProtocolCode.CREATE_ACCOUNT_REQ, msg, cb);
             });
-            this.CallRemoteMethod(ProtocolCode.CREATE_ACCOUNT_REQ, msg, cb);
         }
 
         public async Task<DeleteAccountReq.Callback> rpc_delete_account_async(global::System.String username, global::System.String password, global::System.Action<global::Shared.Protocol.ErrCode> callback=null)
@@ -125,16 +129,18 @@ namespace Server
                     callback?.Invoke(cbMsg.code);
                     t.TrySetResult(cbMsg);
                 };
-                var msg = new DeleteAccountReq()
-                {
-                username=username,
-                password=password
-                };
-                var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null ? new DeleteAccountReq.Callback() : RpcUtil.Deserialize<DeleteAccountReq.Callback>(cbData);
-                    _cb?.Invoke(cbMsg);
-                });
-                this.CallRemoteMethod(ProtocolCode.DELETE_ACCOUNT_REQ, msg, cb);
+                await Task.Run(() => {
+                    var msg = new DeleteAccountReq()
+                    {
+                         username=username,
+                         password=password
+                    };
+                    var cb = new Action<byte[]>((cbData) => {
+                        var cbMsg = cbData==null ? new DeleteAccountReq.Callback() : RpcUtil.Deserialize<DeleteAccountReq.Callback>(cbData);
+                        _cb?.Invoke(cbMsg);
+                    });
+                    this.CallRemoteMethod(ProtocolCode.DELETE_ACCOUNT_REQ, msg, cb);
+                 });
              }
              return await t.Task;
         }
@@ -155,16 +161,18 @@ namespace Server
                     Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { username, password, callback });
                 return;
             }
-            var msg = new DeleteAccountReq()
-            {
-                username=username,
-                password=password
-            };
-            var cb = new Action<byte[]>((cbData) => {
-                var cbMsg = cbData==null?new DeleteAccountReq.Callback():RpcUtil.Deserialize<DeleteAccountReq.Callback>(cbData);
-                callback?.Invoke(cbMsg.code);
+            Task.Run(() => {
+                var msg = new DeleteAccountReq()
+                {
+                    username=username,
+                    password=password
+                };
+                var cb = new Action<byte[]>((cbData) => {
+                    var cbMsg = cbData==null?new DeleteAccountReq.Callback():RpcUtil.Deserialize<DeleteAccountReq.Callback>(cbData);
+                    callback?.Invoke(cbMsg.code);
+                });
+                this.CallRemoteMethod(ProtocolCode.DELETE_ACCOUNT_REQ, msg, cb);
             });
-            this.CallRemoteMethod(ProtocolCode.DELETE_ACCOUNT_REQ, msg, cb);
         }
 
         public async Task<LoginReq.Callback> rpc_login_async(global::System.String username, global::System.String password, global::System.Action<global::Shared.Protocol.ErrCode, global::System.String, global::System.UInt64, global::System.String, global::System.String> callback=null)
@@ -201,16 +209,18 @@ namespace Server
                     callback?.Invoke(cbMsg.code, cbMsg.arg1, cbMsg.arg2, cbMsg.arg3, cbMsg.arg4);
                     t.TrySetResult(cbMsg);
                 };
-                var msg = new LoginReq()
-                {
-                username=username,
-                password=password
-                };
-                var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null ? new LoginReq.Callback() : RpcUtil.Deserialize<LoginReq.Callback>(cbData);
-                    _cb?.Invoke(cbMsg);
-                });
-                this.CallRemoteMethod(ProtocolCode.LOGIN_REQ, msg, cb);
+                await Task.Run(() => {
+                    var msg = new LoginReq()
+                    {
+                         username=username,
+                         password=password
+                    };
+                    var cb = new Action<byte[]>((cbData) => {
+                        var cbMsg = cbData==null ? new LoginReq.Callback() : RpcUtil.Deserialize<LoginReq.Callback>(cbData);
+                        _cb?.Invoke(cbMsg);
+                    });
+                    this.CallRemoteMethod(ProtocolCode.LOGIN_REQ, msg, cb);
+                 });
              }
              return await t.Task;
         }
@@ -231,16 +241,18 @@ namespace Server
                     Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { username, password, callback });
                 return;
             }
-            var msg = new LoginReq()
-            {
-                username=username,
-                password=password
-            };
-            var cb = new Action<byte[]>((cbData) => {
-                var cbMsg = cbData==null?new LoginReq.Callback():RpcUtil.Deserialize<LoginReq.Callback>(cbData);
-                callback?.Invoke(cbMsg.code, cbMsg.arg1, cbMsg.arg2, cbMsg.arg3, cbMsg.arg4);
+            Task.Run(() => {
+                var msg = new LoginReq()
+                {
+                    username=username,
+                    password=password
+                };
+                var cb = new Action<byte[]>((cbData) => {
+                    var cbMsg = cbData==null?new LoginReq.Callback():RpcUtil.Deserialize<LoginReq.Callback>(cbData);
+                    callback?.Invoke(cbMsg.code, cbMsg.arg1, cbMsg.arg2, cbMsg.arg3, cbMsg.arg4);
+                });
+                this.CallRemoteMethod(ProtocolCode.LOGIN_REQ, msg, cb);
             });
-            this.CallRemoteMethod(ProtocolCode.LOGIN_REQ, msg, cb);
         }
 
 
@@ -260,12 +272,14 @@ namespace Server
                     Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { username, email }); 
                return;
            }
-           var msg = new ResetPasswordReq()
-           {
-                username=username,
-                email=email
-           };
-           this.CallRemoteMethod(ProtocolCode.RESET_PASSWORD_REQ, msg, null);
+           Task.Run(() => {
+               var msg = new ResetPasswordReq()
+               {
+                    username=username,
+                    email=email
+               };
+               this.CallRemoteMethod(ProtocolCode.RESET_PASSWORD_REQ, msg, null);
+            });
         }
     }
 }

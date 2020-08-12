@@ -54,15 +54,17 @@ namespace Server
                     callback?.Invoke(cbMsg.code, cbMsg.user);
                     t.TrySetResult(cbMsg);
                 };
-                var msg = new FindMatchReq()
-                {
-                uid=uid
-                };
-                var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null ? new FindMatchReq.Callback() : RpcUtil.Deserialize<FindMatchReq.Callback>(cbData);
-                    _cb?.Invoke(cbMsg);
-                });
-                this.CallRemoteMethod(ProtocolCode.FIND_MATCH_REQ, msg, cb);
+                await Task.Run(() => {
+                    var msg = new FindMatchReq()
+                    {
+                         uid=uid
+                    };
+                    var cb = new Action<byte[]>((cbData) => {
+                        var cbMsg = cbData==null ? new FindMatchReq.Callback() : RpcUtil.Deserialize<FindMatchReq.Callback>(cbData);
+                        _cb?.Invoke(cbMsg);
+                    });
+                    this.CallRemoteMethod(ProtocolCode.FIND_MATCH_REQ, msg, cb);
+                 });
              }
              return await t.Task;
         }
@@ -83,15 +85,17 @@ namespace Server
                     Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { uid, callback });
                 return;
             }
-            var msg = new FindMatchReq()
-            {
-                uid=uid
-            };
-            var cb = new Action<byte[]>((cbData) => {
-                var cbMsg = cbData==null?new FindMatchReq.Callback():RpcUtil.Deserialize<FindMatchReq.Callback>(cbData);
-                callback?.Invoke(cbMsg.code, cbMsg.user);
+            Task.Run(() => {
+                var msg = new FindMatchReq()
+                {
+                    uid=uid
+                };
+                var cb = new Action<byte[]>((cbData) => {
+                    var cbMsg = cbData==null?new FindMatchReq.Callback():RpcUtil.Deserialize<FindMatchReq.Callback>(cbData);
+                    callback?.Invoke(cbMsg.code, cbMsg.user);
+                });
+                this.CallRemoteMethod(ProtocolCode.FIND_MATCH_REQ, msg, cb);
             });
-            this.CallRemoteMethod(ProtocolCode.FIND_MATCH_REQ, msg, cb);
         }
 
         public async Task<JoinMatchReq.Callback> rpc_join_match_async(global::System.String uid, global::System.Int32 match_type, global::System.Action<global::Shared.Protocol.ErrCode> callback=null)
@@ -124,16 +128,18 @@ namespace Server
                     callback?.Invoke(cbMsg.code);
                     t.TrySetResult(cbMsg);
                 };
-                var msg = new JoinMatchReq()
-                {
-                uid=uid,
-                match_type=match_type
-                };
-                var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null ? new JoinMatchReq.Callback() : RpcUtil.Deserialize<JoinMatchReq.Callback>(cbData);
-                    _cb?.Invoke(cbMsg);
-                });
-                this.CallRemoteMethod(ProtocolCode.JOIN_MATCH_REQ, msg, cb);
+                await Task.Run(() => {
+                    var msg = new JoinMatchReq()
+                    {
+                         uid=uid,
+                         match_type=match_type
+                    };
+                    var cb = new Action<byte[]>((cbData) => {
+                        var cbMsg = cbData==null ? new JoinMatchReq.Callback() : RpcUtil.Deserialize<JoinMatchReq.Callback>(cbData);
+                        _cb?.Invoke(cbMsg);
+                    });
+                    this.CallRemoteMethod(ProtocolCode.JOIN_MATCH_REQ, msg, cb);
+                 });
              }
              return await t.Task;
         }
@@ -154,16 +160,18 @@ namespace Server
                     Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { uid, match_type, callback });
                 return;
             }
-            var msg = new JoinMatchReq()
-            {
-                uid=uid,
-                match_type=match_type
-            };
-            var cb = new Action<byte[]>((cbData) => {
-                var cbMsg = cbData==null?new JoinMatchReq.Callback():RpcUtil.Deserialize<JoinMatchReq.Callback>(cbData);
-                callback?.Invoke(cbMsg.code);
+            Task.Run(() => {
+                var msg = new JoinMatchReq()
+                {
+                    uid=uid,
+                    match_type=match_type
+                };
+                var cb = new Action<byte[]>((cbData) => {
+                    var cbMsg = cbData==null?new JoinMatchReq.Callback():RpcUtil.Deserialize<JoinMatchReq.Callback>(cbData);
+                    callback?.Invoke(cbMsg.code);
+                });
+                this.CallRemoteMethod(ProtocolCode.JOIN_MATCH_REQ, msg, cb);
             });
-            this.CallRemoteMethod(ProtocolCode.JOIN_MATCH_REQ, msg, cb);
         }
     }
 }

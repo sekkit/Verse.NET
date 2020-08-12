@@ -53,15 +53,17 @@ namespace Server
                     callback?.Invoke(cbMsg.code);
                     t.TrySetResult(cbMsg);
                 };
-                var msg = new ChangeNameReq()
-                {
-                name=name
-                };
-                var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null ? new ChangeNameReq.Callback() : RpcUtil.Deserialize<ChangeNameReq.Callback>(cbData);
-                    _cb?.Invoke(cbMsg);
-                });
-                this.CallRemoteMethod(ProtocolCode.CHANGE_NAME_REQ, msg, cb);
+                await Task.Run(() => {
+                    var msg = new ChangeNameReq()
+                    {
+                         name=name
+                    };
+                    var cb = new Action<byte[]>((cbData) => {
+                        var cbMsg = cbData==null ? new ChangeNameReq.Callback() : RpcUtil.Deserialize<ChangeNameReq.Callback>(cbData);
+                        _cb?.Invoke(cbMsg);
+                    });
+                    this.CallRemoteMethod(ProtocolCode.CHANGE_NAME_REQ, msg, cb);
+                 });
              }
              return await t.Task;
         }
@@ -82,15 +84,17 @@ namespace Server
                     Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { name, callback });
                 return;
             }
-            var msg = new ChangeNameReq()
-            {
-                name=name
-            };
-            var cb = new Action<byte[]>((cbData) => {
-                var cbMsg = cbData==null?new ChangeNameReq.Callback():RpcUtil.Deserialize<ChangeNameReq.Callback>(cbData);
-                callback?.Invoke(cbMsg.code);
+            Task.Run(() => {
+                var msg = new ChangeNameReq()
+                {
+                    name=name
+                };
+                var cb = new Action<byte[]>((cbData) => {
+                    var cbMsg = cbData==null?new ChangeNameReq.Callback():RpcUtil.Deserialize<ChangeNameReq.Callback>(cbData);
+                    callback?.Invoke(cbMsg.code);
+                });
+                this.CallRemoteMethod(ProtocolCode.CHANGE_NAME_REQ, msg, cb);
             });
-            this.CallRemoteMethod(ProtocolCode.CHANGE_NAME_REQ, msg, cb);
         }
 
 
@@ -110,11 +114,13 @@ namespace Server
                     Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] {  }); 
                return;
            }
-           var msg = new OnMatchOkReq()
-           {
+           Task.Run(() => {
+               var msg = new OnMatchOkReq()
+               {
 
-           };
-           this.CallRemoteMethod(ProtocolCode.ON_MATCH_OK_REQ, msg, null);
+               };
+               this.CallRemoteMethod(ProtocolCode.ON_MATCH_OK_REQ, msg, null);
+            });
         }
     }
 }

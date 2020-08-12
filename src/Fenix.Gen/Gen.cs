@@ -634,7 +634,7 @@ namespace Shared
 
                     string method_name = method.Name;
                     //string msg_type = method.Name + GetApiMessagePostfix(api);
-                    string msg_assign = ParseArgsMsgAssign(methodParameterList, "                ");
+                    string msg_assign = ParseArgsMsgAssign(methodParameterList, "                    ");
 
                     /******************************************************************************
                      * Gen Synchronous Version of ActorRef API
@@ -668,15 +668,17 @@ namespace Shared
                         //.AppendLine($"                (({typename})Global.Host.GetActor(this.toActorId)).{method_name}({args});")
                         .AppendLine($"                return;")
                         .AppendLine($"            }}")
-                        .AppendLine($"            var msg = new {message_type}()")
-                        .AppendLine($"            {{")
+                        .AppendLine($"            Task.Run(() => {{")
+                        .AppendLine($"                var msg = new {message_type}()")
+                        .AppendLine($"                {{")
                         .AppendLine($"{msg_assign}")
-                        .AppendLine($"            }};")
-                        .AppendLine($"            var cb = new Action<byte[]>((cbData) => {{")
-                        .AppendLine($"                var cbMsg = cbData==null?new {message_type}.Callback():RpcUtil.Deserialize<{message_type}.Callback>(cbData);")
-                        .AppendLine($"                callback?.Invoke({cb_args});")
+                        .AppendLine($"                }};")
+                        .AppendLine($"                var cb = new Action<byte[]>((cbData) => {{")
+                        .AppendLine($"                    var cbMsg = cbData==null?new {message_type}.Callback():RpcUtil.Deserialize<{message_type}.Callback>(cbData);")
+                        .AppendLine($"                    callback?.Invoke({cb_args});")
+                        .AppendLine($"                }});")
+                        .AppendLine($"                this.CallRemoteMethod({pc_cls}.{proto_code}, msg, cb);")
                         .AppendLine($"            }});")
-                        .AppendLine($"            this.CallRemoteMethod({pc_cls}.{proto_code}, msg, cb);")
                         .AppendLine($"        }}");
                     }
                     else
@@ -703,11 +705,13 @@ namespace Shared
                         //.AppendLine($"                (({typename})Global.Host.GetActor(this.toActorId)).{method_name}({args});")
                         .AppendLine($"               return;")
                         .AppendLine($"           }}")
-                        .AppendLine($"           var msg = new {message_type}()")
-                        .AppendLine($"           {{")
+                        .AppendLine($"           Task.Run(() => {{")
+                        .AppendLine($"               var msg = new {message_type}()")
+                        .AppendLine($"               {{")
                         .AppendLine($"{msg_assign}")
-                        .AppendLine($"           }};")
-                        .AppendLine($"           this.CallRemoteMethod({pc_cls}.{proto_code}, msg, null);")
+                        .AppendLine($"               }};")
+                        .AppendLine($"               this.CallRemoteMethod({pc_cls}.{proto_code}, msg, null);")
+                        .AppendLine($"            }});")
                         .AppendLine($"        }}");
                     }
 
@@ -727,7 +731,7 @@ namespace Shared
                                                         "                     ",
                                                         "cbMsg.");
                         var async_args = args.Replace("callback", "_cb");
-                        var async_msg_assign = ParseArgsMsgAssign(methodParameterList, "                     ");
+                        var async_msg_assign = ParseArgsMsgAssign(methodParameterList, "                         ");
                         builder = new StringBuilder();
                         if (isHost)
                             builder.AppendLine($"        public async Task<{message_type}.Callback> {rpc_name}Async({args_decl}=null)");
@@ -766,15 +770,17 @@ namespace Shared
                         .AppendLine($"                    callback?.Invoke({cb_args});")
                         .AppendLine($"                    t.TrySetResult(cbMsg);")
                         .AppendLine($"                }};")
-                        .AppendLine($"                var msg = new {message_type}()")
-                        .AppendLine($"                {{")
-                        .AppendLine($"{msg_assign}")
-                        .AppendLine($"                }};")
-                        .AppendLine($"                var cb = new Action<byte[]>((cbData) => {{")
-                        .AppendLine($"                    var cbMsg = cbData==null ? new {message_type}.Callback() : RpcUtil.Deserialize<{message_type}.Callback>(cbData);")
-                        .AppendLine($"                    _cb?.Invoke(cbMsg);")
-                        .AppendLine($"                }});")
-                        .AppendLine($"                this.CallRemoteMethod({pc_cls}.{proto_code}, msg, cb);")
+                        .AppendLine($"                await Task.Run(() => {{")
+                        .AppendLine($"                    var msg = new {message_type}()")
+                        .AppendLine($"                    {{")
+                        .AppendLine($"{async_msg_assign}")
+                        .AppendLine($"                    }};")
+                        .AppendLine($"                    var cb = new Action<byte[]>((cbData) => {{")
+                        .AppendLine($"                        var cbMsg = cbData==null ? new {message_type}.Callback() : RpcUtil.Deserialize<{message_type}.Callback>(cbData);")
+                        .AppendLine($"                        _cb?.Invoke(cbMsg);")
+                        .AppendLine($"                    }});")
+                        .AppendLine($"                    this.CallRemoteMethod({pc_cls}.{proto_code}, msg, cb);")
+                        .AppendLine($"                 }});")
                         .AppendLine($"             }}")
                         .AppendLine($"             return await t.Task;")
                         .AppendLine($"        }}");

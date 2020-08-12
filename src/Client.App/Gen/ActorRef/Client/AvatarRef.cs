@@ -53,15 +53,17 @@ namespace Client
                     callback?.Invoke(cbMsg.code);
                     t.TrySetResult(cbMsg);
                 };
-                var msg = new ApiTestNtf()
-                {
-                uid=uid
-                };
-                var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null ? new ApiTestNtf.Callback() : RpcUtil.Deserialize<ApiTestNtf.Callback>(cbData);
-                    _cb?.Invoke(cbMsg);
-                });
-                this.CallRemoteMethod(ProtocolCode.API_TEST_NTF, msg, cb);
+                await Task.Run(() => {
+                    var msg = new ApiTestNtf()
+                    {
+                         uid=uid
+                    };
+                    var cb = new Action<byte[]>((cbData) => {
+                        var cbMsg = cbData==null ? new ApiTestNtf.Callback() : RpcUtil.Deserialize<ApiTestNtf.Callback>(cbData);
+                        _cb?.Invoke(cbMsg);
+                    });
+                    this.CallRemoteMethod(ProtocolCode.API_TEST_NTF, msg, cb);
+                 });
              }
              return await t.Task;
         }
@@ -82,15 +84,17 @@ namespace Client
                     Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { uid, callback });
                 return;
             }
-            var msg = new ApiTestNtf()
-            {
-                uid=uid
-            };
-            var cb = new Action<byte[]>((cbData) => {
-                var cbMsg = cbData==null?new ApiTestNtf.Callback():RpcUtil.Deserialize<ApiTestNtf.Callback>(cbData);
-                callback?.Invoke(cbMsg.code);
+            Task.Run(() => {
+                var msg = new ApiTestNtf()
+                {
+                    uid=uid
+                };
+                var cb = new Action<byte[]>((cbData) => {
+                    var cbMsg = cbData==null?new ApiTestNtf.Callback():RpcUtil.Deserialize<ApiTestNtf.Callback>(cbData);
+                    callback?.Invoke(cbMsg.code);
+                });
+                this.CallRemoteMethod(ProtocolCode.API_TEST_NTF, msg, cb);
             });
-            this.CallRemoteMethod(ProtocolCode.API_TEST_NTF, msg, cb);
         }
 
 
@@ -110,12 +114,14 @@ namespace Client
                     Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { uid, match_type }); 
                return;
            }
-           var msg = new ApiTest2Ntf()
-           {
-                uid=uid,
-                match_type=match_type
-           };
-           this.CallRemoteMethod(ProtocolCode.API_TEST2_NTF, msg, null);
+           Task.Run(() => {
+               var msg = new ApiTest2Ntf()
+               {
+                    uid=uid,
+                    match_type=match_type
+               };
+               this.CallRemoteMethod(ProtocolCode.API_TEST2_NTF, msg, null);
+            });
         }
     }
 }
