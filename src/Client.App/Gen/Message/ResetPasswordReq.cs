@@ -25,11 +25,11 @@ namespace Shared.Message
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<ResetPasswordReq>(this, RpcUtil.lz4Options);
+            return MessagePackSerializer.Serialize<ResetPasswordReq>(this);
         }
         public new static ResetPasswordReq Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<ResetPasswordReq>(data, RpcUtil.lz4Options);
+            return MessagePackSerializer.Deserialize<ResetPasswordReq>(data);
         }
     }
 }

@@ -31,21 +31,21 @@ namespace Fenix.Common.Message
 
             public override byte[] Pack()
             {
-                return MessagePackSerializer.Serialize<Callback>(this, RpcUtil.lz4Options);
+                return MessagePackSerializer.Serialize<Callback>(this);
             }
             public new static Callback Deserialize(byte[] data)
             {
-                return MessagePackSerializer.Deserialize<Callback>(data, RpcUtil.lz4Options);
+                return MessagePackSerializer.Deserialize<Callback>(data);
             }
         }
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<OnBeforeDisconnectNtf>(this, RpcUtil.lz4Options);
+            return MessagePackSerializer.Serialize<OnBeforeDisconnectNtf>(this);
         }
         public new static OnBeforeDisconnectNtf Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<OnBeforeDisconnectNtf>(data, RpcUtil.lz4Options);
+            return MessagePackSerializer.Deserialize<OnBeforeDisconnectNtf>(data);
         }
     }
 }

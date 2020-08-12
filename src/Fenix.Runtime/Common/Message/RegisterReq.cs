@@ -22,11 +22,11 @@ namespace Fenix.Common.Message
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<RegisterReq>(this, RpcUtil.lz4Options);
+            return MessagePackSerializer.Serialize<RegisterReq>(this);
         }
         public new static RegisterReq Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<RegisterReq>(data, RpcUtil.lz4Options);
+            return MessagePackSerializer.Deserialize<RegisterReq>(data);
         }
     }
 }

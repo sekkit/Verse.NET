@@ -36,21 +36,21 @@ namespace Shared.Message
 
             public override byte[] Pack()
             {
-                return MessagePackSerializer.Serialize<Callback>(this, RpcUtil.lz4Options);
+                return MessagePackSerializer.Serialize<Callback>(this);
             }
             public new static Callback Deserialize(byte[] data)
             {
-                return MessagePackSerializer.Deserialize<Callback>(data, RpcUtil.lz4Options);
+                return MessagePackSerializer.Deserialize<Callback>(data);
             }
         }
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<ChangeNameReq>(this, RpcUtil.lz4Options);
+            return MessagePackSerializer.Serialize<ChangeNameReq>(this);
         }
         public new static ChangeNameReq Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<ChangeNameReq>(data, RpcUtil.lz4Options);
+            return MessagePackSerializer.Deserialize<ChangeNameReq>(data);
         }
     }
 }

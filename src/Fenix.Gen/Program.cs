@@ -37,6 +37,9 @@ namespace Fenix
                 Path.Combine(rootPath, "src/Client.App"),
                 Path.Combine(rootPath, "src/Server.App"));
 
+            //Assembly.LoadFrom(Path.Combine(unityPath, "Assets/Plugins/Fenix/Fenix.Runtime.Unity.dll"));
+            //Assembly.LoadFrom(Path.Combine(unityPath, "Assets/Plugins/Fenix/Shared.Unity.dll"));
+
             Gen.AutogenActor(asmServerApp, true, sharedClientPath, sharedServerPath, clientPath, serverPath); 
             Gen.AutogenActor(asmClientApp, false, sharedClientPath, sharedServerPath, clientPath, serverPath);
 

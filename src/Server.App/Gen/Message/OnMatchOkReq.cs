@@ -20,11 +20,11 @@ namespace Shared.Message
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<OnMatchOkReq>(this, RpcUtil.lz4Options);
+            return MessagePackSerializer.Serialize<OnMatchOkReq>(this);
         }
         public new static OnMatchOkReq Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<OnMatchOkReq>(data, RpcUtil.lz4Options);
+            return MessagePackSerializer.Deserialize<OnMatchOkReq>(data);
         }
     }
 }

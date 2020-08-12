@@ -13,6 +13,8 @@ namespace Fenix
 {
     public partial class ActorRef
     {
+        public ActorRef() { }
+
         public ulong FromHostId => fromHost.Id;
 
         public Host fromHost;

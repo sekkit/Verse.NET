@@ -39,21 +39,21 @@ namespace Shared.Message
 
             public override byte[] Pack()
             {
-                return MessagePackSerializer.Serialize<Callback>(this, RpcUtil.lz4Options);
+                return MessagePackSerializer.Serialize<Callback>(this);
             }
             public new static Callback Deserialize(byte[] data)
             {
-                return MessagePackSerializer.Deserialize<Callback>(data, RpcUtil.lz4Options);
+                return MessagePackSerializer.Deserialize<Callback>(data);
             }
         }
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<DeleteAccountReq>(this, RpcUtil.lz4Options);
+            return MessagePackSerializer.Serialize<DeleteAccountReq>(this);
         }
         public new static DeleteAccountReq Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<DeleteAccountReq>(data, RpcUtil.lz4Options);
+            return MessagePackSerializer.Deserialize<DeleteAccountReq>(data);
         }
     }
 }

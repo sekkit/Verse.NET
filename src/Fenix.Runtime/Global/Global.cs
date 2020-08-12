@@ -1,6 +1,6 @@
 ﻿
 using Fenix.Common.Utils;
-using Fenix.Config;
+using Fenix.Config; 
 #if !CLIENT
 using Server.Config;
 #endif
@@ -115,6 +115,8 @@ namespace Fenix
 
         public static void Init(Assembly[] asmList)
         {
+            RpcUtil.Init(); 
+
 #if !CLIENT
             CacheConfig.Init(); 
 #endif

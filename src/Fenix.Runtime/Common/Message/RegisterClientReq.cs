@@ -39,21 +39,21 @@ namespace Fenix.Common.Message
 
             public override byte[] Pack()
             {
-                return MessagePackSerializer.Serialize<Callback>(this, RpcUtil.lz4Options);
+                return MessagePackSerializer.Serialize<Callback>(this);
             }
             public new static Callback Deserialize(byte[] data)
             {
-                return MessagePackSerializer.Deserialize<Callback>(data, RpcUtil.lz4Options);
+                return MessagePackSerializer.Deserialize<Callback>(data);
             }
         }
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<RegisterClientReq>(this, RpcUtil.lz4Options);
+            return MessagePackSerializer.Serialize<RegisterClientReq>(this);
         }
         public new static RegisterClientReq Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<RegisterClientReq>(data, RpcUtil.lz4Options);
+            return MessagePackSerializer.Deserialize<RegisterClientReq>(data);
         }
     }
 }

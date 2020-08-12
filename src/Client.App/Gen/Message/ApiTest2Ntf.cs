@@ -25,11 +25,11 @@ namespace Shared.Message
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<ApiTest2Ntf>(this, RpcUtil.lz4Options);
+            return MessagePackSerializer.Serialize<ApiTest2Ntf>(this);
         }
         public new static ApiTest2Ntf Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<ApiTest2Ntf>(data, RpcUtil.lz4Options);
+            return MessagePackSerializer.Deserialize<ApiTest2Ntf>(data);
         }
     }
 }

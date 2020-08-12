@@ -19,11 +19,11 @@ namespace Fenix.Common.Message
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<OnServerActorEnableNtf>(this, RpcUtil.lz4Options);
+            return MessagePackSerializer.Serialize<OnServerActorEnableNtf>(this);
         }
         public new static OnServerActorEnableNtf Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<OnServerActorEnableNtf>(data, RpcUtil.lz4Options);
+            return MessagePackSerializer.Deserialize<OnServerActorEnableNtf>(data);
         }
     }
 }

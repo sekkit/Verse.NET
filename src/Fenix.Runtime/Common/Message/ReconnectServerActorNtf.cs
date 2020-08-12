@@ -51,21 +51,21 @@ namespace Fenix.Common.Message
 
             public override byte[] Pack()
             {
-                return MessagePackSerializer.Serialize<Callback>(this, RpcUtil.lz4Options);
+                return MessagePackSerializer.Serialize<Callback>(this);
             }
             public new static Callback Deserialize(byte[] data)
             {
-                return MessagePackSerializer.Deserialize<Callback>(data, RpcUtil.lz4Options);
+                return MessagePackSerializer.Deserialize<Callback>(data);
             }
         }
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<ReconnectServerActorNtf>(this, RpcUtil.lz4Options);
+            return MessagePackSerializer.Serialize<ReconnectServerActorNtf>(this);
         }
         public new static ReconnectServerActorNtf Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<ReconnectServerActorNtf>(data, RpcUtil.lz4Options);
+            return MessagePackSerializer.Deserialize<ReconnectServerActorNtf>(data);
         }
     }
 }

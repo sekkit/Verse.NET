@@ -33,7 +33,7 @@ namespace Server.DataModel
 
         public new static IMessage Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<Account>(data, RpcUtil.lz4Options);
+            return MessagePackSerializer.Deserialize<Account>(data);
         }
     }
 }

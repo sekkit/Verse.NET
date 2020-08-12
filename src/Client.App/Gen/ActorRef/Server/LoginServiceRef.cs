@@ -21,8 +21,10 @@ namespace Server
 {
 
     [RefType("LoginService")]
-    public partial class LoginServiceRef : ActorRef
+    public class LoginServiceRef : ActorRef
     {
+        public LoginServiceRef() { }
+
         public async Task<CreateAccountReq.Callback> rpc_create_account_async(global::System.String username, global::System.String password, global::System.Action<global::Shared.Protocol.ErrCode> callback=null)
         {
             var t = new TaskCompletionSource<CreateAccountReq.Callback>();

@@ -16,7 +16,7 @@ namespace Fenix.Common.Rpc
 
         public virtual byte[] Pack()
         {
-            return MessagePackSerializer.Serialize(this, Utils.RpcUtil.lz4Options);
+            return MessagePackSerializer.Serialize(this);//, Utils.RpcUtil.lz4Options);
         }
 
         //public virtual void UnPack(byte[] data)
@@ -36,7 +36,7 @@ namespace Fenix.Common.Rpc
 
         public static IMessage Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<IMessage>(data, RpcUtil.lz4Options);
+            return MessagePackSerializer.Deserialize<IMessage>(data);
         }
 
         public virtual bool HasCallback()
@@ -68,7 +68,7 @@ namespace Fenix.Common.Rpc
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize(this, RpcUtil.lz4Options);
+            return MessagePackSerializer.Serialize(this);
         }
     }
 }

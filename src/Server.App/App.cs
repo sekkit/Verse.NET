@@ -16,6 +16,8 @@ using System.Reflection;
 using System.Text;
 using Server.Config;
 using CommandLine;
+using MessagePack.Resolvers;
+using MessagePack;
 
 namespace Server
 {
@@ -31,7 +33,17 @@ namespace Server
     class App
     { 
         static void Main(string[] args)
-        { 
+        {
+            StaticCompositeResolver.Instance.Register(
+                 MessagePack.Resolvers.ClientAppResolver.Instance,
+                 MessagePack.Resolvers.FenixRuntimeResolver.Instance,
+                 MessagePack.Resolvers.SharedResolver.Instance,
+                 MessagePack.Unity.UnityResolver.Instance,
+                 MessagePack.Unity.Extension.UnityBlitResolver.Instance,
+                 MessagePack.Unity.Extension.UnityBlitWithPrimitiveArrayResolver.Instance,
+                 MessagePack.Resolvers.StandardResolver.Instance
+            );
+
             if (args.Length == 0)
             {
                 var cfgList = new List<RuntimeConfig>();

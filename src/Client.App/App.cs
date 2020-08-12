@@ -1,6 +1,7 @@
 ﻿using Fenix;
 using Fenix.Common;
 using Fenix.Common.Utils;
+using MessagePack.Resolvers;
 using Server;
 using Shared.Protocol;
 using System;
@@ -28,6 +29,16 @@ namespace Client
 #endif
         public void Init(bool threaded = true)
         {
+            StaticCompositeResolver.Instance.Register(
+                 MessagePack.Resolvers.ClientAppResolver.Instance,
+                 MessagePack.Resolvers.FenixRuntimeResolver.Instance,
+                 MessagePack.Resolvers.SharedResolver.Instance,
+                 MessagePack.Unity.UnityResolver.Instance,
+                 MessagePack.Unity.Extension.UnityBlitResolver.Instance,
+                 MessagePack.Unity.Extension.UnityBlitWithPrimitiveArrayResolver.Instance,
+                 MessagePack.Resolvers.StandardResolver.Instance
+            );
+
             Environment.SetEnvironmentVariable("AppName", "Client.App");
             Global.Init(new Assembly[] { typeof(App).Assembly });
             host = Host.CreateClient();
