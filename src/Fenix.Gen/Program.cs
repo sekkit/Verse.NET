@@ -14,19 +14,13 @@ namespace Fenix
 
             var rootFolder = Directory.GetCurrentDirectory();
 
-            string rootPath = Path.Combine(Path.Combine(rootFolder, "../../../../../../../"));
+            string rootPath = Path.Combine(Path.Combine(rootFolder, "../../../../../"));
 
-            Assembly asmClientApp = Assembly.LoadFrom(Path.Combine(rootPath, "Libs/Unity/Client.App.Unity.dll"));
-            Assembly asmServerApp = Assembly.LoadFrom(Path.Combine(rootPath, "bin/netcoreapp3.1/Server.App.dll"));
-            //Assembly asmServerApp = typeof(Server.UModule.Avatar).Assembly;// Assembly.Load(serverDll);
+            Assembly asmClientApp = Assembly.LoadFrom(Path.Combine(rootPath, @"src\Client.App\bin\Debug\netcoreapp3.1\Client.App\netcoreapp3.1\Client.App.dll"));
+            Assembly asmServerApp = Assembly.LoadFrom(Path.Combine(rootPath, "bin/netcoreapp3.1/Server.App.dll")); 
 
-            Assembly asmRuntime = Assembly.LoadFrom(Path.Combine(rootPath, "bin/netcoreapp3.1/Fenix.Runtime.dll"));
-            //Assembly asmServerApp = typeof(Server.UModule.Avatar).Assembly;
-            //Assembly asmClientApp = typeof(Client.Avatar).Assembly;
+            Assembly asmRuntime = Assembly.LoadFrom(Path.Combine(rootPath, "bin/netcoreapp3.1/Fenix.Runtime.dll")); 
 
-            //Assembly asmApp = typeof(ErrCode).Assembly;
-
-            //string sharedPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../Shared/Gen");
             string clientPath = Path.Combine(rootPath, "src/Client.App");
             string serverPath = Path.Combine(rootPath, "src/Server.App");
 
@@ -35,10 +29,7 @@ namespace Fenix
 
             Gen.AutogenHost(asmRuntime, Path.Combine(rootPath, "src/Fenix.Runtime/Common"),
                 Path.Combine(rootPath, "src/Client.App"),
-                Path.Combine(rootPath, "src/Server.App"));
-
-            //Assembly.LoadFrom(Path.Combine(unityPath, "Assets/Plugins/Fenix/Fenix.Runtime.Unity.dll"));
-            //Assembly.LoadFrom(Path.Combine(unityPath, "Assets/Plugins/Fenix/Shared.Unity.dll"));
+                Path.Combine(rootPath, "src/Server.App")); 
 
             Gen.AutogenActor(asmServerApp, true, sharedClientPath, sharedServerPath, clientPath, serverPath); 
             Gen.AutogenActor(asmClientApp, false, sharedClientPath, sharedServerPath, clientPath, serverPath);

@@ -21,7 +21,7 @@ namespace Server
 {
 
     [RefType("Server.UModule.Avatar")]
-    public class AvatarRef : ActorRef
+    public partial class AvatarRef : ActorRef
     {
         public async Task<ChangeNameReq.Callback> rpc_change_name_async(global::System.String name, global::System.Action<global::Shared.Protocol.ErrCode> callback=null)
         {

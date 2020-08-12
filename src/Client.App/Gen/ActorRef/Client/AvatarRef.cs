@@ -21,7 +21,7 @@ namespace Client
 {
 
     [RefType("Client.Avatar")]
-    public class AvatarRef : ActorRef
+    public partial class AvatarRef : ActorRef
     {
         public async Task<ApiTestNtf.Callback> client_on_api_test_async(global::System.String uid, global::System.Action<global::Shared.Protocol.ErrCode> callback=null)
         {

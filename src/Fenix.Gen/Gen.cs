@@ -1033,7 +1033,7 @@ using System.Threading.Tasks;
             if(!isHost)
             {
                 refBuilder.AppendLine($"    {{")
-                    .AppendLine($"        public {tname}Ref() {{}}")
+                    //.AppendLine($"        public {tname}Ref() {{}}")
                     .AppendLine($"{refCode}    }}")
                     .AppendLine($"}}");
                 var result = refBuilder.ToString();

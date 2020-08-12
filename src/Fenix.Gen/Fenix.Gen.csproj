@@ -30,6 +30,6 @@
     <ProjectReference Include="..\MessagePack.Annotations\MessagePack.Annotations.csproj" />
     <ProjectReference Include="..\MessagePack.UnityShims\MessagePack.UnityShims.csproj" />
     <ProjectReference Include="..\MessagePack\MessagePack.csproj" />
-  </ItemGroup>
+  </ItemGroup> 
 
 </Project>
