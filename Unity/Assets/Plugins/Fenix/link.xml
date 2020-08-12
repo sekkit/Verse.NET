@@ -1,0 +1,22 @@
+<linker>
+	<assembly fullname="System" perserve="all"> 
+	</assembly>
+  <assembly fullname="DotNetty.Handlers" preserve="all"> 
+  </assembly>
+  <assembly fullname="DotNetty.KCP">
+    <namespace fullname="DotNetty.KCP" preserve="all"/> 
+  </assembly>
+  <assembly fullname="DotNetty.TCP" preserve="all"> 
+  </assembly>
+  <assembly fullname="DotNetty.Codecs" preserve="all"> 
+  </assembly>
+  <assembly fullname="DotNetty.Buffers" preserve="all"> 
+  </assembly>
+  <assembly fullname="DotNetty.Transport" preserve="all"> 
+  </assembly>
+  <assembly fullname="DotNetty.Transport.Libuv"  preserve="all">
+  </assembly>
+  <assembly fullname="Client.App.Unity" preserve="all"/> 
+  <assembly fullname="Fenix.Runtime.Unity" preserve="all"/>  
+	<assembly fullname="MessagePack" preserve="all"/>  
+</linker>
