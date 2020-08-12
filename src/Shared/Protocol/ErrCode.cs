@@ -1,5 +1,4 @@
 ﻿using Fenix.Common.Attributes;
-using MessagePack;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

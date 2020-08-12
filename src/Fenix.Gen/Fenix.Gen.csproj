@@ -31,5 +31,7 @@
     <ProjectReference Include="..\MessagePack.UnityShims\MessagePack.UnityShims.csproj" />
     <ProjectReference Include="..\MessagePack\MessagePack.csproj" />
   </ItemGroup> 
-
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="dotnet-mpc -i $(SolutionDir)src\Client.App\Gen\Message -o $(SolutionDir)src\Client.App\Gen\Message\Generated\ClientAppMsg.g.cs -r ClientAppResolver&#xA;&#xD;&#xA;dotnet-mpc -i $(SolutionDir)src\Fenix.Runtime\Common -o $(SolutionDir)src\Client.App\Gen\Message\Generated\FenixRuntimeMsg.g.cs -r FenixRuntimeResolver&#xD;&#xA;&#xA;dotnet-mpc -i $(SolutionDir)src\Shared\ -o $(SolutionDir)src\Client.App\Gen\Message\Generated\SharedMsg.g.cs -r SharedResolver&#xD;&#xA;&#xD;&#xA;dotnet-mpc -i $(SolutionDir)src\Client.App\Gen\Message -o $(SolutionDir)src\Server.App\Gen\Message\Generated\ClientAppMsg.g.cs -r ClientAppResolver&#xA;&#xD;&#xA;dotnet-mpc -i $(SolutionDir)src\Fenix.Runtime\Common -o $(SolutionDir)src\Server.App\Gen\Message\Generated\FenixRuntimeMsg.g.cs -r FenixRuntimeResolver&#xD;&#xA;&#xA;dotnet-mpc -i $(SolutionDir)src\Shared\ -o $(SolutionDir)src\Server.App\Gen\Message\Generated\SharedMsg.g.cs -r SharedResolver" />  
+  </Target>
 </Project>
