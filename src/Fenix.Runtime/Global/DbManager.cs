@@ -29,6 +29,12 @@ namespace Fenix
             DbDic.TryGetValue(name, out var db);
             return db;
         }
+
+        public void Destroy()
+        {
+            foreach (var db in DbDic.Values)
+                db.Dispose();
+        }
     }
 }
 #endif

@@ -124,5 +124,12 @@ namespace Fenix
             Global.TypeManager.ScanAssemblies(asmList);
             Global.TypeManager.ScanAssemblies(new Assembly[] { typeof(Global).Assembly });
         }
+
+        public static void DeInit()
+        {
+#if !CLIENT
+            Global.DbManager.Destroy();
+#endif
+        }
     }
 }

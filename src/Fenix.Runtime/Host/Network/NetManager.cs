@@ -516,37 +516,31 @@ namespace Fenix
         }
 
         public void Destroy()
-        {
+        { 
             foreach (var p in tcpPeers.Values)
                 Deregister(p);
-            tcpPeers.Clear();
-
+            tcpPeers.Clear(); 
             foreach (var p in kcpPeers.Values)
                 Deregister(p);
-            kcpPeers.Clear();
-
+            kcpPeers.Clear(); 
             foreach (var p in channelPeers.Values)
                 Deregister(p);
-            channelPeers.Clear();
-
-            foreach(var kv in tcpServerDic) 
+            channelPeers.Clear();  
+            foreach (var kv in tcpServerDic) 
                 kv.Value.Stop();
-            tcpServerDic.Clear();
-
+            tcpServerDic.Clear(); 
             foreach (var kv in kcpServerDic) 
                 kv.Value.Stop();
-            kcpServerDic.Clear();
-
+            kcpServerDic.Clear(); 
             this.OnClose = null;
             this.OnConnect = null;
             this.OnException = null;
             this.OnReceive = null;
             //this.OnSend = null;
             //this.OnPeerLost = null;
-            Global.NetManager = null;
-
-            //heartbeatTh.Join();
-            heartbeatTh = null;
+            Global.NetManager = null; 
+            heartbeatTh.Abort();
+            heartbeatTh = null; 
         }
     }
 }

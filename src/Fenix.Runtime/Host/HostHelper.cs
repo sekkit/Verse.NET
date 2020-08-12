@@ -55,6 +55,7 @@ namespace Fenix
         { 
             host.Destroy();
             host = null;
+            th?.Abort();
             th = null;
         }
     }

@@ -22,6 +22,7 @@ namespace Client
         public void OnDestroy()
         {
             App.Instance.OnDestroy();
+            App.Instance = null;
         }
 
         public void Login(string userName, string password, Action<ErrCode, Avatar> callback)

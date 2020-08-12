@@ -115,9 +115,7 @@ namespace Client
                         loginapp.Disconnect();
                     });
                 }
-            });
-
-            HostHelper.RunThread(host);
+            }); 
         }
 
         public void Close()
@@ -133,6 +131,7 @@ namespace Client
         public void OnDestroy()
         {
             this.Close();
+            host = null;
         }
     }
 }
