@@ -264,6 +264,9 @@
     <Reference Include="SyntaxTree.VisualStudio.Unity.Bridge">
       <HintPath>C:/Program Files (x86)/Microsoft Visual Studio Tools for Unity/16.0/Editor/SyntaxTree.VisualStudio.Unity.Bridge.dll</HintPath>
     </Reference>
+    <Reference Include="Client.App.Unity">
+      <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/Client.App.Unity.dll</HintPath>
+    </Reference>
     <Reference Include="DotNetty.Buffers">
       <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/DotNetty.Buffers.dll</HintPath>
     </Reference>
@@ -287,6 +290,9 @@
     </Reference>
     <Reference Include="Fenix.Runtime.Unity">
       <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/Fenix.Runtime.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="MessagePack">
+      <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/MessagePack.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
       <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
@@ -320,15 +326,6 @@
     </Reference>
     <Reference Include="System.Threading.Tasks.Extensions">
       <HintPath>C:/Code/Fenix/Unity/Assets/Plugins/Fenix/System.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>C:/Code/Fenix/Unity/Library/PackageCache/jillejr.newtonsoft.json-for-unity@12.0.101/Plugins/Newtonsoft.Json Editor/Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="NugetForUnity">
-      <HintPath>C:/Code/Fenix/Unity/Assets/NuGet/Editor/NugetForUnity.dll</HintPath>
-    </Reference>
-    <Reference Include="DotNetZip">
-      <HintPath>C:/Code/Fenix/Unity/Assets/NuGet/Editor/DotNetZip.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>C:/Program Files/Unity/Editor/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/mscorlib.dll</HintPath>

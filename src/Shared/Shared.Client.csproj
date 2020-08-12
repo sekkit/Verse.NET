@@ -42,8 +42,5 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Fenix.Runtime\Fenix.Runtime.Client.csproj" />
-  </ItemGroup>
-  <!--<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(OS)' == 'Windows_NT' ">
-    <Exec Command="xcopy /K /D /H /Y $(TargetPath) $(SolutionDir)Unity\Assets\Plugins\Fenix\&#xD;&#xA;xcopy /K /D /H /Y $(TargetPath) $(SolutionDir)Libs\Unity\" />
-  </Target>-->
+  </ItemGroup> 
 </Project>
