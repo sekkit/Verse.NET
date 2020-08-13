@@ -46,7 +46,7 @@ namespace Client
 
         [RpcMethod(ProtocolCode.API_TEST_NTF, Api.ClientApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void CLIENT_API_NATIVE_api_test(global::System.String uid, global::System.Action<global::Shared.Protocol.ErrCode> callback)
+        public void CLIENT_API_NATIVE_api_test(global::System.String uid, global::System.Action<Shared.Protocol.ErrCode> callback)
         {
             this.ApiTest(uid, callback);
         }
