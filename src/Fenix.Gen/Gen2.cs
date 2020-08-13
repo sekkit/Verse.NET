@@ -574,7 +574,7 @@ namespace Shared
                     if (!isHost)
                     {
                         msgBuilder.AppendLine($"using Shared;")
-                        .AppendLine($"using Shared;")
+                        .AppendLine($"using Shared.Protocol;")
                         .AppendLine($"using Shared.DataModel;");
                     }
 
@@ -1039,7 +1039,7 @@ using Fenix.Common.Message;
             {
                 refBuilder.AppendLine(@"using Shared;
 using Shared.DataModel;
-using Shared; 
+using Shared.Protocol; 
 using Shared.Message;
                     ");
             }
@@ -1137,7 +1137,7 @@ using Fenix.Common.Utils;");
                 apiBuilder.AppendLine(@"
 using Shared;
 using Shared.DataModel;
-using Shared; 
+using Shared.Protocol; 
 using Shared.Message;");
             }
             if (isServer && !isHost)
