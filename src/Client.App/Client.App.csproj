@@ -27,14 +27,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-
-
-  <ItemGroup>
-    <Compile Remove="Shared\**" />
-    <EmbeddedResource Remove="Shared\**" />
-    <None Remove="Shared\**" />
-  </ItemGroup>
-
+ 
   <ItemGroup>
     <ProjectReference Include="..\DotNetty.Buffers\DotNetty.Buffers.csproj" />
     <ProjectReference Include="..\DotNetty.Codecs\DotNetty.Codecs.csproj" />

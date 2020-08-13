@@ -1,4 +1,5 @@
-using MessagePack;
+
+using Mono.Cecil;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,19 +10,17 @@ namespace Fenix.Common.Utils
     {
         public static byte[] Serialize(object msg)
         {
-            return MessagePackSerializer.Serialize(msg);
+            return null;
         }
 
         public static T Deserialize<T>(byte[] bytes)
-        { 
-            Log.Info(MessagePackSerializer.ConvertToJson(bytes));
-            return MessagePackSerializer.Deserialize<T>(bytes);
+        {
+            return default(T);
         }
 
         public static object Deserialize(Type type, byte[] bytes)
         {
-            Log.Info(MessagePackSerializer.ConvertToJson(bytes));
-            return MessagePackSerializer.Deserialize(type, bytes);
+            return null;
         }
 
         public static Type GetBaseType(Type type)
@@ -52,5 +51,61 @@ namespace Fenix.Common.Utils
 
             return IsHeritedType(type.BaseType, baseTypeName);
         }
-    }
+
+        public static bool IsHeritedType(TypeDefinition type, string baseTypeName)
+        {
+            if (type.Namespace.StartsWith("UnityEngine"))
+                return false;
+            if (type.Namespace.StartsWith("UnityEditor"))
+                return false;
+            if (type.Name == baseTypeName)
+            {
+                return true;
+            }
+
+            if (type.Name == "Object" || type.BaseType == null || type.BaseType.Name == "Object" || 
+                type.BaseType.Namespace.StartsWith("UnityEngine") ||
+                type.BaseType.Namespace.StartsWith("UnityEditor"))
+            {
+                return false;
+            }
+            try
+            {
+                return IsHeritedType(type.BaseType, baseTypeName);
+            }
+            catch(Exception ex)
+            {
+                return false;
+            }
+        }
+
+        public static bool IsHeritedType(TypeReference type, string baseTypeName)
+        {
+            if (type == null)
+                return false;
+            if (type.Namespace.StartsWith("UnityEngine"))
+                return false;
+            if (type.Namespace.StartsWith("UnityEditor"))
+                return false;
+            if (type.Name == baseTypeName)
+            {
+                return true;
+            }
+
+            //if (type.Name == "Object" || type. == null || type.BaseType.Name == "Object" ||
+            //    type.BaseType.Namespace.StartsWith("UnityEngine") ||
+            //    type.BaseType.Namespace.StartsWith("UnityEditor"))
+            //{
+            //    return false;
+            //}
+            try
+            {
+                return IsHeritedType(type.Resolve().BaseType, baseTypeName);
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+    } 
 }
