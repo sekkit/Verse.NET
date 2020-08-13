@@ -265,9 +265,10 @@ namespace Fenix
                 var attr2 = p.ParameterType.Resolve().CustomAttributes.Where(m=>m.AttributeType.Resolve().FullName == typeof(DefaultValueAttribute).FullName).FirstOrDefault() as CustomAttribute;
                 if (attr2 != null)
                 {
-                    var v = attr2.ConstructorArguments[0].Value;
-                    var value = v.GetType().IsEnum ? (v.GetType().Name + "." + v.ToString()) : v;
-                    lines.Add($"{prefix}[Key({position})]\n{prefix}public {pType} {pName} {{ get; set; }} = {value};\n");
+                    var value = (CustomAttributeArgument)attr2.ConstructorArguments[0].Value;
+                    //var value = v.GetType().IsEnum ? (v.GetType().Name + "." + v.ToString()) : v;
+                    var v = (value.Type.Resolve().BaseType.FullName == "System.Enum") ? ("(global::" + value.Type.FullName + ")(" + value.Value.ToString()+")") : value.Value.ToString();
+                    lines.Add($"{prefix}[Key({position})]\n{prefix}public {pType} {pName} {{ get; set; }} = {v};\n");
                     //lines.Add($"{prefix}[Key({position})]\n{prefix}[DefaultValue({attr2.Value})]\n{prefix}public {pType} {pName} {{ get; set; }} = {v};\n");
                 }
 
@@ -297,8 +298,8 @@ namespace Fenix
                 var attr2 = t.CustomAttributes.Where(m => m.AttributeType.FullName == typeof(DefaultValueAttribute).FullName).FirstOrDefault();
                 if (attr2 != null)
                 {
-                    var value = attr2.ConstructorArguments[0].Value;
-                    var v = value.GetType().IsEnum ? (value.GetType().Name + "." + value.ToString()) : value;
+                    var value = (CustomAttributeArgument)attr2.ConstructorArguments[0].Value;
+                    var v = (value.Type.Resolve().BaseType.FullName == "System.Enum") ? ("(global::" + value.Type.FullName + ")(" + value.Value.ToString() + ")") : value.Value.ToString();
                     lines.Add($"{prefix}[Key({position})]\n{prefix}public {pType} {pName} {{ get; set; }} = {v};\n");
                     //lines.Add($"{prefix}[Key({position})]\n{prefix}[DefaultValue({v})]\n{prefix}public {pType} {pName} {{ get; set; }} = {v};\n");
                 }
