@@ -9,8 +9,6 @@ using UnityEngine;
 
 public class Startup
 {
-    static bool serializerRegistered = false;
-
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     static void Initialize()
     {
