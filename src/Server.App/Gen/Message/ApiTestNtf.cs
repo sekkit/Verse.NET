@@ -32,7 +32,7 @@ namespace Shared.Message
         public class Callback : IMessage
         {
             [Key(0)]
-            public global::Shared.Protocol.ErrCode code { get; set; } = ErrCode.ERROR;
+            public global::Shared.Protocol.ErrCode code { get; set; } = (global::Shared.Protocol.ErrCode)(-1);
 
             public override byte[] Pack()
             {

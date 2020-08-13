@@ -23,13 +23,13 @@ namespace Client
     [RefType("Client.Avatar")]
     public partial class AvatarRef : ActorRef
     {
-        public async Task<ApiTestNtf.Callback> client_on_api_test_async(global::System.String uid, global::System.Action<global::Shared.Protocol.ErrCode> callback=null)
+        public async Task<ApiTestNtf.Callback> client_on_api_test_async(global::System.String uid, global::System.Action<Shared.Protocol.ErrCode> callback=null)
         {
             var t = new TaskCompletionSource<ApiTestNtf.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                global::System.Action<global::Shared.Protocol.ErrCode> _cb = (code) =>
+                global::System.Action<Shared.Protocol.ErrCode> _cb = (code) =>
                 {
                      var cbMsg = new ApiTestNtf.Callback();
                      cbMsg.code=code;
@@ -59,7 +59,7 @@ namespace Client
                          uid=uid
                     };
                     var cb = new Action<byte[]>((cbData) => {
-                        var cbMsg = cbData==null ? new ApiTestNtf.Callback() : RpcUtil.Deserialize<ApiTestNtf.Callback>(cbData);
+                        var cbMsg = cbData==null ? new ApiTestNtf.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<ApiTestNtf.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
                     this.CallRemoteMethod(ProtocolCode.API_TEST_NTF, msg, cb);
@@ -68,7 +68,7 @@ namespace Client
              return await t.Task;
         }
 
-        public void client_on_api_test(global::System.String uid, global::System.Action<global::Shared.Protocol.ErrCode> callback)
+        public void client_on_api_test(global::System.String uid, global::System.Action<Shared.Protocol.ErrCode> callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -90,7 +90,7 @@ namespace Client
                     uid=uid
                 };
                 var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null?new ApiTestNtf.Callback():RpcUtil.Deserialize<ApiTestNtf.Callback>(cbData);
+                    var cbMsg = cbData==null?new ApiTestNtf.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<ApiTestNtf.Callback>(cbData);
                     callback?.Invoke(cbMsg.code);
                 });
                 this.CallRemoteMethod(ProtocolCode.API_TEST_NTF, msg, cb);
