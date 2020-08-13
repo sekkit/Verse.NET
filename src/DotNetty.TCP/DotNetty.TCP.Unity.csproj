@@ -25,7 +25,20 @@
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'"> 
     <DefineConstants>TRACE;NET_3_5_GREATER;SIGNED;NETSTANDARD;NET_4_0_GREATER;NET_4_5_GREATER;NET_4_6_GREATER;UNITY_5_3_OR_NEWER;</DefineConstants>
   </PropertyGroup> 
-
+  
+  <PropertyGroup Condition=" '$(OS)' != 'Windows_NT' ">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CustomCommands>
+      <CustomCommands>
+        <Command>
+          <type>AfterBuild</type>
+          <command>cp -rf ${TargetPath} ${SolutionDir}/Unity/Assets/Plugins/Fenix/;cp -rf ${TargetPath} ${SolutionDir}/Libs/Unity/</command>
+          <externalConsole>True</externalConsole>
+        </Command>
+      </CustomCommands>
+    </CustomCommands>
+  </PropertyGroup> 
+    
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.6">
       <PrivateAssets>all</PrivateAssets>
