@@ -20,8 +20,6 @@ namespace Fenix.Common.Utils
             MessagePackSerializer.DefaultOptions = option;
         }
 
-        //public static MessagePackSerializerOptions lz4Options = MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4BlockArray);
-
         public delegate IMessage MsgDeserialize(byte[] data);
 
 //#if ENABLE_IL2CPP
