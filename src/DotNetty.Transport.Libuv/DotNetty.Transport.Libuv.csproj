@@ -67,5 +67,8 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="..\..\.editorconfig" />
+  </ItemGroup>
   <Import Project="..\version.props" />
 </Project>
