@@ -16,7 +16,7 @@ A distributed game server featuring asynchronous event-driven networking, KCP/TC
 From MMORPG to small projects, Fenix is designed to be stable, simple, and super easy to scale.
 With the power of .NetCore, Fenix can be run on MacOS/Linux/Windows.
 
-Fenix is in a early stage of development, but is also being used in commercial Game projects.
+Fenix is in a early stage of development, but is also being used in reallife Game projects.
 
 #### [RELEASES] https://github.com/sekkit/Fenix/releases<br>
 
@@ -26,7 +26,7 @@ Fenix is in a early stage of development, but is also being used in commercial G
 · [![status](https://img.shields.io/badge/Passed%3F-yes-green.svg)]()&nbsp;&nbsp;&nbsp;&nbsp;macOS/Linux/Windows supported (for client sdk supports macOS/Linux/Windows/Android/iOS)<br>
 · [![status](https://img.shields.io/badge/Passed%3F-yes-green.svg)]()&nbsp;&nbsp;&nbsp;&nbsp;Unity Mono/IL2CPP compilation passed<br>
 · [![status](https://img.shields.io/badge/Passed%3F-yes-green.svg)]()&nbsp;&nbsp;&nbsp;&nbsp;KCP/TCP benchmark passed (Recommend to use IL2CPP compilation for client, maybe server also**UNTESTED)<br>
-· [![status](https://img.shields.io/pypi/status/ansicolortags.svg)]()&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Not all feature completed, Fenix will get better as our commercial project finished.<br>
+· [![status](https://img.shields.io/pypi/status/ansicolortags.svg)]()&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Not all feature completed currently.<br>
 
 ## Get Started
 
