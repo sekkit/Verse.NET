@@ -266,10 +266,18 @@ namespace Fenix
                 if (attr2 != null)
                 {
                     var value = (CustomAttributeArgument)attr2.ConstructorArguments[0].Value;
-                    //var value = v.GetType().IsEnum ? (v.GetType().Name + "." + v.ToString()) : v;
-                    var v = (value.Type.Resolve().BaseType.FullName == "System.Enum") ? ("(global::" + value.Type.FullName + ")(" + value.Value.ToString()+")") : value.Value.ToString();
-                    lines.Add($"{prefix}[Key({position})]\n{prefix}public {pType} {pName} {{ get; set; }} = {v};\n");
-                    //lines.Add($"{prefix}[Key({position})]\n{prefix}[DefaultValue({attr2.Value})]\n{prefix}public {pType} {pName} {{ get; set; }} = {v};\n");
+                    bool isEnum = value.Type.Resolve().BaseType.FullName == "System.Enum";
+                    if (isEnum)
+                    {
+                        var inst = value.Type.Resolve();
+                        var enumType = value.Type.FullName + "." + inst.Fields.Where(m => m.Constant?.ToString() == value.Value.ToString()).Select(m => m.Name).FirstOrDefault();
+                        //var v = isEnum ? ("(global::" + value.Type.FullName + ")(" + value.Value.ToString() + ")") : value.Value.ToString();
+                        lines.Add($"{prefix}[Key({position})]\n{prefix}public {pType} {pName} {{ get; set; }} = {enumType};\n");
+                    }
+                    else
+                    {
+                        lines.Add($"{prefix}[Key({position})]\n{prefix}public {pType} {pName} {{ get; set; }} = {value.Value.ToString()};\n");
+                    }
                 }
 
                 else
@@ -299,9 +307,18 @@ namespace Fenix
                 if (attr2 != null)
                 {
                     var value = (CustomAttributeArgument)attr2.ConstructorArguments[0].Value;
-                    var v = (value.Type.Resolve().BaseType.FullName == "System.Enum") ? ("(global::" + value.Type.FullName + ")(" + value.Value.ToString() + ")") : value.Value.ToString();
-                    lines.Add($"{prefix}[Key({position})]\n{prefix}public {pType} {pName} {{ get; set; }} = {v};\n");
-                    //lines.Add($"{prefix}[Key({position})]\n{prefix}[DefaultValue({v})]\n{prefix}public {pType} {pName} {{ get; set; }} = {v};\n");
+                    bool isEnum = value.Type.Resolve().BaseType.FullName == "System.Enum";
+                    if (isEnum)
+                    {
+                        var inst = value.Type.Resolve();
+                        var enumType = value.Type.FullName + "." + inst.Fields.Where(m => m.Constant?.ToString() == value.Value.ToString()).Select(m => m.Name).FirstOrDefault();
+                        //var v = isEnum ? ("(global::" + value.Type.FullName + ")(" + value.Value.ToString() + ")") : value.Value.ToString();
+                        lines.Add($"{prefix}[Key({position})]\n{prefix}public {pType} {pName} {{ get; set; }} = {enumType};\n");
+                    }
+                    else
+                    {
+                        lines.Add($"{prefix}[Key({position})]\n{prefix}public {pType} {pName} {{ get; set; }} = {value.Value.ToString()};\n");
+                    }
                 }
                 else
                     lines.Add($"{prefix}[Key({position})]\n{prefix}public {pType} {pName} {{ get; set; }}\n");
