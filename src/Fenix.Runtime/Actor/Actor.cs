@@ -48,8 +48,7 @@ namespace Fenix
 
         public T Get<T>() where T: IMessage
         {
-            IMessage value;
-            mPersistentDic.TryGetValue(typeof(T), out value);
+            mPersistentDic.TryGetValue(typeof(T), out var value);
             return (T)value;
         }
         
