@@ -17,7 +17,7 @@ public class test : MonoBehaviour
 
     void OnLogin()
     {
-        app.Login("", "", (code, avatar) =>
+        app.Login("sekkit", "password", (code, avatar) =>
         {
             Log.Info("login_result", code);
         });
