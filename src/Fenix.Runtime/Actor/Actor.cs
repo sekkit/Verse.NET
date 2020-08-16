@@ -76,6 +76,19 @@ namespace Fenix
                 {
                     foreach (RuntimeDataAttribute attr in attrs)
                     {
+                        mRuntimeDic[attr.dataType] = Activator.CreateInstance(attr.dataType) as IMessage;
+                    }
+                }
+            }
+
+            for (int i = 0; i < methods.Length; ++i)
+            {
+                MethodInfo method = methods[i];
+                var attrs = method.GetCustomAttributes(typeof(PersistentDataAttribute));
+                if (attrs.Count() > 0)
+                {
+                    foreach (PersistentDataAttribute attr in attrs)
+                    {
                         mPersistentDic[attr.dataType] = Activator.CreateInstance(attr.dataType) as IMessage;
                     }
                 }
