@@ -618,7 +618,7 @@ namespace Shared
                     //现在生成actor_ref定义 
                     var rpc_name = "rpc_" + NameToApi(method.Name);
                     if (api == Api.ClientApi)
-                        rpc_name = "client_on_" + NameToApi(method.Name);
+                        rpc_name = "client_" + NameToApi(method.Name);
                     else if (api == Api.ServerOnly)
                         rpc_name = "rpc_" + NameToApi(method.Name);
 
