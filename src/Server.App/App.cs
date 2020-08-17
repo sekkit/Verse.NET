@@ -49,8 +49,8 @@ namespace Server
                 var cfgList = new List<RuntimeConfig>();
 
                 var obj = new RuntimeConfig();
-                obj.ExternalIp = "auto";
-                obj.InternalIp = "auto";
+                obj.ExternalIP = "auto";
+                obj.InternalIP = "auto";
                 obj.Port = 17777; //auto
                 obj.AppName = "Login.App";
                 obj.HeartbeatIntervalMS = 5000;
@@ -63,8 +63,8 @@ namespace Server
                 cfgList.Add(obj);
 
                 obj = new RuntimeConfig();
-                obj.ExternalIp = "auto";
-                obj.InternalIp = "auto";
+                obj.ExternalIP = "auto";
+                obj.InternalIP = "auto";
                 obj.Port = 17778; //auto
                 obj.AppName = "Match.App";
                 obj.HeartbeatIntervalMS = 5000;
@@ -77,8 +77,8 @@ namespace Server
                 cfgList.Add(obj);
 
                 obj = new RuntimeConfig();
-                obj.ExternalIp = "auto";
-                obj.InternalIp = "auto";
+                obj.ExternalIP = "auto";
+                obj.InternalIP = "auto";
                 obj.Port = 17779; //auto
                 obj.AppName = "Master.App";
                 obj.HeartbeatIntervalMS = 5000;
@@ -91,8 +91,8 @@ namespace Server
                 cfgList.Add(obj);
 
                 obj = new RuntimeConfig();
-                obj.ExternalIp = "auto";
-                obj.InternalIp = "auto";
+                obj.ExternalIP = "auto";
+                obj.InternalIP = "auto";
                 obj.Port = 17780; //auto
                 obj.AppName = "Zone.App";
                 obj.HeartbeatIntervalMS = 5000;
@@ -109,12 +109,9 @@ namespace Server
                     var content = JsonConvert.SerializeObject(cfgList, Formatting.Indented);
                     sw.Write(content);
                 }
-
-                Environment.SetEnvironmentVariable("AppName", "Login.App");
-
-                Bootstrap.Start(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfgList, OnInit, isMultiProcess:true); //单进程模式
-
-                //Bootstrap.Start(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfgList, OnInit, isMultiProcess: false); //单进程模式
+                
+                //for Debug purpose
+                Bootstrap.StartSingleProcess(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfgList, OnInit); //单进程模式
             }
             else
             {
@@ -127,7 +124,9 @@ namespace Server
                        using (var sr = new StreamReader(o.Config))
                        {
                            var cfgList = JsonConvert.DeserializeObject<List<RuntimeConfig>>(sr.ReadToEnd());
-                           Bootstrap.Start(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfgList, OnInit, isMultiProcess: true); //分布式
+                           foreach (var cfg in cfgList)
+                               if(cfg.AppName == o.AppName)
+                                   Bootstrap.StartMultiProcess(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfg, OnInit); //分布式
                        }
                    });
             }

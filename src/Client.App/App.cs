@@ -1,6 +1,7 @@
 ﻿using Fenix;
 using Fenix.Common;
 using Fenix.Common.Utils;
+using Fenix.Config;
 using MessagePack.Resolvers;
 using Server;
 using Shared.Protocol;
@@ -20,15 +21,15 @@ namespace Client
         static void Main(string[] args)
         {
             var app = new App();
-            app.Init();
+            app.Init(null);
             app.Login("sekkit", "password", (code, avatar) =>
             {
-
+                
             });
         } 
 #endif
-        public void Init(bool threaded = true)
-        {
+        public void Init(RuntimeConfig cfg, bool threaded = true)
+        { 
             StaticCompositeResolver.Instance.Register(
                  MessagePack.Resolvers.ClientAppResolver.Instance,
                  MessagePack.Resolvers.FenixRuntimeResolver.Instance,
@@ -40,7 +41,7 @@ namespace Client
             );
 
             Environment.SetEnvironmentVariable("AppName", "Client.App");
-            Global.Init(new Assembly[] { typeof(App).Assembly });
+            Global.Init(cfg, new Assembly[] { typeof(App).Assembly });
             host = Host.CreateClient();
             if (threaded)
                 HostHelper.RunThread(host);
@@ -54,12 +55,12 @@ namespace Client
             }
         }
 
-        public void Login(string userName, string password, Action<ErrCode, Avatar> callback)
+        public void Login(string username, string password, Action<ErrCode, Avatar> callback)
         {
-            var localAddr = Basic.GetLocalIPv4(System.Net.NetworkInformation.NetworkInterfaceType.Ethernet);
+            //var localAddr = Basic.GetLocalIPv4(System.Net.NetworkInformation.NetworkInterfaceType.Ethernet);
             //localAddr = "182.254.179.250"; 
-
-            var loginapp = host.GetHost("Login.App", localAddr, 17777);
+            Log.Info("Connecting", Global.Config.HostIP, Global.Config.Port);
+            var loginapp = host.GetHost("Login.App", Global.Config.HostIP, Global.Config.Port);
             //注册客户端，初始化路由表信息 
 
             loginapp.RegisterClient(host.Id, host.UniqueName, (code, hostInfo) =>
@@ -83,8 +84,9 @@ namespace Client
                 if (code == 0)
                 {
                     //发起登陆请求，得到玩家entity所在host信息
+                    Log.Info("Request Login", username, password);
                     var svc = host.GetService<LoginServiceRef>();
-                    svc.rpc_login("username", "password", (code2, uid, hostId, hostName, hostAddress) =>
+                    svc.rpc_login(username, password, (code2, uid, hostId, hostName, hostAddress) =>
                     {
                         if (code2 != ErrCode.OK)
                         {

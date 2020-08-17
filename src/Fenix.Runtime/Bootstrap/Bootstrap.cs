@@ -1,4 +1,5 @@
 ﻿using Fenix;
+using Fenix.Common;
 using Fenix.Common.Utils;
 using Fenix.Config;
 using System;
@@ -12,51 +13,52 @@ namespace Fenix
 {
     public class Bootstrap
     {
-        public static void Start(Assembly[] asmList, List<RuntimeConfig> cfgList, Action init, bool isMultiProcess=false)
+        public static void StartMultiProcess(Assembly[] asmList, RuntimeConfig cfg, Action init)
         {
-            Global.Init(asmList);
+#if !CLIENT
+            Global.Init(cfg, asmList);
 
             init();
              
             Host host = null;
-            if (!isMultiProcess || cfgList == null)
-            { 
-                var cfg = Global.Config;
-                string localAddrV4 = "";
-                if (cfg.InternalIp == "auto")
-                    localAddrV4 = Basic.GetLocalIPv4(NetworkInterfaceType.Ethernet);
-                host = Host.Create("App", localAddrV4, cfg.ExternalIp, 17777, false);
-
-                foreach (var aName in cfg.DefaultActorNames) 
-                    host.CreateActorLocally(aName, aName);
-            }
-            else
+          
+            Environment.SetEnvironmentVariable("AppName", cfg.AppName);
+            string appName = Environment.GetEnvironmentVariable("AppName");
+         
+            if (host == null)
             {
-                foreach (var cfg in cfgList)
-                {
-                    string appName = Environment.GetEnvironmentVariable("AppName");
-                    if (!isMultiProcess)
-                    {
-                        foreach (var aName in cfg.DefaultActorNames)
-                            host.CreateActorLocally(aName, aName);
-                    }
-                    else
-                    {
-                        if (appName != cfg.AppName)
-                            continue;
-                        if (host == null)
-                        {
-                            //if(cfg.InternalIp == "auto")
-                            //var localAddrV4 = Basic.GetLocalIPv4(NetworkInterfaceType.Ethernet);
-                            host = Host.Create(cfg.AppName, cfg.InternalIp, cfg.ExternalIp, cfg.Port, false);
-                        }
-                        foreach (var aName in cfg.DefaultActorNames)
-                            host.CreateActorLocally(aName, aName);
-                    }
-                }
+                //if(cfg.InternalIp == "auto")
+                //var localAddrV4 = Basic.GetLocalIPv4(NetworkInterfaceType.Ethernet);
+                host = Host.Create(cfg.AppName, cfg.InternalIP, cfg.ExternalIP, cfg.Port, false);
             }
+
+            foreach (var aName in cfg.DefaultActorNames)
+                host.CreateActorLocally(aName, aName); 
 
             HostHelper.RunThread(host);
+#endif
+        }
+
+        public static void StartSingleProcess(Assembly[] asmList, List<RuntimeConfig> cfgList, Action init)
+        {
+#if !CLIENT
+            Global.Init(null, asmList);
+
+            init();
+
+            Host host = null;
+        
+            string localAddrV4 = "";
+            if (Global.Config.InternalIP == "auto")
+                localAddrV4 = Basic.GetLocalIPv4(NetworkInterfaceType.Ethernet);
+
+            host = Host.Create("App", localAddrV4, Global.Config.ExternalIP, 17777, false);
+            foreach(var cfg in cfgList)
+                foreach (var aName in cfg.DefaultActorNames)
+                    host.CreateActorLocally(aName, aName); 
+
+            HostHelper.RunThread(host);
+#endif
         }
     }
 }

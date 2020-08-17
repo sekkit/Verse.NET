@@ -33,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Gen\" />
     <Folder Include="UModule\Item\" />
     <Folder Include="UModule\Reward\" />
   </ItemGroup>

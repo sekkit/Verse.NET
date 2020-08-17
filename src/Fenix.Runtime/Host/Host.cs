@@ -87,7 +87,7 @@ namespace Fenix
 
             if (!this.IsClientMode)
             {
-                Log.Info(string.Format("{0}(ID:{1}) is running at {2} as ServerMode", this.UniqueName, this.Id, LocalAddress.ToIPv4String()));
+                Log.Info(string.Format("{0}(ID:{1}) is running at {2} as ServerMode", this.UniqueName, this.Id, LocalAddress.ToString()));
             }
             else
             {

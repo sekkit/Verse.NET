@@ -38,13 +38,23 @@ namespace Fenix.Common.Utils
         {
             if (ep == null)
                 return "";
-            return string.Format("{0}:{1}", ep.Address.MapToIPv4().ToString(), ep.Port);
+            var ip = ep.Address.MapToIPv4().ToString().Trim();
+#if !CLIENT
+            if (ip == "0.0.0.0")
+                ip = Basic.GetLocalIPv4(System.Net.NetworkInformation.NetworkInterfaceType.Ethernet);
+#endif
+            return string.Format("{0}:{1}", ip, ep.Port);
         }
 
         public static string ToIPv4String(this EndPoint ep)
         {
             var newEp = (IPEndPoint)ep;
-            return string.Format("{0}:{1}", newEp.Address.MapToIPv4().ToString(), newEp.Port);
+            var ip = newEp.Address.MapToIPv4().ToString().Trim();
+#if !CLIENT
+            if (ip == "0.0.0.0")
+                ip = Basic.GetLocalIPv4(System.Net.NetworkInformation.NetworkInterfaceType.Ethernet);
+#endif
+            return string.Format("{0}:{1}", ip, newEp.Port);
         }
 
         /// <summary>

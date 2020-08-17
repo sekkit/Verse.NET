@@ -15,7 +15,11 @@ namespace Fenix
         public static Host Host;
         
         static RuntimeConfig _cfg;
-        public static RuntimeConfig Config => _cfg==null?_cfg = RuntimeConfig.MakeDefaultConfig(): _cfg;
+#if !CLIENT
+        public static RuntimeConfig Config => _cfg==null?_cfg = RuntimeConfig.MakeDefaultServerConfig(): _cfg;
+#else
+        public static RuntimeConfig Config => _cfg == null ? _cfg = RuntimeConfig.MakeDefaultClientConfig() : _cfg;
+#endif
 
 #if !CLIENT
         public static DbManager DbManager = new DbManager();
@@ -113,13 +117,14 @@ namespace Fenix
             return ActorRef.Create(toHostId, toActorId, refType, fromActor, fromHost, isClient, toPeerEP);
         }
 
-        public static void Init(Assembly[] asmList)
+        public static void Init(RuntimeConfig cfg, Assembly[] asmList)
         {
             RpcUtil.Init(); 
 
 #if !CLIENT
-            CacheConfig.Init(); 
+            CacheConfig.Init();
 #endif
+            _cfg = cfg;
 
             Global.TypeManager.ScanAssemblies(asmList);
             Global.TypeManager.ScanAssemblies(new Assembly[] { typeof(Global).Assembly });
