@@ -18,8 +18,8 @@ using System.Threading.Tasks;
 
 namespace Fenix
 {
-    //Ò»¸öÄÚÍøIP£¬±ØĞë
-    //Ò»¸öÍâÍøIP
+    //ä¸€ä¸ªå†…ç½‘IPï¼Œå¿…é¡»
+    //ä¸€ä¸ªå¤–ç½‘IP
 
     public partial class Host : Entity
     {
@@ -43,8 +43,8 @@ namespace Fenix
             Global.NetManager.OnException += OnExcept;
             Global.NetManager.OnHeartBeat += OnHeartBeat;
 
-            //Èç¹ûÊÇ¿Í»§¶Ë£¬ÔòÓÃ±¾µØÁ¬½Ó×öÎªid
-            //Èç¹ûÊÇ·şÎñ¶Ë£¬Ôò´ÓÃû³Æ¼ÆËãÒ»¸öid, ·½±ãÂ·ÓÉ²éÕÒ
+            //å¦‚æœæ˜¯å®¢æˆ·ç«¯ï¼Œåˆ™ç”¨æœ¬åœ°è¿æ¥åšä¸ºid
+            //å¦‚æœæ˜¯æœåŠ¡ç«¯ï¼Œåˆ™ä»åç§°è®¡ç®—ä¸€ä¸ªid, æ–¹ä¾¿è·¯ç”±æŸ¥æ‰¾
             if (!clientMode)
             {
                 string _ip = ip;
@@ -157,8 +157,8 @@ namespace Fenix
 
         public override void Destroy()
         {
-            //ÏÈÏú»ÙËùÓĞµÄactor, netpeer
-            //ÔÙÏú»Ù×Ô¼º
+            //å…ˆé”€æ¯æ‰€æœ‰çš„actor, netpeer
+            //å†é”€æ¯è‡ªå·±
 
             foreach (var a in this.actorDic.Values)
                 a.Destroy();
@@ -191,7 +191,7 @@ namespace Fenix
                         Global.IdManager.ReregisterHost(peer.ConnId, peer.RemoteAddress.ToIPv4String());
                     
 #if !CLIENT
-                    //Èç¹ûpeerÊÇ¿Í»§¶Ë£¬Ôò´ú±í
+                    //å¦‚æœpeeræ˜¯å®¢æˆ·ç«¯ï¼Œåˆ™ä»£è¡¨
                     var clientActorId = Global.IdManager.GetClientActorId(peer.ConnId);
                     if (clientActorId != 0 && this.actorDic.ContainsKey(clientActorId))
                     {
@@ -213,7 +213,7 @@ namespace Fenix
                 }
                 else if (opCode == (byte)OpCode.GOODBYE)
                 {
-                    //É¾³ıÕâ¸öÁ¬½Ó
+                    //åˆ é™¤è¿™ä¸ªè¿æ¥
                     Global.NetManager.Deregister(peer); 
                     return;
                 }
@@ -299,7 +299,7 @@ namespace Fenix
             if (!IsAlive)
                 return;
 
-            if (IsClientMode) //¿Í»§¶ËÎŞ·¨·ÃÎÊÈ«¾Ö»º´æ
+            if (IsClientMode) //å®¢æˆ·ç«¯æ— æ³•è®¿é—®å…¨å±€ç¼“å­˜
             {
                 lastTs = TimeUtil.GetTimeStampMS2(); 
             }
@@ -426,7 +426,7 @@ namespace Fenix
             }
         }
 
-        //µ÷ÓÃActorÉíÉÏµÄ·½·¨
+        //è°ƒç”¨Actorèº«ä¸Šçš„æ–¹æ³•
         protected void CallActorMethod(Packet packet)
         {
             if (packet.ToActorId == 0)
@@ -462,7 +462,7 @@ namespace Fenix
             {
                 //callback(DefaultErrCode.create_actor_remote_exists, name, actorId);
                 //return;
-                //Ç¨ÒÆactorµ½±¾µØ
+                //è¿ç§»actoråˆ°æœ¬åœ°
                 var remoteHost = this.GetHost(hostId);
                 remoteHost.MigrateActor(actorId, (code, actorData) =>
                 {
@@ -483,7 +483,7 @@ namespace Fenix
                 callback(DefaultErrCode.ERROR, "", 0);
         }
 
-        //Ç¨ÒÆactor
+        //è¿ç§»actor
         [ServerOnly]
         public void MigrateActor(ulong actorId, Action<DefaultErrCode, byte[]> callback, RpcContext __context)
         {
@@ -516,7 +516,7 @@ namespace Fenix
         }
 
         [ServerOnly]
-        //ÒÆ³ıactor
+        //ç§»é™¤actor
         public void RemoveActor(ulong actorId, Action<DefaultErrCode> callback, RpcContext __context)
         {
             var a = this.actorDic[actorId];
@@ -527,7 +527,7 @@ namespace Fenix
         {
             if (__context.Peer.ConnId != hostId)
             {
-                //ĞŞÕıÒ»ÏÂpeerµÄid 
+                //ä¿®æ­£ä¸€ä¸‹peerçš„id 
                 Global.NetManager.ChangePeerId(__context.Peer.ConnId, hostId, hostName, __context.Peer.RemoteAddress.ToIPv4String()); 
             }
             else
@@ -554,9 +554,9 @@ namespace Fenix
         [ServerApi]
         public void BindClientActor(string actorName, Action<DefaultErrCode> callback, RpcContext __context)
         {
-            //Ê×ÏÈÕâ¸öactorÒ»¶¨ÊÇ±¾µØµÄ
-            //Èç¹ûactor²»ÔÚ±¾µØ£¬Ôò°ÑÇëÇó×ªµ½Ä¿±êhostÉÏÈ¥
-            //TODO£¬µÈÏëµ½ÁËÓ¦ÓÃ³¡¾°ÔÙ¼Ó
+            //é¦–å…ˆè¿™ä¸ªactorä¸€å®šæ˜¯æœ¬åœ°çš„
+            //å¦‚æœactorä¸åœ¨æœ¬åœ°ï¼Œåˆ™æŠŠè¯·æ±‚è½¬åˆ°ç›®æ ‡hostä¸Šå»
+            //TODOï¼Œç­‰æƒ³åˆ°äº†åº”ç”¨åœºæ™¯å†åŠ 
 
             //find actor.server
             var actorId = Global.IdManager.GetActorId(actorName);
@@ -617,19 +617,20 @@ namespace Fenix
             avatarHost.BindClientActor(actorName, (code3) =>
             {
                 Global.NetManager.PrintPeerInfo("# Master.App: BindClientActor called");
-                Log.Info("AvatarÒÑ¾­ÖØĞÂºÍ·şÎñ¶Ë°ó¶¨");
+                Log.Info("Avatarå·²ç»é‡æ–°å’ŒæœåŠ¡ç«¯ç»‘å®š");
             });
         }
 
         [ClientApi]
         public void OnBeforeDisconnect(DisconnectReason reason, Action callback, RpcContext __context)
         {
-            Log.Info("OnBeforeDisconnect", reason, this.LocalAddress, this.ExternalAddress); 
-            callback();
+            Log.Info("OnBeforeDisconnect", reason, this.LocalAddress, this.ExternalAddress);  
 
             foreach (var kv in actorDic)
                 kv.Value.Destroy();
-            actorDic.Clear(); 
+            actorDic.Clear();
+
+            callback();
         }
 
         [ClientApi]
