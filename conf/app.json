@@ -8,7 +8,7 @@
       "LoginService"
     ],
     "HeartbeatIntervalMS": 5000,
-    "ClientNetwork": 1
+    "ClientNetwork": 2
   },
   {
     "AppName": "Match.App",
@@ -19,7 +19,7 @@
       "MatchService"
     ],
     "HeartbeatIntervalMS": 5000,
-    "ClientNetwork": 1
+    "ClientNetwork": 2
   },
   {
     "AppName": "Master.App",
@@ -30,7 +30,7 @@
       "MasterService"
     ],
     "HeartbeatIntervalMS": 5000,
-    "ClientNetwork": 1
+    "ClientNetwork": 2
   },
   {
     "AppName": "Zone.App",
@@ -41,6 +41,6 @@
       "ZoneService"
     ],
     "HeartbeatIntervalMS": 5000,
-    "ClientNetwork": 1
+    "ClientNetwork": 2
   }
 ]
