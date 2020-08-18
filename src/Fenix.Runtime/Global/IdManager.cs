@@ -129,6 +129,23 @@ namespace Fenix
 
 #if !CLIENT
 
+        public void RemoveClientHost(ulong clientId)
+        {
+            if (mId2Name.TryRemove(clientId, out var cName))
+                mName2Id.TryRemove(cName, out var _);
+
+            if (mCNAME2ANAME.TryRemove(cName, out var aName))
+                mANAME2CNAME.TryRemove(aName, out var _);
+
+            mHNAME2ADDR.TryRemove(cName, out var addr);
+            mANAME2TNAME.TryRemove(aName, out var _);
+
+            CacheANAME2CNAME.Delete(aName);
+            CacheHNAME2ADDR.Delete(cName);
+            CacheID2NAME.Delete(clientId.ToString());
+            CacheANAME2TNAME.Delete(aName);
+        }
+
         public void RegisterClientHost(ulong clientId, string clientName, string address)
         { 
             AddNameId(clientName, clientId);

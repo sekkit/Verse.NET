@@ -183,7 +183,7 @@ namespace Fenix
 
                 if (opCode == (byte)OpCode.PING)
                 {
-                    Log.Info(string.Format("Ping({0}) {1} FROM {2}", peer.netType, peer.ConnId, peer.RemoteAddress));
+                    //Log.Info(string.Format("Ping({0}) {1} FROM {2}", peer.netType, peer.ConnId, peer.RemoteAddress));
                     
                     peer.Pong();
 
@@ -205,7 +205,7 @@ namespace Fenix
                 else if(opCode == (byte)OpCode.PONG)
                 {
 #if CLIENT
-                    Log.Info("ping>>>" + (TimeUtil.GetTimeStampMS2() - lastTs).ToString());
+                    //Log.Info("ping>>>" + (TimeUtil.GetTimeStampMS2() - lastTs).ToString());
 #endif
                     peer.lastTickTime = TimeUtil.GetTimeStampMS2();
                     Global.NetManager.OnPong(peer); 
@@ -275,10 +275,17 @@ namespace Fenix
 #if !CLIENT
             if (peer.IsRemoteClient)
             {
-                var aId = Global.IdManager.GetClientActorId(peer.ConnId);
-                Log.Info(aId); 
-                if (this.actorDic.TryGetValue(aId, out var a))
-                    a.OnClientDisable();
+                var aId = Global.IdManager.GetClientActorId(peer.ConnId); 
+                if (aId != 0)
+                {
+                    var hId = Global.IdManager.GetHostIdByActorId(aId, true);
+                    Log.Info("OnClose2", aId, hId); 
+                    if (this.actorDic.TryGetValue(aId, out var a))
+                    {
+                        a.OnClientDisable();
+                    }
+                    Global.IdManager.RemoveClientHost(hId);
+                }
             }
 #endif
         }

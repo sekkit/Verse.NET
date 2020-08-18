@@ -389,7 +389,7 @@ namespace Fenix
         public void OnPong(NetPeer peer)
         {
             peer.lastTickTime = Fenix.Common.Utils.TimeUtil.GetTimeStampMS();
-            Log.Info(string.Format("PONG({0}) {1} from {2}", peer.netType, peer.ConnId, peer.RemoteAddress?.ToString()));
+            //Log.Info(string.Format("PONG({0}) {1} from {2}", peer.netType, peer.ConnId, peer.RemoteAddress?.ToString()));
         }
 
         public void Send(NetPeer peer, Packet packet)
