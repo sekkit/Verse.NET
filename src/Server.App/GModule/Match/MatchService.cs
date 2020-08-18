@@ -13,22 +13,17 @@ using Server.DataModel;
 
 namespace Server.GModule
 {
+    [AccessLevel(ALevel.SERVER)]
     [RuntimeData(typeof(MatchData))]
     public partial class MatchService : Service
-    {
-        public MatchService(string name): base(name)
+    { 
+        protected override void onLoad()
         {
-
-        }
-
-        public void onLoad()
-        {
-
         }
 
         //public new string UniqueName => nameof(MatchService);
 
-        [ServerApi] 
+        [ServerApi]
         public void JoinMatch(string uid, int match_type, Action<ErrCode> callback)
         {
             Log.Info("Call=>server_api:JoinMatch");

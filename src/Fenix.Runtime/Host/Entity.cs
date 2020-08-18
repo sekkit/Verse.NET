@@ -3,7 +3,7 @@ using Fenix.Common;
 using Fenix.Common.Attributes;
 using Fenix.Common.Rpc;
 using Fenix.Common.Utils;
-using MessagePack;
+//using MessagePack;
 using System;
 using System.Collections.Concurrent; 
 using System.Linq;
@@ -13,35 +13,35 @@ using System.Runtime.Serialization;
 
 namespace Fenix
 {
-    [MessagePackObject]
-    [Serializable]
+    //[MessagePackObject]
+    //[Serializable]
     public abstract class Entity: IMessage
     {
-        [Key(0)]
-        [DataMember]
+        //[Key(0)]
+        //[DataMember]
         public ulong Id { get; set; }
 
-        [Key(2)]
-        [DataMember]
+        //[Key(2)]
+        //[DataMember]
         public string UniqueName { get; set; }
 
-        [IgnoreMember]
+        //[IgnoreMember]
         public bool IsAlive { get; set; } = true;
 
-        [IgnoreMember]
-        [IgnoreDataMember]
+        //[IgnoreMember]
+        //[IgnoreDataMember]
         public ConcurrentDictionary<UInt64, RpcCommand> rpcDic     = new ConcurrentDictionary<UInt64, RpcCommand>();
 
-        [IgnoreMember]
-        [IgnoreDataMember]
+        //[IgnoreMember]
+        //[IgnoreDataMember]
         public ConcurrentDictionary<UInt32, MethodInfo> rpcStubDic = new ConcurrentDictionary<UInt32, MethodInfo>();
 
-        [IgnoreMember]
-        [IgnoreDataMember]
+        //[IgnoreMember]
+        //[IgnoreDataMember]
         public ConcurrentDictionary<UInt32, MethodInfo> rpcNativeStubDic = new ConcurrentDictionary<uint, MethodInfo>();
 
-        [IgnoreMember]
-        [IgnoreDataMember]
+        //[IgnoreMember]
+        //[IgnoreDataMember]
         private ConcurrentDictionary<ulong, Timer> mTimerDic = new ConcurrentDictionary<ulong, Timer>();
 
         public Entity()
@@ -137,6 +137,7 @@ namespace Fenix
             }
             catch(Exception ex)
             {
+                Log.Error(this.UniqueName);
                 Log.Error(ex.ToString());
             }
         }
@@ -149,6 +150,7 @@ namespace Fenix
             }
             catch (Exception ex)
             {
+                Log.Error(this.UniqueName);
                 Log.Error(ex.ToString());
             }
         }
@@ -188,7 +190,7 @@ namespace Fenix
   
             if (peer == null || !peer.IsActive)
             {
-                Log.Error(string.Format("Rpc:peer disconnected {0}", toHostId));
+                Log.Error(string.Format("Rpc:peer disconnected {0}", toHostId), toPeerAddr, netType);
                 //这里可以尝试把global以及redis状态清空
                 if (peer == null)
                     Global.NetManager.RemovePeerId(toHostId);

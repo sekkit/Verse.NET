@@ -58,15 +58,29 @@ namespace Fenix.Redis
             return this.client.Exists(key);
         }
 
-        public T Get<T>(string key) where T: IMessage
+        //public T Get<T>(string key) where T: IMessage
+        //{
+        //    var t = typeof(T);
+        //    if(t == typeof(IMessage) || t.IsSubclassOf(typeof(IMessage)))
+        //    {
+        //        var bytes = this.client.GetBytes(key);
+        //        if (bytes == null)
+        //            return null;
+        //        return RpcUtil.Deserialize<T>(bytes);
+        //    }
+
+        //    return this.client.Get<T>(key);
+        //}
+
+        public T Get<T>(string key)  
         {
             var t = typeof(T);
-            if(t == typeof(IMessage) || t.IsSubclassOf(typeof(IMessage)))
+            if (t == typeof(IMessage) || t.IsSubclassOf(typeof(IMessage)))
             {
                 var bytes = this.client.GetBytes(key);
                 if (bytes == null)
-                    return null;
-                return RpcUtil.Deserialize<T>(bytes);
+                    return default(T);
+                return (T)(object)RpcUtil.Deserialize(typeof(T), bytes);
             }
 
             return this.client.Get<T>(key);
@@ -75,6 +89,33 @@ namespace Fenix.Redis
         public string Get(string key)
         {
             return this.client.Get(key);
+        }
+
+        public async Task<object> GetAsync(Type type, string key)
+        { 
+            if (type == typeof(IMessage) || type.IsSubclassOf(typeof(IMessage)))
+            {
+                var bytes = await this.client.GetBytesAsync(key);
+                if (bytes == null)
+                    return null;
+                return RpcUtil.Deserialize(type, bytes);
+            }
+
+            return await this.client.GetAsync(key);
+        }
+
+        public async Task<T> GetAsync<T>(string key) 
+        {
+            var t = typeof(T);
+            if (t == typeof(IMessage) || t.IsSubclassOf(typeof(IMessage)))
+            {
+                var bytes = await this.client.GetBytesAsync(key);
+                if (bytes == null)
+                    return default(T);
+                return (T)(object)RpcUtil.Deserialize(typeof(T), bytes);
+            }
+
+            return await this.client.GetAsync<T>(key);
         }
 
         public async Task<string> GetAsync(string key)

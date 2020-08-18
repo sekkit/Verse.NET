@@ -8,9 +8,11 @@ namespace Fenix
     public class PersistentDataAttribute : Attribute
     {
         public Type dataType;
-        public PersistentDataAttribute(Type type)
+        public string dbName;
+        public PersistentDataAttribute(Type type, string dbName)
         {
-            dataType = type;
+            this.dataType = type;
+            this.dbName = dbName;
         } 
     }
 }

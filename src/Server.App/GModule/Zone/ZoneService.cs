@@ -8,10 +8,6 @@ namespace Server.GModule
 {
     [AccessLevel(ALevel.SERVER)]
     public partial class ZoneService : Service
-    {
-        public ZoneService(string name): base(name)
-        { }
-
-
+    { 
     }
 }

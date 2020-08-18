@@ -2080,6 +2080,9 @@ namespace CSRedis
         /// <param name="key">不含prefix前辍</param>
         /// <returns></returns>
         public Task<string> GetAsync(string key) => ExecuteScalarAsync(key, (c, k) => c.Value.GetAsync(k));
+
+        public Task<byte[]> GetBytesAsync(string key) => ExecuteScalarAsync(key, (c, k) => c.Value.GetBytesAsync(k));
+         
         /// <summary>
         /// 获取指定 key 的值
         /// </summary>

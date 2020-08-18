@@ -88,7 +88,7 @@ namespace Fenix
             kcpServer.OnClose += KcpServer_OnClose;
             kcpServer.OnException += KcpServer_OnException;
 
-            Log.Info(string.Format("KCP-Server@{0}", localAddr.ToIPv4String()));
+            Log.Info(string.Format("KCP-Server@{0}", localAddr));
             return kcpServer;
         }
 
@@ -131,7 +131,7 @@ namespace Fenix
             tcpServer.OnReceive += OnTcpServerReceive;
             tcpServer.OnClose += OnTcpServerClose;
             tcpServer.OnException += OnTcpServerException;
-            Log.Info(string.Format("TCP-Server@{0}", localAddr.ToIPv4String()));
+            Log.Info(string.Format("TCP-Server@{0}", localAddr));
             return tcpServer;
         }
 
@@ -506,12 +506,12 @@ namespace Fenix
 
             foreach (var p in tcpPeers.Values)
             {
-                Log.Info(string.Format("========Peer({0}): {1} {2} {3} active:{4}", p.netType, p.ConnId, p.RemoteAddress, p.LocalAddress, p.IsActive)); 
+                Log.Info(string.Format("========Peer({0}): {1} {2} {3} active:{4}", p.netType, p.ConnId, p.RemoteAddress.ToIPv4String(), p.LocalAddress.ToIPv4String(), p.IsActive)); 
             }
 
             foreach (var p in kcpPeers.Values)
             {
-                Log.Info(string.Format("========Peer({0}): {1} {2} {3} active:{4}", p.netType, p.ConnId, p.RemoteAddress, p.LocalAddress, p.IsActive));
+                Log.Info(string.Format("========Peer({0}): {1} {2} {3} active:{4}", p.netType, p.ConnId, p.RemoteAddress.ToIPv4String(), p.LocalAddress.ToIPv4String(), p.IsActive));
             } 
         }
 

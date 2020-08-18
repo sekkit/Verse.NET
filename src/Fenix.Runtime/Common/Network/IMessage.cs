@@ -48,6 +48,11 @@ namespace Fenix.Common.Rpc
         {
             return null;
         }
+
+        public override string ToString()
+        {
+            return this.ToJson();
+        }
     }
 
     [MessagePackObject]

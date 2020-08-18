@@ -10,7 +10,7 @@ namespace Fenix
 {
     public partial class Host
     {
-        public T CreateActorLocally<T>(string name) where T: Actor
+        public T CreateActorLocally<T>(string name) where T: Actor, new()
         {
             return (T)CreateActorLocally(typeof(T), name);
         }

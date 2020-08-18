@@ -3291,7 +3291,8 @@ return 0", $"CSRedisPSubscribe{psubscribeKey}", "", trylong.ToString());
         /// <param name="key">不含prefix前辍</param>
         /// <returns></returns>
         /// 
-        public byte[] GetBytes(string key) => ExecuteScalar(key, (c, k) => c.Value.GetBytes(k)); 
+        public byte[] GetBytes(string key) => ExecuteScalar(key, (c, k) => c.Value.GetBytes(k));
+
         /// <summary>
         /// 获取指定 key 的值
         /// </summary>

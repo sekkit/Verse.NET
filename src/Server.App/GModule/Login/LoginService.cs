@@ -15,10 +15,6 @@ namespace Server.GModule
     [AccessLevel(ALevel.CLIENT_AND_SERVER)]
     public partial class LoginService : Service
     {
-        
-        public LoginService(string name): base(name)
-        {
-        }
 
         [ServerApi] 
         public void CreateAccount(string username, string password, string extra, Action<ErrCode> callback)
@@ -42,7 +38,7 @@ namespace Server.GModule
         [ServerApi]
         public async Task Login(string username, string password, Action<ErrCode, string, ulong, string, string> callback)
         {
-            Console.WriteLine(string.Format("login {0} {1}", username, password));
+            Log.Info(string.Format("login {0} {1}", username, password));
 
             //验证用户db，成功则登陆
             var account = AccountDb.Get<Account>(username);

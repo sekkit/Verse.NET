@@ -11,6 +11,8 @@ namespace Server.Config
              
         }
 
+        public const string RUNTIME = "RUNTIME";
+
         protected static Dictionary<string, DbEntry> _cfgDic = new Dictionary<string, DbEntry>();
 
         public static DbEntry Get(string dbName)

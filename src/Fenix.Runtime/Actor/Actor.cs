@@ -3,7 +3,9 @@ using Fenix.Common;
 using Fenix.Common.Attributes;
 using Fenix.Common.Rpc;
 using Fenix.Common.Utils;
-using MessagePack;
+#if !CLIENT
+using Server.Config;
+#endif
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -12,17 +14,14 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
 
 namespace Fenix
-{
-    [MessagePackObject]
+{ 
     public class Actor: Entity
-    {
-        [IgnoreMember]
+    { 
         public ulong HostId => Global.Host.Id;
-         
-        [Key(3)]
-        [DataMember]
+          
         public bool CanTransfer { get; set; }
 
 #if !CLIENT
@@ -38,33 +37,40 @@ namespace Fenix
         public virtual ActorRef Server => serverActor;
 
 #endif
-
-        [IgnoreMember] 
+         
         protected Dictionary<Type, IMessage> mPersistentDic = new Dictionary<Type, IMessage>();
-
-        [IgnoreMember]
+         
         protected Dictionary<Type, object> mRuntimeDic = new Dictionary<Type, object>();
 
-
-        public T Get<T>() where T: IMessage
-        {
+        public T GetRuntime<T>() where T: IMessage
+        { 
             mPersistentDic.TryGetValue(typeof(T), out var value);
             return (T)value;
         }
-        
-        public Actor()
+
+        public T GetPersist<T>() where T : IMessage
+        { 
+            mPersistentDic.TryGetValue(typeof(T), out var value);
+            return (T)value;
+        }
+
+        protected Actor()
         {
         }
 
         protected Actor(string name) : base()
+        { 
+            this.InitWithName(name);
+        }
+
+        protected virtual void InitWithName(string name)
         {
             this.UniqueName = name;
             this.Id = Basic.GenID64FromName(this.UniqueName);
-
-            this.Init();
+            Init();
         }
 
-        public virtual void Init()
+        public virtual async Task Init()
         {
             var methods = GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
             for (int i = 0; i < methods.Length; ++i)
@@ -75,7 +81,11 @@ namespace Fenix
                 {
                     foreach (RuntimeDataAttribute attr in attrs)
                     {
-                        mRuntimeDic[attr.dataType] = Activator.CreateInstance(attr.dataType) as IMessage;
+#if !CLIENT
+                        mRuntimeDic[attr.dataType] = await LoadDataFromDb(DbConf.RUNTIME, attr.dataType);
+#endif
+                        if(mRuntimeDic[attr.dataType] == null)
+                            mRuntimeDic[attr.dataType] = Activator.CreateInstance(attr.dataType) as IMessage;
                     }
                 }
             }
@@ -88,11 +98,24 @@ namespace Fenix
                 {
                     foreach (PersistentDataAttribute attr in attrs)
                     {
-                        mPersistentDic[attr.dataType] = Activator.CreateInstance(attr.dataType) as IMessage;
+#if !CLIENT
+                        mPersistentDic[attr.dataType] = await LoadDataFromDb(attr.dbName, attr.dataType);
+#endif
+                        if (mPersistentDic[attr.dataType] == null)
+                            mPersistentDic[attr.dataType] = Activator.CreateInstance(attr.dataType) as IMessage; 
                     }
                 }
             }
         }
+
+#if !CLIENT
+        protected async Task<IMessage> LoadDataFromDb(string dbName, Type type) 
+        {
+            string dbKey = this.UniqueName + ":" + type.FullName;
+            var db = Global.DbManager.GetDb(dbName);
+            return (IMessage)(await db.GetAsync(type, dbKey));
+        }
+#endif
 
         ~Actor()
         {
@@ -106,7 +129,10 @@ namespace Fenix
 
         public static Actor Create(Type type, string name)
         {
-            return (Actor)Activator.CreateInstance(type, new object[] { name }); 
+            //var a = (Actor)Activator.CreateInstance(type, new object[] { name });
+            var a = (Actor)Activator.CreateInstance(type);
+            a.InitWithName(name);
+            return a;
         }
 
         public sealed override void Update()
@@ -128,12 +154,7 @@ namespace Fenix
         //public virtual void Unpack()
         //{
             
-        //}
-
-        public new static Actor Deserialize(byte[] data)
-        {
-            return MessagePackSerializer.Deserialize<Actor>(data);
-        }
+        //} 
 
         public void Restore()
         {
@@ -218,7 +239,7 @@ namespace Fenix
 
             this.onClientDisable();
         }
-#else 
+#else
 
         public void OnServerEnable()
         {
@@ -248,8 +269,8 @@ namespace Fenix
         {
 
         }
+ 
 
-        [IgnoreMember]
         protected ulong destroyTimerId = 0;
 
 #if !CLIENT
@@ -285,7 +306,8 @@ namespace Fenix
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<Actor>(this);
+            return null;
+            //return MessagePackSerializer.Serialize<Actor>(this);
         }
     }
 }

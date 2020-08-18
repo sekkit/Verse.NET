@@ -8,12 +8,7 @@ namespace Fenix
     //Service cannot communicate with client
     //server only
     [ActorType(AType.SERVER)]
-    [AccessLevel(ALevel.SERVER)]
     public partial class Service : Actor
-    {
-        public Service(string name) : base(name)
-        {
-
-        }
+    { 
     }
 }

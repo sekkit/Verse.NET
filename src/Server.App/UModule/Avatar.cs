@@ -6,29 +6,19 @@ using System;
 using Shared.DataModel;
 using Server.DataModel;
 using System.Collections.Generic;
+using Server.Config;
 
 namespace Server.UModule
-{
-    [ActorType(AType.SERVER)] 
-    [AccessLevel(ALevel.CLIENT_AND_SERVER)]
-    [PersistentData(typeof(User))]
-    public partial class Avatar : Actor
+{ 
+    [PersistentData(typeof(User), DbConfig.USER)]
+    public partial class Avatar : ServerAvatar
     {
         public new Client.AvatarRef Client => (Client.AvatarRef)this.clientActor;
-
-        public Avatar()
-        {
-            
-        }
-
-        public Avatar(string uid) : base(uid)
-        {
-
-        }
+         
 
         protected override void onLoad()
         {
-            
+            Log.Info("Avatar.User>", GetRuntime<User>()); 
         }
 
         protected override void onClientEnable()
@@ -44,9 +34,7 @@ namespace Server.UModule
 
         [ServerApi]
         public void ChangeName(string name, Action<ErrCode> callback)
-        {
-            Get<Account>().uid = name;
-
+        { 
             callback(ErrCode.OK);
         }
 

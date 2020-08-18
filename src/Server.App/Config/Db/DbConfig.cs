@@ -9,7 +9,7 @@ namespace Server.Config
     { 
         public const string ACCOUNT = "ACCOUNT";
         public const string USER = "USER";
-        public const string RUNTIME = "RUNTIME";
+        
         public const string SEQ     = "SEQ"; 
 
         public const string key_seq_uid = "key_seq_uid"; 

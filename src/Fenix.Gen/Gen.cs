@@ -25,9 +25,13 @@ namespace Fenix
 
                 if (!RpcUtil.IsHeritedType(type, "Actor"))
                     continue;
-
+                
                 var attr = GetAttribute<ActorTypeAttribute>(type);
                 if (attr == null)
+                    continue;
+
+                var attr2 = GetAttribute<NoCodeGenAttribute>(type, true);
+                if (attr2 != null)
                     continue;
 
                 var at = (int)attr.AType;
@@ -60,15 +64,15 @@ namespace Fenix
             }
         }
 
-        static dynamic GetAttribute<T>(Type type) where T : Attribute
+        static dynamic GetAttribute<T>(Type type, bool noInherit=false) where T : Attribute
         {
-            var attrs = type.GetCustomAttributes(true);
+            var attrs = type.GetCustomAttributes(!noInherit);
             return attrs.Where(m => (m.GetType().Name == typeof(T).Name)).FirstOrDefault();
         }
 
-        static dynamic GetAttribute<T>(MethodInfo methodInfo) where T : Attribute
+        static dynamic GetAttribute<T>(MethodInfo methodInfo, bool noInherit=false) where T : Attribute
         {
-            var attrs = methodInfo.GetCustomAttributes(true);
+            var attrs = methodInfo.GetCustomAttributes(!noInherit);
             return attrs.Where(m => (m.GetType().Name == typeof(T).Name)).FirstOrDefault();
         }
 
@@ -457,7 +461,9 @@ namespace Shared
             var apiNativeDefineDic = new SortedDictionary<string, string>();
 
             if (GetAttribute<ActorTypeAttribute>(type) == null && type.Name != "Host")
-                return; 
+                return;
+
+            Log.Info("Gen", type.FullName);
 
             bool isServer = type.Name == "Host" ? true : ((int)GetAttribute<ActorTypeAttribute>(type).AType == (int)AType.SERVER);
 
@@ -674,7 +680,7 @@ namespace Shared
                         .AppendLine($"{msg_assign}")
                         .AppendLine($"                }};")
                         .AppendLine($"                var cb = new Action<byte[]>((cbData) => {{")
-                        .AppendLine($"                    var cbMsg = cbData==null?new {message_type}.Callback():RpcUtil.Deserialize<{message_type}.Callback>(cbData);")
+                        .AppendLine($"                    var cbMsg = cbData==null?new {message_type}.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<{message_type}.Callback>(cbData);")
                         .AppendLine($"                    callback?.Invoke({cb_args});")
                         .AppendLine($"                }});")
                         .AppendLine($"                this.CallRemoteMethod({pc_cls}.{proto_code}, msg, cb);")
@@ -776,7 +782,7 @@ namespace Shared
                         .AppendLine($"{async_msg_assign}")
                         .AppendLine($"                    }};")
                         .AppendLine($"                    var cb = new Action<byte[]>((cbData) => {{")
-                        .AppendLine($"                        var cbMsg = cbData==null ? new {message_type}.Callback() : RpcUtil.Deserialize<{message_type}.Callback>(cbData);")
+                        .AppendLine($"                        var cbMsg = cbData==null ? new {message_type}.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<{message_type}.Callback>(cbData);")
                         .AppendLine($"                        _cb?.Invoke(cbMsg);")
                         .AppendLine($"                    }});")
                         .AppendLine($"                    this.CallRemoteMethod({pc_cls}.{proto_code}, msg, cb);")
@@ -983,11 +989,11 @@ namespace Shared
                 return;
             }
 
-            if (type.Name != "Host")
-            {
-                var al = alAttr.AccessLevel;
-                Log.Info(string.Format("AccessLevel {0} : {1}", type.Name, al));
-            }
+            //if (type.Name != "Host")
+            //{
+            //    var al = alAttr.AccessLevel;
+            //    Log.Info(string.Format("AccessLevel {0} : {1}", type.Name, al));
+            //}
 
             string root_ns = type.Name == "Host" ? "Fenix" : (isServer ? "Server" : "Client");
 

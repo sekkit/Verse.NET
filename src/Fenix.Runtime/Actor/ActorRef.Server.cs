@@ -54,7 +54,7 @@ namespace Fenix
                          actorName=actorName
                     };
                     var cb = new Action<byte[]>((cbData) => {
-                        var cbMsg = cbData==null ? new BindClientActorReq.Callback() : RpcUtil.Deserialize<BindClientActorReq.Callback>(cbData);
+                        var cbMsg = cbData==null ? new BindClientActorReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<BindClientActorReq.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
                     this.CallRemoteMethod(OpCode.BIND_CLIENT_ACTOR_REQ, msg, cb);
@@ -85,7 +85,7 @@ namespace Fenix
                     actorName=actorName
                 };
                 var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null?new BindClientActorReq.Callback():RpcUtil.Deserialize<BindClientActorReq.Callback>(cbData);
+                    var cbMsg = cbData==null?new BindClientActorReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<BindClientActorReq.Callback>(cbData);
                     callback?.Invoke(cbMsg.code);
                 });
                 this.CallRemoteMethod(OpCode.BIND_CLIENT_ACTOR_REQ, msg, cb);
@@ -131,7 +131,7 @@ namespace Fenix
                          name=name
                     };
                     var cb = new Action<byte[]>((cbData) => {
-                        var cbMsg = cbData==null ? new CreateActorReq.Callback() : RpcUtil.Deserialize<CreateActorReq.Callback>(cbData);
+                        var cbMsg = cbData==null ? new CreateActorReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<CreateActorReq.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
                     this.CallRemoteMethod(OpCode.CREATE_ACTOR_REQ, msg, cb);
@@ -163,7 +163,7 @@ namespace Fenix
                     name=name
                 };
                 var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null?new CreateActorReq.Callback():RpcUtil.Deserialize<CreateActorReq.Callback>(cbData);
+                    var cbMsg = cbData==null?new CreateActorReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<CreateActorReq.Callback>(cbData);
                     callback?.Invoke(cbMsg.code, cbMsg.arg1, cbMsg.arg2);
                 });
                 this.CallRemoteMethod(OpCode.CREATE_ACTOR_REQ, msg, cb);
@@ -207,7 +207,7 @@ namespace Fenix
                          actorId=actorId
                     };
                     var cb = new Action<byte[]>((cbData) => {
-                        var cbMsg = cbData==null ? new MigrateActorReq.Callback() : RpcUtil.Deserialize<MigrateActorReq.Callback>(cbData);
+                        var cbMsg = cbData==null ? new MigrateActorReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<MigrateActorReq.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
                     this.CallRemoteMethod(OpCode.MIGRATE_ACTOR_REQ, msg, cb);
@@ -238,7 +238,7 @@ namespace Fenix
                     actorId=actorId
                 };
                 var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null?new MigrateActorReq.Callback():RpcUtil.Deserialize<MigrateActorReq.Callback>(cbData);
+                    var cbMsg = cbData==null?new MigrateActorReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<MigrateActorReq.Callback>(cbData);
                     callback?.Invoke(cbMsg.code, cbMsg.arg1);
                 });
                 this.CallRemoteMethod(OpCode.MIGRATE_ACTOR_REQ, msg, cb);
@@ -281,7 +281,7 @@ namespace Fenix
                          reason=reason
                     };
                     var cb = new Action<byte[]>((cbData) => {
-                        var cbMsg = cbData==null ? new OnBeforeDisconnectNtf.Callback() : RpcUtil.Deserialize<OnBeforeDisconnectNtf.Callback>(cbData);
+                        var cbMsg = cbData==null ? new OnBeforeDisconnectNtf.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<OnBeforeDisconnectNtf.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
                     this.CallRemoteMethod(OpCode.ON_BEFORE_DISCONNECT_NTF, msg, cb);
@@ -312,7 +312,7 @@ namespace Fenix
                     reason=reason
                 };
                 var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null?new OnBeforeDisconnectNtf.Callback():RpcUtil.Deserialize<OnBeforeDisconnectNtf.Callback>(cbData);
+                    var cbMsg = cbData==null?new OnBeforeDisconnectNtf.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<OnBeforeDisconnectNtf.Callback>(cbData);
                     callback?.Invoke();
                 });
                 this.CallRemoteMethod(OpCode.ON_BEFORE_DISCONNECT_NTF, msg, cb);
@@ -387,7 +387,7 @@ namespace Fenix
                          aTypeName=aTypeName
                     };
                     var cb = new Action<byte[]>((cbData) => {
-                        var cbMsg = cbData==null ? new ReconnectServerActorNtf.Callback() : RpcUtil.Deserialize<ReconnectServerActorNtf.Callback>(cbData);
+                        var cbMsg = cbData==null ? new ReconnectServerActorNtf.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<ReconnectServerActorNtf.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
                     this.CallRemoteMethod(OpCode.RECONNECT_SERVER_ACTOR_NTF, msg, cb);
@@ -424,7 +424,7 @@ namespace Fenix
                     aTypeName=aTypeName
                 };
                 var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null?new ReconnectServerActorNtf.Callback():RpcUtil.Deserialize<ReconnectServerActorNtf.Callback>(cbData);
+                    var cbMsg = cbData==null?new ReconnectServerActorNtf.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<ReconnectServerActorNtf.Callback>(cbData);
                     callback?.Invoke(cbMsg.code);
                 });
                 this.CallRemoteMethod(OpCode.RECONNECT_SERVER_ACTOR_NTF, msg, cb);
@@ -496,7 +496,7 @@ namespace Fenix
                          hostName=hostName
                     };
                     var cb = new Action<byte[]>((cbData) => {
-                        var cbMsg = cbData==null ? new RegisterClientReq.Callback() : RpcUtil.Deserialize<RegisterClientReq.Callback>(cbData);
+                        var cbMsg = cbData==null ? new RegisterClientReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<RegisterClientReq.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
                     this.CallRemoteMethod(OpCode.REGISTER_CLIENT_REQ, msg, cb);
@@ -528,7 +528,7 @@ namespace Fenix
                     hostName=hostName
                 };
                 var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null?new RegisterClientReq.Callback():RpcUtil.Deserialize<RegisterClientReq.Callback>(cbData);
+                    var cbMsg = cbData==null?new RegisterClientReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<RegisterClientReq.Callback>(cbData);
                     callback?.Invoke(cbMsg.code, cbMsg.arg1);
                 });
                 this.CallRemoteMethod(OpCode.REGISTER_CLIENT_REQ, msg, cb);
@@ -571,7 +571,7 @@ namespace Fenix
                          actorId=actorId
                     };
                     var cb = new Action<byte[]>((cbData) => {
-                        var cbMsg = cbData==null ? new RemoveActorReq.Callback() : RpcUtil.Deserialize<RemoveActorReq.Callback>(cbData);
+                        var cbMsg = cbData==null ? new RemoveActorReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<RemoveActorReq.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
                     this.CallRemoteMethod(OpCode.REMOVE_ACTOR_REQ, msg, cb);
@@ -602,7 +602,7 @@ namespace Fenix
                     actorId=actorId
                 };
                 var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null?new RemoveActorReq.Callback():RpcUtil.Deserialize<RemoveActorReq.Callback>(cbData);
+                    var cbMsg = cbData==null?new RemoveActorReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<RemoveActorReq.Callback>(cbData);
                     callback?.Invoke(cbMsg.code);
                 });
                 this.CallRemoteMethod(OpCode.REMOVE_ACTOR_REQ, msg, cb);
@@ -646,7 +646,7 @@ namespace Fenix
                          reason=reason
                     };
                     var cb = new Action<byte[]>((cbData) => {
-                        var cbMsg = cbData==null ? new RemoveClientActorReq.Callback() : RpcUtil.Deserialize<RemoveClientActorReq.Callback>(cbData);
+                        var cbMsg = cbData==null ? new RemoveClientActorReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<RemoveClientActorReq.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
                     this.CallRemoteMethod(OpCode.REMOVE_CLIENT_ACTOR_REQ, msg, cb);
@@ -678,7 +678,7 @@ namespace Fenix
                     reason=reason
                 };
                 var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null?new RemoveClientActorReq.Callback():RpcUtil.Deserialize<RemoveClientActorReq.Callback>(cbData);
+                    var cbMsg = cbData==null?new RemoveClientActorReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<RemoveClientActorReq.Callback>(cbData);
                     callback?.Invoke(cbMsg.code);
                 });
                 this.CallRemoteMethod(OpCode.REMOVE_CLIENT_ACTOR_REQ, msg, cb);

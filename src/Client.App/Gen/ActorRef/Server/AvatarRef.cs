@@ -59,7 +59,7 @@ namespace Server
                          name=name
                     };
                     var cb = new Action<byte[]>((cbData) => {
-                        var cbMsg = cbData==null ? new ChangeNameReq.Callback() : RpcUtil.Deserialize<ChangeNameReq.Callback>(cbData);
+                        var cbMsg = cbData==null ? new ChangeNameReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<ChangeNameReq.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
                     this.CallRemoteMethod(ProtocolCode.CHANGE_NAME_REQ, msg, cb);
@@ -90,7 +90,7 @@ namespace Server
                     name=name
                 };
                 var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null?new ChangeNameReq.Callback():RpcUtil.Deserialize<ChangeNameReq.Callback>(cbData);
+                    var cbMsg = cbData==null?new ChangeNameReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<ChangeNameReq.Callback>(cbData);
                     callback?.Invoke(cbMsg.code);
                 });
                 this.CallRemoteMethod(ProtocolCode.CHANGE_NAME_REQ, msg, cb);

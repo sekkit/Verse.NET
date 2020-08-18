@@ -15,14 +15,17 @@ namespace Fenix
     {
         public static void StartMultiProcess(Assembly[] asmList, RuntimeConfig cfg, Action init)
         {
+            Environment.SetEnvironmentVariable("AppName", cfg.AppName);
+
 #if !CLIENT
+
             Global.Init(cfg, asmList);
 
             init();
              
             Host host = null;
           
-            Environment.SetEnvironmentVariable("AppName", cfg.AppName);
+            
             string appName = Environment.GetEnvironmentVariable("AppName");
          
             if (host == null)
@@ -41,6 +44,8 @@ namespace Fenix
 
         public static void StartSingleProcess(Assembly[] asmList, List<RuntimeConfig> cfgList, Action init)
         {
+            Environment.SetEnvironmentVariable("AppName", "Login.App");
+
 #if !CLIENT
             Global.Init(null, asmList);
 
@@ -52,7 +57,7 @@ namespace Fenix
             if (Global.Config.InternalIP == "auto")
                 localAddrV4 = Basic.GetLocalIPv4(NetworkInterfaceType.Ethernet);
 
-            host = Host.Create("App", localAddrV4, Global.Config.ExternalIP, 17777, false);
+            host = Host.Create("App", "0.0.0.0", Global.Config.ExternalIP, 17777, false);
             foreach(var cfg in cfgList)
                 foreach (var aName in cfg.DefaultActorNames)
                     host.CreateActorLocally(aName, aName); 

@@ -1,10 +1,15 @@
-﻿using System;
+﻿using Fenix.Common.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Fenix.Runtime.Actor
+namespace Fenix
 {
-    class ClientAvatar
+    [NoCodeGen]
+    [ActorType(AType.CLIENT)]
+    [AccessLevel(ALevel.CLIENT_AND_SERVER)]
+    public class ClientAvatar : Actor
     {
+        public string Uid => this.UniqueName;
     }
 }

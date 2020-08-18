@@ -24,13 +24,9 @@ namespace Fenix
             foreach(var m in ad.Modules)
             {
                 foreach (var type in m.Types)
-                { 
-                    if(type.Name == "Avatar" || type.Name.EndsWith("Service"))
-                    {
-
-                    }
+                {
                     if (type.IsAbstract)
-                        continue;
+                        continue; 
 
                     if (!RpcUtil.IsHeritedType(type, "Actor"))
                         continue;
@@ -38,7 +34,11 @@ namespace Fenix
                     var attr = GetAttribute<ActorTypeAttribute>(type); 
                     if (attr == null)
                         continue;
-                    
+
+                    var attr2 = GetAttribute<NoCodeGenAttribute>(type, true);
+                    if (attr2 != null)
+                        continue;
+
                     var at = (int)attr.ConstructorArguments[0].Value;
                     if (isServer && at != (int)AType.SERVER)
                         continue;
@@ -71,17 +71,32 @@ namespace Fenix
                 } 
         }
 
-        static dynamic GetAttribute<T>(TypeDefinition type) where T : Attribute
+        static dynamic GetAttribute<T>(TypeDefinition type, bool noInherit=false) where T : Attribute
         {
-            var attrs = type.CustomAttributes;
+            var attrs = type.CustomAttributes;  
             var attr = attrs.Where(m => (m.AttributeType.Name == typeof(T).Name)).FirstOrDefault(); 
+            if (attr == null && !noInherit)
+            {
+                if(type.BaseType != null)
+                {
+                    var bt = type.BaseType.Resolve();
+                    return GetAttribute<T>(bt, noInherit);
+                }
+            }
             return attr;
         }
 
-        static dynamic GetAttribute<T>(MethodDefinition methodInfo) where T : Attribute
+        static dynamic GetAttribute<T>(MethodDefinition methodInfo, bool noInherit=false) where T : Attribute
         {
             var attrs = methodInfo.CustomAttributes;
-            return attrs.Where(m => (m.AttributeType.Name == typeof(T).Name)).FirstOrDefault();
+            var attr = attrs.Where(m => (m.AttributeType.Name == typeof(T).Name)).FirstOrDefault(); 
+            //if (attr == null && !noInherit)
+            //{
+            //    var bm = methodInfo.GetBaseMethod();
+            //    if (bm != null) 
+            //        return GetAttribute<T>(bm, noInherit); 
+            //}
+            return attr;
         }
 
         static string[] SplitCamelCase(string source)
@@ -311,7 +326,7 @@ namespace Fenix
                     if (isEnum)
                     {
                         var inst = value.Type.Resolve();
-                        var enumType = value.Type.FullName + "." + inst.Fields.Where(m => m.Constant?.ToString() == value.Value.ToString()).Select(m => m.Name).FirstOrDefault();
+                        var enumType = value.Type.FullName + "." + inst.Fields.Where(m => m.Constant?.ToString() == value.Value.ToString()).Select(m => m.Name).FirstOrDefault();  
                         //var v = isEnum ? ("(global::" + value.Type.FullName + ")(" + value.Value.ToString() + ")") : value.Value.ToString();
                         lines.Add($"{prefix}[Key({position})]\n{prefix}public {pType} {pName} {{ get; set; }} = {enumType};\n");
                     }
@@ -319,6 +334,7 @@ namespace Fenix
                     {
                         lines.Add($"{prefix}[Key({position})]\n{prefix}public {pType} {pName} {{ get; set; }} = {value.Value.ToString()};\n");
                     }
+                    //lines.Add($"{prefix}[Key({position})]\n{prefix}[DefaultValue({v})]\n{prefix}public {pType} {pName} {{ get; set; }} = {v};\n");
                 }
                 else
                     lines.Add($"{prefix}[Key({position})]\n{prefix}public {pType} {pName} {{ get; set; }}\n");
@@ -503,6 +519,8 @@ namespace Shared
 
             if (GetAttribute<ActorTypeAttribute>(type) == null && type.Name != "Host")
                 return;
+
+            Log.Info("Gen", type.FullName);
 
             bool isServer = type.Name == "Host" ? true : ((int)GetAttribute<ActorTypeAttribute>(type).ConstructorArguments[0].Value == (int)AType.SERVER);
 

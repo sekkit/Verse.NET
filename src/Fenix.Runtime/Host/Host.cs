@@ -14,7 +14,7 @@ using System.Text;
 using TimeUtil = Fenix.Common.Utils.TimeUtil;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MessagePack;
+//using MessagePack;
 
 namespace Fenix
 {
@@ -138,7 +138,8 @@ namespace Fenix
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<Host>(this);
+            return null;
+            //return MessagePackSerializer.Serialize<Host>(this);
         }
 
         public sealed override void Update()
@@ -566,6 +567,7 @@ namespace Fenix
             callback(DefaultErrCode.OK);
 
             //Set actor.server's client property
+            Log.Info("binding_client_actor", actorId);
             var a = Global.Host.GetActor(actorId);
             a.OnClientEnable();
         }
@@ -622,7 +624,7 @@ namespace Fenix
         [ClientApi]
         public void OnBeforeDisconnect(DisconnectReason reason, Action callback, RpcContext __context)
         {
-            Log.Info("OnBeforeDisconnect", reason); 
+            Log.Info("OnBeforeDisconnect", reason, this.LocalAddress, this.ExternalAddress); 
             callback();
 
             foreach (var kv in actorDic)

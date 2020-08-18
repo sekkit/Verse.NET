@@ -14,7 +14,7 @@ namespace Fenix
     {
         public static Host Host;
         
-        static RuntimeConfig _cfg;
+        static RuntimeConfig _cfg { get; set; }
 #if !CLIENT
         public static RuntimeConfig Config => _cfg==null?_cfg = RuntimeConfig.MakeDefaultServerConfig(): _cfg;
 #else
