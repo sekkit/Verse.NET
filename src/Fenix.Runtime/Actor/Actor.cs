@@ -42,16 +42,20 @@ namespace Fenix
          
         protected Dictionary<Type, object> mRuntimeDic = new Dictionary<Type, object>();
 
+        protected Dictionary<Type, IActor> mModuleDic = new Dictionary<Type, IActor>();
+
         public T GetRuntime<T>() where T: IMessage
         { 
-            mPersistentDic.TryGetValue(typeof(T), out var value);
-            return (T)value;
+            if(mRuntimeDic.TryGetValue(typeof(T), out var value))
+                return (T)value;
+            return default(T);
         }
 
         public T GetPersist<T>() where T : IMessage
         { 
-            mPersistentDic.TryGetValue(typeof(T), out var value);
-            return (T)value;
+            if(mPersistentDic.TryGetValue(typeof(T), out var value))
+                return (T)value;
+            return default(T);
         }
 
         protected Actor()
@@ -70,40 +74,46 @@ namespace Fenix
             Init();
         }
 
-        public virtual async Task Init()
+        protected ulong GenDataKey(Type type)
         {
-            var methods = GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-            for (int i = 0; i < methods.Length; ++i)
+            return Basic.GenID64FromName(type.FullName);
+        }
+
+        public virtual async void Init()
+        { 
+            var attrs = GetType().GetCustomAttributes(typeof(RuntimeDataAttribute), true);
+            if (attrs.Count() > 0)
             {
-                MethodInfo method = methods[i];
-                var attrs = method.GetCustomAttributes(typeof(RuntimeDataAttribute));
-                if (attrs.Count() > 0)
+                foreach (RuntimeDataAttribute attr in attrs)
                 {
-                    foreach (RuntimeDataAttribute attr in attrs)
-                    {
 #if !CLIENT
-                        mRuntimeDic[attr.dataType] = await LoadDataFromDb(DbConf.RUNTIME, attr.dataType);
+                    mRuntimeDic[attr.dataType] = await LoadDataFromDb(DbConf.RUNTIME, attr.dataType);
 #endif
-                        if(mRuntimeDic[attr.dataType] == null)
-                            mRuntimeDic[attr.dataType] = Activator.CreateInstance(attr.dataType) as IMessage;
-                    }
+                    if(!mRuntimeDic.TryGetValue(attr.dataType, out var d) || d == null)
+                        mRuntimeDic[attr.dataType] = Activator.CreateInstance(attr.dataType) as IMessage;
+                }
+            }  
+            
+            attrs = GetType().GetCustomAttributes(typeof(PersistentDataAttribute), true);
+            if (attrs.Count() > 0)
+            {
+                foreach (PersistentDataAttribute attr in attrs)
+                {
+#if !CLIENT
+                    mPersistentDic[attr.dataType] = await LoadDataFromDb(attr.dbName, attr.dataType);
+#endif
+                    if (!mPersistentDic.TryGetValue(attr.dataType, out var d) ||  d == null)
+                        mPersistentDic[attr.dataType] = Activator.CreateInstance(attr.dataType) as IMessage; 
                 }
             }
 
-            for (int i = 0; i < methods.Length; ++i)
+            attrs = GetType().GetCustomAttributes(typeof(RequireModuleAttribute), true);
+            if (attrs.Count() > 0)
             {
-                MethodInfo method = methods[i];
-                var attrs = method.GetCustomAttributes(typeof(PersistentDataAttribute));
-                if (attrs.Count() > 0)
-                {
-                    foreach (PersistentDataAttribute attr in attrs)
-                    {
-#if !CLIENT
-                        mPersistentDic[attr.dataType] = await LoadDataFromDb(attr.dbName, attr.dataType);
-#endif
-                        if (mPersistentDic[attr.dataType] == null)
-                            mPersistentDic[attr.dataType] = Activator.CreateInstance(attr.dataType) as IMessage; 
-                    }
+                foreach (RequireModuleAttribute attr in attrs)
+                { 
+                    if (!mModuleDic.TryGetValue(attr.ModuleType, out var d) || d == null)
+                        mModuleDic[attr.ModuleType] = (IActor)Activator.CreateInstance(attr.ModuleType, new object[] { this });
                 }
             }
         }
@@ -141,6 +151,9 @@ namespace Fenix
             base.EntityUpdate();
 
             this.onUpdate();
+
+            foreach (var m in this.mModuleDic.Values)
+                m.onUpdate();
         }
 
         //public virtual void Pack()
@@ -158,13 +171,19 @@ namespace Fenix
 
         public void Restore()
         {
+            this.onRestore();
 
+            foreach (var m in this.mModuleDic.Values)
+                m.onRestore();
         } 
 
         public override void Destroy()
         {
             //actor api
             this.onDestroy();
+
+            foreach (var m in this.mModuleDic.Values)
+                m.onDestory();
 
             base.Destroy(); 
         }
@@ -226,6 +245,9 @@ namespace Fenix
 
             this.onClientEnable();
 
+            foreach (var m in this.mModuleDic.Values)
+                m.onClientEnable();
+
             //this.clientActor.OnServerActorEnable(this.UniqueName);
         }
 
@@ -238,6 +260,9 @@ namespace Fenix
             Log.Info(string.Format("on_client_disable", this.UniqueName, this.UniqueName));
 
             this.onClientDisable();
+
+            foreach (var m in this.mModuleDic.Values)
+                m.onClientDisable();
         }
 #else
 
@@ -256,13 +281,15 @@ namespace Fenix
         }
 
 #endif
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
+         
         public void OnLoad()
         {
             Log.Info(string.Format("on_load", this.UniqueName, this.UniqueName));
 
             this.onLoad();
+
+            foreach (var m in this.mModuleDic.Values)
+                m.onLoad();
         }
 
         protected virtual void onLoad()

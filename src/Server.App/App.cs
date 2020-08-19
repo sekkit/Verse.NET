@@ -109,8 +109,9 @@ namespace Server
                     var content = JsonConvert.SerializeObject(cfgList, Formatting.Indented);
                     sw.Write(content);
                 }
-                
+
                 //for Debug purpose
+                Environment.SetEnvironmentVariable("AppPath", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../"));
 
                 Bootstrap.StartSingleProcess(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfgList, OnInit); //单进程模式
                 //foreach (var cfg in cfgList)
@@ -140,8 +141,10 @@ namespace Server
         {
             DbConfig.Init();
 
-            Global.DbManager.LoadDb(DbConfig.account_db);
-            Global.DbManager.LoadDb(DbConfig.seq_db);
+            foreach (var cfg in DbConfig.CfgDic)
+            {
+                Fenix.Global.DbManager.LoadDb(cfg.Value);
+            }
         }
     }
 }

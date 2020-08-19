@@ -462,7 +462,7 @@ namespace Fenix
             }
 #if !CLIENT
             var hostId = Global.IdManager.GetHostIdByActorId(actorId);
-            if (hostId != 0)
+            if (hostId != 0 && Global.Host.Id != hostId)
             {
                 //callback(DefaultErrCode.create_actor_remote_exists, name, actorId);
                 //return;
@@ -582,7 +582,13 @@ namespace Fenix
             var hostId = Global.IdManager.GetHostIdByActorId(actorId);
             var clientId = Global.IdManager.GetHostIdByActorId(actorId, true);
 
-            if(hostId != this.Id)
+            if(clientId == 0)
+            {
+                callback(DefaultErrCode.OK);
+                return;
+            }    
+
+            if(hostId != this.Id && hostId != 0)
             {
                 //call remote host
                 this.GetHost(hostId)?.RemoveClientActor(actorId, reason, callback);
@@ -646,6 +652,24 @@ namespace Fenix
             var a = Global.Host.GetActor(actorId);
             a.OnServerEnable();
 #endif
+        }
+        
+        [ClientApi]
+        public void Sync(ulong actorId, ulong dataKey, DataType dataType, byte[] data, RpcContext __context)
+        {
+            if(this.actorDic.TryGetValue(actorId, out var a))
+            {
+                //a.SyncData(dataType, data);
+            }
+        }
+
+        [ClientApi]
+        public void SyncField(ulong actorId, ulong dataKey, DataType dataType, uint field,  byte[] data, RpcContext __context)
+        {
+            if (this.actorDic.TryGetValue(actorId, out var a))
+            {
+                //a.SyncField(dataType, field, data);
+            }
         }
     }
 }

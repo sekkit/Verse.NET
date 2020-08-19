@@ -49,7 +49,7 @@ namespace MessagePack.Resolvers
 
         static FenixRuntimeResolverGetFormatterHelper()
         {
-            lookup = new global::System.Collections.Generic.Dictionary<Type, int>(25)
+            lookup = new global::System.Collections.Generic.Dictionary<Type, int>(27)
             {
                 { typeof(global::System.Collections.Generic.Dictionary<ulong, string>), 0 },
                 { typeof(global::Fenix.Common.DefaultErrCode), 1 },
@@ -72,10 +72,12 @@ namespace MessagePack.Resolvers
                 { typeof(global::Fenix.Common.Message.RemoveActorReq.Callback), 18 },
                 { typeof(global::Fenix.Common.Message.RemoveClientActorReq), 19 },
                 { typeof(global::Fenix.Common.Message.RemoveClientActorReq.Callback), 20 },
-                { typeof(global::Fenix.Common.Rpc.IMessage), 21 },
-                { typeof(global::Fenix.Common.Rpc.IMessageWithCallback), 22 },
-                { typeof(global::Fenix.HostInfo), 23 },
-                { typeof(global::Fenix.Packet), 24 },
+                { typeof(global::Fenix.Common.Message.SyncFieldNtf), 21 },
+                { typeof(global::Fenix.Common.Message.SyncNtf), 22 },
+                { typeof(global::Fenix.Common.Rpc.IMessage), 23 },
+                { typeof(global::Fenix.Common.Rpc.IMessageWithCallback), 24 },
+                { typeof(global::Fenix.HostInfo), 25 },
+                { typeof(global::Fenix.Packet), 26 },
             };
         }
 
@@ -110,10 +112,12 @@ namespace MessagePack.Resolvers
                 case 18: return new MessagePack.Formatters.Fenix.Common.Message.RemoveActorReq_CallbackFormatter();
                 case 19: return new MessagePack.Formatters.Fenix.Common.Message.RemoveClientActorReqFormatter();
                 case 20: return new MessagePack.Formatters.Fenix.Common.Message.RemoveClientActorReq_CallbackFormatter();
-                case 21: return new MessagePack.Formatters.Fenix.Common.Rpc.IMessageFormatter();
-                case 22: return new MessagePack.Formatters.Fenix.Common.Rpc.IMessageWithCallbackFormatter();
-                case 23: return new MessagePack.Formatters.Fenix.HostInfoFormatter();
-                case 24: return new MessagePack.Formatters.Fenix.PacketFormatter();
+                case 21: return new MessagePack.Formatters.Fenix.Common.Message.SyncFieldNtfFormatter();
+                case 22: return new MessagePack.Formatters.Fenix.Common.Message.SyncNtfFormatter();
+                case 23: return new MessagePack.Formatters.Fenix.Common.Rpc.IMessageFormatter();
+                case 24: return new MessagePack.Formatters.Fenix.Common.Rpc.IMessageWithCallbackFormatter();
+                case 25: return new MessagePack.Formatters.Fenix.HostInfoFormatter();
+                case 26: return new MessagePack.Formatters.Fenix.PacketFormatter();
                 default: return null;
             }
         }
@@ -1248,6 +1252,150 @@ namespace MessagePack.Formatters.Fenix.Common.Message
 
             var ____result = new global::Fenix.Common.Message.RemoveClientActorReq.Callback();
             ____result.code = __code__;
+            reader.Depth--;
+            return ____result;
+        }
+    }
+
+    public sealed class SyncFieldNtfFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Fenix.Common.Message.SyncFieldNtf>
+    {
+
+
+        public void Serialize(ref MessagePackWriter writer, global::Fenix.Common.Message.SyncFieldNtf value, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (value == null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
+            IFormatterResolver formatterResolver = options.Resolver;
+            writer.WriteArrayHeader(5);
+            writer.Write(value.actorId);
+            writer.Write(value.dataKey);
+            formatterResolver.GetFormatterWithVerify<global::Fenix.DataType>().Serialize(ref writer, value.dataType, options);
+            writer.Write(value.field);
+            formatterResolver.GetFormatterWithVerify<byte[]>().Serialize(ref writer, value.data, options);
+        }
+
+        public global::Fenix.Common.Message.SyncFieldNtf Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (reader.TryReadNil())
+            {
+                return null;
+            }
+
+            options.Security.DepthStep(ref reader);
+            IFormatterResolver formatterResolver = options.Resolver;
+            var length = reader.ReadArrayHeader();
+            var __actorId__ = default(ulong);
+            var __dataKey__ = default(ulong);
+            var __dataType__ = default(global::Fenix.DataType);
+            var __field__ = default(uint);
+            var __data__ = default(byte[]);
+
+            for (int i = 0; i < length; i++)
+            {
+                var key = i;
+
+                switch (key)
+                {
+                    case 0:
+                        __actorId__ = reader.ReadUInt64();
+                        break;
+                    case 1:
+                        __dataKey__ = reader.ReadUInt64();
+                        break;
+                    case 2:
+                        __dataType__ = formatterResolver.GetFormatterWithVerify<global::Fenix.DataType>().Deserialize(ref reader, options);
+                        break;
+                    case 3:
+                        __field__ = reader.ReadUInt32();
+                        break;
+                    case 4:
+                        __data__ = formatterResolver.GetFormatterWithVerify<byte[]>().Deserialize(ref reader, options);
+                        break;
+                    default:
+                        reader.Skip();
+                        break;
+                }
+            }
+
+            var ____result = new global::Fenix.Common.Message.SyncFieldNtf();
+            ____result.actorId = __actorId__;
+            ____result.dataKey = __dataKey__;
+            ____result.dataType = __dataType__;
+            ____result.field = __field__;
+            ____result.data = __data__;
+            reader.Depth--;
+            return ____result;
+        }
+    }
+
+    public sealed class SyncNtfFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Fenix.Common.Message.SyncNtf>
+    {
+
+
+        public void Serialize(ref MessagePackWriter writer, global::Fenix.Common.Message.SyncNtf value, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (value == null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
+            IFormatterResolver formatterResolver = options.Resolver;
+            writer.WriteArrayHeader(4);
+            writer.Write(value.actorId);
+            writer.Write(value.dataKey);
+            formatterResolver.GetFormatterWithVerify<global::Fenix.DataType>().Serialize(ref writer, value.dataType, options);
+            formatterResolver.GetFormatterWithVerify<byte[]>().Serialize(ref writer, value.data, options);
+        }
+
+        public global::Fenix.Common.Message.SyncNtf Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (reader.TryReadNil())
+            {
+                return null;
+            }
+
+            options.Security.DepthStep(ref reader);
+            IFormatterResolver formatterResolver = options.Resolver;
+            var length = reader.ReadArrayHeader();
+            var __actorId__ = default(ulong);
+            var __dataKey__ = default(ulong);
+            var __dataType__ = default(global::Fenix.DataType);
+            var __data__ = default(byte[]);
+
+            for (int i = 0; i < length; i++)
+            {
+                var key = i;
+
+                switch (key)
+                {
+                    case 0:
+                        __actorId__ = reader.ReadUInt64();
+                        break;
+                    case 1:
+                        __dataKey__ = reader.ReadUInt64();
+                        break;
+                    case 2:
+                        __dataType__ = formatterResolver.GetFormatterWithVerify<global::Fenix.DataType>().Deserialize(ref reader, options);
+                        break;
+                    case 3:
+                        __data__ = formatterResolver.GetFormatterWithVerify<byte[]>().Deserialize(ref reader, options);
+                        break;
+                    default:
+                        reader.Skip();
+                        break;
+                }
+            }
+
+            var ____result = new global::Fenix.Common.Message.SyncNtf();
+            ____result.actorId = __actorId__;
+            ____result.dataKey = __dataKey__;
+            ____result.dataType = __dataType__;
+            ____result.data = __data__;
             reader.Depth--;
             return ____result;
         }

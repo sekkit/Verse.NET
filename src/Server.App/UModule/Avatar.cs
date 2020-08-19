@@ -13,12 +13,16 @@ namespace Server.UModule
     [PersistentData(typeof(User), DbConfig.USER)]
     public partial class Avatar : ServerAvatar
     {
+        protected Avatar self => this;
+
+        public User User => GetPersist<User>();
+
         public new Client.AvatarRef Client => (Client.AvatarRef)this.clientActor;
          
 
         protected override void onLoad()
         {
-            Log.Info("Avatar.User>", GetRuntime<User>()); 
+            Log.Info("Avatar.User>", GetPersist<User>()); 
         }
 
         protected override void onClientEnable()

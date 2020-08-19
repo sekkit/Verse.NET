@@ -15,6 +15,8 @@ namespace Server.Config
 
         protected static Dictionary<string, DbEntry> _cfgDic = new Dictionary<string, DbEntry>();
 
+        public static Dictionary<string, DbEntry> CfgDic => _cfgDic;
+
         public static DbEntry Get(string dbName)
         {
             if (_cfgDic.TryGetValue(dbName, out var dbEntry))

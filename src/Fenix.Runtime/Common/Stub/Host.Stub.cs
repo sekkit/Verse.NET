@@ -59,6 +59,22 @@ namespace Fenix
             }, context);
         }
 
+        [RpcMethod(OpCode.SYNC_NTF, Api.ClientApi)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void CLIENT_API_sync(IMessage msg, RpcContext context)
+        {
+            var _msg = (SyncNtf)msg;
+            this.Sync(_msg.actorId, _msg.dataKey, _msg.dataType, _msg.data, context);
+        }
+
+        [RpcMethod(OpCode.SYNC_FIELD_NTF, Api.ClientApi)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void CLIENT_API_sync_field(IMessage msg, RpcContext context)
+        {
+            var _msg = (SyncFieldNtf)msg;
+            this.SyncField(_msg.actorId, _msg.dataKey, _msg.dataType, _msg.field, _msg.data, context);
+        }
+
         public event Action<global::Fenix.Common.DisconnectReason, global::System.Action> on_before_disconnect;
         [RpcMethod(OpCode.ON_BEFORE_DISCONNECT_NTF, Api.ClientApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -82,6 +98,20 @@ namespace Fenix
         public void CLIENT_API_NATIVE_reconnect_server_actor(global::System.UInt64 hostId, global::System.String hostName, global::System.String hostIP, global::System.Int32 hostPort, global::System.UInt64 actorId, global::System.String actorName, global::System.String aTypeName, global::System.Action<global::Fenix.Common.DefaultErrCode> callback, RpcContext context)
         {
             this.ReconnectServerActor(hostId, hostName, hostIP, hostPort, actorId, actorName, aTypeName, callback, context);
+        }
+
+        [RpcMethod(OpCode.SYNC_NTF, Api.ClientApi)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void CLIENT_API_NATIVE_sync(global::System.UInt64 actorId, global::System.UInt64 dataKey, global::Fenix.DataType dataType, global::System.Byte[] data, RpcContext context)
+        {
+            this.Sync(actorId, dataKey, dataType, data, context);
+        }
+
+        [RpcMethod(OpCode.SYNC_FIELD_NTF, Api.ClientApi)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void CLIENT_API_NATIVE_sync_field(global::System.UInt64 actorId, global::System.UInt64 dataKey, global::Fenix.DataType dataType, global::System.UInt32 field, global::System.Byte[] data, RpcContext context)
+        {
+            this.SyncField(actorId, dataKey, dataType, field, data, context);
         }
 
 #endif

@@ -22,6 +22,8 @@ namespace Fenix.Common
         public const uint REMOVE_CLIENT_ACTOR_REQ = 0x16;
         public const uint ON_BEFORE_DISCONNECT_NTF = 0x17;
         public const uint ON_SERVER_ACTOR_ENABLE_NTF = 0x18;
+        public const uint SYNC_NTF = 0x20;
+        public const uint SYNC_FIELD_NTF = 0x21;
         public const uint CALL_ACTOR_METHOD = 0xff;
 
         //NONE = 0x0,

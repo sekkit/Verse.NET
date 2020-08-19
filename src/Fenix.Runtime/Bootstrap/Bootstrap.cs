@@ -13,6 +13,17 @@ namespace Fenix
 {
     public class Bootstrap
     {
+        public Bootstrap()
+        {
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+        }
+
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Log.Error("Exception occurred");
+            Log.Error(e);
+        }
+
         public static void StartMultiProcess(Assembly[] asmList, RuntimeConfig cfg, Action init)
         {
             Environment.SetEnvironmentVariable("AppName", cfg.AppName);
