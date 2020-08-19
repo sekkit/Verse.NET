@@ -654,22 +654,13 @@ namespace Fenix
 #endif
         }
         
-        [ClientApi]
-        public void Sync(ulong actorId, ulong dataKey, DataType dataType, byte[] data, RpcContext __context)
-        {
-            if(this.actorDic.TryGetValue(actorId, out var a))
-            {
-                //a.SyncData(dataType, data);
-            }
-        }
-
-        [ClientApi]
-        public void SyncField(ulong actorId, ulong dataKey, DataType dataType, uint field,  byte[] data, RpcContext __context)
-        {
-            if (this.actorDic.TryGetValue(actorId, out var a))
-            {
-                //a.SyncField(dataType, field, data);
-            }
-        }
+        //[ClientApi]
+        //public void Sync(ulong actorId, ulong dataKey, DataType dataType, byte[] data, RpcContext __context)
+        //{
+        //    if(this.actorDic.TryGetValue(actorId, out var a))
+        //    {
+        //        //a.SyncData(dataType, data);
+        //    }
+        //}
     }
 }
