@@ -7,33 +7,9 @@ using System.Text;
 
 namespace Shared.DataModel
 {
-    //public class UserAttr : IMessage
-    //{
-    //    [Key(0)]
-    //    public int Coin;
-
-    //    [Key(1)]
-    //    public int BlueCoin;
-
-    //    [Key(2)]
-    //    public int RedCoin;
-
-    //    [Key(3)]
-    //    public int Strength;
-
-    //    [Key(4)]
-    //    public int Spirit;
-
-    //    [Key(5)]
-    //    public int Power;
-    //}
-
     [MessagePackObject]
     public partial class User : IMessage
     {
-        //[Key(0)]
-        //public UserAttr Attr;
-
         [Key(0)]
         public string uid;
 

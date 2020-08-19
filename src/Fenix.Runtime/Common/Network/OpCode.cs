@@ -25,18 +25,6 @@ namespace Fenix.Common
         public const uint SYNC_NTF = 0x20;
         public const uint SYNC_FIELD_NTF = 0x21;
         public const uint CALL_ACTOR_METHOD = 0xff;
-
-        //NONE = 0x0,
-        //PING = 0x1,
-        //PONG = 0x2,
-        //GOODBYE = 0x4,
-
-        //REGISTER = 0x5,
-
-        //CREATE_ACTOR_REQ = 0x10,
-        //MIGRATE_ACTOR_REQ = 0x11,
-
-        //CALL_ACTOR_METHOD = 0xff,
     }
 
     public enum DisconnectReason

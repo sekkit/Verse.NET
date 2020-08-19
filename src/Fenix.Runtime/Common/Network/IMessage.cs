@@ -72,15 +72,15 @@ namespace Fenix.Common.Rpc
         }
 
         public virtual string ToJson()
-        {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
-           //return MessagePackSerializer.ConvertToJson(Pack());
+        { 
+           return MessagePackSerializer.ConvertToJson(Pack());
         }
 
-        //public virtual void FromJson(string json)
-        //{
-        //    MessagePackSerializer.ConvertFromJson(json, ref this);
-        //}
+        public virtual void FromJson(string json)
+        {
+            var data = MessagePackSerializer.ConvertFromJson(json);
+            this.UnPack(data);
+        }
 
         public static IMessage Deserialize(byte[] data)
         {
@@ -99,7 +99,7 @@ namespace Fenix.Common.Rpc
 
         public override string ToString()
         {
-            return this.ToJson();
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
         }
     }
 
