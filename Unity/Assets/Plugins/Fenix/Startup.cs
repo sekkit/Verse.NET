@@ -1,14 +1,9 @@
-﻿using DotNetty.Common.Utilities;
-using Fenix.Common.Message;
-using Fenix.Common.Rpc;
-using Fenix.Common.Utils;
-using MessagePack;
-using MessagePack.Resolvers;
-using System;
+﻿
 using UnityEngine; 
 
 public class Startup
 {
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     static void Initialize()
     {
