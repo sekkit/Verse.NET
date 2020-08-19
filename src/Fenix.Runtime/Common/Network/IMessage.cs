@@ -55,9 +55,8 @@ namespace Fenix.Common.Rpc
     public class IMessage
     {
         public IMessage()
-        { }
-
-        //public abstract byte[] Pack();
+        {
+        }
 
         public virtual byte[] Pack()
         {
