@@ -322,9 +322,6 @@ namespace Fenix
                 foreach (var aId in actorRemoveList)
                     actorDic.TryRemove(aId, out var _);
             }
-#if !CLIENT
-            Global.IdManager.SyncWithCacheAsync();
-#endif
         }
 
 #if !CLIENT

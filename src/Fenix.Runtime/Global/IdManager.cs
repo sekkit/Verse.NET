@@ -3,6 +3,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Fenix.Common;
 using Fenix.Common.Utils;
@@ -53,7 +54,9 @@ namespace Fenix
         protected RedisDb CacheANAME2TNAME => Global.DbManager.GetDb(CacheConfig.ANAME2TNAME); 
         protected RedisDb CacheID2NAME     => Global.DbManager.GetDb(CacheConfig.ID2NAME);
         protected RedisDb CacheAddr2ExAddr => Global.DbManager.GetDb(CacheConfig.ADDR2EXTADDR);
-        
+
+        private Thread th;
+
         public IdManager()
         {
             Global.DbManager.LoadDb(CacheConfig.Get(CacheConfig.HNAME2ADDR));
@@ -65,10 +68,20 @@ namespace Fenix
 
             var assembly = typeof(Global).Assembly;
             Log.Info(assembly.FullName.Replace("Server.App", "Fenix.Runtime").Replace("Client.App", "Fenix.Runtime"));
+
+            th = new Thread(new ThreadStart(AutoSync));
+            th.Start();
         }
 
         ~IdManager()
         {
+            th?.Abort();
+        }
+
+        void AutoSync()
+        { 
+            SyncWithCache();
+            Thread.Sleep(100);
         }
 
 #else
@@ -197,6 +210,9 @@ namespace Fenix
 
         ulong GetId(string name)
         {
+            if (name == null)
+                return 0;
+
             if(mName2Id.TryGetValue(name, out var result))
                 return result;
 #if !CLIENT
