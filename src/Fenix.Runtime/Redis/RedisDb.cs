@@ -17,16 +17,9 @@ namespace Fenix.Redis
 
         private RedisHelper helper;
 
-        protected DbEntry conf; 
+        protected DbEntry conf;
 
-        //public RedisDb(string prefix, string addr, int port)
-        //{
-        //    //this.Prefix = prefix;
-        //    Console.WriteLine(string.Format("{0}:{1},password=,defaultDatabase=0,prefix={2}_", addr, port, Prefix));
-        //    client = new CSRedisClient(string.Format("{0}:{1},password=,defaultDatabase=0,prefix={2}_", addr, port, Prefix));
-        //    helper = new RedisHelper();
-        //    helper.Initialization(client);
-        //}
+
 
         public RedisDb(DbEntry db)
         {
@@ -36,7 +29,8 @@ namespace Fenix.Redis
             client = new CSRedisClient(connStr);
             helper = new RedisHelper();
             helper.Initialization(client);
-        } 
+        }
+
         public bool Set(string key, object value, int? expireSec = null)
         { 
             if (value == null)
@@ -53,24 +47,26 @@ namespace Fenix.Redis
             return this.client.Set(key, value, expireSeconds: expireSec.Value);
         }
 
+        public async Task<bool> SetAsync(string key, object value, int? expireSec = null)
+        {
+            if (value == null)
+                return false;
+            if (value is IMessage || value.GetType().IsSubclassOf(typeof(IMessage)))
+            {
+                if (expireSec == null || !expireSec.HasValue)
+                    return await this.client.SetAsync(key, ((IMessage)value).Pack(), expireSeconds: this.conf.ValidTime);
+                return await this.client.SetAsync(key, ((IMessage)value).Pack(), expireSeconds: expireSec.Value);
+            }
+
+            if (expireSec == null || !expireSec.HasValue)
+                return await this.client.SetAsync(key, value, expireSeconds: this.conf.ValidTime);
+            return await this.client.SetAsync(key, value, expireSeconds: expireSec.Value);
+        }
+
         public bool HasKey(string key)
         {
             return this.client.Exists(key);
         }
-
-        //public T Get<T>(string key) where T: IMessage
-        //{
-        //    var t = typeof(T);
-        //    if(t == typeof(IMessage) || t.IsSubclassOf(typeof(IMessage)))
-        //    {
-        //        var bytes = this.client.GetBytes(key);
-        //        if (bytes == null)
-        //            return null;
-        //        return RpcUtil.Deserialize<T>(bytes);
-        //    }
-
-        //    return this.client.Get<T>(key);
-        //}
 
         public T Get<T>(string key)  
         {

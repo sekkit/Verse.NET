@@ -1,9 +1,6 @@
 
 /*
  * (c)2020 Sekkit.com
- * FenixÊÇÒ»¸ö»ùÓÚActorÍøÂçÄ£ĞÍµÄ·Ö²¼Ê½ÓÎÏ··şÎñÆ÷
- * server¶ËÍ¨ĞÅ¶¼ÊÇ×ßtcp
- * server/clientÖ®¼ä¿ÉÒÔ×ßtcp/kcp/websockets
  */
  
 using Fenix;
@@ -113,17 +110,16 @@ namespace Server
                 //for Debug purpose
                 Environment.SetEnvironmentVariable("AppPath", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../"));
 
-                Bootstrap.StartSingleProcess(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfgList, OnInit); //µ¥½ø³ÌÄ£Ê½
+                Bootstrap.StartSingleProcess(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfgList, OnInit);  
                 //foreach (var cfg in cfgList)
                 //    if (cfg.AppName == "Master.App")
-                //        Bootstrap.StartMultiProcess(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfg, OnInit); //·Ö²¼Ê½
+                //        Bootstrap.StartMultiProcess(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfg, OnInit); //é”Ÿè¡—è¯§æ‹·å¼
             }
             else
             {
                 Parser.Default.ParseArguments<Options>(args)
                    .WithParsed<Options>(o =>
-                   {
-                       //½«ÃüÁîĞĞ²ÎÊı£¬ÉèÖÃµ½½ø³ÌµÄ»·¾³±äÁ¿
+                   { 
                        Environment.SetEnvironmentVariable("AppName", o.AppName);
 
                        using (var sr = new StreamReader(o.Config))
@@ -131,7 +127,7 @@ namespace Server
                            var cfgList = JsonConvert.DeserializeObject<List<RuntimeConfig>>(sr.ReadToEnd());
                            foreach (var cfg in cfgList)
                                if(cfg.AppName == o.AppName)
-                                   Bootstrap.StartMultiProcess(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfg, OnInit); //·Ö²¼Ê½
+                                   Bootstrap.StartMultiProcess(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfg, OnInit);  
                        }
                    });
             }
@@ -141,7 +137,7 @@ namespace Server
         {
             DbConfig.Init();
 
-            foreach (var cfg in DbConfig.CfgDic)
+            foreach (var cfg in DbConfig.Instance.CfgDic)
             {
                 Fenix.Global.DbManager.LoadDb(cfg.Value);
             }

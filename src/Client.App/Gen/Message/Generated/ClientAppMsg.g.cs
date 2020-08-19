@@ -49,7 +49,7 @@ namespace MessagePack.Resolvers
 
         static ClientAppResolverGetFormatterHelper()
         {
-            lookup = new global::System.Collections.Generic.Dictionary<Type, int>(13)
+            lookup = new global::System.Collections.Generic.Dictionary<Type, int>(14)
             {
                 { typeof(global::Shared.Message.ApiTest2Ntf), 0 },
                 { typeof(global::Shared.Message.ApiTestNtf), 1 },
@@ -63,7 +63,8 @@ namespace MessagePack.Resolvers
                 { typeof(global::Shared.Message.LoginReq), 9 },
                 { typeof(global::Shared.Message.LoginReq.Callback), 10 },
                 { typeof(global::Shared.Message.OnMatchOkReq), 11 },
-                { typeof(global::Shared.Message.ResetPasswordReq), 12 },
+                { typeof(global::Shared.Message.OnSyncUserNtf), 12 },
+                { typeof(global::Shared.Message.ResetPasswordReq), 13 },
             };
         }
 
@@ -89,7 +90,8 @@ namespace MessagePack.Resolvers
                 case 9: return new MessagePack.Formatters.Shared.Message.LoginReqFormatter();
                 case 10: return new MessagePack.Formatters.Shared.Message.LoginReq_CallbackFormatter();
                 case 11: return new MessagePack.Formatters.Shared.Message.OnMatchOkReqFormatter();
-                case 12: return new MessagePack.Formatters.Shared.Message.ResetPasswordReqFormatter();
+                case 12: return new MessagePack.Formatters.Shared.Message.OnSyncUserNtfFormatter();
+                case 13: return new MessagePack.Formatters.Shared.Message.ResetPasswordReqFormatter();
                 default: return null;
             }
         }
@@ -809,6 +811,57 @@ namespace MessagePack.Formatters.Shared.Message
             }
 
             var ____result = new global::Shared.Message.OnMatchOkReq();
+            reader.Depth--;
+            return ____result;
+        }
+    }
+
+    public sealed class OnSyncUserNtfFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.OnSyncUserNtf>
+    {
+
+
+        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.OnSyncUserNtf value, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (value == null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
+            IFormatterResolver formatterResolver = options.Resolver;
+            writer.WriteArrayHeader(1);
+            formatterResolver.GetFormatterWithVerify<byte[]>().Serialize(ref writer, value.data, options);
+        }
+
+        public global::Shared.Message.OnSyncUserNtf Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (reader.TryReadNil())
+            {
+                return null;
+            }
+
+            options.Security.DepthStep(ref reader);
+            IFormatterResolver formatterResolver = options.Resolver;
+            var length = reader.ReadArrayHeader();
+            var __data__ = default(byte[]);
+
+            for (int i = 0; i < length; i++)
+            {
+                var key = i;
+
+                switch (key)
+                {
+                    case 0:
+                        __data__ = formatterResolver.GetFormatterWithVerify<byte[]>().Deserialize(ref reader, options);
+                        break;
+                    default:
+                        reader.Skip();
+                        break;
+                }
+            }
+
+            var ____result = new global::Shared.Message.OnSyncUserNtf();
+            ____result.data = __data__;
             reader.Depth--;
             return ____result;
         }

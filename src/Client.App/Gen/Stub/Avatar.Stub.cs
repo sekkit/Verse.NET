@@ -44,6 +44,15 @@ namespace Client
             this.ApiTest2(_msg.uid, _msg.match_type);
         }
 
+        [RpcMethod(ProtocolCode.ON_SYNC_USER_NTF, Api.ClientApi)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void CLIENT_API_on_sync_user(IMessage msg)
+        {
+            var _msg = (OnSyncUserNtf)msg;
+            on_sync_user?.Invoke(_msg.data);
+            this.OnSyncUser(_msg.data);
+        }
+
         [RpcMethod(ProtocolCode.API_TEST_NTF, Api.ClientApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void CLIENT_API_NATIVE_api_test(global::System.String uid, global::System.Action<Shared.Protocol.ErrCode> callback)
@@ -56,6 +65,15 @@ namespace Client
         public void CLIENT_API_NATIVE_api_test2(global::System.String uid, global::System.Int32 match_type)
         {
             this.ApiTest2(uid, match_type);
+        }
+
+        public event Action<global::System.Byte[]> on_sync_user;
+        [RpcMethod(ProtocolCode.ON_SYNC_USER_NTF, Api.ClientApi)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void CLIENT_API_NATIVE_on_sync_user(global::System.Byte[] data)
+        {
+            on_sync_user?.Invoke(data);
+            this.OnSyncUser(data);
         }
 
 #endif

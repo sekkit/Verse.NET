@@ -18,22 +18,30 @@ namespace Server.UModule
         public User User => GetPersist<User>();
 
         public new Client.AvatarRef Client => (Client.AvatarRef)this.clientActor;
-         
-
+        
         protected override void onLoad()
         {
-            Log.Info("Avatar.User>", GetPersist<User>()); 
+            Log.Info("Avatar.User>", GetPersist<User>());
+
+            if(User.Exp == 0)
+            {
+                User.Exp = 1; 
+            }
         }
 
         protected override void onClientEnable()
         {
             base.onClientEnable();
 
-            //Ïò¿Í»§¶Ë·¢ÏûÏ¢µÄÇ°ÌáÊÇ£¬ÒÑ¾­°ó¶¨ÁËClientAvatarRef,¶øÇÒÒ»¸öActorµÄClientRef²»ÊÇÈ«¾Ö¿É¼ûµÄ£¬Ö»ÄÜÔÚ¸Ãhost½ø³ÌÉÏµ÷ÓÃ
+            //å‘å®¢æˆ·ç«¯å‘æ¶ˆæ¯çš„å‰ææ˜¯ï¼Œå·²ç»ç»‘å®šäº†ClientAvatarRef,è€Œä¸”ä¸€ä¸ªActorçš„ClientRefä¸æ˜¯å…¨å±€å¯è§çš„ï¼Œåªèƒ½åœ¨è¯¥hostè¿›ç¨‹ä¸Šè°ƒç”¨
+            /*
             this.Client.client_api_test("hello", (code) =>
             {
                 Log.Info("client_on_api_test", code);
             });
+            */
+
+            this.Client.client_on_sync_user(User.Pack());
         }
 
         [ServerApi]
@@ -47,5 +55,7 @@ namespace Server.UModule
         {
 
         }
+
+
     }
 }

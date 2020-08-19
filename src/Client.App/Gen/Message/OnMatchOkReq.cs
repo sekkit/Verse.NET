@@ -22,9 +22,16 @@ namespace Shared.Message
         {
             return MessagePackSerializer.Serialize<OnMatchOkReq>(this);
         }
+
         public new static OnMatchOkReq Deserialize(byte[] data)
         {
             return MessagePackSerializer.Deserialize<OnMatchOkReq>(data);
+        }
+
+        public override void UnPack(byte[] data)
+        {
+            var obj = Deserialize(data);
+            Copier<OnMatchOkReq>.CopyTo(obj, this);
         }
     }
 }

@@ -41,9 +41,16 @@ namespace Fenix.Common.Message
             {
                 return MessagePackSerializer.Serialize<Callback>(this);
             }
+
             public new static Callback Deserialize(byte[] data)
             {
                 return MessagePackSerializer.Deserialize<Callback>(data);
+            }
+
+            public override void UnPack(byte[] data)
+            {
+                var obj = Deserialize(data);
+                Copier<Callback>.CopyTo(obj, this);
             }
         }
 
@@ -51,9 +58,16 @@ namespace Fenix.Common.Message
         {
             return MessagePackSerializer.Serialize<RegisterClientReq>(this);
         }
+
         public new static RegisterClientReq Deserialize(byte[] data)
         {
             return MessagePackSerializer.Deserialize<RegisterClientReq>(data);
+        }
+
+        public override void UnPack(byte[] data)
+        {
+            var obj = Deserialize(data);
+            Copier<RegisterClientReq>.CopyTo(obj, this);
         }
     }
 }

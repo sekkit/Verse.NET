@@ -10,6 +10,7 @@ namespace Shared
     {
         public const uint API_TEST_NTF = 1383176864;
         public const uint API_TEST2_NTF = 4266374684;
+        public const uint ON_SYNC_USER_NTF = 652703717;
     }
 }
 

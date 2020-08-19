@@ -53,9 +53,16 @@ namespace Fenix.Common.Message
             {
                 return MessagePackSerializer.Serialize<Callback>(this);
             }
+
             public new static Callback Deserialize(byte[] data)
             {
                 return MessagePackSerializer.Deserialize<Callback>(data);
+            }
+
+            public override void UnPack(byte[] data)
+            {
+                var obj = Deserialize(data);
+                Copier<Callback>.CopyTo(obj, this);
             }
         }
 
@@ -63,9 +70,16 @@ namespace Fenix.Common.Message
         {
             return MessagePackSerializer.Serialize<ReconnectServerActorNtf>(this);
         }
+
         public new static ReconnectServerActorNtf Deserialize(byte[] data)
         {
             return MessagePackSerializer.Deserialize<ReconnectServerActorNtf>(data);
+        }
+
+        public override void UnPack(byte[] data)
+        {
+            var obj = Deserialize(data);
+            Copier<ReconnectServerActorNtf>.CopyTo(obj, this);
         }
     }
 }

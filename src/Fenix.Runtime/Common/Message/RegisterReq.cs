@@ -24,9 +24,16 @@ namespace Fenix.Common.Message
         {
             return MessagePackSerializer.Serialize<RegisterReq>(this);
         }
+
         public new static RegisterReq Deserialize(byte[] data)
         {
             return MessagePackSerializer.Deserialize<RegisterReq>(data);
+        }
+
+        public override void UnPack(byte[] data)
+        {
+            var obj = Deserialize(data);
+            Copier<RegisterReq>.CopyTo(obj, this);
         }
     }
 }

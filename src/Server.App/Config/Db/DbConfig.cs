@@ -6,7 +6,9 @@ using System.Text;
 namespace Server.Config
 {  
     public class DbConfig : DbConf
-    { 
+    {
+        public static DbConfig Instance = new DbConfig();
+
         public const string ACCOUNT = "ACCOUNT";
         public const string USER = "USER";
         
@@ -64,10 +66,10 @@ namespace Server.Config
 
         public new static void Init()
         {
-            AddDbConfig(ACCOUNT, "127.0.0.1", 7380, ACCOUNT, 3, type: "Kedis");
-            AddDbConfig(USER, "127.0.0.1", 7380, USER, 3, type: "Kedis");
-            AddDbConfig(RUNTIME, "127.0.0.1", 7380, RUNTIME, 3, type: "Redis");
-            AddDbConfig(SEQ, "127.0.0.1", 7380, SEQ, 3, type: "Redis"); 
+            Instance.AddDbConfig(ACCOUNT, "127.0.0.1", 7380, ACCOUNT, 3, type: "Kedis");
+            Instance.AddDbConfig(USER, "127.0.0.1", 7380, USER, 3, type: "Kedis");
+            Instance.AddDbConfig(RUNTIME, "127.0.0.1", 7380, RUNTIME, 3, type: "Redis");
+            Instance.AddDbConfig(SEQ, "127.0.0.1", 7380, SEQ, 3, type: "Redis"); 
         }
     }
 }

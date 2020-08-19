@@ -30,9 +30,16 @@ namespace Fenix.Common.Message
         {
             return MessagePackSerializer.Serialize<SyncNtf>(this);
         }
+
         public new static SyncNtf Deserialize(byte[] data)
         {
             return MessagePackSerializer.Deserialize<SyncNtf>(data);
+        }
+
+        public override void UnPack(byte[] data)
+        {
+            var obj = Deserialize(data);
+            Copier<SyncNtf>.CopyTo(obj, this);
         }
     }
 }

@@ -29,7 +29,7 @@ namespace Shared.DataModel
     //}
 
     [MessagePackObject]
-    public class User : IMessage
+    public partial class User : IMessage
     {
         //[Key(0)]
         //public UserAttr Attr;
@@ -64,6 +64,17 @@ namespace Shared.DataModel
         public override byte[] Pack()
         {
             return MessagePackSerializer.Serialize<User>(this);
+        }
+
+        public new static User Deserialize(byte[] data)
+        {
+            return MessagePackSerializer.Deserialize<User>(data);
+        }
+
+        public override void UnPack(byte[] data)
+        {
+            var obj = Deserialize(data);
+            Copier<User>.CopyTo(obj, this);
         }
     }
 }

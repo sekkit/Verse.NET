@@ -21,9 +21,16 @@ namespace Fenix.Common.Message
         {
             return MessagePackSerializer.Serialize<OnServerActorEnableNtf>(this);
         }
+
         public new static OnServerActorEnableNtf Deserialize(byte[] data)
         {
             return MessagePackSerializer.Deserialize<OnServerActorEnableNtf>(data);
+        }
+
+        public override void UnPack(byte[] data)
+        {
+            var obj = Deserialize(data);
+            Copier<OnServerActorEnableNtf>.CopyTo(obj, this);
         }
     }
 }

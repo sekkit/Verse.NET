@@ -59,13 +59,18 @@ namespace Fenix
 
         public IdManager()
         {
-            Global.DbManager.LoadDb(CacheConfig.Get(CacheConfig.HNAME2ADDR));
-            Global.DbManager.LoadDb(CacheConfig.Get(CacheConfig.ANAME2CNAME));
-            Global.DbManager.LoadDb(CacheConfig.Get(CacheConfig.ANAME2HNAME));
-            Global.DbManager.LoadDb(CacheConfig.Get(CacheConfig.ANAME2TNAME));
-            Global.DbManager.LoadDb(CacheConfig.Get(CacheConfig.ID2NAME));
-            Global.DbManager.LoadDb(CacheConfig.Get(CacheConfig.ADDR2EXTADDR));
-
+            foreach (var cfg in CacheConfig.Instance.CfgDic)
+            {
+                Global.DbManager.LoadDb(cfg.Value);
+            }
+            /*
+            Global.DbManager.LoadDb(CacheConfig.Instance.Get(CacheConfig.HNAME2ADDR));
+            Global.DbManager.LoadDb(CacheConfig.Instance.Get(CacheConfig.ANAME2CNAME));
+            Global.DbManager.LoadDb(CacheConfig.Instance.Get(CacheConfig.ANAME2HNAME));
+            Global.DbManager.LoadDb(CacheConfig.Instance.Get(CacheConfig.ANAME2TNAME));
+            Global.DbManager.LoadDb(CacheConfig.Instance.Get(CacheConfig.ID2NAME));
+            Global.DbManager.LoadDb(CacheConfig.Instance.Get(CacheConfig.ADDR2EXTADDR));
+            */
             var assembly = typeof(Global).Assembly;
             Log.Info(assembly.FullName.Replace("Server.App", "Fenix.Runtime").Replace("Client.App", "Fenix.Runtime"));
 

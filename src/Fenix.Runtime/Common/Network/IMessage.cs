@@ -2,10 +2,55 @@
 using MessagePack;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace Fenix.Common.Rpc
 {
+    public static class Copier<T>
+    {
+        private static readonly Action<T, T> _copier;
+
+        static Copier()
+        {
+            var x = Expression.Parameter(typeof(T), "x");
+            var y = Expression.Parameter(typeof(T), "y");
+            var expressions = new List<Expression>();
+            foreach (var property in typeof(T).GetProperties())
+            {
+                var attrs = property.GetCustomAttributes(typeof(KeyAttribute), true);
+                if (attrs.Length == 0)
+                    continue;
+                if (property.CanWrite)
+                {
+                    var xProp = Expression.Property(x, property);
+                    var yProp = Expression.Property(y, property);
+                    expressions.Add(Expression.Assign(yProp, xProp));
+                }
+            }
+
+            foreach (var field in typeof(T).GetFields())
+            {
+                var attrs = field.GetCustomAttributes(typeof(KeyAttribute), true);
+                if (attrs.Length == 0)
+                    continue;
+
+                var xProp = Expression.Field(x, field);
+                var yProp = Expression.Field(y, field);
+                expressions.Add(Expression.Assign(yProp, xProp));
+            }
+
+            var block = Expression.Block(expressions);
+            var lambda = Expression.Lambda<Action<T, T>>(block, x, y);
+            _copier = lambda.Compile();
+        }
+
+        public static void CopyTo(T from, T to)
+        {
+            _copier(from, to);
+        }
+    }
+
     [MessagePackObject]
     public class IMessage
     {
@@ -19,14 +64,17 @@ namespace Fenix.Common.Rpc
             return MessagePackSerializer.Serialize(this);//, Utils.RpcUtil.lz4Options);
         }
 
-        //public virtual void UnPack(byte[] data)
-        //{
-            
-        //}
+        public virtual void UnPack(byte[] data)
+        {
+            var obj = Deserialize(data);
+
+            Copier<IMessage>.CopyTo(obj, this);
+        }
 
         public virtual string ToJson()
         {
-           return MessagePackSerializer.SerializeToJson(this);
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+           //return MessagePackSerializer.ConvertToJson(Pack());
         }
 
         //public virtual void FromJson(string json)

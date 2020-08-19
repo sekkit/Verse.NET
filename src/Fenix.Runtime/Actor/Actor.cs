@@ -37,10 +37,12 @@ namespace Fenix
         public virtual ActorRef Server => serverActor;
 
 #endif
-         
+
         protected Dictionary<Type, IMessage> mPersistentDic = new Dictionary<Type, IMessage>();
          
         protected Dictionary<Type, object> mRuntimeDic = new Dictionary<Type, object>();
+
+        protected Dictionary<Type, object> mVolatileDic = new Dictionary<Type, object>();
 
         protected Dictionary<Type, IActor> mModuleDic = new Dictionary<Type, IActor>();
 
@@ -54,6 +56,20 @@ namespace Fenix
         public T GetPersist<T>() where T : IMessage
         { 
             if(mPersistentDic.TryGetValue(typeof(T), out var value))
+                return (T)value;
+            return default(T);
+        }
+
+        public T GetVolatile<T>()
+        {
+            if (mVolatileDic.TryGetValue(typeof(T), out var value))
+                return (T)value;
+            return default(T);
+        }
+
+        public T GetModule<T>() where T: IActor
+        {
+            if (mModuleDic.TryGetValue(typeof(T), out var value))
                 return (T)value;
             return default(T);
         }
@@ -87,12 +103,12 @@ namespace Fenix
                 foreach (RuntimeDataAttribute attr in attrs)
                 {
 #if !CLIENT
-                    mRuntimeDic[attr.dataType] = await LoadDataFromDb(DbConf.RUNTIME, attr.dataType);
+                    mRuntimeDic[attr.DataType] = await LoadDataFromDb(DbConf.RUNTIME, attr.DataType);
 #endif
-                    if(!mRuntimeDic.TryGetValue(attr.dataType, out var d) || d == null)
-                        mRuntimeDic[attr.dataType] = Activator.CreateInstance(attr.dataType) as IMessage;
+                    if(!mRuntimeDic.TryGetValue(attr.DataType, out var d) || d == null)
+                        mRuntimeDic[attr.DataType] = Activator.CreateInstance(attr.DataType) as IMessage;
                 }
-            }  
+            }
             
             attrs = GetType().GetCustomAttributes(typeof(PersistentDataAttribute), true);
             if (attrs.Count() > 0)
@@ -100,10 +116,20 @@ namespace Fenix
                 foreach (PersistentDataAttribute attr in attrs)
                 {
 #if !CLIENT
-                    mPersistentDic[attr.dataType] = await LoadDataFromDb(attr.dbName, attr.dataType);
+                    mPersistentDic[attr.DataType] = await LoadDataFromDb(attr.dbName, attr.DataType);
 #endif
-                    if (!mPersistentDic.TryGetValue(attr.dataType, out var d) ||  d == null)
-                        mPersistentDic[attr.dataType] = Activator.CreateInstance(attr.dataType) as IMessage; 
+                    if (!mPersistentDic.TryGetValue(attr.DataType, out var d) ||  d == null)
+                        mPersistentDic[attr.DataType] = Activator.CreateInstance(attr.DataType) as IMessage; 
+                }
+            }
+
+            attrs = GetType().GetCustomAttributes(typeof(VolatileDataAttribute), true);
+            if (attrs.Count() > 0)
+            {
+                foreach (VolatileDataAttribute attr in attrs)
+                {
+                    if (!mVolatileDic.TryGetValue(attr.DataType, out var d) || d == null)
+                        mVolatileDic[attr.DataType] = Activator.CreateInstance(attr.DataType) as IMessage;
                 }
             }
 
@@ -119,12 +145,21 @@ namespace Fenix
         }
 
 #if !CLIENT
+
         protected async Task<IMessage> LoadDataFromDb(string dbName, Type type) 
         {
             string dbKey = this.UniqueName + ":" + type.FullName;
             var db = Global.DbManager.GetDb(dbName);
             return (IMessage)(await db.GetAsync(type, dbKey));
         }
+
+        protected async Task<bool> SaveDataToDb(string dbName, Type type, object data)
+        {
+            string dbKey = this.UniqueName + ":" + type.FullName;
+            var db = Global.DbManager.GetDb(dbName);
+            return await db.SetAsync(dbKey, data);
+        }
+
 #endif
 
         ~Actor()
@@ -229,9 +264,7 @@ namespace Fenix
         }
 
 #if !CLIENT
-
-        //[ServerOnly]
-        //[EditorBrowsable(EditorBrowsableState.Never)]
+         
         public void OnClientEnable()
         { 
             string actorTypeName = this.GetType().Name;
@@ -250,9 +283,7 @@ namespace Fenix
 
             //this.clientActor.OnServerActorEnable(this.UniqueName);
         }
-
-        //[ServerOnly]
-        //[EditorBrowsable(EditorBrowsableState.Never)]
+         
         public void OnClientDisable()
         {
             //actorName == this.UniqueName

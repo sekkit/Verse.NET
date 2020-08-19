@@ -38,9 +38,16 @@ namespace Shared.Message
             {
                 return MessagePackSerializer.Serialize<Callback>(this);
             }
+
             public new static Callback Deserialize(byte[] data)
             {
                 return MessagePackSerializer.Deserialize<Callback>(data);
+            }
+
+            public override void UnPack(byte[] data)
+            {
+                var obj = Deserialize(data);
+                Copier<Callback>.CopyTo(obj, this);
             }
         }
 
@@ -48,9 +55,16 @@ namespace Shared.Message
         {
             return MessagePackSerializer.Serialize<ApiTestNtf>(this);
         }
+
         public new static ApiTestNtf Deserialize(byte[] data)
         {
             return MessagePackSerializer.Deserialize<ApiTestNtf>(data);
+        }
+
+        public override void UnPack(byte[] data)
+        {
+            var obj = Deserialize(data);
+            Copier<ApiTestNtf>.CopyTo(obj, this);
         }
     }
 }

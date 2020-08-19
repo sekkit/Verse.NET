@@ -7,10 +7,10 @@ namespace Fenix
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
     public class RuntimeDataAttribute : Attribute
     {
-        public Type dataType;
+        public Type DataType;
         public RuntimeDataAttribute(Type type)
         {
-            dataType = type;
+            DataType = type;
         }
     }
 }

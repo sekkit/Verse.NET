@@ -174,7 +174,7 @@ namespace Fenix
                 if (ignoreCallback)
                     if (p.Name == "callback")
                         continue;
-                paramList.Add(string.Format("{0}", ParseTypeName(p.ParameterType.Resolve()), p.Name));
+                paramList.Add(string.Format("{0}", ParseTypeName(p.ParameterType)));
             }
 
             var result = string.Join(", ", paramList);
@@ -362,10 +362,15 @@ namespace Fenix
                     .AppendLine($"            public override byte[] Pack()")
                     .AppendLine($"            {{")
                     .AppendLine($"                return MessagePackSerializer.Serialize<Callback>(this);")
-                    .AppendLine($"            }}")
-                     .AppendLine($"            public new static Callback Deserialize(byte[] data)")
+                    .AppendLine($"            }}\n")
+                    .AppendLine($"            public new static Callback Deserialize(byte[] data)")
                     .AppendLine($"            {{")
                     .AppendLine($"                return MessagePackSerializer.Deserialize<Callback>(data);")
+                    .AppendLine($"            }}\n")
+                    .AppendLine($"            public override void UnPack(byte[] data)")
+                    .AppendLine($"            {{")
+                    .AppendLine($"                var obj = Deserialize(data);")
+                    .AppendLine($"                Copier<Callback>.CopyTo(obj, this);")
                     .AppendLine($"            }}")
                     .AppendLine($"        }}");
                 return builder.ToString();
@@ -643,10 +648,15 @@ namespace Shared
                     msgBuilder.AppendLine($"        public override byte[] Pack()")
                     .AppendLine($"        {{")
                     .AppendLine($"            return MessagePackSerializer.Serialize<{message_type}>(this);")
-                    .AppendLine($"        }}");
+                    .AppendLine($"        }}\n");
                     msgBuilder.AppendLine($"        public new static {message_type} Deserialize(byte[] data)")
                     .AppendLine($"        {{")
                     .AppendLine($"            return MessagePackSerializer.Deserialize<{message_type}>(data);")
+                    .AppendLine($"        }}\n");
+                    msgBuilder.AppendLine($"        public override void UnPack(byte[] data)")
+                    .AppendLine($"        {{")
+                    .AppendLine($"            var obj = Deserialize(data);")
+                    .AppendLine($"            Copier<{message_type}>.CopyTo(obj, this);")
                     .AppendLine($"        }}");
                     msgBuilder.AppendLine($"    }}")
                         .AppendLine($"}}");

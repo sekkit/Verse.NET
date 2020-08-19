@@ -7,12 +7,29 @@ namespace Fenix
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
     public class PersistentDataAttribute : Attribute
     {
-        public Type dataType;
+        public Type DataType;
         public string dbName;
+        public int dbIndex;
+
+#if CLIENT
+        public PersistentDataAttribute(Type type)
+        {
+            this.DataType = type;
+            this.dbName = "";
+        }
+#endif
+
         public PersistentDataAttribute(Type type, string dbName)
         {
-            this.dataType = type;
+            this.DataType = type;
             this.dbName = dbName;
-        } 
+        }
+
+        public PersistentDataAttribute(Type type, string dbName, int index)
+        {
+            this.DataType = type;
+            this.dbName = dbName;
+            this.dbIndex = index;
+        }
     }
 }
