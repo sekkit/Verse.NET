@@ -8,10 +8,10 @@ namespace Shared
 {
     public partial class ProtocolCode
     {
-        public const uint CREATE_ACCOUNT_REQ = 234992065;
-        public const uint DELETE_ACCOUNT_REQ = 345718522;
-        public const uint LOGIN_REQ = 1779258869;
-        public const uint RESET_PASSWORD_REQ = 843637103;
+        public const uint __SERVERGMODULE__LOGINSERVICE__CREATE_ACCOUNT_REQ = 1133027049;
+        public const uint __SERVERGMODULE__LOGINSERVICE__DELETE_ACCOUNT_REQ = 3605007557;
+        public const uint __SERVERGMODULE__LOGINSERVICE__LOGIN_REQ = 3382765897;
+        public const uint __SERVERGMODULE__LOGINSERVICE__RESET_PASSWORD_REQ = 2419458890;
     }
 }
 

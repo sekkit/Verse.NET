@@ -8,8 +8,8 @@ namespace Shared
 {
     public partial class ProtocolCode
     {
-        public const uint CHANGE_NAME_REQ = 3740974912;
-        public const uint ON_MATCH_OK_REQ = 1348381187;
+        public const uint __SERVERUMODULE__AVATAR__CHANGE_NAME_REQ = 715415876;
+        public const uint __SERVERUMODULE__AVATAR__ON_MATCH_OK_REQ = 3424189238;
     }
 }
 

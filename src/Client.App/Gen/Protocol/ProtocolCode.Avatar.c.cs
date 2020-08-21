@@ -8,9 +8,9 @@ namespace Shared
 {
     public partial class ProtocolCode
     {
-        public const uint API_TEST_NTF = 1383176864;
-        public const uint API_TEST2_NTF = 4266374684;
-        public const uint ON_SYNC_USER_NTF = 652703717;
+        public const uint __CLIENT__AVATAR__API_TEST_NTF = 1128147696;
+        public const uint __CLIENT__AVATAR__API_TEST2_NTF = 2176074343;
+        public const uint __CLIENT__AVATAR__ON_SYNC_USER_NTF = 3542824279;
     }
 }
 

@@ -13,7 +13,7 @@ using System;
 
 namespace Shared.Message
 {
-    [MessageType(ProtocolCode.FIND_MATCH_REQ)]
+    [MessageType(ProtocolCode.__SERVERGMODULE__MATCHSERVICE__FIND_MATCH_REQ)]
     [MessagePackObject]
     public class FindMatchReq : IMessageWithCallback
     {

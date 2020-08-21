@@ -37,7 +37,7 @@ namespace Server
                      callback?.Invoke(cbMsg.code, cbMsg.user);
                      t.TrySetResult(cbMsg);
                 }; 
-                var protoCode = ProtocolCode.FIND_MATCH_REQ;
+                var protoCode = ProtocolCode.__SERVERGMODULE__MATCHSERVICE__FIND_MATCH_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
@@ -63,7 +63,7 @@ namespace Server
                         var cbMsg = cbData==null ? new FindMatchReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<FindMatchReq.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
-                    this.CallRemoteMethod(ProtocolCode.FIND_MATCH_REQ, msg, cb);
+                    this.CallRemoteMethod(ProtocolCode.__SERVERGMODULE__MATCHSERVICE__FIND_MATCH_REQ, msg, cb);
                  });
              }
              return await t.Task;
@@ -74,7 +74,7 @@ namespace Server
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                var protoCode = ProtocolCode.FIND_MATCH_REQ;
+                var protoCode = ProtocolCode.__SERVERGMODULE__MATCHSERVICE__FIND_MATCH_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
@@ -94,7 +94,7 @@ namespace Server
                     var cbMsg = cbData==null?new FindMatchReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<FindMatchReq.Callback>(cbData);
                     callback?.Invoke(cbMsg.code, cbMsg.user);
                 });
-                this.CallRemoteMethod(ProtocolCode.FIND_MATCH_REQ, msg, cb);
+                this.CallRemoteMethod(ProtocolCode.__SERVERGMODULE__MATCHSERVICE__FIND_MATCH_REQ, msg, cb);
             });
         }
 
@@ -111,7 +111,7 @@ namespace Server
                      callback?.Invoke(cbMsg.code);
                      t.TrySetResult(cbMsg);
                 }; 
-                var protoCode = ProtocolCode.JOIN_MATCH_REQ;
+                var protoCode = ProtocolCode.__SERVERGMODULE__MATCHSERVICE__JOIN_MATCH_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
@@ -138,7 +138,7 @@ namespace Server
                         var cbMsg = cbData==null ? new JoinMatchReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<JoinMatchReq.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
-                    this.CallRemoteMethod(ProtocolCode.JOIN_MATCH_REQ, msg, cb);
+                    this.CallRemoteMethod(ProtocolCode.__SERVERGMODULE__MATCHSERVICE__JOIN_MATCH_REQ, msg, cb);
                  });
              }
              return await t.Task;
@@ -149,7 +149,7 @@ namespace Server
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                var protoCode = ProtocolCode.JOIN_MATCH_REQ;
+                var protoCode = ProtocolCode.__SERVERGMODULE__MATCHSERVICE__JOIN_MATCH_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
@@ -170,7 +170,7 @@ namespace Server
                     var cbMsg = cbData==null?new JoinMatchReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<JoinMatchReq.Callback>(cbData);
                     callback?.Invoke(cbMsg.code);
                 });
-                this.CallRemoteMethod(ProtocolCode.JOIN_MATCH_REQ, msg, cb);
+                this.CallRemoteMethod(ProtocolCode.__SERVERGMODULE__MATCHSERVICE__JOIN_MATCH_REQ, msg, cb);
             });
         }
     }

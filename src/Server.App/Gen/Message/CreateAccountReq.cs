@@ -13,7 +13,7 @@ using System;
 
 namespace Shared.Message
 {
-    [MessageType(ProtocolCode.CREATE_ACCOUNT_REQ)]
+    [MessageType(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__CREATE_ACCOUNT_REQ)]
     [MessagePackObject]
     public class CreateAccountReq : IMessageWithCallback
     {

@@ -13,7 +13,7 @@ using System;
 
 namespace Shared.Message
 {
-    [MessageType(ProtocolCode.RESET_PASSWORD_REQ)]
+    [MessageType(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__RESET_PASSWORD_REQ)]
     [MessagePackObject]
     public class ResetPasswordReq : IMessage
     {

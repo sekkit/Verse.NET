@@ -13,7 +13,7 @@ using System;
 
 namespace Shared.Message
 {
-    [MessageType(ProtocolCode.DELETE_ACCOUNT_REQ)]
+    [MessageType(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__DELETE_ACCOUNT_REQ)]
     [MessagePackObject]
     public class DeleteAccountReq : IMessageWithCallback
     {

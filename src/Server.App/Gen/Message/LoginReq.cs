@@ -13,7 +13,7 @@ using System;
 
 namespace Shared.Message
 {
-    [MessageType(ProtocolCode.LOGIN_REQ)]
+    [MessageType(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__LOGIN_REQ)]
     [MessagePackObject]
     public class LoginReq : IMessageWithCallback
     {

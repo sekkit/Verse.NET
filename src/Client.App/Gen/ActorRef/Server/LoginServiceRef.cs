@@ -36,7 +36,7 @@ namespace Server
                      callback?.Invoke(cbMsg.code);
                      t.TrySetResult(cbMsg);
                 }; 
-                var protoCode = ProtocolCode.CREATE_ACCOUNT_REQ;
+                var protoCode = ProtocolCode.__SERVERGMODULE__LOGINSERVICE__CREATE_ACCOUNT_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
@@ -63,7 +63,7 @@ namespace Server
                         var cbMsg = cbData==null ? new CreateAccountReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<CreateAccountReq.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
-                    this.CallRemoteMethod(ProtocolCode.CREATE_ACCOUNT_REQ, msg, cb);
+                    this.CallRemoteMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__CREATE_ACCOUNT_REQ, msg, cb);
                  });
              }
              return await t.Task;
@@ -74,7 +74,7 @@ namespace Server
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                var protoCode = ProtocolCode.CREATE_ACCOUNT_REQ;
+                var protoCode = ProtocolCode.__SERVERGMODULE__LOGINSERVICE__CREATE_ACCOUNT_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
@@ -95,7 +95,7 @@ namespace Server
                     var cbMsg = cbData==null?new CreateAccountReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<CreateAccountReq.Callback>(cbData);
                     callback?.Invoke(cbMsg.code);
                 });
-                this.CallRemoteMethod(ProtocolCode.CREATE_ACCOUNT_REQ, msg, cb);
+                this.CallRemoteMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__CREATE_ACCOUNT_REQ, msg, cb);
             });
         }
 
@@ -112,7 +112,7 @@ namespace Server
                      callback?.Invoke(cbMsg.code);
                      t.TrySetResult(cbMsg);
                 }; 
-                var protoCode = ProtocolCode.DELETE_ACCOUNT_REQ;
+                var protoCode = ProtocolCode.__SERVERGMODULE__LOGINSERVICE__DELETE_ACCOUNT_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
@@ -139,7 +139,7 @@ namespace Server
                         var cbMsg = cbData==null ? new DeleteAccountReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<DeleteAccountReq.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
-                    this.CallRemoteMethod(ProtocolCode.DELETE_ACCOUNT_REQ, msg, cb);
+                    this.CallRemoteMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__DELETE_ACCOUNT_REQ, msg, cb);
                  });
              }
              return await t.Task;
@@ -150,7 +150,7 @@ namespace Server
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                var protoCode = ProtocolCode.DELETE_ACCOUNT_REQ;
+                var protoCode = ProtocolCode.__SERVERGMODULE__LOGINSERVICE__DELETE_ACCOUNT_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
@@ -171,7 +171,7 @@ namespace Server
                     var cbMsg = cbData==null?new DeleteAccountReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<DeleteAccountReq.Callback>(cbData);
                     callback?.Invoke(cbMsg.code);
                 });
-                this.CallRemoteMethod(ProtocolCode.DELETE_ACCOUNT_REQ, msg, cb);
+                this.CallRemoteMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__DELETE_ACCOUNT_REQ, msg, cb);
             });
         }
 
@@ -192,7 +192,7 @@ namespace Server
                      callback?.Invoke(cbMsg.code, cbMsg.arg1, cbMsg.arg2, cbMsg.arg3, cbMsg.arg4);
                      t.TrySetResult(cbMsg);
                 }; 
-                var protoCode = ProtocolCode.LOGIN_REQ;
+                var protoCode = ProtocolCode.__SERVERGMODULE__LOGINSERVICE__LOGIN_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
@@ -219,7 +219,7 @@ namespace Server
                         var cbMsg = cbData==null ? new LoginReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<LoginReq.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
-                    this.CallRemoteMethod(ProtocolCode.LOGIN_REQ, msg, cb);
+                    this.CallRemoteMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__LOGIN_REQ, msg, cb);
                  });
              }
              return await t.Task;
@@ -230,7 +230,7 @@ namespace Server
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                var protoCode = ProtocolCode.LOGIN_REQ;
+                var protoCode = ProtocolCode.__SERVERGMODULE__LOGINSERVICE__LOGIN_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
@@ -251,7 +251,7 @@ namespace Server
                     var cbMsg = cbData==null?new LoginReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<LoginReq.Callback>(cbData);
                     callback?.Invoke(cbMsg.code, cbMsg.arg1, cbMsg.arg2, cbMsg.arg3, cbMsg.arg4);
                 });
-                this.CallRemoteMethod(ProtocolCode.LOGIN_REQ, msg, cb);
+                this.CallRemoteMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__LOGIN_REQ, msg, cb);
             });
         }
 
@@ -261,7 +261,7 @@ namespace Server
            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
            if (this.FromHostId == toHostId)
            {
-                var protoCode = ProtocolCode.RESET_PASSWORD_REQ;
+                var protoCode = ProtocolCode.__SERVERGMODULE__LOGINSERVICE__RESET_PASSWORD_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
@@ -278,7 +278,7 @@ namespace Server
                     username=username,
                     email=email
                };
-               this.CallRemoteMethod(ProtocolCode.RESET_PASSWORD_REQ, msg, null);
+               this.CallRemoteMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__RESET_PASSWORD_REQ, msg, null);
             });
         }
     }

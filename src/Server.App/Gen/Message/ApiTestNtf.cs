@@ -13,7 +13,7 @@ using System;
 
 namespace Shared.Message
 {
-    [MessageType(ProtocolCode.API_TEST_NTF)]
+    [MessageType(ProtocolCode.__CLIENT__AVATAR__API_TEST_NTF)]
     [MessagePackObject]
     public class ApiTestNtf : IMessageWithCallback
     {

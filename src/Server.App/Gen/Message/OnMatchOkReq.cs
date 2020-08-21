@@ -13,7 +13,7 @@ using System;
 
 namespace Shared.Message
 {
-    [MessageType(ProtocolCode.ON_MATCH_OK_REQ)]
+    [MessageType(ProtocolCode.__SERVERUMODULE__AVATAR__ON_MATCH_OK_REQ)]
     [MessagePackObject]
     public class OnMatchOkReq : IMessage
     {

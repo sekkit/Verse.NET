@@ -80,21 +80,28 @@ namespace Fenix
         {
             return Regex.Split(source, @"(?<!^)(?=[A-Z])");
         }
-
-        static string NameToApi(string name)
+        static string NameToApi(string apiName)
         {
-            var parts = SplitCamelCase(name);
+            var parts = SplitCamelCase(apiName);
             for (int i = 0; i < parts.Length; ++i)
                 parts[i] = parts[i].ToLower();
             return string.Join("_", parts);
         }
-
-        static string NameToProtoCode(string name)
+        
+        static string NameToProtoCode(string ns, string entityName, string apiName)
         {
-            var parts = SplitCamelCase(name);
+            var parts = SplitCamelCase(apiName);
             for (int i = 0; i < parts.Length; ++i)
                 parts[i] = parts[i].ToUpper();
-            return string.Join("_", parts);
+            return string.Format("__{0}__{1}__{2}", ns.Replace(".", "").ToUpper(), entityName.ToUpper(), string.Join("_", parts));
+        }
+
+        static string NameToProtoCode(string apiName)
+        {
+            var parts = SplitCamelCase(apiName);
+            for (int i = 0; i < parts.Length; ++i)
+                parts[i] = parts[i].ToUpper();
+            return string.Format("{0}", string.Join("_", parts));
         }
 
         static string ParseGenericDecl(Type genericType)
@@ -344,9 +351,9 @@ namespace Fenix
                     MethodInfo method = methods[i];
                     var attr = GetAttribute<ServerApiAttribute>(method);
                     if (attr != null)
-                    {
-                        uint code = Basic.GenID32FromName(method.Name);
-                        string proto_code = NameToProtoCode(method.Name) + "_REQ";
+                    { 
+                        string proto_code = (isHost? NameToProtoCode(method.Name) : NameToProtoCode(type.Namespace, type.Name, method.Name)) + "_REQ";
+                        uint code = Basic.GenID32FromName(proto_code);
                         codes[proto_code] = code;
                     }
                 }
@@ -357,8 +364,8 @@ namespace Fenix
                     var attr = GetAttribute<ServerOnlyAttribute>(method);
                     if (attr != null)
                     {
-                        uint code = Basic.GenID32FromName(method.Name);
-                        string proto_code = NameToProtoCode(method.Name) + "_REQ";
+                        string proto_code = (isHost ? NameToProtoCode(method.Name) : NameToProtoCode(type.Namespace, type.Name, method.Name)) + "_REQ";
+                        uint code = Basic.GenID32FromName(proto_code);
                         codes[proto_code] = code;
                     }
                 }
@@ -369,8 +376,8 @@ namespace Fenix
                     var attr = GetAttribute<ClientApiAttribute>(method);
                     if (attr != null)
                     {
-                        uint code = Basic.GenID32FromName(method.Name);
-                        string proto_code = NameToProtoCode(method.Name) + "_NTF";
+                        string proto_code = (isHost ? NameToProtoCode(method.Name) : NameToProtoCode(type.Namespace, type.Name, method.Name)) + "_NTF";
+                        uint code = Basic.GenID32FromName(proto_code);
                         codes[proto_code] = code;
                     }
                 }
@@ -523,8 +530,6 @@ namespace Shared
                         methodParameterList = newList.ToArray();
                     }
 
-                    uint code = Basic.GenID32FromName(method.Name);
-
                     //现在生成message
                     string message_type = method.Name + GetApiMessagePostfix(api);
 
@@ -540,7 +545,8 @@ namespace Shared
                     if (hasCallback)
                         itype = "IMessageWithCallback";
 
-                    string proto_code = NameToProtoCode(method.Name) + "_" + GetApiMessagePostfix(api).ToUpper();
+                    string proto_code = (isHost ? NameToProtoCode(method.Name) : NameToProtoCode(type.Namespace, type.Name, method.Name)) + "_" + GetApiMessagePostfix(api).ToUpper(); 
+                    uint code = Basic.GenID32FromName(proto_code);
 
                     string msg_ns = type.Name == "Host" ? "Fenix.Common.Message" : "Shared.Message";
 

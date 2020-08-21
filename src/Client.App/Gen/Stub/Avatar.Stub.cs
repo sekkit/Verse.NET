@@ -23,7 +23,7 @@ namespace Client
     public partial class Avatar
     {
 #if CLIENT
-        [RpcMethod(ProtocolCode.API_TEST_NTF, Api.ClientApi)]
+        [RpcMethod(ProtocolCode.__CLIENT__AVATAR__API_TEST_NTF, Api.ClientApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void CLIENT_API_api_test(IMessage msg, Action<IMessage> cb)
         {
@@ -36,7 +36,7 @@ namespace Client
             });
         }
 
-        [RpcMethod(ProtocolCode.API_TEST2_NTF, Api.ClientApi)]
+        [RpcMethod(ProtocolCode.__CLIENT__AVATAR__API_TEST2_NTF, Api.ClientApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void CLIENT_API_api_test2(IMessage msg)
         {
@@ -44,7 +44,7 @@ namespace Client
             this.ApiTest2(_msg.uid, _msg.match_type);
         }
 
-        [RpcMethod(ProtocolCode.ON_SYNC_USER_NTF, Api.ClientApi)]
+        [RpcMethod(ProtocolCode.__CLIENT__AVATAR__ON_SYNC_USER_NTF, Api.ClientApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void CLIENT_API_on_sync_user(IMessage msg)
         {
@@ -53,14 +53,14 @@ namespace Client
             on_sync_user?.Invoke(_msg.data);
         }
 
-        [RpcMethod(ProtocolCode.API_TEST_NTF, Api.ClientApi)]
+        [RpcMethod(ProtocolCode.__CLIENT__AVATAR__API_TEST_NTF, Api.ClientApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void CLIENT_API_NATIVE_api_test(global::System.String uid, global::System.Action<Shared.Protocol.ErrCode> callback)
         {
             this.ApiTest(uid, callback);
         }
 
-        [RpcMethod(ProtocolCode.API_TEST2_NTF, Api.ClientApi)]
+        [RpcMethod(ProtocolCode.__CLIENT__AVATAR__API_TEST2_NTF, Api.ClientApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void CLIENT_API_NATIVE_api_test2(global::System.String uid, global::System.Int32 match_type)
         {
@@ -68,7 +68,7 @@ namespace Client
         }
 
         public event Action<global::System.Byte[]> on_sync_user;
-        [RpcMethod(ProtocolCode.ON_SYNC_USER_NTF, Api.ClientApi)]
+        [RpcMethod(ProtocolCode.__CLIENT__AVATAR__ON_SYNC_USER_NTF, Api.ClientApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void CLIENT_API_NATIVE_on_sync_user(global::System.Byte[] data)
         {

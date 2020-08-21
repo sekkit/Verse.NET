@@ -29,7 +29,7 @@ namespace Server.GModule
 
 #endif
 #if !CLIENT
-        [RpcMethod(ProtocolCode.JOIN_MATCH_REQ, Api.ServerApi)]
+        [RpcMethod(ProtocolCode.__SERVERGMODULE__MATCHSERVICE__JOIN_MATCH_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API_join_match(IMessage msg, Action<IMessage> cb)
         {
@@ -42,7 +42,7 @@ namespace Server.GModule
             });
         }
 
-        [RpcMethod(ProtocolCode.FIND_MATCH_REQ, Api.ServerOnly)]
+        [RpcMethod(ProtocolCode.__SERVERGMODULE__MATCHSERVICE__FIND_MATCH_REQ, Api.ServerOnly)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_ONLY_find_match(IMessage msg, Action<IMessage> cb)
         {
@@ -56,14 +56,14 @@ namespace Server.GModule
             });
         }
 
-        [RpcMethod(ProtocolCode.JOIN_MATCH_REQ, Api.ServerApi)]
+        [RpcMethod(ProtocolCode.__SERVERGMODULE__MATCHSERVICE__JOIN_MATCH_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API_NATIVE_join_match(global::System.String uid, global::System.Int32 match_type, global::System.Action<global::Shared.Protocol.ErrCode> callback)
         {
             this.JoinMatch(uid, match_type, callback);
         }
 
-        [RpcMethod(ProtocolCode.FIND_MATCH_REQ, Api.ServerOnly)]
+        [RpcMethod(ProtocolCode.__SERVERGMODULE__MATCHSERVICE__FIND_MATCH_REQ, Api.ServerOnly)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_ONLY_NATIVE_find_match(global::System.String uid, global::System.Action<global::Shared.Protocol.ErrCode, global::Server.DataModel.Account> callback)
         {

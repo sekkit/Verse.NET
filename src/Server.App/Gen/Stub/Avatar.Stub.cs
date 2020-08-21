@@ -29,7 +29,7 @@ namespace Server.UModule
 
 #endif
 #if !CLIENT
-        [RpcMethod(ProtocolCode.CHANGE_NAME_REQ, Api.ServerApi)]
+        [RpcMethod(ProtocolCode.__SERVERUMODULE__AVATAR__CHANGE_NAME_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API_change_name(IMessage msg, Action<IMessage> cb)
         {
@@ -42,7 +42,7 @@ namespace Server.UModule
             });
         }
 
-        [RpcMethod(ProtocolCode.ON_MATCH_OK_REQ, Api.ServerOnly)]
+        [RpcMethod(ProtocolCode.__SERVERUMODULE__AVATAR__ON_MATCH_OK_REQ, Api.ServerOnly)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_ONLY_on_match_ok(IMessage msg)
         {
@@ -50,14 +50,14 @@ namespace Server.UModule
             this.OnMatchOk();
         }
 
-        [RpcMethod(ProtocolCode.CHANGE_NAME_REQ, Api.ServerApi)]
+        [RpcMethod(ProtocolCode.__SERVERUMODULE__AVATAR__CHANGE_NAME_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API_NATIVE_change_name(global::System.String name, global::System.Action<global::Shared.Protocol.ErrCode> callback)
         {
             this.ChangeName(name, callback);
         }
 
-        [RpcMethod(ProtocolCode.ON_MATCH_OK_REQ, Api.ServerOnly)]
+        [RpcMethod(ProtocolCode.__SERVERUMODULE__AVATAR__ON_MATCH_OK_REQ, Api.ServerOnly)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_ONLY_NATIVE_on_match_ok()
         {

@@ -13,7 +13,7 @@ using System;
 
 namespace Shared.Message
 {
-    [MessageType(ProtocolCode.CHANGE_NAME_REQ)]
+    [MessageType(ProtocolCode.__SERVERUMODULE__AVATAR__CHANGE_NAME_REQ)]
     [MessagePackObject]
     public class ChangeNameReq : IMessageWithCallback
     {

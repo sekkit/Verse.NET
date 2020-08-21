@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Text.RegularExpressions;
 
 namespace Fenix
 {
@@ -46,6 +47,9 @@ namespace Fenix
 
         public Entity()
         {
+            string ns = GetType().Namespace;
+            string tname = GetType().Name;
+            bool isHost = GetType().FullName == "Fenix.Host";
             var methods = this.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
             for (int i = 0; i < methods.Length; ++i)
             {
@@ -53,21 +57,24 @@ namespace Fenix
                 var attrs = method.GetCustomAttributes(typeof(ServerApiAttribute));
                 if (attrs.Count() > 0)
                 {
-                    uint code = Basic.GenID32FromName(method.Name);
+                    string protoCode = (isHost? NameToProtoCode(method.Name) : NameToProtoCode(ns, tname, method.Name)) + "_" + GetApiMessagePostfix(Api.ServerApi).ToUpper();
+                    uint code = Basic.GenID32FromName(protoCode);
                     Global.TypeManager.RegisterApi(code, Api.ServerApi);
                 }
 
                 attrs = method.GetCustomAttributes(typeof(ServerOnlyAttribute));
                 if (attrs.Count() > 0)
                 {
-                    uint code = Basic.GenID32FromName(method.Name);  
+                    string protoCode = (isHost ? NameToProtoCode(method.Name) : NameToProtoCode(ns, tname, method.Name)) + "_" + GetApiMessagePostfix(Api.ServerOnly).ToUpper();
+                    uint code = Basic.GenID32FromName(protoCode);
                     Global.TypeManager.RegisterApi(code, Api.ServerOnly);
                 }
 
                 attrs = method.GetCustomAttributes(typeof(ClientApiAttribute));
                 if (attrs.Count() > 0)
                 {
-                    uint code = Basic.GenID32FromName(method.Name);  
+                    string protoCode = (isHost ? NameToProtoCode(method.Name) : NameToProtoCode(ns, tname, method.Name)) + "_" + GetApiMessagePostfix(Api.ClientApi).ToUpper();
+                    uint code = Basic.GenID32FromName(protoCode);
                     Global.TypeManager.RegisterApi(code, Api.ClientApi);
                 }
 
@@ -86,6 +93,38 @@ namespace Fenix
             }
 
             this.AddRepeatedTimer(1000, 2000, CheckRpc);
+        }
+
+        static string GetApiMessagePostfix(Api api)
+        {
+            if (api == Api.ClientApi)
+                return "Ntf";
+            if (api == Api.ServerApi)
+                return "Req";
+            if (api == Api.ServerOnly)
+                return "Req";
+            return "";
+        }
+
+        static string[] SplitCamelCase(string source)
+        {
+            return Regex.Split(source, @"(?<!^)(?=[A-Z])");
+        }
+
+        static string NameToProtoCode(string apiName)
+        {
+            var parts = SplitCamelCase(apiName);
+            for (int i = 0; i < parts.Length; ++i)
+                parts[i] = parts[i].ToUpper();
+            return string.Format("{0}", string.Join("_", parts));
+        }
+
+        static string NameToProtoCode(string ns, string entityName, string apiName)
+        {
+            var parts = SplitCamelCase(apiName);
+            for (int i = 0; i < parts.Length; ++i)
+                parts[i] = parts[i].ToUpper();
+            return string.Format("__{0}__{1}__{2}", ns.Replace(".", "").ToUpper(), entityName.ToUpper(), string.Join("_", parts));
         }
 
         public void AddCallbackRpc(RpcCommand cmd)

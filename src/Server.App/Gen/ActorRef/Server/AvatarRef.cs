@@ -36,7 +36,7 @@ namespace Server
                      callback?.Invoke(cbMsg.code);
                      t.TrySetResult(cbMsg);
                 }; 
-                var protoCode = ProtocolCode.CHANGE_NAME_REQ;
+                var protoCode = ProtocolCode.__SERVERUMODULE__AVATAR__CHANGE_NAME_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
@@ -62,7 +62,7 @@ namespace Server
                         var cbMsg = cbData==null ? new ChangeNameReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<ChangeNameReq.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
-                    this.CallRemoteMethod(ProtocolCode.CHANGE_NAME_REQ, msg, cb);
+                    this.CallRemoteMethod(ProtocolCode.__SERVERUMODULE__AVATAR__CHANGE_NAME_REQ, msg, cb);
                  });
              }
              return await t.Task;
@@ -73,7 +73,7 @@ namespace Server
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                var protoCode = ProtocolCode.CHANGE_NAME_REQ;
+                var protoCode = ProtocolCode.__SERVERUMODULE__AVATAR__CHANGE_NAME_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
@@ -93,7 +93,7 @@ namespace Server
                     var cbMsg = cbData==null?new ChangeNameReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<ChangeNameReq.Callback>(cbData);
                     callback?.Invoke(cbMsg.code);
                 });
-                this.CallRemoteMethod(ProtocolCode.CHANGE_NAME_REQ, msg, cb);
+                this.CallRemoteMethod(ProtocolCode.__SERVERUMODULE__AVATAR__CHANGE_NAME_REQ, msg, cb);
             });
         }
 
@@ -103,7 +103,7 @@ namespace Server
            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
            if (this.FromHostId == toHostId)
            {
-                var protoCode = ProtocolCode.ON_MATCH_OK_REQ;
+                var protoCode = ProtocolCode.__SERVERUMODULE__AVATAR__ON_MATCH_OK_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
@@ -119,7 +119,7 @@ namespace Server
                {
 
                };
-               this.CallRemoteMethod(ProtocolCode.ON_MATCH_OK_REQ, msg, null);
+               this.CallRemoteMethod(ProtocolCode.__SERVERUMODULE__AVATAR__ON_MATCH_OK_REQ, msg, null);
             });
         }
     }

@@ -13,7 +13,7 @@ using System;
 
 namespace Shared.Message
 {
-    [MessageType(ProtocolCode.ON_SYNC_USER_NTF)]
+    [MessageType(ProtocolCode.__CLIENT__AVATAR__ON_SYNC_USER_NTF)]
     [MessagePackObject]
     public class OnSyncUserNtf : IMessage
     {

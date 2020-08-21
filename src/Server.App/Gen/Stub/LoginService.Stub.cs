@@ -29,7 +29,7 @@ namespace Server.GModule
 
 #endif
 #if !CLIENT
-        [RpcMethod(ProtocolCode.CREATE_ACCOUNT_REQ, Api.ServerApi)]
+        [RpcMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__CREATE_ACCOUNT_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API_create_account(IMessage msg, Action<IMessage> cb)
         {
@@ -42,7 +42,7 @@ namespace Server.GModule
             });
         }
 
-        [RpcMethod(ProtocolCode.DELETE_ACCOUNT_REQ, Api.ServerApi)]
+        [RpcMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__DELETE_ACCOUNT_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API_delete_account(IMessage msg, Action<IMessage> cb)
         {
@@ -55,7 +55,7 @@ namespace Server.GModule
             });
         }
 
-        [RpcMethod(ProtocolCode.LOGIN_REQ, Api.ServerApi)]
+        [RpcMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__LOGIN_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API_login(IMessage msg, Action<IMessage> cb)
         {
@@ -72,7 +72,7 @@ namespace Server.GModule
             });
         }
 
-        [RpcMethod(ProtocolCode.RESET_PASSWORD_REQ, Api.ServerApi)]
+        [RpcMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__RESET_PASSWORD_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API_reset_password(IMessage msg)
         {
@@ -80,28 +80,28 @@ namespace Server.GModule
             this.ResetPassword(_msg.username, _msg.email);
         }
 
-        [RpcMethod(ProtocolCode.CREATE_ACCOUNT_REQ, Api.ServerApi)]
+        [RpcMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__CREATE_ACCOUNT_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API_NATIVE_create_account(global::System.String username, global::System.String password, global::System.Action<global::Shared.Protocol.ErrCode> callback)
         {
             this.CreateAccount(username, password, callback);
         }
 
-        [RpcMethod(ProtocolCode.DELETE_ACCOUNT_REQ, Api.ServerApi)]
+        [RpcMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__DELETE_ACCOUNT_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API_NATIVE_delete_account(global::System.String username, global::System.String password, global::System.Action<global::Shared.Protocol.ErrCode> callback)
         {
             this.DeleteAccount(username, password, callback);
         }
 
-        [RpcMethod(ProtocolCode.LOGIN_REQ, Api.ServerApi)]
+        [RpcMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__LOGIN_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API_NATIVE_login(global::System.String username, global::System.String password, global::System.Action<global::Shared.Protocol.ErrCode, global::System.String, global::System.UInt64, global::System.String, global::System.String> callback)
         {
             this.Login(username, password, callback);
         }
 
-        [RpcMethod(ProtocolCode.RESET_PASSWORD_REQ, Api.ServerApi)]
+        [RpcMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__RESET_PASSWORD_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API_NATIVE_reset_password(global::System.String username, global::System.String email)
         {

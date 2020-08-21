@@ -9,7 +9,8 @@ using System.Collections.Generic;
 using Server.Config;
 
 namespace Server.UModule
-{ 
+{
+    [RequireModule(typeof(ItemModule))]
     [PersistentData(typeof(User), DbConfig.USER)]
     public partial class Avatar : ServerAvatar
     {

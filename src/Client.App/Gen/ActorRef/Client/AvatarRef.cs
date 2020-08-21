@@ -36,7 +36,7 @@ namespace Client
                      callback?.Invoke(cbMsg.code);
                      t.TrySetResult(cbMsg);
                 }; 
-                var protoCode = ProtocolCode.API_TEST_NTF;
+                var protoCode = ProtocolCode.__CLIENT__AVATAR__API_TEST_NTF;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
@@ -62,7 +62,7 @@ namespace Client
                         var cbMsg = cbData==null ? new ApiTestNtf.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<ApiTestNtf.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
-                    this.CallRemoteMethod(ProtocolCode.API_TEST_NTF, msg, cb);
+                    this.CallRemoteMethod(ProtocolCode.__CLIENT__AVATAR__API_TEST_NTF, msg, cb);
                  });
              }
              return await t.Task;
@@ -73,7 +73,7 @@ namespace Client
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                var protoCode = ProtocolCode.API_TEST_NTF;
+                var protoCode = ProtocolCode.__CLIENT__AVATAR__API_TEST_NTF;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
@@ -93,7 +93,7 @@ namespace Client
                     var cbMsg = cbData==null?new ApiTestNtf.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<ApiTestNtf.Callback>(cbData);
                     callback?.Invoke(cbMsg.code);
                 });
-                this.CallRemoteMethod(ProtocolCode.API_TEST_NTF, msg, cb);
+                this.CallRemoteMethod(ProtocolCode.__CLIENT__AVATAR__API_TEST_NTF, msg, cb);
             });
         }
 
@@ -103,7 +103,7 @@ namespace Client
            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
            if (this.FromHostId == toHostId)
            {
-                var protoCode = ProtocolCode.API_TEST2_NTF;
+                var protoCode = ProtocolCode.__CLIENT__AVATAR__API_TEST2_NTF;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
@@ -120,7 +120,7 @@ namespace Client
                     uid=uid,
                     match_type=match_type
                };
-               this.CallRemoteMethod(ProtocolCode.API_TEST2_NTF, msg, null);
+               this.CallRemoteMethod(ProtocolCode.__CLIENT__AVATAR__API_TEST2_NTF, msg, null);
             });
         }
 
@@ -130,7 +130,7 @@ namespace Client
            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
            if (this.FromHostId == toHostId)
            {
-                var protoCode = ProtocolCode.ON_SYNC_USER_NTF;
+                var protoCode = ProtocolCode.__CLIENT__AVATAR__ON_SYNC_USER_NTF;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
@@ -146,7 +146,7 @@ namespace Client
                {
                     data=data
                };
-               this.CallRemoteMethod(ProtocolCode.ON_SYNC_USER_NTF, msg, null);
+               this.CallRemoteMethod(ProtocolCode.__CLIENT__AVATAR__ON_SYNC_USER_NTF, msg, null);
             });
         }
     }
