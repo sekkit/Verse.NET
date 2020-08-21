@@ -861,6 +861,12 @@ namespace Shared
                                                         GetCallbackArgs(method),
                                                         "                ",
                                                         "cbMsg."); 
+                         
+                        builder.AppendLine($"            this.{method.Name}({fileterArgs} ({api_cb_args}) =>")
+                            .AppendLine($"            {{")
+                            .AppendLine($"                var cbMsg = new {message_type}.Callback();")
+                            .AppendLine($"{api_cb_assign}")
+                            .AppendLine($"                cb.Invoke(cbMsg);");
 
                         if (hasEvent)
                         {
@@ -870,12 +876,7 @@ namespace Shared
                             .AppendLine($"{api_cb_assign}")
                             .AppendLine($"                cb.Invoke(cbMsg);")
                             .AppendLine($"            }});");
-                        } 
-                        builder.AppendLine($"            this.{method.Name}({fileterArgs} ({api_cb_args}) =>")
-                            .AppendLine($"            {{")
-                            .AppendLine($"                var cbMsg = new {message_type}.Callback();")
-                            .AppendLine($"{api_cb_assign}")
-                            .AppendLine($"                cb.Invoke(cbMsg);"); 
+                        }
 
                         if (type.Name == "Host")
                             builder.AppendLine($"            }}, context);");
@@ -884,15 +885,15 @@ namespace Shared
                     }
                     else
                     {
-                        if (hasEvent)
-                        {
-                            builder.AppendLine($"            {NameToApi(method.Name)}?.Invoke({api_rpc_args});");
-                        }
-
                         if (type.Name == "Host")
                             builder.AppendLine($"            this.{method.Name}({fileterArgs} context);");
                         else
                             builder.AppendLine($"            this.{method.Name}({api_rpc_args});");
+
+                        if (hasEvent)
+                        {
+                            builder.AppendLine($"            {NameToApi(method.Name)}?.Invoke({api_rpc_args});");
+                        }
                     }
 
                     builder.AppendLine($"        }}");
@@ -957,25 +958,26 @@ namespace Shared
 
                         builder.AppendLine($"        {{");
 
-                        if (hasEvent)
-                            builder.AppendLine($"            {NameToApi(method.Name)}?.Invoke({args});");
-
                         if (type.Name == "Host")
                             builder.AppendLine($"            this.{method.Name}({args}, context);");
                         else
                             builder.AppendLine($"            this.{method.Name}({args});");
+
+                        if (hasEvent)
+                            builder.AppendLine($"            {NameToApi(method.Name)}?.Invoke({args});"); 
                     }
                     else
                     { 
 
                         builder.AppendLine($"        {{");
-                        if (hasEvent)
-                            builder.AppendLine($"            {NameToApi(method.Name)}?.Invoke({args});");
-
+                       
                         if (type.Name == "Host")
                             builder.AppendLine($"            this.{method.Name}({args}, context);");
                         else
-                            builder.AppendLine($"            this.{method.Name}({args});");
+                            builder.AppendLine($"            this.{method.Name}({args});"); 
+                        
+                        if (hasEvent)
+                            builder.AppendLine($"            {NameToApi(method.Name)}?.Invoke({args});"); 
                     }
 
                     builder.AppendLine($"        }}");

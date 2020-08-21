@@ -281,7 +281,7 @@ namespace Fenix
             foreach (var m in this.mModuleDic.Values)
                 m.onClientEnable();
 
-            //this.clientActor.OnServerActorEnable(this.UniqueName);
+            this.clientActor.OnServerActorEnable(this.UniqueName);
         }
          
         public void OnClientDisable()
@@ -306,7 +306,7 @@ namespace Fenix
                 refType = Global.TypeManager.GetActorRefType(this.GetType().FullName);
 
             this.serverActor = GetActorRef(refType, this.UniqueName);
-            Log.Info(string.Format("on_client_enable", this.UniqueName, this.UniqueName));
+            Log.Info(string.Format("on_server_enable", this.UniqueName, this.UniqueName));
 
             this.onServerEnable();
         }

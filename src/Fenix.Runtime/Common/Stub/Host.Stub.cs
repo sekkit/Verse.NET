@@ -23,17 +23,17 @@ namespace Fenix
         public void CLIENT_API_on_before_disconnect(IMessage msg, Action<IMessage> cb, RpcContext context)
         {
             var _msg = (OnBeforeDisconnectNtf)msg;
+            this.OnBeforeDisconnect(_msg.reason, () =>
+            {
+                var cbMsg = new OnBeforeDisconnectNtf.Callback();
+
+                cb.Invoke(cbMsg);
             on_before_disconnect?.Invoke(_msg.reason, () =>
             {
                 var cbMsg = new OnBeforeDisconnectNtf.Callback();
 
                 cb.Invoke(cbMsg);
             });
-            this.OnBeforeDisconnect(_msg.reason, () =>
-            {
-                var cbMsg = new OnBeforeDisconnectNtf.Callback();
-
-                cb.Invoke(cbMsg);
             }, context);
         }
 
@@ -42,8 +42,8 @@ namespace Fenix
         public void CLIENT_API_on_server_actor_enable(IMessage msg, RpcContext context)
         {
             var _msg = (OnServerActorEnableNtf)msg;
-            on_server_actor_enable?.Invoke(_msg.actorName);
             this.OnServerActorEnable(_msg.actorName, context);
+            on_server_actor_enable?.Invoke(_msg.actorName);
         }
 
         [RpcMethod(OpCode.RECONNECT_SERVER_ACTOR_NTF, Api.ClientApi)]
@@ -57,15 +57,15 @@ namespace Fenix
                 cbMsg.code=code;
                 cb.Invoke(cbMsg);
             }, context);
-        } 
-     
+        }
+
         public event Action<global::Fenix.Common.DisconnectReason, global::System.Action> on_before_disconnect;
         [RpcMethod(OpCode.ON_BEFORE_DISCONNECT_NTF, Api.ClientApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void CLIENT_API_NATIVE_on_before_disconnect(global::Fenix.Common.DisconnectReason reason, global::System.Action callback, RpcContext context)
         {
-            on_before_disconnect?.Invoke(reason, callback);
             this.OnBeforeDisconnect(reason, callback, context);
+            on_before_disconnect?.Invoke(reason, callback);
         }
 
         public event Action<global::System.String> on_server_actor_enable;
@@ -73,8 +73,8 @@ namespace Fenix
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void CLIENT_API_NATIVE_on_server_actor_enable(global::System.String actorName, RpcContext context)
         {
-            on_server_actor_enable?.Invoke(actorName);
             this.OnServerActorEnable(actorName, context);
+            on_server_actor_enable?.Invoke(actorName);
         }
 
         [RpcMethod(OpCode.RECONNECT_SERVER_ACTOR_NTF, Api.ClientApi)]
@@ -83,7 +83,6 @@ namespace Fenix
         {
             this.ReconnectServerActor(hostId, hostName, hostIP, hostPort, actorId, actorName, aTypeName, callback, context);
         }
-         
 
 #endif
 #if !CLIENT

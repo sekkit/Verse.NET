@@ -920,7 +920,13 @@ namespace Shared
                         string api_cb_assign = ParseArgsMsgAssign(inst2.GenericArguments.Select(m => m.Resolve()).ToArray(),
                                                         GetCallbackArgs(method),
                                                         "                ",
-                                                        "cbMsg.");
+                                                        "cbMsg."); 
+                        
+                        builder.AppendLine($"            this.{method.Name}({fileterArgs} ({api_cb_args}) =>")
+                            .AppendLine($"            {{")
+                            .AppendLine($"                var cbMsg = new {message_type}.Callback();")
+                            .AppendLine($"{api_cb_assign}")
+                            .AppendLine($"                cb.Invoke(cbMsg);");
 
                         if (hasEvent)
                         {
@@ -931,11 +937,6 @@ namespace Shared
                             .AppendLine($"                cb.Invoke(cbMsg);")
                             .AppendLine($"            }});");
                         }
-                        builder.AppendLine($"            this.{method.Name}({fileterArgs} ({api_cb_args}) =>")
-                            .AppendLine($"            {{")
-                            .AppendLine($"                var cbMsg = new {message_type}.Callback();")
-                            .AppendLine($"{api_cb_assign}")
-                            .AppendLine($"                cb.Invoke(cbMsg);");
 
                         if (type.Name == "Host")
                             builder.AppendLine($"            }}, context);");
@@ -944,15 +945,15 @@ namespace Shared
                     }
                     else
                     {
-                        if (hasEvent)
-                        {
-                            builder.AppendLine($"            {NameToApi(method.Name)}?.Invoke({api_rpc_args});");
-                        }
-
                         if (type.Name == "Host")
                             builder.AppendLine($"            this.{method.Name}({fileterArgs} context);");
                         else
                             builder.AppendLine($"            this.{method.Name}({api_rpc_args});");
+
+                        if (hasEvent)
+                        {
+                            builder.AppendLine($"            {NameToApi(method.Name)}?.Invoke({api_rpc_args});");
+                        } 
                     }
 
                     builder.AppendLine($"        }}");
@@ -1017,25 +1018,28 @@ namespace Shared
 
                         builder.AppendLine($"        {{");
 
-                        if (hasEvent)
-                            builder.AppendLine($"            {NameToApi(method.Name)}?.Invoke({args});");
-
                         if (type.Name == "Host")
                             builder.AppendLine($"            this.{method.Name}({args}, context);");
                         else
-                            builder.AppendLine($"            this.{method.Name}({args});");
+                            builder.AppendLine($"            this.{method.Name}({args});"); 
+
+                        if (hasEvent)
+                            builder.AppendLine($"            {NameToApi(method.Name)}?.Invoke({args});");
+
                     }
                     else
                     {
 
                         builder.AppendLine($"        {{");
-                        if (hasEvent)
-                            builder.AppendLine($"            {NameToApi(method.Name)}?.Invoke({args});");
-
+                       
                         if (type.Name == "Host")
                             builder.AppendLine($"            this.{method.Name}({args}, context);");
                         else
-                            builder.AppendLine($"            this.{method.Name}({args});");
+                            builder.AppendLine($"            this.{method.Name}({args});"); 
+                        
+                        if (hasEvent)
+                            builder.AppendLine($"            {NameToApi(method.Name)}?.Invoke({args});");
+
                     }
 
                     builder.AppendLine($"        }}");
@@ -1060,11 +1064,11 @@ namespace Shared
                 return;
             }
 
-            if (type.Name != "Host")
-            {
-                var al = alAttr.ConstructorArguments[0].Value;
-                Log.Info(string.Format("AccessLevel {0} : {1}", type.Name, al));
-            }
+            //if (type.Name != "Host")
+            //{
+            //    var al = alAttr.ConstructorArguments[0].Value;
+            //    Log.Info(string.Format("AccessLevel {0} : {1}", type.Name, al));
+            //}
 
             string root_ns = type.Name == "Host" ? "Fenix" : (isServer ? "Server" : "Client");
 

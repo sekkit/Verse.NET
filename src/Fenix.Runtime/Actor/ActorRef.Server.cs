@@ -684,65 +684,6 @@ namespace Fenix
                 this.CallRemoteMethod(OpCode.REMOVE_CLIENT_ACTOR_REQ, msg, cb);
             });
         }
-
-
-        public void Sync(global::System.UInt64 actorId, global::System.UInt64 dataKey, global::Fenix.DataType dataType, global::System.Byte[] data)
-        {
-           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
-           if (this.FromHostId == toHostId)
-           {
-                var protoCode = OpCode.SYNC_NTF;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
-                {
-                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
-                    var context = new RpcContext(null, peer);
-                    Global.Host.CallMethodWithParams(protoCode, new object[] { actorId, dataKey, dataType, data, context });
-                }
-                else
-                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { actorId, dataKey, dataType, data }); 
-               return;
-           }
-           Task.Run(() => {
-               var msg = new SyncNtf()
-               {
-                    actorId=actorId,
-                    dataKey=dataKey,
-                    dataType=dataType,
-                    data=data
-               };
-               this.CallRemoteMethod(OpCode.SYNC_NTF, msg, null);
-            });
-        }
-
-
-        public void SyncField(global::System.UInt64 actorId, global::System.UInt64 dataKey, global::Fenix.DataType dataType, global::System.UInt32 field, global::System.Byte[] data)
-        {
-           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
-           if (this.FromHostId == toHostId)
-           {
-                var protoCode = OpCode.SYNC_FIELD_NTF;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
-                {
-                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
-                    var context = new RpcContext(null, peer);
-                    Global.Host.CallMethodWithParams(protoCode, new object[] { actorId, dataKey, dataType, field, data, context });
-                }
-                else
-                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { actorId, dataKey, dataType, field, data }); 
-               return;
-           }
-           Task.Run(() => {
-               var msg = new SyncFieldNtf()
-               {
-                    actorId=actorId,
-                    dataKey=dataKey,
-                    dataType=dataType,
-                    field=field,
-                    data=data
-               };
-               this.CallRemoteMethod(OpCode.SYNC_FIELD_NTF, msg, null);
-            });
-        }
     }
 }
 #endif

@@ -49,8 +49,8 @@ namespace Client
         public void CLIENT_API_on_sync_user(IMessage msg)
         {
             var _msg = (OnSyncUserNtf)msg;
-            on_sync_user?.Invoke(_msg.data);
             this.OnSyncUser(_msg.data);
+            on_sync_user?.Invoke(_msg.data);
         }
 
         [RpcMethod(ProtocolCode.API_TEST_NTF, Api.ClientApi)]
@@ -72,8 +72,8 @@ namespace Client
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void CLIENT_API_NATIVE_on_sync_user(global::System.Byte[] data)
         {
-            on_sync_user?.Invoke(data);
             this.OnSyncUser(data);
+            on_sync_user?.Invoke(data);
         }
 
 #endif
