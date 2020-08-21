@@ -48,15 +48,7 @@ Fenix is in a early stage of development, but is also being used in reallife Gam
     //to tag a function with ServerApi, ServerOnly, ClienApi you can create a RPC protocol without effort.
     [RuntimeData(typeof(MatchData))]
     public partial class MatchService : Service
-    {
-        public MatchService(string name): base(name)
-        {
-        }
-
-        public void onLoad()
-        {
-        }
-
+    {  
         //public new string UniqueName => nameof(MatchService);
 
         [ServerApi] 
@@ -105,18 +97,7 @@ Redis for cache and Rocksdb for persistency(also in redis protocol^^)
   ```
 4. Messagepack/Zeroformatter/Protobuf are easily supported <br>AutoGen takes care of serialization&deserializtion
 ```csharp
-//AUTOGEN, do not modify it!
-
-using Fenix.Common;
-using Fenix.Common.Attributes;
-using Fenix.Common.Rpc;
-using MessagePack; 
-using System.ComponentModel;
-using Shared;
-using Shared.Protocol;
-using Shared.DataModel;
-using System; 
-
+//AUTOGEN, do not modify it! 
 namespace Shared.Message
 {
     [MessageType(ProtocolCode.CHANGE_NAME_REQ)]
@@ -184,9 +165,14 @@ using Shared.DataModel;
 
 namespace Server.UModule
 {
+       [RequireModule(typeof(UserModule))]
+       [RequireModule(typeof(ItemModule))]
+       [RequireModule(typeof(RoomModule))]
+       [RequireModule(typeof(MatchModule))]
+       [RequireModule(typeof(FightModule))]
+       [PersistentData(typeof(User), DbConfig.USER)] //Tag an actor with RuntimeData/PersistData, the DB saving process is taken care of.
        [ActorType(AType.SERVER)] //this actor exists only in server side
-       [AccessLevel(ALevel.CLIENT_AND_SERVER)] //this actor can be accessed from both client/server
-       [RuntimeData(typeof(Account))]  //Tag an actor with RuntimeData/PersistData, the DB saving process is taken care of.
+       [AccessLevel(ALevel.CLIENT_AND_SERVER)] //this actor can be accessed from both client/server 
        //When disaster happens, the actor can be recovered from previous state
        public partial class Avatar : Actor
        {
