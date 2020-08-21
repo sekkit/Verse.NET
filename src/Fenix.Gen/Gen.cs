@@ -70,6 +70,12 @@ namespace Fenix
             return attrs.Where(m => (m.GetType().Name == typeof(T).Name)).FirstOrDefault();
         }
 
+        static List<dynamic> GetAttributes<T>(Type type, bool noInherit = false) where T : Attribute
+        {
+            var attrs = type.GetCustomAttributes(!noInherit);
+            return attrs.Where(m => (m.GetType().Name == typeof(T).Name)).ToList();
+        }
+
         static dynamic GetAttribute<T>(MethodInfo methodInfo, bool noInherit=false) where T : Attribute
         {
             var attrs = methodInfo.GetCustomAttributes(!noInherit);
@@ -342,9 +348,22 @@ namespace Fenix
             foreach (var type in types)
             {
                 if (GetAttribute<ActorTypeAttribute>(type) == null)
-                    continue;
+                    continue; 
+
                 bool isHost = type.Name == "Host";
                 var codes = new SortedDictionary<string, uint>();
+
+                ////////////
+                /// gen sub actormodule
+                ////////////
+
+                var rmAttrs = GetAttributes<RequireModuleAttribute>(type);
+                foreach(var rmAttr in rmAttrs)
+                {
+                    RequireModuleAttribute x;
+                    //x.ModuleType
+                }
+
                 var methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
                 for (int i = 0; i < methods.Length; ++i)
                 {
@@ -429,6 +448,7 @@ namespace Shared
             }
         }
 
+    
         static string GenCbArgs(Type[] types, string[] names, string instanceName)
         {
             string args = "";

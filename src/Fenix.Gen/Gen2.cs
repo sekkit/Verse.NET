@@ -86,6 +86,21 @@ namespace Fenix
             return attr;
         }
 
+        static List<dynamic> GetAttributes<T>(TypeDefinition type, bool noInherit = false) where T : Attribute
+        {
+            var attrs = type.CustomAttributes;
+            var attrList = attrs.Where(m => (m.AttributeType.Name == typeof(T).Name)).ToList();
+            if (attrList.Count == 0 && !noInherit)
+            {
+                if (type.BaseType != null)
+                {
+                    var bt = type.BaseType.Resolve();
+                    return GetAttributes<T>(bt, noInherit);
+                }
+            }
+            return attrList;
+        }
+
         static dynamic GetAttribute<T>(MethodDefinition methodInfo, bool noInherit=false) where T : Attribute
         {
             var attrs = methodInfo.CustomAttributes;
@@ -404,6 +419,17 @@ namespace Fenix
                     continue;
                 bool isHost = type.Name == "Host";
                 var codes = new SortedDictionary<string, uint>();
+
+                ////////////
+                /// gen sub actormodule
+                ////////////
+
+                var rmAttrs = GetAttributes<RequireModuleAttribute>(type);
+                foreach (var rmAttr in rmAttrs)
+                {
+
+                }
+
                 var methods = type.Methods;//.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
                 for (int i = 0; i < methods.Count(); ++i)
                 {
