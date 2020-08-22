@@ -126,22 +126,21 @@ namespace Fenix
                 parts[i] = parts[i].ToLower();
             return string.Join("_", parts);
         }
-
-        //__SERVER_UMODULE__LOGINSERVICE__REGISTER_CLIENT_REQ
-        static string NameToProtoCode(string ns, string entityName, string apiName)
+        
+        static string NameToProtoCode(string prefix, string ns, string entityName, string apiName)
         {
             var parts = SplitCamelCase(apiName);
             for (int i = 0; i < parts.Length; ++i)
                 parts[i] = parts[i].ToUpper();
-            return string.Format("__{0}__{1}__{2}", ns.Replace(".", "").ToUpper(), entityName.ToUpper(), string.Join("_", parts));
+            return string.Format("{0}__{1}__{2}__{3}", prefix==null?"":prefix, ns.Replace(".", "").ToUpper(), entityName.ToUpper(), string.Join("_", parts));
         }
 
-        static string NameToProtoCode(string apiName)
+        static string NameToProtoCode(string prefix, string apiName)
         {
             var parts = SplitCamelCase(apiName);
             for (int i = 0; i < parts.Length; ++i)
                 parts[i] = parts[i].ToUpper();
-            return string.Format("{0}", string.Join("_", parts));
+            return prefix == null ? string.Format("{0}", string.Join("_", parts)) : string.Format("{0}{1}", prefix, apiName);
         }
 
         static string ParseGenericDecl(TypeReference genericType)
@@ -416,54 +415,32 @@ namespace Fenix
             foreach (var type in types)
             {
                 if (GetAttribute<ActorTypeAttribute>(type) == null)
-                    continue;
+                    continue; 
+
                 bool isHost = type.Name == "Host";
                 var codes = new SortedDictionary<string, uint>();
 
+                foreach (var kv in ParseProtoCode(type, null))
+                {
+                    codes[kv.Key] = kv.Value;
+                }
+
                 ////////////
-                /// gen sub actormodule
+                // gen sub actormodule
                 ////////////
 
                 var rmAttrs = GetAttributes<RequireModuleAttribute>(type);
-                foreach (var rmAttr in rmAttrs)
-                {
+                foreach(var rmAttr in rmAttrs)
+                {  
+                    var t = (TypeDefinition)rmAttr.ConstructorArguments[0].Value;
 
-                }
+                    //检查是不是有一样的api
+                    //有的话，报错
 
-                var methods = type.Methods;//.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-                for (int i = 0; i < methods.Count(); ++i)
-                {
-                    var method = methods[i];
-                    var attr = GetAttribute<ServerApiAttribute>(method);
-                    if (attr != null)
-                    { 
-                        string proto_code = (isHost ? NameToProtoCode(method.Name) : NameToProtoCode(type.Namespace, type.Name, method.Name)) + "_REQ";
-                        uint code = Basic.GenID32FromName(proto_code);
-                        codes[proto_code] = code;
-                    }
-                }
-
-                for (int i = 0; i < methods.Count(); ++i)
-                {
-                    var method = methods[i];
-                    var attr = GetAttribute<ServerOnlyAttribute>(method);
-                    if (attr != null)
+                    //生成module的api
+                    foreach (var kv in ParseProtoCode(t, type))
                     {
-                        string proto_code = (isHost ? NameToProtoCode(method.Name) : NameToProtoCode(type.Namespace, type.Name, method.Name)) + "_REQ";
-                        uint code = Basic.GenID32FromName(proto_code);
-                        codes[proto_code] = code;
-                    }
-                }
-
-                for (int i = 0; i < methods.Count(); ++i)
-                {
-                    var method = methods[i];
-                    var attr = GetAttribute<ClientApiAttribute>(method);
-                    if (attr != null)
-                    {
-                        string proto_code = (isHost ? NameToProtoCode(method.Name) : NameToProtoCode(type.Namespace, type.Name, method.Name)) + "_NTF";
-                        uint code = Basic.GenID32FromName(proto_code);
-                        codes[proto_code] = code;
+                        codes[kv.Key] = kv.Value;
                     }
                 }
 
@@ -487,7 +464,14 @@ namespace Fenix
                             continue;
                     }
 
-                    using (var sw = new StreamWriter(Path.Combine(sharedPath, "Protocol", string.Format("ProtocolCode.{0}.{1}.{2}.cs", type.Namespace, type.Name, isServer ? "s" : "c")), false, Encoding.UTF8))
+                    using (var sw = new StreamWriter(Path.Combine(sharedPath, 
+                            "Protocol",
+                            string.Format("ProtocolCode.{0}.{1}.{2}.cs", 
+                            type.Namespace,
+                            type.Name, 
+                            isServer ? "s" : "c")), 
+                        false, 
+                        Encoding.UTF8))
                     {
                         string lines = @"
 //AUTOGEN, do not modify it!
@@ -514,6 +498,53 @@ namespace Shared
             }
         }
 
+        static SortedDictionary<string, uint> ParseProtoCode(TypeDefinition type, TypeDefinition parentType)
+        {
+            var codes = new SortedDictionary<string, uint>();
+
+            bool isHost = parentType == null ? type.Name == "Host" : parentType.Name == "Host";
+            string tPrefix = parentType==null?null: string.Format("__{0}__{1}__M", parentType.Namespace.Replace(".", ""), parentType.Name);
+            var methods = type.Methods;//.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            for (int i = 0; i < methods.Count(); ++i)
+            {
+                MethodDefinition method = methods[i];
+                var attr = GetAttribute<ServerApiAttribute>(method);
+                if (attr != null)
+                {
+                    string proto_code =  (isHost ? NameToProtoCode(tPrefix, method.Name) : NameToProtoCode(tPrefix, type.Namespace, type.Name, method.Name)) + "_REQ";
+                    uint code = Basic.GenID32FromName(proto_code);
+                    codes[proto_code] = code;
+                }
+            }
+
+            for (int i = 0; i < methods.Count(); ++i)
+            {
+                MethodDefinition method = methods[i];
+                var attr = GetAttribute<ServerOnlyAttribute>(method);
+                if (attr != null)
+                {
+                    string proto_code = (isHost ? NameToProtoCode(tPrefix, method.Name) : NameToProtoCode(tPrefix, type.Namespace, type.Name, method.Name)) + "_REQ";
+                    uint code = Basic.GenID32FromName(proto_code);
+                    codes[proto_code] = code;
+                }
+            }
+
+            for (int i = 0; i < methods.Count(); ++i)
+            {
+                MethodDefinition method = methods[i];
+                var attr = GetAttribute<ClientApiAttribute>(method);
+                if (attr != null)
+                {
+                    string proto_code = (isHost ? NameToProtoCode(tPrefix, method.Name) : NameToProtoCode(tPrefix, type.Namespace, type.Name, method.Name)) + "_NTF";
+                    uint code = Basic.GenID32FromName(proto_code);
+                    codes[proto_code] = code;
+                }
+            }
+
+            return codes;
+        }
+
+    
         static string GenCbArgs(TypeDefinition[] types, string[] names, string instanceName)
         {
             string args = "";
@@ -550,9 +581,9 @@ namespace Shared
             return "";
         }
 
-        static string GetMessageName(string ns, string entityName, string typeName)
+        static string GetMessageName(string prefix, string ns, string entityName, string typeName)
         {
-            return string.Format("__{0}__{1}__{2}", ns.Replace(".", ""), entityName, typeName);
+            return string.Format("{0}__{1}__{2}__{3}", prefix==null?"":prefix, ns.Replace(".", ""), entityName, typeName); 
         }
 
         static void GenFromActorType(TypeDefinition type, string sharedCPath, string sharedSPath, string clientPath, string serverPath)
@@ -568,9 +599,9 @@ namespace Shared
             Log.Info("Gen", type.FullName);
 
             bool isServer = type.Name == "Host" ? true : ((int)GetAttribute<ActorTypeAttribute>(type).ConstructorArguments[0].Value == (int)AType.SERVER);
-
+            
             bool isHost = type.Name == "Host";
-
+            string parentTypePrefix = parentType != null ? string.Format("__{0}__{1}__M", parentType.Namespace.Replace(".", ""), parentType.Name): null; 
             var methods = type.Methods;//.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
             for (int i = 0; i < methods.Count(); ++i)
             {
@@ -608,7 +639,7 @@ namespace Shared
                 {
                     var methodParameterList = method.Parameters.ToList();
 
-                    if (type.Name == "Host")
+                    if (isHost)
                     {
                         var newList = new List<ParameterDefinition>();
                         for (var ii = 0; ii < methodParameterList.Count(); ++ii)
@@ -621,9 +652,12 @@ namespace Shared
                     } 
 
                     //现在生成message
-                    string message_type = GetMessageName(type.Namespace, type.Name, method.Name) + GetApiMessagePostfix(api);
+                    string message_type =  GetMessageName(parentTypePrefix, type.Namespace, type.Name, method.Name) + GetApiMessagePostfix(api);
 
-                    string message_fields = ParseMessageFields(methodParameterList.ToArray(), "        ");
+                    if (isHost)
+                        message_type = method.Name + GetApiMessagePostfix(api);
+
+                    string message_fields = ParseMessageFields(methodParameterList, "        ");
 
                     string callback_define = GenCallbackMsgDecl(methodParameterList.ToArray(),
                         GetCallbackArgs(method),
@@ -633,12 +667,14 @@ namespace Shared
 
                     string itype = "IMessage";
                     if (hasCallback)
-                        itype = "IMessageWithCallback"; 
-                    string proto_code = (isHost ? NameToProtoCode(method.Name) : NameToProtoCode(type.Namespace, type.Name, method.Name)) + "_" + GetApiMessagePostfix(api).ToUpper();
-                    uint code = Basic.GenID32FromName(proto_code);
-                    string msg_ns = type.Name == "Host" ? "Fenix.Common.Message" : "Shared.Message";
+                        itype = "IMessageWithCallback";
 
-                    string pc_cls = type.Name == "Host" ? "OpCode" : "ProtocolCode";
+                    string proto_code = (isHost ? NameToProtoCode(parentTypePrefix, method.Name) : NameToProtoCode(parentTypePrefix, type.Namespace, type.Name, method.Name)) + "_" + GetApiMessagePostfix(api).ToUpper();
+                    uint code = Basic.GenID32FromName(proto_code);
+
+                    string msg_ns = isHost ? "Fenix.Common.Message" : "Shared.Message";
+
+                    string pc_cls = isHost ? "OpCode" : "ProtocolCode";
 
                     var msgBuilder = new StringBuilder()
                         .AppendLine($"//AUTOGEN, do not modify it!\n")
@@ -717,9 +753,15 @@ namespace Shared
                                 continue;
                         }
 
-                        using (var sw = new StreamWriter(Path.Combine(pPath, message_type + ".cs"), false, Encoding.UTF8))
+                        if(isHost)
                         {
-                            sw.WriteLine(msgCode.Replace("\r", ""));
+                            using (var sw = new StreamWriter(Path.Combine(pPath, method.Name + ".cs"), false, Encoding.UTF8)) 
+                                sw.WriteLine(msgCode.Replace("\r", ""));
+                        }
+                        else
+                        {
+                            using (var sw = new StreamWriter(Path.Combine(pPath, message_type + ".cs"), false, Encoding.UTF8))
+                                sw.WriteLine(msgCode.Replace("\r", ""));
                         }
                     }
 
@@ -732,7 +774,7 @@ namespace Shared
                     else if (api == Api.ServerOnly)
                         rpc_name = "rpc_" + NameToApi(method.Name);
 
-                    if (type.Name == "Host")
+                    if (isHost)
                         rpc_name = method.Name;
 
                     string args_decl = ParseArgsDecl(methodParameterList.ToArray(), ignoreCallback: false);
@@ -907,15 +949,15 @@ namespace Shared
 
                     string api_rpc_args = ParseArgs(methodParameterList.ToArray(), "_msg.", "callback");
                     string api_type = "ServerApi";
-                    string api_name = "SERVER_API__" + type.Namespace.Replace(".", "") + "__" + type.Name + "__" + NameToApi(method.Name);
+                    string api_name = "SERVER_API" + parentTypePrefix==null?"":parentTypePrefix+ "__"+ type.Namespace.Replace(".", "") + "__" + type.Name + "__" + NameToApi(method.Name);
                     if (api == Api.ClientApi)
                     {
-                        api_name = "CLIENT_API__" + type.Namespace.Replace(".", "") + "__" + type.Name + "__" + NameToApi(method.Name);
+                        api_name = "CLIENT_API__" + parentTypePrefix == null ? "" : parentTypePrefix + "__" + type.Namespace.Replace(".", "") + "__" + type.Name + "__" + NameToApi(method.Name);
                         api_type = "ClientApi";
                     }
                     else if (api == Api.ServerOnly)
                     {
-                        api_name = "SERVER_ONLY__" + type.Namespace.Replace(".", "") + "__" + type.Name + "__" + NameToApi(method.Name);
+                        api_name = "SERVER_ONLY__" + parentTypePrefix == null ? "" : parentTypePrefix + "__" + type.Namespace.Replace(".", "") + "__" + type.Name + "__" + NameToApi(method.Name);
                         api_type = "ServerOnly";
                     }
 
@@ -928,7 +970,7 @@ namespace Shared
                     builder = new StringBuilder()
                         .AppendLine($"        [RpcMethod({pc_cls}.{proto_code}, Api.{api_type})]")
                         .AppendLine($"        [EditorBrowsable(EditorBrowsableState.Never)]");
-                    if (type.Name == "Host")
+                    if (isHost)
                     {
                         if (hasCallback)
                             builder.AppendLine($"        public void {api_name}(IMessage msg, Action<IMessage> cb, RpcContext context)");
@@ -949,6 +991,8 @@ namespace Shared
 
                     var fileterArgs = api_rpc_args != "" ? api_rpc_args + "," : "";
 
+                    string selfName = isModule?string.Format("GetModule<{0}>()", type.Name):"this";
+
                     if (hasCallback)
                     {
                         var cbType2 = methodParameterList.Where(m => m.Name == "callback").First().ParameterType;
@@ -957,9 +1001,9 @@ namespace Shared
                         string api_cb_assign = ParseArgsMsgAssign(inst2.GenericArguments.Select(m => m.Resolve()).ToArray(),
                                                         GetCallbackArgs(method),
                                                         "                ",
-                                                        "cbMsg."); 
-                        
-                        builder.AppendLine($"            this.{method.Name}({fileterArgs} ({api_cb_args}) =>")
+                                                        "cbMsg.");
+
+                        builder.AppendLine($"            {selfName}.{method.Name}({fileterArgs} ({api_cb_args}) =>")
                             .AppendLine($"            {{")
                             .AppendLine($"                var cbMsg = new {message_type}.Callback();")
                             .AppendLine($"{api_cb_assign}")
@@ -975,14 +1019,14 @@ namespace Shared
                             .AppendLine($"            }});");
                         }
 
-                        if (type.Name == "Host")
+                        if (isHost)
                             builder.AppendLine($"            }}, context);");
                         else
                             builder.AppendLine($"            }});");
                     }
                     else
                     {
-                        if (type.Name == "Host")
+                        if (isHost)
                             builder.AppendLine($"            this.{method.Name}({fileterArgs} context);");
                         else
                             builder.AppendLine($"            this.{method.Name}({api_rpc_args});");
@@ -990,7 +1034,7 @@ namespace Shared
                         if (hasEvent)
                         {
                             builder.AppendLine($"            {NameToApi(method.Name)}?.Invoke({api_rpc_args});");
-                        } 
+                        }
                     }
 
                     builder.AppendLine($"        }}");
@@ -999,15 +1043,15 @@ namespace Shared
                     apiDefineDic[api_name] = apiDefineCode;
 
                     api_type = "ServerApi";
-                    api_name = "SERVER_API_NATIVE__" + type.Namespace.Replace(".", "") + "__" + type.Name + "__" + NameToApi(method.Name);
+                    api_name = "SERVER_API_NATIVE__" + parentTypePrefix == null ? "" : parentTypePrefix + "__" + type.Namespace.Replace(".", "") + "__" + type.Name + "__" + NameToApi(method.Name);
                     if (api == Api.ClientApi)
                     {
-                        api_name = "CLIENT_API_NATIVE__" + type.Namespace.Replace(".", "") + "__" + type.Name + "__" + NameToApi(method.Name);
+                        api_name = "CLIENT_API_NATIVE__" + parentTypePrefix == null ? "" : parentTypePrefix + "__" + type.Namespace.Replace(".", "") + "__" + type.Name + "__" + NameToApi(method.Name);
                         api_type = "ClientApi";
                     }
                     else if (api == Api.ServerOnly)
                     {
-                        api_name = "SERVER_ONLY_NATIVE__" + type.Namespace.Replace(".", "") + "__" + type.Name + "__" + NameToApi(method.Name);
+                        api_name = "SERVER_ONLY_NATIVE__" + parentTypePrefix == null ? "" : parentTypePrefix + "__" + type.Namespace.Replace(".", "") + "__" + type.Name + "__" + NameToApi(method.Name);
                         api_type = "ServerOnly";
                     }
 
@@ -1033,7 +1077,7 @@ namespace Shared
                     builder.AppendLine($"        [RpcMethod({pc_cls}.{proto_code}, Api.{api_type})]")
                         .AppendLine($"        [EditorBrowsable(EditorBrowsableState.Never)]");
 
-                    if (type.Name == "Host")
+                    if (isHost)
                     {
                         if (hasCallback)
                             builder.AppendLine($"        public void {api_name}({args_decl}, RpcContext context)");
@@ -1055,28 +1099,26 @@ namespace Shared
 
                         builder.AppendLine($"        {{");
 
-                        if (type.Name == "Host")
+                        if (isHost)
                             builder.AppendLine($"            this.{method.Name}({args}, context);");
                         else
-                            builder.AppendLine($"            this.{method.Name}({args});"); 
+                            builder.AppendLine($"            this.{method.Name}({args});");
 
                         if (hasEvent)
                             builder.AppendLine($"            {NameToApi(method.Name)}?.Invoke({args});");
-
                     }
                     else
                     {
 
                         builder.AppendLine($"        {{");
-                       
-                        if (type.Name == "Host")
+
+                        if (isHost)
                             builder.AppendLine($"            this.{method.Name}({args}, context);");
                         else
-                            builder.AppendLine($"            this.{method.Name}({args});"); 
-                        
+                            builder.AppendLine($"            this.{method.Name}({args});");
+
                         if (hasEvent)
                             builder.AppendLine($"            {NameToApi(method.Name)}?.Invoke({args});");
-
                     }
 
                     builder.AppendLine($"        }}");
@@ -1095,19 +1137,13 @@ namespace Shared
             string ns = type.Namespace;
 
             var alAttr = GetAttribute<AccessLevelAttribute>(type);
-            if (alAttr == null && type.Name != "Host")
+            if (alAttr == null && !isHost)
             {
                 Log.Info(string.Format("ERROR: {0} has no AccessLevel", type.Name));
                 return;
             }
 
-            //if (type.Name != "Host")
-            //{
-            //    var al = alAttr.ConstructorArguments[0].Value;
-            //    Log.Info(string.Format("AccessLevel {0} : {1}", type.Name, al));
-            //}
-
-            string root_ns = type.Name == "Host" ? "Fenix" : (isServer ? "Server" : "Client");
+            string root_ns = isHost ? "Fenix" : (isServer ? "Server" : "Client");
 
             string refTypeName = tname == "Avatar" ? type.FullName : tname;
 
@@ -1163,14 +1199,12 @@ using System.Threading.Tasks;
                 var result = refBuilder.ToString();
                 foreach (var sharedPath in new List<string>() { sharedCPath, sharedSPath })
                 {
-                    var pPath = Path.Combine(sharedPath, "ActorRef", root_ns);
+                    var pPath = Path.Combine(sharedPath, "ActorRef", root_ns); 
                     if (!Directory.Exists(pPath))
-                    {
                         Directory.CreateDirectory(pPath);
-                    }
 
                     //生成客户端msg时，判断一下actor类型的accesstype，如果是serveronly的就不写客户端msg
-                    if (sharedPath == sharedCPath)
+                    if (!isHost && sharedPath == sharedCPath)
                     {
                         var al = GetAttribute<AccessLevelAttribute>(type);
                         if (al == null)
@@ -1188,21 +1222,17 @@ using System.Threading.Tasks;
             else
             {
                 var preludePart = refBuilder.ToString();
-                var clientCode = "#if CLIENT\n" + preludePart + string.Format("    {{\n{0}    }}\n}}", clientRefCode) + "\n#endif\n";
+                var clientCode = "#if CLIENT\n"+preludePart + string.Format("    {{\n{0}    }}\n}}", clientRefCode)+"\n#endif\n";
                 var serverCode = "#if !CLIENT\n" + preludePart + string.Format("    {{\n{0}    }}\n}}", serverRefCode) + "\n#endif\n";
 
                 if (!Directory.Exists(Path.Combine(sharedCPath, "../Actor")))
                     Directory.CreateDirectory(Path.Combine(sharedCPath, "../Actor"));
 
-                using (var sw = new StreamWriter(Path.Combine(sharedCPath, "../Actor", "ActorRef.Client.cs"), false, Encoding.UTF8))
-                {
-                    sw.WriteLine(clientCode);
-                }
+                using (var sw = new StreamWriter(Path.Combine(sharedCPath, "../Actor", "ActorRef.Client.cs"), false, Encoding.UTF8)) 
+                    sw.WriteLine(clientCode); 
 
-                using (var sw = new StreamWriter(Path.Combine(sharedCPath, "../Actor", "ActorRef.Server.cs"), false, Encoding.UTF8))
-                {
-                    sw.WriteLine(serverCode);
-                }
+                using (var sw = new StreamWriter(Path.Combine(sharedCPath, "../Actor", "ActorRef.Server.cs"), false, Encoding.UTF8)) 
+                    sw.WriteLine(serverCode); 
             }
 
             string internalClientApiCode = string.Join("\n", apiDefineDic.Where(m => m.Key.StartsWith("CLIENT_API")).Select(m => m.Value).ToList());
