@@ -1,6 +1,9 @@
 
 /*
  * (c)2020 Sekkit.com
+ * Fenix是一个基于Actor网络模型的分布式游戏服务器
+ * server端通信都是走tcp
+ * server/client之间可以走tcp/kcp/websockets
  */
  
 using Fenix;

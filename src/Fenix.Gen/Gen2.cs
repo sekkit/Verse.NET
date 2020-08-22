@@ -86,7 +86,7 @@ namespace Fenix
             return attr;
         }
 
-        static List<dynamic> GetAttributes<T>(TypeDefinition type, bool noInherit = false) where T : Attribute
+        static List<CustomAttribute> GetAttributes<T>(TypeDefinition type, bool noInherit = false) where T : Attribute
         {
             var attrs = type.CustomAttributes;
             var attrList = attrs.Where(m => (m.AttributeType.Name == typeof(T).Name)).ToList();
