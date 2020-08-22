@@ -13,14 +13,17 @@ using System;
 
 namespace Shared.Message
 {
-    [MessageType(ProtocolCode.__CLIENT__AVATAR__API_TEST_NTF)]
+    [MessageType(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__CREATE_ACCOUNT_REQ)]
     [MessagePackObject]
-    public class ApiTestNtf : IMessageWithCallback
+    public class __ServerGModule__LoginService__CreateAccountReq : IMessageWithCallback
     {
         [Key(0)]
-        public global::System.String uid { get; set; }
+        public global::System.String username { get; set; }
 
         [Key(1)]
+        public global::System.String password { get; set; }
+
+        [Key(2)]
 
         public Callback callback
         {
@@ -32,7 +35,7 @@ namespace Shared.Message
         public class Callback : IMessage
         {
             [Key(0)]
-            public global::Shared.Protocol.ErrCode code { get; set; } = Shared.Protocol.ErrCode.ERROR;
+            public global::Shared.Protocol.ErrCode code { get; set; } = ErrCode.ERROR;
 
             public override byte[] Pack()
             {
@@ -53,18 +56,18 @@ namespace Shared.Message
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<ApiTestNtf>(this);
+            return MessagePackSerializer.Serialize<__ServerGModule__LoginService__CreateAccountReq>(this);
         }
 
-        public new static ApiTestNtf Deserialize(byte[] data)
+        public new static __ServerGModule__LoginService__CreateAccountReq Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<ApiTestNtf>(data);
+            return MessagePackSerializer.Deserialize<__ServerGModule__LoginService__CreateAccountReq>(data);
         }
 
         public override void UnPack(byte[] data)
         {
             var obj = Deserialize(data);
-            Copier<ApiTestNtf>.CopyTo(obj, this);
+            Copier<__ServerGModule__LoginService__CreateAccountReq>.CopyTo(obj, this);
         }
     }
 }

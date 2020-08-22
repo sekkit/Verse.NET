@@ -551,7 +551,7 @@ PlayerSettings:
   webGLThreadsSupport: 0
   webGLWasmStreaming: 0
   scriptingDefineSymbols:
-    1: CLIENT
+    1: CLIENT;ENABLE_IL2CPP
   platformArchitecture: {}
   scriptingBackend:
     Standalone: 1

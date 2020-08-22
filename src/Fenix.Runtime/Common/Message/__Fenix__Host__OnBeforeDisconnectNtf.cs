@@ -6,24 +6,18 @@ using Fenix.Common.Attributes;
 using Fenix.Common.Rpc;
 using MessagePack; 
 using System.ComponentModel;
-using Shared;
-using Shared.Protocol;
-using Shared.DataModel;
 using System; 
 
-namespace Shared.Message
+namespace Fenix.Common.Message
 {
-    [MessageType(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__LOGIN_REQ)]
+    [MessageType(OpCode.ON_BEFORE_DISCONNECT_NTF)]
     [MessagePackObject]
-    public class LoginReq : IMessageWithCallback
+    public class __Fenix__Host__OnBeforeDisconnectNtf : IMessageWithCallback
     {
         [Key(0)]
-        public global::System.String username { get; set; }
+        public global::Fenix.Common.DisconnectReason reason { get; set; }
 
         [Key(1)]
-        public global::System.String password { get; set; }
-
-        [Key(2)]
 
         public Callback callback
         {
@@ -34,20 +28,6 @@ namespace Shared.Message
         [MessagePackObject]
         public class Callback : IMessage
         {
-            [Key(0)]
-            public global::Shared.Protocol.ErrCode code { get; set; } = ErrCode.ERROR;
-
-            [Key(1)]
-            public global::System.String arg1 { get; set; }
-
-            [Key(2)]
-            public global::System.UInt64 arg2 { get; set; }
-
-            [Key(3)]
-            public global::System.String arg3 { get; set; }
-
-            [Key(4)]
-            public global::System.String arg4 { get; set; }
 
             public override byte[] Pack()
             {
@@ -68,18 +48,18 @@ namespace Shared.Message
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<LoginReq>(this);
+            return MessagePackSerializer.Serialize<__Fenix__Host__OnBeforeDisconnectNtf>(this);
         }
 
-        public new static LoginReq Deserialize(byte[] data)
+        public new static __Fenix__Host__OnBeforeDisconnectNtf Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<LoginReq>(data);
+            return MessagePackSerializer.Deserialize<__Fenix__Host__OnBeforeDisconnectNtf>(data);
         }
 
         public override void UnPack(byte[] data)
         {
             var obj = Deserialize(data);
-            Copier<LoginReq>.CopyTo(obj, this);
+            Copier<__Fenix__Host__OnBeforeDisconnectNtf>.CopyTo(obj, this);
         }
     }
 }

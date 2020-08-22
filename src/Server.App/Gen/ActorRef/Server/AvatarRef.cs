@@ -23,15 +23,15 @@ namespace Server
     [RefType("Server.UModule.Avatar")]
     public partial class AvatarRef : ActorRef
     {
-        public async Task<ChangeNameReq.Callback> rpc_change_name_async(global::System.String name, global::System.Action<global::Shared.Protocol.ErrCode> callback=null)
+        public async Task<__ServerUModule__Avatar__ChangeNameReq.Callback> rpc_change_name_async(global::System.String name, global::System.Action<global::Shared.Protocol.ErrCode> callback=null)
         {
-            var t = new TaskCompletionSource<ChangeNameReq.Callback>();
+            var t = new TaskCompletionSource<__ServerUModule__Avatar__ChangeNameReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
                 global::System.Action<global::Shared.Protocol.ErrCode> _cb = (code) =>
                 {
-                     var cbMsg = new ChangeNameReq.Callback();
+                     var cbMsg = new __ServerUModule__Avatar__ChangeNameReq.Callback();
                      cbMsg.code=code;
                      callback?.Invoke(cbMsg.code);
                      t.TrySetResult(cbMsg);
@@ -48,18 +48,18 @@ namespace Server
             }
             else
             {
-                Action<ChangeNameReq.Callback> _cb = (cbMsg) =>
+                Action<__ServerUModule__Avatar__ChangeNameReq.Callback> _cb = (cbMsg) =>
                 {
                     callback?.Invoke(cbMsg.code);
                     t.TrySetResult(cbMsg);
                 };
                 await Task.Run(() => {
-                    var msg = new ChangeNameReq()
+                    var msg = new __ServerUModule__Avatar__ChangeNameReq()
                     {
                          name=name
                     };
                     var cb = new Action<byte[]>((cbData) => {
-                        var cbMsg = cbData==null ? new ChangeNameReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<ChangeNameReq.Callback>(cbData);
+                        var cbMsg = cbData==null ? new __ServerUModule__Avatar__ChangeNameReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<__ServerUModule__Avatar__ChangeNameReq.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
                     this.CallRemoteMethod(ProtocolCode.__SERVERUMODULE__AVATAR__CHANGE_NAME_REQ, msg, cb);
@@ -85,12 +85,12 @@ namespace Server
                 return;
             }
             Task.Run(() => {
-                var msg = new ChangeNameReq()
+                var msg = new __ServerUModule__Avatar__ChangeNameReq()
                 {
                     name=name
                 };
                 var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null?new ChangeNameReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<ChangeNameReq.Callback>(cbData);
+                    var cbMsg = cbData==null?new __ServerUModule__Avatar__ChangeNameReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<__ServerUModule__Avatar__ChangeNameReq.Callback>(cbData);
                     callback?.Invoke(cbMsg.code);
                 });
                 this.CallRemoteMethod(ProtocolCode.__SERVERUMODULE__AVATAR__CHANGE_NAME_REQ, msg, cb);
@@ -115,7 +115,7 @@ namespace Server
                return;
            }
            Task.Run(() => {
-               var msg = new OnMatchOkReq()
+               var msg = new __ServerUModule__Avatar__OnMatchOkReq()
                {
 
                };

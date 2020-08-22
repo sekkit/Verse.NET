@@ -13,17 +13,14 @@ using System;
 
 namespace Shared.Message
 {
-    [MessageType(ProtocolCode.__SERVERGMODULE__MATCHSERVICE__JOIN_MATCH_REQ)]
+    [MessageType(ProtocolCode.__SERVERGMODULE__MATCHSERVICE__FIND_MATCH_REQ)]
     [MessagePackObject]
-    public class JoinMatchReq : IMessageWithCallback
+    public class __ServerGModule__MatchService__FindMatchReq : IMessageWithCallback
     {
         [Key(0)]
         public global::System.String uid { get; set; }
 
         [Key(1)]
-        public global::System.Int32 match_type { get; set; }
-
-        [Key(2)]
 
         public Callback callback
         {
@@ -36,6 +33,9 @@ namespace Shared.Message
         {
             [Key(0)]
             public global::Shared.Protocol.ErrCode code { get; set; } = ErrCode.ERROR;
+
+            [Key(1)]
+            public global::Server.DataModel.Account user { get; set; }
 
             public override byte[] Pack()
             {
@@ -56,18 +56,18 @@ namespace Shared.Message
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<JoinMatchReq>(this);
+            return MessagePackSerializer.Serialize<__ServerGModule__MatchService__FindMatchReq>(this);
         }
 
-        public new static JoinMatchReq Deserialize(byte[] data)
+        public new static __ServerGModule__MatchService__FindMatchReq Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<JoinMatchReq>(data);
+            return MessagePackSerializer.Deserialize<__ServerGModule__MatchService__FindMatchReq>(data);
         }
 
         public override void UnPack(byte[] data)
         {
             var obj = Deserialize(data);
-            Copier<JoinMatchReq>.CopyTo(obj, this);
+            Copier<__ServerGModule__MatchService__FindMatchReq>.CopyTo(obj, this);
         }
     }
 }

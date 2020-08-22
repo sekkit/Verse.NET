@@ -6,19 +6,16 @@ using Fenix.Common.Attributes;
 using Fenix.Common.Rpc;
 using MessagePack; 
 using System.ComponentModel;
-using Shared;
-using Shared.Protocol;
-using Shared.DataModel;
 using System; 
 
-namespace Shared.Message
+namespace Fenix.Common.Message
 {
-    [MessageType(ProtocolCode.__SERVERGMODULE__MATCHSERVICE__FIND_MATCH_REQ)]
+    [MessageType(OpCode.BIND_CLIENT_ACTOR_REQ)]
     [MessagePackObject]
-    public class FindMatchReq : IMessageWithCallback
+    public class __Fenix__Host__BindClientActorReq : IMessageWithCallback
     {
         [Key(0)]
-        public global::System.String uid { get; set; }
+        public global::System.String actorName { get; set; }
 
         [Key(1)]
 
@@ -32,10 +29,7 @@ namespace Shared.Message
         public class Callback : IMessage
         {
             [Key(0)]
-            public global::Shared.Protocol.ErrCode code { get; set; } = ErrCode.ERROR;
-
-            [Key(1)]
-            public global::Server.DataModel.Account user { get; set; }
+            public global::Fenix.Common.DefaultErrCode code { get; set; } = DefaultErrCode.ERROR;
 
             public override byte[] Pack()
             {
@@ -56,18 +50,18 @@ namespace Shared.Message
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<FindMatchReq>(this);
+            return MessagePackSerializer.Serialize<__Fenix__Host__BindClientActorReq>(this);
         }
 
-        public new static FindMatchReq Deserialize(byte[] data)
+        public new static __Fenix__Host__BindClientActorReq Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<FindMatchReq>(data);
+            return MessagePackSerializer.Deserialize<__Fenix__Host__BindClientActorReq>(data);
         }
 
         public override void UnPack(byte[] data)
         {
             var obj = Deserialize(data);
-            Copier<FindMatchReq>.CopyTo(obj, this);
+            Copier<__Fenix__Host__BindClientActorReq>.CopyTo(obj, this);
         }
     }
 }

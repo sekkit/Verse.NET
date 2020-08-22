@@ -31,12 +31,12 @@ namespace Server.UModule
 #if !CLIENT
         [RpcMethod(ProtocolCode.__SERVERUMODULE__AVATAR__CHANGE_NAME_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_API_change_name(IMessage msg, Action<IMessage> cb)
+        public void SERVER_API__ServerUModule__Avatar__change_name(IMessage msg, Action<IMessage> cb)
         {
-            var _msg = (ChangeNameReq)msg;
+            var _msg = (__ServerUModule__Avatar__ChangeNameReq)msg;
             this.ChangeName(_msg.name, (code) =>
             {
-                var cbMsg = new ChangeNameReq.Callback();
+                var cbMsg = new __ServerUModule__Avatar__ChangeNameReq.Callback();
                 cbMsg.code=code;
                 cb.Invoke(cbMsg);
             });
@@ -44,22 +44,22 @@ namespace Server.UModule
 
         [RpcMethod(ProtocolCode.__SERVERUMODULE__AVATAR__ON_MATCH_OK_REQ, Api.ServerOnly)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_ONLY_on_match_ok(IMessage msg)
+        public void SERVER_ONLY__ServerUModule__Avatar__on_match_ok(IMessage msg)
         {
-            var _msg = (OnMatchOkReq)msg;
+            var _msg = (__ServerUModule__Avatar__OnMatchOkReq)msg;
             this.OnMatchOk();
         }
 
         [RpcMethod(ProtocolCode.__SERVERUMODULE__AVATAR__CHANGE_NAME_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_API_NATIVE_change_name(global::System.String name, global::System.Action<global::Shared.Protocol.ErrCode> callback)
+        public void SERVER_API_NATIVE__ServerUModule__Avatar__change_name(global::System.String name, global::System.Action<global::Shared.Protocol.ErrCode> callback)
         {
             this.ChangeName(name, callback);
         }
 
         [RpcMethod(ProtocolCode.__SERVERUMODULE__AVATAR__ON_MATCH_OK_REQ, Api.ServerOnly)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_ONLY_NATIVE_on_match_ok()
+        public void SERVER_ONLY_NATIVE__ServerUModule__Avatar__on_match_ok()
         {
             this.OnMatchOk();
         }

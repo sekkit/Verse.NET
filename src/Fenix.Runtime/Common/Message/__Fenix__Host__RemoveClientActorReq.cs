@@ -6,21 +6,21 @@ using Fenix.Common.Attributes;
 using Fenix.Common.Rpc;
 using MessagePack; 
 using System.ComponentModel;
-using Shared;
-using Shared.Protocol;
-using Shared.DataModel;
 using System; 
 
-namespace Shared.Message
+namespace Fenix.Common.Message
 {
-    [MessageType(ProtocolCode.__CLIENT__AVATAR__API_TEST_NTF)]
+    [MessageType(OpCode.REMOVE_CLIENT_ACTOR_REQ)]
     [MessagePackObject]
-    public class ApiTestNtf : IMessageWithCallback
+    public class __Fenix__Host__RemoveClientActorReq : IMessageWithCallback
     {
         [Key(0)]
-        public global::System.String uid { get; set; }
+        public global::System.UInt64 actorId { get; set; }
 
         [Key(1)]
+        public global::Fenix.Common.DisconnectReason reason { get; set; }
+
+        [Key(2)]
 
         public Callback callback
         {
@@ -32,7 +32,7 @@ namespace Shared.Message
         public class Callback : IMessage
         {
             [Key(0)]
-            public global::Shared.Protocol.ErrCode code { get; set; } = Shared.Protocol.ErrCode.ERROR;
+            public global::Fenix.Common.DefaultErrCode code { get; set; } = DefaultErrCode.ERROR;
 
             public override byte[] Pack()
             {
@@ -53,18 +53,18 @@ namespace Shared.Message
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<ApiTestNtf>(this);
+            return MessagePackSerializer.Serialize<__Fenix__Host__RemoveClientActorReq>(this);
         }
 
-        public new static ApiTestNtf Deserialize(byte[] data)
+        public new static __Fenix__Host__RemoveClientActorReq Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<ApiTestNtf>(data);
+            return MessagePackSerializer.Deserialize<__Fenix__Host__RemoveClientActorReq>(data);
         }
 
         public override void UnPack(byte[] data)
         {
             var obj = Deserialize(data);
-            Copier<ApiTestNtf>.CopyTo(obj, this);
+            Copier<__Fenix__Host__RemoveClientActorReq>.CopyTo(obj, this);
         }
     }
 }

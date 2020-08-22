@@ -23,15 +23,15 @@ namespace Server
     [RefType("LoginService")]
     public partial class LoginServiceRef : ActorRef
     {
-        public async Task<CreateAccountReq.Callback> rpc_create_account_async(global::System.String username, global::System.String password, global::System.Action<global::Shared.Protocol.ErrCode> callback=null)
+        public async Task<__ServerGModule__LoginService__CreateAccountReq.Callback> rpc_create_account_async(global::System.String username, global::System.String password, global::System.Action<global::Shared.Protocol.ErrCode> callback=null)
         {
-            var t = new TaskCompletionSource<CreateAccountReq.Callback>();
+            var t = new TaskCompletionSource<__ServerGModule__LoginService__CreateAccountReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
                 global::System.Action<global::Shared.Protocol.ErrCode> _cb = (code) =>
                 {
-                     var cbMsg = new CreateAccountReq.Callback();
+                     var cbMsg = new __ServerGModule__LoginService__CreateAccountReq.Callback();
                      cbMsg.code=code;
                      callback?.Invoke(cbMsg.code);
                      t.TrySetResult(cbMsg);
@@ -48,19 +48,19 @@ namespace Server
             }
             else
             {
-                Action<CreateAccountReq.Callback> _cb = (cbMsg) =>
+                Action<__ServerGModule__LoginService__CreateAccountReq.Callback> _cb = (cbMsg) =>
                 {
                     callback?.Invoke(cbMsg.code);
                     t.TrySetResult(cbMsg);
                 };
                 await Task.Run(() => {
-                    var msg = new CreateAccountReq()
+                    var msg = new __ServerGModule__LoginService__CreateAccountReq()
                     {
                          username=username,
                          password=password
                     };
                     var cb = new Action<byte[]>((cbData) => {
-                        var cbMsg = cbData==null ? new CreateAccountReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<CreateAccountReq.Callback>(cbData);
+                        var cbMsg = cbData==null ? new __ServerGModule__LoginService__CreateAccountReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<__ServerGModule__LoginService__CreateAccountReq.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
                     this.CallRemoteMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__CREATE_ACCOUNT_REQ, msg, cb);
@@ -86,28 +86,28 @@ namespace Server
                 return;
             }
             Task.Run(() => {
-                var msg = new CreateAccountReq()
+                var msg = new __ServerGModule__LoginService__CreateAccountReq()
                 {
                     username=username,
                     password=password
                 };
                 var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null?new CreateAccountReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<CreateAccountReq.Callback>(cbData);
+                    var cbMsg = cbData==null?new __ServerGModule__LoginService__CreateAccountReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<__ServerGModule__LoginService__CreateAccountReq.Callback>(cbData);
                     callback?.Invoke(cbMsg.code);
                 });
                 this.CallRemoteMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__CREATE_ACCOUNT_REQ, msg, cb);
             });
         }
 
-        public async Task<DeleteAccountReq.Callback> rpc_delete_account_async(global::System.String username, global::System.String password, global::System.Action<global::Shared.Protocol.ErrCode> callback=null)
+        public async Task<__ServerGModule__LoginService__DeleteAccountReq.Callback> rpc_delete_account_async(global::System.String username, global::System.String password, global::System.Action<global::Shared.Protocol.ErrCode> callback=null)
         {
-            var t = new TaskCompletionSource<DeleteAccountReq.Callback>();
+            var t = new TaskCompletionSource<__ServerGModule__LoginService__DeleteAccountReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
                 global::System.Action<global::Shared.Protocol.ErrCode> _cb = (code) =>
                 {
-                     var cbMsg = new DeleteAccountReq.Callback();
+                     var cbMsg = new __ServerGModule__LoginService__DeleteAccountReq.Callback();
                      cbMsg.code=code;
                      callback?.Invoke(cbMsg.code);
                      t.TrySetResult(cbMsg);
@@ -124,19 +124,19 @@ namespace Server
             }
             else
             {
-                Action<DeleteAccountReq.Callback> _cb = (cbMsg) =>
+                Action<__ServerGModule__LoginService__DeleteAccountReq.Callback> _cb = (cbMsg) =>
                 {
                     callback?.Invoke(cbMsg.code);
                     t.TrySetResult(cbMsg);
                 };
                 await Task.Run(() => {
-                    var msg = new DeleteAccountReq()
+                    var msg = new __ServerGModule__LoginService__DeleteAccountReq()
                     {
                          username=username,
                          password=password
                     };
                     var cb = new Action<byte[]>((cbData) => {
-                        var cbMsg = cbData==null ? new DeleteAccountReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<DeleteAccountReq.Callback>(cbData);
+                        var cbMsg = cbData==null ? new __ServerGModule__LoginService__DeleteAccountReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<__ServerGModule__LoginService__DeleteAccountReq.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
                     this.CallRemoteMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__DELETE_ACCOUNT_REQ, msg, cb);
@@ -162,28 +162,28 @@ namespace Server
                 return;
             }
             Task.Run(() => {
-                var msg = new DeleteAccountReq()
+                var msg = new __ServerGModule__LoginService__DeleteAccountReq()
                 {
                     username=username,
                     password=password
                 };
                 var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null?new DeleteAccountReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<DeleteAccountReq.Callback>(cbData);
+                    var cbMsg = cbData==null?new __ServerGModule__LoginService__DeleteAccountReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<__ServerGModule__LoginService__DeleteAccountReq.Callback>(cbData);
                     callback?.Invoke(cbMsg.code);
                 });
                 this.CallRemoteMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__DELETE_ACCOUNT_REQ, msg, cb);
             });
         }
 
-        public async Task<LoginReq.Callback> rpc_login_async(global::System.String username, global::System.String password, global::System.Action<global::Shared.Protocol.ErrCode, global::System.String, global::System.UInt64, global::System.String, global::System.String> callback=null)
+        public async Task<__ServerGModule__LoginService__LoginReq.Callback> rpc_login_async(global::System.String username, global::System.String password, global::System.Action<global::Shared.Protocol.ErrCode, global::System.String, global::System.UInt64, global::System.String, global::System.String> callback=null)
         {
-            var t = new TaskCompletionSource<LoginReq.Callback>();
+            var t = new TaskCompletionSource<__ServerGModule__LoginService__LoginReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
                 global::System.Action<global::Shared.Protocol.ErrCode, global::System.String, global::System.UInt64, global::System.String, global::System.String> _cb = (code, arg1, arg2, arg3, arg4) =>
                 {
-                     var cbMsg = new LoginReq.Callback();
+                     var cbMsg = new __ServerGModule__LoginService__LoginReq.Callback();
                      cbMsg.code=code;
                      cbMsg.arg1=arg1;
                      cbMsg.arg2=arg2;
@@ -204,19 +204,19 @@ namespace Server
             }
             else
             {
-                Action<LoginReq.Callback> _cb = (cbMsg) =>
+                Action<__ServerGModule__LoginService__LoginReq.Callback> _cb = (cbMsg) =>
                 {
                     callback?.Invoke(cbMsg.code, cbMsg.arg1, cbMsg.arg2, cbMsg.arg3, cbMsg.arg4);
                     t.TrySetResult(cbMsg);
                 };
                 await Task.Run(() => {
-                    var msg = new LoginReq()
+                    var msg = new __ServerGModule__LoginService__LoginReq()
                     {
                          username=username,
                          password=password
                     };
                     var cb = new Action<byte[]>((cbData) => {
-                        var cbMsg = cbData==null ? new LoginReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<LoginReq.Callback>(cbData);
+                        var cbMsg = cbData==null ? new __ServerGModule__LoginService__LoginReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<__ServerGModule__LoginService__LoginReq.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
                     this.CallRemoteMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__LOGIN_REQ, msg, cb);
@@ -242,13 +242,13 @@ namespace Server
                 return;
             }
             Task.Run(() => {
-                var msg = new LoginReq()
+                var msg = new __ServerGModule__LoginService__LoginReq()
                 {
                     username=username,
                     password=password
                 };
                 var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null?new LoginReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<LoginReq.Callback>(cbData);
+                    var cbMsg = cbData==null?new __ServerGModule__LoginService__LoginReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<__ServerGModule__LoginService__LoginReq.Callback>(cbData);
                     callback?.Invoke(cbMsg.code, cbMsg.arg1, cbMsg.arg2, cbMsg.arg3, cbMsg.arg4);
                 });
                 this.CallRemoteMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__LOGIN_REQ, msg, cb);
@@ -273,7 +273,7 @@ namespace Server
                return;
            }
            Task.Run(() => {
-               var msg = new ResetPasswordReq()
+               var msg = new __ServerGModule__LoginService__ResetPasswordReq()
                {
                     username=username,
                     email=email

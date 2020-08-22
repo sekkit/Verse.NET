@@ -15,7 +15,7 @@ namespace Shared.Message
 {
     [MessageType(ProtocolCode.__CLIENT__AVATAR__API_TEST2_NTF)]
     [MessagePackObject]
-    public class ApiTest2Ntf : IMessage
+    public class __Client__Avatar__ApiTest2Ntf : IMessage
     {
         [Key(0)]
         public global::System.String uid { get; set; }
@@ -25,18 +25,18 @@ namespace Shared.Message
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<ApiTest2Ntf>(this);
+            return MessagePackSerializer.Serialize<__Client__Avatar__ApiTest2Ntf>(this);
         }
 
-        public new static ApiTest2Ntf Deserialize(byte[] data)
+        public new static __Client__Avatar__ApiTest2Ntf Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<ApiTest2Ntf>(data);
+            return MessagePackSerializer.Deserialize<__Client__Avatar__ApiTest2Ntf>(data);
         }
 
         public override void UnPack(byte[] data)
         {
             var obj = Deserialize(data);
-            Copier<ApiTest2Ntf>.CopyTo(obj, this);
+            Copier<__Client__Avatar__ApiTest2Ntf>.CopyTo(obj, this);
         }
     }
 }

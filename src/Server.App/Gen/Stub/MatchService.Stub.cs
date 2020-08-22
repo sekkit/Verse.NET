@@ -31,12 +31,12 @@ namespace Server.GModule
 #if !CLIENT
         [RpcMethod(ProtocolCode.__SERVERGMODULE__MATCHSERVICE__JOIN_MATCH_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_API_join_match(IMessage msg, Action<IMessage> cb)
+        public void SERVER_API__ServerGModule__MatchService__join_match(IMessage msg, Action<IMessage> cb)
         {
-            var _msg = (JoinMatchReq)msg;
+            var _msg = (__ServerGModule__MatchService__JoinMatchReq)msg;
             this.JoinMatch(_msg.uid, _msg.match_type, (code) =>
             {
-                var cbMsg = new JoinMatchReq.Callback();
+                var cbMsg = new __ServerGModule__MatchService__JoinMatchReq.Callback();
                 cbMsg.code=code;
                 cb.Invoke(cbMsg);
             });
@@ -44,12 +44,12 @@ namespace Server.GModule
 
         [RpcMethod(ProtocolCode.__SERVERGMODULE__MATCHSERVICE__FIND_MATCH_REQ, Api.ServerOnly)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_ONLY_find_match(IMessage msg, Action<IMessage> cb)
+        public void SERVER_ONLY__ServerGModule__MatchService__find_match(IMessage msg, Action<IMessage> cb)
         {
-            var _msg = (FindMatchReq)msg;
+            var _msg = (__ServerGModule__MatchService__FindMatchReq)msg;
             this.FindMatch(_msg.uid, (code, user) =>
             {
-                var cbMsg = new FindMatchReq.Callback();
+                var cbMsg = new __ServerGModule__MatchService__FindMatchReq.Callback();
                 cbMsg.code=code;
                 cbMsg.user=user;
                 cb.Invoke(cbMsg);
@@ -58,14 +58,14 @@ namespace Server.GModule
 
         [RpcMethod(ProtocolCode.__SERVERGMODULE__MATCHSERVICE__JOIN_MATCH_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_API_NATIVE_join_match(global::System.String uid, global::System.Int32 match_type, global::System.Action<global::Shared.Protocol.ErrCode> callback)
+        public void SERVER_API_NATIVE__ServerGModule__MatchService__join_match(global::System.String uid, global::System.Int32 match_type, global::System.Action<global::Shared.Protocol.ErrCode> callback)
         {
             this.JoinMatch(uid, match_type, callback);
         }
 
         [RpcMethod(ProtocolCode.__SERVERGMODULE__MATCHSERVICE__FIND_MATCH_REQ, Api.ServerOnly)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_ONLY_NATIVE_find_match(global::System.String uid, global::System.Action<global::Shared.Protocol.ErrCode, global::Server.DataModel.Account> callback)
+        public void SERVER_ONLY_NATIVE__ServerGModule__MatchService__find_match(global::System.String uid, global::System.Action<global::Shared.Protocol.ErrCode, global::Server.DataModel.Account> callback)
         {
             this.FindMatch(uid, callback);
         }

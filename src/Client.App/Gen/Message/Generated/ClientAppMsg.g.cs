@@ -51,20 +51,20 @@ namespace MessagePack.Resolvers
         {
             lookup = new global::System.Collections.Generic.Dictionary<Type, int>(14)
             {
-                { typeof(global::Shared.Message.ApiTest2Ntf), 0 },
-                { typeof(global::Shared.Message.ApiTestNtf), 1 },
-                { typeof(global::Shared.Message.ApiTestNtf.Callback), 2 },
-                { typeof(global::Shared.Message.ChangeNameReq), 3 },
-                { typeof(global::Shared.Message.ChangeNameReq.Callback), 4 },
-                { typeof(global::Shared.Message.CreateAccountReq), 5 },
-                { typeof(global::Shared.Message.CreateAccountReq.Callback), 6 },
-                { typeof(global::Shared.Message.DeleteAccountReq), 7 },
-                { typeof(global::Shared.Message.DeleteAccountReq.Callback), 8 },
-                { typeof(global::Shared.Message.LoginReq), 9 },
-                { typeof(global::Shared.Message.LoginReq.Callback), 10 },
-                { typeof(global::Shared.Message.OnMatchOkReq), 11 },
-                { typeof(global::Shared.Message.OnSyncUserNtf), 12 },
-                { typeof(global::Shared.Message.ResetPasswordReq), 13 },
+                { typeof(global::Shared.Message.__Client__Avatar__ApiTest2Ntf), 0 },
+                { typeof(global::Shared.Message.__Client__Avatar__ApiTestNtf), 1 },
+                { typeof(global::Shared.Message.__Client__Avatar__ApiTestNtf.Callback), 2 },
+                { typeof(global::Shared.Message.__Client__Avatar__OnSyncUserNtf), 3 },
+                { typeof(global::Shared.Message.__ServerGModule__LoginService__CreateAccountReq), 4 },
+                { typeof(global::Shared.Message.__ServerGModule__LoginService__CreateAccountReq.Callback), 5 },
+                { typeof(global::Shared.Message.__ServerGModule__LoginService__DeleteAccountReq), 6 },
+                { typeof(global::Shared.Message.__ServerGModule__LoginService__DeleteAccountReq.Callback), 7 },
+                { typeof(global::Shared.Message.__ServerGModule__LoginService__LoginReq), 8 },
+                { typeof(global::Shared.Message.__ServerGModule__LoginService__LoginReq.Callback), 9 },
+                { typeof(global::Shared.Message.__ServerGModule__LoginService__ResetPasswordReq), 10 },
+                { typeof(global::Shared.Message.__ServerUModule__Avatar__ChangeNameReq), 11 },
+                { typeof(global::Shared.Message.__ServerUModule__Avatar__ChangeNameReq.Callback), 12 },
+                { typeof(global::Shared.Message.__ServerUModule__Avatar__OnMatchOkReq), 13 },
             };
         }
 
@@ -78,20 +78,20 @@ namespace MessagePack.Resolvers
 
             switch (key)
             {
-                case 0: return new MessagePack.Formatters.Shared.Message.ApiTest2NtfFormatter();
-                case 1: return new MessagePack.Formatters.Shared.Message.ApiTestNtfFormatter();
-                case 2: return new MessagePack.Formatters.Shared.Message.ApiTestNtf_CallbackFormatter();
-                case 3: return new MessagePack.Formatters.Shared.Message.ChangeNameReqFormatter();
-                case 4: return new MessagePack.Formatters.Shared.Message.ChangeNameReq_CallbackFormatter();
-                case 5: return new MessagePack.Formatters.Shared.Message.CreateAccountReqFormatter();
-                case 6: return new MessagePack.Formatters.Shared.Message.CreateAccountReq_CallbackFormatter();
-                case 7: return new MessagePack.Formatters.Shared.Message.DeleteAccountReqFormatter();
-                case 8: return new MessagePack.Formatters.Shared.Message.DeleteAccountReq_CallbackFormatter();
-                case 9: return new MessagePack.Formatters.Shared.Message.LoginReqFormatter();
-                case 10: return new MessagePack.Formatters.Shared.Message.LoginReq_CallbackFormatter();
-                case 11: return new MessagePack.Formatters.Shared.Message.OnMatchOkReqFormatter();
-                case 12: return new MessagePack.Formatters.Shared.Message.OnSyncUserNtfFormatter();
-                case 13: return new MessagePack.Formatters.Shared.Message.ResetPasswordReqFormatter();
+                case 0: return new MessagePack.Formatters.Shared.Message.__Client__Avatar__ApiTest2NtfFormatter();
+                case 1: return new MessagePack.Formatters.Shared.Message.__Client__Avatar__ApiTestNtfFormatter();
+                case 2: return new MessagePack.Formatters.Shared.Message.__Client__Avatar__ApiTestNtf_CallbackFormatter();
+                case 3: return new MessagePack.Formatters.Shared.Message.__Client__Avatar__OnSyncUserNtfFormatter();
+                case 4: return new MessagePack.Formatters.Shared.Message.__ServerGModule__LoginService__CreateAccountReqFormatter();
+                case 5: return new MessagePack.Formatters.Shared.Message.__ServerGModule__LoginService__CreateAccountReq_CallbackFormatter();
+                case 6: return new MessagePack.Formatters.Shared.Message.__ServerGModule__LoginService__DeleteAccountReqFormatter();
+                case 7: return new MessagePack.Formatters.Shared.Message.__ServerGModule__LoginService__DeleteAccountReq_CallbackFormatter();
+                case 8: return new MessagePack.Formatters.Shared.Message.__ServerGModule__LoginService__LoginReqFormatter();
+                case 9: return new MessagePack.Formatters.Shared.Message.__ServerGModule__LoginService__LoginReq_CallbackFormatter();
+                case 10: return new MessagePack.Formatters.Shared.Message.__ServerGModule__LoginService__ResetPasswordReqFormatter();
+                case 11: return new MessagePack.Formatters.Shared.Message.__ServerUModule__Avatar__ChangeNameReqFormatter();
+                case 12: return new MessagePack.Formatters.Shared.Message.__ServerUModule__Avatar__ChangeNameReq_CallbackFormatter();
+                case 13: return new MessagePack.Formatters.Shared.Message.__ServerUModule__Avatar__OnMatchOkReqFormatter();
                 default: return null;
             }
         }
@@ -132,11 +132,11 @@ namespace MessagePack.Formatters.Shared.Message
     using System.Buffers;
     using MessagePack;
 
-    public sealed class ApiTest2NtfFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.ApiTest2Ntf>
+    public sealed class __Client__Avatar__ApiTest2NtfFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.__Client__Avatar__ApiTest2Ntf>
     {
 
 
-        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.ApiTest2Ntf value, global::MessagePack.MessagePackSerializerOptions options)
+        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.__Client__Avatar__ApiTest2Ntf value, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (value == null)
             {
@@ -150,7 +150,7 @@ namespace MessagePack.Formatters.Shared.Message
             writer.Write(value.match_type);
         }
 
-        public global::Shared.Message.ApiTest2Ntf Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        public global::Shared.Message.__Client__Avatar__ApiTest2Ntf Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
@@ -181,7 +181,7 @@ namespace MessagePack.Formatters.Shared.Message
                 }
             }
 
-            var ____result = new global::Shared.Message.ApiTest2Ntf();
+            var ____result = new global::Shared.Message.__Client__Avatar__ApiTest2Ntf();
             ____result.uid = __uid__;
             ____result.match_type = __match_type__;
             reader.Depth--;
@@ -189,11 +189,11 @@ namespace MessagePack.Formatters.Shared.Message
         }
     }
 
-    public sealed class ApiTestNtfFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.ApiTestNtf>
+    public sealed class __Client__Avatar__ApiTestNtfFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.__Client__Avatar__ApiTestNtf>
     {
 
 
-        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.ApiTestNtf value, global::MessagePack.MessagePackSerializerOptions options)
+        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.__Client__Avatar__ApiTestNtf value, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (value == null)
             {
@@ -204,10 +204,10 @@ namespace MessagePack.Formatters.Shared.Message
             IFormatterResolver formatterResolver = options.Resolver;
             writer.WriteArrayHeader(2);
             formatterResolver.GetFormatterWithVerify<string>().Serialize(ref writer, value.uid, options);
-            formatterResolver.GetFormatterWithVerify<global::Shared.Message.ApiTestNtf.Callback>().Serialize(ref writer, value.callback, options);
+            formatterResolver.GetFormatterWithVerify<global::Shared.Message.__Client__Avatar__ApiTestNtf.Callback>().Serialize(ref writer, value.callback, options);
         }
 
-        public global::Shared.Message.ApiTestNtf Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        public global::Shared.Message.__Client__Avatar__ApiTestNtf Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
@@ -218,7 +218,7 @@ namespace MessagePack.Formatters.Shared.Message
             IFormatterResolver formatterResolver = options.Resolver;
             var length = reader.ReadArrayHeader();
             var __uid__ = default(string);
-            var __callback__ = default(global::Shared.Message.ApiTestNtf.Callback);
+            var __callback__ = default(global::Shared.Message.__Client__Avatar__ApiTestNtf.Callback);
 
             for (int i = 0; i < length; i++)
             {
@@ -230,7 +230,7 @@ namespace MessagePack.Formatters.Shared.Message
                         __uid__ = formatterResolver.GetFormatterWithVerify<string>().Deserialize(ref reader, options);
                         break;
                     case 1:
-                        __callback__ = formatterResolver.GetFormatterWithVerify<global::Shared.Message.ApiTestNtf.Callback>().Deserialize(ref reader, options);
+                        __callback__ = formatterResolver.GetFormatterWithVerify<global::Shared.Message.__Client__Avatar__ApiTestNtf.Callback>().Deserialize(ref reader, options);
                         break;
                     default:
                         reader.Skip();
@@ -238,7 +238,7 @@ namespace MessagePack.Formatters.Shared.Message
                 }
             }
 
-            var ____result = new global::Shared.Message.ApiTestNtf();
+            var ____result = new global::Shared.Message.__Client__Avatar__ApiTestNtf();
             ____result.uid = __uid__;
             ____result.callback = __callback__;
             reader.Depth--;
@@ -246,11 +246,11 @@ namespace MessagePack.Formatters.Shared.Message
         }
     }
 
-    public sealed class ApiTestNtf_CallbackFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.ApiTestNtf.Callback>
+    public sealed class __Client__Avatar__ApiTestNtf_CallbackFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.__Client__Avatar__ApiTestNtf.Callback>
     {
 
 
-        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.ApiTestNtf.Callback value, global::MessagePack.MessagePackSerializerOptions options)
+        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.__Client__Avatar__ApiTestNtf.Callback value, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (value == null)
             {
@@ -263,7 +263,7 @@ namespace MessagePack.Formatters.Shared.Message
             formatterResolver.GetFormatterWithVerify<global::Shared.Protocol.ErrCode>().Serialize(ref writer, value.code, options);
         }
 
-        public global::Shared.Message.ApiTestNtf.Callback Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        public global::Shared.Message.__Client__Avatar__ApiTestNtf.Callback Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
@@ -290,75 +290,18 @@ namespace MessagePack.Formatters.Shared.Message
                 }
             }
 
-            var ____result = new global::Shared.Message.ApiTestNtf.Callback();
+            var ____result = new global::Shared.Message.__Client__Avatar__ApiTestNtf.Callback();
             ____result.code = __code__;
             reader.Depth--;
             return ____result;
         }
     }
 
-    public sealed class ChangeNameReqFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.ChangeNameReq>
+    public sealed class __Client__Avatar__OnSyncUserNtfFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.__Client__Avatar__OnSyncUserNtf>
     {
 
 
-        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.ChangeNameReq value, global::MessagePack.MessagePackSerializerOptions options)
-        {
-            if (value == null)
-            {
-                writer.WriteNil();
-                return;
-            }
-
-            IFormatterResolver formatterResolver = options.Resolver;
-            writer.WriteArrayHeader(2);
-            formatterResolver.GetFormatterWithVerify<string>().Serialize(ref writer, value.name, options);
-            formatterResolver.GetFormatterWithVerify<global::Shared.Message.ChangeNameReq.Callback>().Serialize(ref writer, value.callback, options);
-        }
-
-        public global::Shared.Message.ChangeNameReq Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
-        {
-            if (reader.TryReadNil())
-            {
-                return null;
-            }
-
-            options.Security.DepthStep(ref reader);
-            IFormatterResolver formatterResolver = options.Resolver;
-            var length = reader.ReadArrayHeader();
-            var __name__ = default(string);
-            var __callback__ = default(global::Shared.Message.ChangeNameReq.Callback);
-
-            for (int i = 0; i < length; i++)
-            {
-                var key = i;
-
-                switch (key)
-                {
-                    case 0:
-                        __name__ = formatterResolver.GetFormatterWithVerify<string>().Deserialize(ref reader, options);
-                        break;
-                    case 1:
-                        __callback__ = formatterResolver.GetFormatterWithVerify<global::Shared.Message.ChangeNameReq.Callback>().Deserialize(ref reader, options);
-                        break;
-                    default:
-                        reader.Skip();
-                        break;
-                }
-            }
-
-            var ____result = new global::Shared.Message.ChangeNameReq();
-            ____result.name = __name__;
-            ____result.callback = __callback__;
-            reader.Depth--;
-            return ____result;
-        }
-    }
-
-    public sealed class ChangeNameReq_CallbackFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.ChangeNameReq.Callback>
-    {
-
-
-        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.ChangeNameReq.Callback value, global::MessagePack.MessagePackSerializerOptions options)
+        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.__Client__Avatar__OnSyncUserNtf value, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (value == null)
             {
@@ -368,10 +311,10 @@ namespace MessagePack.Formatters.Shared.Message
 
             IFormatterResolver formatterResolver = options.Resolver;
             writer.WriteArrayHeader(1);
-            formatterResolver.GetFormatterWithVerify<global::Shared.Protocol.ErrCode>().Serialize(ref writer, value.code, options);
+            formatterResolver.GetFormatterWithVerify<byte[]>().Serialize(ref writer, value.data, options);
         }
 
-        public global::Shared.Message.ChangeNameReq.Callback Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        public global::Shared.Message.__Client__Avatar__OnSyncUserNtf Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
@@ -381,7 +324,7 @@ namespace MessagePack.Formatters.Shared.Message
             options.Security.DepthStep(ref reader);
             IFormatterResolver formatterResolver = options.Resolver;
             var length = reader.ReadArrayHeader();
-            var __code__ = default(global::Shared.Protocol.ErrCode);
+            var __data__ = default(byte[]);
 
             for (int i = 0; i < length; i++)
             {
@@ -390,7 +333,7 @@ namespace MessagePack.Formatters.Shared.Message
                 switch (key)
                 {
                     case 0:
-                        __code__ = formatterResolver.GetFormatterWithVerify<global::Shared.Protocol.ErrCode>().Deserialize(ref reader, options);
+                        __data__ = formatterResolver.GetFormatterWithVerify<byte[]>().Deserialize(ref reader, options);
                         break;
                     default:
                         reader.Skip();
@@ -398,18 +341,18 @@ namespace MessagePack.Formatters.Shared.Message
                 }
             }
 
-            var ____result = new global::Shared.Message.ChangeNameReq.Callback();
-            ____result.code = __code__;
+            var ____result = new global::Shared.Message.__Client__Avatar__OnSyncUserNtf();
+            ____result.data = __data__;
             reader.Depth--;
             return ____result;
         }
     }
 
-    public sealed class CreateAccountReqFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.CreateAccountReq>
+    public sealed class __ServerGModule__LoginService__CreateAccountReqFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.__ServerGModule__LoginService__CreateAccountReq>
     {
 
 
-        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.CreateAccountReq value, global::MessagePack.MessagePackSerializerOptions options)
+        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.__ServerGModule__LoginService__CreateAccountReq value, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (value == null)
             {
@@ -421,10 +364,10 @@ namespace MessagePack.Formatters.Shared.Message
             writer.WriteArrayHeader(3);
             formatterResolver.GetFormatterWithVerify<string>().Serialize(ref writer, value.username, options);
             formatterResolver.GetFormatterWithVerify<string>().Serialize(ref writer, value.password, options);
-            formatterResolver.GetFormatterWithVerify<global::Shared.Message.CreateAccountReq.Callback>().Serialize(ref writer, value.callback, options);
+            formatterResolver.GetFormatterWithVerify<global::Shared.Message.__ServerGModule__LoginService__CreateAccountReq.Callback>().Serialize(ref writer, value.callback, options);
         }
 
-        public global::Shared.Message.CreateAccountReq Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        public global::Shared.Message.__ServerGModule__LoginService__CreateAccountReq Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
@@ -436,7 +379,7 @@ namespace MessagePack.Formatters.Shared.Message
             var length = reader.ReadArrayHeader();
             var __username__ = default(string);
             var __password__ = default(string);
-            var __callback__ = default(global::Shared.Message.CreateAccountReq.Callback);
+            var __callback__ = default(global::Shared.Message.__ServerGModule__LoginService__CreateAccountReq.Callback);
 
             for (int i = 0; i < length; i++)
             {
@@ -451,7 +394,7 @@ namespace MessagePack.Formatters.Shared.Message
                         __password__ = formatterResolver.GetFormatterWithVerify<string>().Deserialize(ref reader, options);
                         break;
                     case 2:
-                        __callback__ = formatterResolver.GetFormatterWithVerify<global::Shared.Message.CreateAccountReq.Callback>().Deserialize(ref reader, options);
+                        __callback__ = formatterResolver.GetFormatterWithVerify<global::Shared.Message.__ServerGModule__LoginService__CreateAccountReq.Callback>().Deserialize(ref reader, options);
                         break;
                     default:
                         reader.Skip();
@@ -459,7 +402,7 @@ namespace MessagePack.Formatters.Shared.Message
                 }
             }
 
-            var ____result = new global::Shared.Message.CreateAccountReq();
+            var ____result = new global::Shared.Message.__ServerGModule__LoginService__CreateAccountReq();
             ____result.username = __username__;
             ____result.password = __password__;
             ____result.callback = __callback__;
@@ -468,11 +411,11 @@ namespace MessagePack.Formatters.Shared.Message
         }
     }
 
-    public sealed class CreateAccountReq_CallbackFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.CreateAccountReq.Callback>
+    public sealed class __ServerGModule__LoginService__CreateAccountReq_CallbackFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.__ServerGModule__LoginService__CreateAccountReq.Callback>
     {
 
 
-        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.CreateAccountReq.Callback value, global::MessagePack.MessagePackSerializerOptions options)
+        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.__ServerGModule__LoginService__CreateAccountReq.Callback value, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (value == null)
             {
@@ -485,7 +428,7 @@ namespace MessagePack.Formatters.Shared.Message
             formatterResolver.GetFormatterWithVerify<global::Shared.Protocol.ErrCode>().Serialize(ref writer, value.code, options);
         }
 
-        public global::Shared.Message.CreateAccountReq.Callback Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        public global::Shared.Message.__ServerGModule__LoginService__CreateAccountReq.Callback Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
@@ -512,18 +455,18 @@ namespace MessagePack.Formatters.Shared.Message
                 }
             }
 
-            var ____result = new global::Shared.Message.CreateAccountReq.Callback();
+            var ____result = new global::Shared.Message.__ServerGModule__LoginService__CreateAccountReq.Callback();
             ____result.code = __code__;
             reader.Depth--;
             return ____result;
         }
     }
 
-    public sealed class DeleteAccountReqFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.DeleteAccountReq>
+    public sealed class __ServerGModule__LoginService__DeleteAccountReqFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.__ServerGModule__LoginService__DeleteAccountReq>
     {
 
 
-        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.DeleteAccountReq value, global::MessagePack.MessagePackSerializerOptions options)
+        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.__ServerGModule__LoginService__DeleteAccountReq value, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (value == null)
             {
@@ -535,10 +478,10 @@ namespace MessagePack.Formatters.Shared.Message
             writer.WriteArrayHeader(3);
             formatterResolver.GetFormatterWithVerify<string>().Serialize(ref writer, value.username, options);
             formatterResolver.GetFormatterWithVerify<string>().Serialize(ref writer, value.password, options);
-            formatterResolver.GetFormatterWithVerify<global::Shared.Message.DeleteAccountReq.Callback>().Serialize(ref writer, value.callback, options);
+            formatterResolver.GetFormatterWithVerify<global::Shared.Message.__ServerGModule__LoginService__DeleteAccountReq.Callback>().Serialize(ref writer, value.callback, options);
         }
 
-        public global::Shared.Message.DeleteAccountReq Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        public global::Shared.Message.__ServerGModule__LoginService__DeleteAccountReq Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
@@ -550,7 +493,7 @@ namespace MessagePack.Formatters.Shared.Message
             var length = reader.ReadArrayHeader();
             var __username__ = default(string);
             var __password__ = default(string);
-            var __callback__ = default(global::Shared.Message.DeleteAccountReq.Callback);
+            var __callback__ = default(global::Shared.Message.__ServerGModule__LoginService__DeleteAccountReq.Callback);
 
             for (int i = 0; i < length; i++)
             {
@@ -565,7 +508,7 @@ namespace MessagePack.Formatters.Shared.Message
                         __password__ = formatterResolver.GetFormatterWithVerify<string>().Deserialize(ref reader, options);
                         break;
                     case 2:
-                        __callback__ = formatterResolver.GetFormatterWithVerify<global::Shared.Message.DeleteAccountReq.Callback>().Deserialize(ref reader, options);
+                        __callback__ = formatterResolver.GetFormatterWithVerify<global::Shared.Message.__ServerGModule__LoginService__DeleteAccountReq.Callback>().Deserialize(ref reader, options);
                         break;
                     default:
                         reader.Skip();
@@ -573,7 +516,7 @@ namespace MessagePack.Formatters.Shared.Message
                 }
             }
 
-            var ____result = new global::Shared.Message.DeleteAccountReq();
+            var ____result = new global::Shared.Message.__ServerGModule__LoginService__DeleteAccountReq();
             ____result.username = __username__;
             ____result.password = __password__;
             ____result.callback = __callback__;
@@ -582,11 +525,11 @@ namespace MessagePack.Formatters.Shared.Message
         }
     }
 
-    public sealed class DeleteAccountReq_CallbackFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.DeleteAccountReq.Callback>
+    public sealed class __ServerGModule__LoginService__DeleteAccountReq_CallbackFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.__ServerGModule__LoginService__DeleteAccountReq.Callback>
     {
 
 
-        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.DeleteAccountReq.Callback value, global::MessagePack.MessagePackSerializerOptions options)
+        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.__ServerGModule__LoginService__DeleteAccountReq.Callback value, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (value == null)
             {
@@ -599,7 +542,7 @@ namespace MessagePack.Formatters.Shared.Message
             formatterResolver.GetFormatterWithVerify<global::Shared.Protocol.ErrCode>().Serialize(ref writer, value.code, options);
         }
 
-        public global::Shared.Message.DeleteAccountReq.Callback Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        public global::Shared.Message.__ServerGModule__LoginService__DeleteAccountReq.Callback Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
@@ -626,18 +569,18 @@ namespace MessagePack.Formatters.Shared.Message
                 }
             }
 
-            var ____result = new global::Shared.Message.DeleteAccountReq.Callback();
+            var ____result = new global::Shared.Message.__ServerGModule__LoginService__DeleteAccountReq.Callback();
             ____result.code = __code__;
             reader.Depth--;
             return ____result;
         }
     }
 
-    public sealed class LoginReqFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.LoginReq>
+    public sealed class __ServerGModule__LoginService__LoginReqFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.__ServerGModule__LoginService__LoginReq>
     {
 
 
-        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.LoginReq value, global::MessagePack.MessagePackSerializerOptions options)
+        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.__ServerGModule__LoginService__LoginReq value, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (value == null)
             {
@@ -649,10 +592,10 @@ namespace MessagePack.Formatters.Shared.Message
             writer.WriteArrayHeader(3);
             formatterResolver.GetFormatterWithVerify<string>().Serialize(ref writer, value.username, options);
             formatterResolver.GetFormatterWithVerify<string>().Serialize(ref writer, value.password, options);
-            formatterResolver.GetFormatterWithVerify<global::Shared.Message.LoginReq.Callback>().Serialize(ref writer, value.callback, options);
+            formatterResolver.GetFormatterWithVerify<global::Shared.Message.__ServerGModule__LoginService__LoginReq.Callback>().Serialize(ref writer, value.callback, options);
         }
 
-        public global::Shared.Message.LoginReq Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        public global::Shared.Message.__ServerGModule__LoginService__LoginReq Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
@@ -664,7 +607,7 @@ namespace MessagePack.Formatters.Shared.Message
             var length = reader.ReadArrayHeader();
             var __username__ = default(string);
             var __password__ = default(string);
-            var __callback__ = default(global::Shared.Message.LoginReq.Callback);
+            var __callback__ = default(global::Shared.Message.__ServerGModule__LoginService__LoginReq.Callback);
 
             for (int i = 0; i < length; i++)
             {
@@ -679,7 +622,7 @@ namespace MessagePack.Formatters.Shared.Message
                         __password__ = formatterResolver.GetFormatterWithVerify<string>().Deserialize(ref reader, options);
                         break;
                     case 2:
-                        __callback__ = formatterResolver.GetFormatterWithVerify<global::Shared.Message.LoginReq.Callback>().Deserialize(ref reader, options);
+                        __callback__ = formatterResolver.GetFormatterWithVerify<global::Shared.Message.__ServerGModule__LoginService__LoginReq.Callback>().Deserialize(ref reader, options);
                         break;
                     default:
                         reader.Skip();
@@ -687,7 +630,7 @@ namespace MessagePack.Formatters.Shared.Message
                 }
             }
 
-            var ____result = new global::Shared.Message.LoginReq();
+            var ____result = new global::Shared.Message.__ServerGModule__LoginService__LoginReq();
             ____result.username = __username__;
             ____result.password = __password__;
             ____result.callback = __callback__;
@@ -696,11 +639,11 @@ namespace MessagePack.Formatters.Shared.Message
         }
     }
 
-    public sealed class LoginReq_CallbackFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.LoginReq.Callback>
+    public sealed class __ServerGModule__LoginService__LoginReq_CallbackFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.__ServerGModule__LoginService__LoginReq.Callback>
     {
 
 
-        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.LoginReq.Callback value, global::MessagePack.MessagePackSerializerOptions options)
+        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.__ServerGModule__LoginService__LoginReq.Callback value, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (value == null)
             {
@@ -717,7 +660,7 @@ namespace MessagePack.Formatters.Shared.Message
             formatterResolver.GetFormatterWithVerify<string>().Serialize(ref writer, value.arg4, options);
         }
 
-        public global::Shared.Message.LoginReq.Callback Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        public global::Shared.Message.__ServerGModule__LoginService__LoginReq.Callback Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
@@ -760,7 +703,7 @@ namespace MessagePack.Formatters.Shared.Message
                 }
             }
 
-            var ____result = new global::Shared.Message.LoginReq.Callback();
+            var ____result = new global::Shared.Message.__ServerGModule__LoginService__LoginReq.Callback();
             ____result.code = __code__;
             ____result.arg1 = __arg1__;
             ____result.arg2 = __arg2__;
@@ -771,107 +714,11 @@ namespace MessagePack.Formatters.Shared.Message
         }
     }
 
-    public sealed class OnMatchOkReqFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.OnMatchOkReq>
+    public sealed class __ServerGModule__LoginService__ResetPasswordReqFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.__ServerGModule__LoginService__ResetPasswordReq>
     {
 
 
-        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.OnMatchOkReq value, global::MessagePack.MessagePackSerializerOptions options)
-        {
-            if (value == null)
-            {
-                writer.WriteNil();
-                return;
-            }
-
-            IFormatterResolver formatterResolver = options.Resolver;
-            writer.WriteArrayHeader(0);
-        }
-
-        public global::Shared.Message.OnMatchOkReq Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
-        {
-            if (reader.TryReadNil())
-            {
-                return null;
-            }
-
-            options.Security.DepthStep(ref reader);
-            IFormatterResolver formatterResolver = options.Resolver;
-            var length = reader.ReadArrayHeader();
-
-            for (int i = 0; i < length; i++)
-            {
-                var key = i;
-
-                switch (key)
-                {
-                    default:
-                        reader.Skip();
-                        break;
-                }
-            }
-
-            var ____result = new global::Shared.Message.OnMatchOkReq();
-            reader.Depth--;
-            return ____result;
-        }
-    }
-
-    public sealed class OnSyncUserNtfFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.OnSyncUserNtf>
-    {
-
-
-        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.OnSyncUserNtf value, global::MessagePack.MessagePackSerializerOptions options)
-        {
-            if (value == null)
-            {
-                writer.WriteNil();
-                return;
-            }
-
-            IFormatterResolver formatterResolver = options.Resolver;
-            writer.WriteArrayHeader(1);
-            formatterResolver.GetFormatterWithVerify<byte[]>().Serialize(ref writer, value.data, options);
-        }
-
-        public global::Shared.Message.OnSyncUserNtf Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
-        {
-            if (reader.TryReadNil())
-            {
-                return null;
-            }
-
-            options.Security.DepthStep(ref reader);
-            IFormatterResolver formatterResolver = options.Resolver;
-            var length = reader.ReadArrayHeader();
-            var __data__ = default(byte[]);
-
-            for (int i = 0; i < length; i++)
-            {
-                var key = i;
-
-                switch (key)
-                {
-                    case 0:
-                        __data__ = formatterResolver.GetFormatterWithVerify<byte[]>().Deserialize(ref reader, options);
-                        break;
-                    default:
-                        reader.Skip();
-                        break;
-                }
-            }
-
-            var ____result = new global::Shared.Message.OnSyncUserNtf();
-            ____result.data = __data__;
-            reader.Depth--;
-            return ____result;
-        }
-    }
-
-    public sealed class ResetPasswordReqFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.ResetPasswordReq>
-    {
-
-
-        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.ResetPasswordReq value, global::MessagePack.MessagePackSerializerOptions options)
+        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.__ServerGModule__LoginService__ResetPasswordReq value, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (value == null)
             {
@@ -885,7 +732,7 @@ namespace MessagePack.Formatters.Shared.Message
             formatterResolver.GetFormatterWithVerify<string>().Serialize(ref writer, value.email, options);
         }
 
-        public global::Shared.Message.ResetPasswordReq Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        public global::Shared.Message.__ServerGModule__LoginService__ResetPasswordReq Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
@@ -916,9 +763,162 @@ namespace MessagePack.Formatters.Shared.Message
                 }
             }
 
-            var ____result = new global::Shared.Message.ResetPasswordReq();
+            var ____result = new global::Shared.Message.__ServerGModule__LoginService__ResetPasswordReq();
             ____result.username = __username__;
             ____result.email = __email__;
+            reader.Depth--;
+            return ____result;
+        }
+    }
+
+    public sealed class __ServerUModule__Avatar__ChangeNameReqFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.__ServerUModule__Avatar__ChangeNameReq>
+    {
+
+
+        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.__ServerUModule__Avatar__ChangeNameReq value, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (value == null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
+            IFormatterResolver formatterResolver = options.Resolver;
+            writer.WriteArrayHeader(2);
+            formatterResolver.GetFormatterWithVerify<string>().Serialize(ref writer, value.name, options);
+            formatterResolver.GetFormatterWithVerify<global::Shared.Message.__ServerUModule__Avatar__ChangeNameReq.Callback>().Serialize(ref writer, value.callback, options);
+        }
+
+        public global::Shared.Message.__ServerUModule__Avatar__ChangeNameReq Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (reader.TryReadNil())
+            {
+                return null;
+            }
+
+            options.Security.DepthStep(ref reader);
+            IFormatterResolver formatterResolver = options.Resolver;
+            var length = reader.ReadArrayHeader();
+            var __name__ = default(string);
+            var __callback__ = default(global::Shared.Message.__ServerUModule__Avatar__ChangeNameReq.Callback);
+
+            for (int i = 0; i < length; i++)
+            {
+                var key = i;
+
+                switch (key)
+                {
+                    case 0:
+                        __name__ = formatterResolver.GetFormatterWithVerify<string>().Deserialize(ref reader, options);
+                        break;
+                    case 1:
+                        __callback__ = formatterResolver.GetFormatterWithVerify<global::Shared.Message.__ServerUModule__Avatar__ChangeNameReq.Callback>().Deserialize(ref reader, options);
+                        break;
+                    default:
+                        reader.Skip();
+                        break;
+                }
+            }
+
+            var ____result = new global::Shared.Message.__ServerUModule__Avatar__ChangeNameReq();
+            ____result.name = __name__;
+            ____result.callback = __callback__;
+            reader.Depth--;
+            return ____result;
+        }
+    }
+
+    public sealed class __ServerUModule__Avatar__ChangeNameReq_CallbackFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.__ServerUModule__Avatar__ChangeNameReq.Callback>
+    {
+
+
+        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.__ServerUModule__Avatar__ChangeNameReq.Callback value, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (value == null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
+            IFormatterResolver formatterResolver = options.Resolver;
+            writer.WriteArrayHeader(1);
+            formatterResolver.GetFormatterWithVerify<global::Shared.Protocol.ErrCode>().Serialize(ref writer, value.code, options);
+        }
+
+        public global::Shared.Message.__ServerUModule__Avatar__ChangeNameReq.Callback Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (reader.TryReadNil())
+            {
+                return null;
+            }
+
+            options.Security.DepthStep(ref reader);
+            IFormatterResolver formatterResolver = options.Resolver;
+            var length = reader.ReadArrayHeader();
+            var __code__ = default(global::Shared.Protocol.ErrCode);
+
+            for (int i = 0; i < length; i++)
+            {
+                var key = i;
+
+                switch (key)
+                {
+                    case 0:
+                        __code__ = formatterResolver.GetFormatterWithVerify<global::Shared.Protocol.ErrCode>().Deserialize(ref reader, options);
+                        break;
+                    default:
+                        reader.Skip();
+                        break;
+                }
+            }
+
+            var ____result = new global::Shared.Message.__ServerUModule__Avatar__ChangeNameReq.Callback();
+            ____result.code = __code__;
+            reader.Depth--;
+            return ____result;
+        }
+    }
+
+    public sealed class __ServerUModule__Avatar__OnMatchOkReqFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.__ServerUModule__Avatar__OnMatchOkReq>
+    {
+
+
+        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.__ServerUModule__Avatar__OnMatchOkReq value, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (value == null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
+            IFormatterResolver formatterResolver = options.Resolver;
+            writer.WriteArrayHeader(0);
+        }
+
+        public global::Shared.Message.__ServerUModule__Avatar__OnMatchOkReq Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (reader.TryReadNil())
+            {
+                return null;
+            }
+
+            options.Security.DepthStep(ref reader);
+            IFormatterResolver formatterResolver = options.Resolver;
+            var length = reader.ReadArrayHeader();
+
+            for (int i = 0; i < length; i++)
+            {
+                var key = i;
+
+                switch (key)
+                {
+                    default:
+                        reader.Skip();
+                        break;
+                }
+            }
+
+            var ____result = new global::Shared.Message.__ServerUModule__Avatar__OnMatchOkReq();
             reader.Depth--;
             return ____result;
         }

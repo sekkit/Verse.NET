@@ -23,15 +23,15 @@ namespace Server
     [RefType("MatchService")]
     public partial class MatchServiceRef : ActorRef
     {
-        public async Task<FindMatchReq.Callback> rpc_find_match_async(global::System.String uid, global::System.Action<global::Shared.Protocol.ErrCode, global::Server.DataModel.Account> callback=null)
+        public async Task<__ServerGModule__MatchService__FindMatchReq.Callback> rpc_find_match_async(global::System.String uid, global::System.Action<global::Shared.Protocol.ErrCode, global::Server.DataModel.Account> callback=null)
         {
-            var t = new TaskCompletionSource<FindMatchReq.Callback>();
+            var t = new TaskCompletionSource<__ServerGModule__MatchService__FindMatchReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
                 global::System.Action<global::Shared.Protocol.ErrCode, global::Server.DataModel.Account> _cb = (code, user) =>
                 {
-                     var cbMsg = new FindMatchReq.Callback();
+                     var cbMsg = new __ServerGModule__MatchService__FindMatchReq.Callback();
                      cbMsg.code=code;
                      cbMsg.user=user;
                      callback?.Invoke(cbMsg.code, cbMsg.user);
@@ -49,18 +49,18 @@ namespace Server
             }
             else
             {
-                Action<FindMatchReq.Callback> _cb = (cbMsg) =>
+                Action<__ServerGModule__MatchService__FindMatchReq.Callback> _cb = (cbMsg) =>
                 {
                     callback?.Invoke(cbMsg.code, cbMsg.user);
                     t.TrySetResult(cbMsg);
                 };
                 await Task.Run(() => {
-                    var msg = new FindMatchReq()
+                    var msg = new __ServerGModule__MatchService__FindMatchReq()
                     {
                          uid=uid
                     };
                     var cb = new Action<byte[]>((cbData) => {
-                        var cbMsg = cbData==null ? new FindMatchReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<FindMatchReq.Callback>(cbData);
+                        var cbMsg = cbData==null ? new __ServerGModule__MatchService__FindMatchReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<__ServerGModule__MatchService__FindMatchReq.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
                     this.CallRemoteMethod(ProtocolCode.__SERVERGMODULE__MATCHSERVICE__FIND_MATCH_REQ, msg, cb);
@@ -86,27 +86,27 @@ namespace Server
                 return;
             }
             Task.Run(() => {
-                var msg = new FindMatchReq()
+                var msg = new __ServerGModule__MatchService__FindMatchReq()
                 {
                     uid=uid
                 };
                 var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null?new FindMatchReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<FindMatchReq.Callback>(cbData);
+                    var cbMsg = cbData==null?new __ServerGModule__MatchService__FindMatchReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<__ServerGModule__MatchService__FindMatchReq.Callback>(cbData);
                     callback?.Invoke(cbMsg.code, cbMsg.user);
                 });
                 this.CallRemoteMethod(ProtocolCode.__SERVERGMODULE__MATCHSERVICE__FIND_MATCH_REQ, msg, cb);
             });
         }
 
-        public async Task<JoinMatchReq.Callback> rpc_join_match_async(global::System.String uid, global::System.Int32 match_type, global::System.Action<global::Shared.Protocol.ErrCode> callback=null)
+        public async Task<__ServerGModule__MatchService__JoinMatchReq.Callback> rpc_join_match_async(global::System.String uid, global::System.Int32 match_type, global::System.Action<global::Shared.Protocol.ErrCode> callback=null)
         {
-            var t = new TaskCompletionSource<JoinMatchReq.Callback>();
+            var t = new TaskCompletionSource<__ServerGModule__MatchService__JoinMatchReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
                 global::System.Action<global::Shared.Protocol.ErrCode> _cb = (code) =>
                 {
-                     var cbMsg = new JoinMatchReq.Callback();
+                     var cbMsg = new __ServerGModule__MatchService__JoinMatchReq.Callback();
                      cbMsg.code=code;
                      callback?.Invoke(cbMsg.code);
                      t.TrySetResult(cbMsg);
@@ -123,19 +123,19 @@ namespace Server
             }
             else
             {
-                Action<JoinMatchReq.Callback> _cb = (cbMsg) =>
+                Action<__ServerGModule__MatchService__JoinMatchReq.Callback> _cb = (cbMsg) =>
                 {
                     callback?.Invoke(cbMsg.code);
                     t.TrySetResult(cbMsg);
                 };
                 await Task.Run(() => {
-                    var msg = new JoinMatchReq()
+                    var msg = new __ServerGModule__MatchService__JoinMatchReq()
                     {
                          uid=uid,
                          match_type=match_type
                     };
                     var cb = new Action<byte[]>((cbData) => {
-                        var cbMsg = cbData==null ? new JoinMatchReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<JoinMatchReq.Callback>(cbData);
+                        var cbMsg = cbData==null ? new __ServerGModule__MatchService__JoinMatchReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<__ServerGModule__MatchService__JoinMatchReq.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
                     this.CallRemoteMethod(ProtocolCode.__SERVERGMODULE__MATCHSERVICE__JOIN_MATCH_REQ, msg, cb);
@@ -161,13 +161,13 @@ namespace Server
                 return;
             }
             Task.Run(() => {
-                var msg = new JoinMatchReq()
+                var msg = new __ServerGModule__MatchService__JoinMatchReq()
                 {
                     uid=uid,
                     match_type=match_type
                 };
                 var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null?new JoinMatchReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<JoinMatchReq.Callback>(cbData);
+                    var cbMsg = cbData==null?new __ServerGModule__MatchService__JoinMatchReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<__ServerGModule__MatchService__JoinMatchReq.Callback>(cbData);
                     callback?.Invoke(cbMsg.code);
                 });
                 this.CallRemoteMethod(ProtocolCode.__SERVERGMODULE__MATCHSERVICE__JOIN_MATCH_REQ, msg, cb);

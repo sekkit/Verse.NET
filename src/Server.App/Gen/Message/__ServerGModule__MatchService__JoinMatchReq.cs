@@ -13,14 +13,17 @@ using System;
 
 namespace Shared.Message
 {
-    [MessageType(ProtocolCode.__SERVERUMODULE__AVATAR__CHANGE_NAME_REQ)]
+    [MessageType(ProtocolCode.__SERVERGMODULE__MATCHSERVICE__JOIN_MATCH_REQ)]
     [MessagePackObject]
-    public class ChangeNameReq : IMessageWithCallback
+    public class __ServerGModule__MatchService__JoinMatchReq : IMessageWithCallback
     {
         [Key(0)]
-        public global::System.String name { get; set; }
+        public global::System.String uid { get; set; }
 
         [Key(1)]
+        public global::System.Int32 match_type { get; set; }
+
+        [Key(2)]
 
         public Callback callback
         {
@@ -53,18 +56,18 @@ namespace Shared.Message
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<ChangeNameReq>(this);
+            return MessagePackSerializer.Serialize<__ServerGModule__MatchService__JoinMatchReq>(this);
         }
 
-        public new static ChangeNameReq Deserialize(byte[] data)
+        public new static __ServerGModule__MatchService__JoinMatchReq Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<ChangeNameReq>(data);
+            return MessagePackSerializer.Deserialize<__ServerGModule__MatchService__JoinMatchReq>(data);
         }
 
         public override void UnPack(byte[] data)
         {
             var obj = Deserialize(data);
-            Copier<ChangeNameReq>.CopyTo(obj, this);
+            Copier<__ServerGModule__MatchService__JoinMatchReq>.CopyTo(obj, this);
         }
     }
 }

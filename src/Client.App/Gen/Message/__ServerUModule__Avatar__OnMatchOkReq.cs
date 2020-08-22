@@ -15,23 +15,23 @@ namespace Shared.Message
 {
     [MessageType(ProtocolCode.__SERVERUMODULE__AVATAR__ON_MATCH_OK_REQ)]
     [MessagePackObject]
-    public class OnMatchOkReq : IMessage
+    public class __ServerUModule__Avatar__OnMatchOkReq : IMessage
     {
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<OnMatchOkReq>(this);
+            return MessagePackSerializer.Serialize<__ServerUModule__Avatar__OnMatchOkReq>(this);
         }
 
-        public new static OnMatchOkReq Deserialize(byte[] data)
+        public new static __ServerUModule__Avatar__OnMatchOkReq Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<OnMatchOkReq>(data);
+            return MessagePackSerializer.Deserialize<__ServerUModule__Avatar__OnMatchOkReq>(data);
         }
 
         public override void UnPack(byte[] data)
         {
             var obj = Deserialize(data);
-            Copier<OnMatchOkReq>.CopyTo(obj, this);
+            Copier<__ServerUModule__Avatar__OnMatchOkReq>.CopyTo(obj, this);
         }
     }
 }

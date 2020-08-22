@@ -13,17 +13,14 @@ using System;
 
 namespace Shared.Message
 {
-    [MessageType(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__DELETE_ACCOUNT_REQ)]
+    [MessageType(ProtocolCode.__SERVERUMODULE__AVATAR__CHANGE_NAME_REQ)]
     [MessagePackObject]
-    public class DeleteAccountReq : IMessageWithCallback
+    public class __ServerUModule__Avatar__ChangeNameReq : IMessageWithCallback
     {
         [Key(0)]
-        public global::System.String username { get; set; }
+        public global::System.String name { get; set; }
 
         [Key(1)]
-        public global::System.String password { get; set; }
-
-        [Key(2)]
 
         public Callback callback
         {
@@ -56,18 +53,18 @@ namespace Shared.Message
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<DeleteAccountReq>(this);
+            return MessagePackSerializer.Serialize<__ServerUModule__Avatar__ChangeNameReq>(this);
         }
 
-        public new static DeleteAccountReq Deserialize(byte[] data)
+        public new static __ServerUModule__Avatar__ChangeNameReq Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<DeleteAccountReq>(data);
+            return MessagePackSerializer.Deserialize<__ServerUModule__Avatar__ChangeNameReq>(data);
         }
 
         public override void UnPack(byte[] data)
         {
             var obj = Deserialize(data);
-            Copier<DeleteAccountReq>.CopyTo(obj, this);
+            Copier<__ServerUModule__Avatar__ChangeNameReq>.CopyTo(obj, this);
         }
     }
 }

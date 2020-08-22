@@ -6,21 +6,21 @@ using Fenix.Common.Attributes;
 using Fenix.Common.Rpc;
 using MessagePack; 
 using System.ComponentModel;
-using Shared;
-using Shared.Protocol;
-using Shared.DataModel;
 using System; 
 
-namespace Shared.Message
+namespace Fenix.Common.Message
 {
-    [MessageType(ProtocolCode.__SERVERUMODULE__AVATAR__CHANGE_NAME_REQ)]
+    [MessageType(OpCode.REGISTER_CLIENT_REQ)]
     [MessagePackObject]
-    public class ChangeNameReq : IMessageWithCallback
+    public class __Fenix__Host__RegisterClientReq : IMessageWithCallback
     {
         [Key(0)]
-        public global::System.String name { get; set; }
+        public global::System.UInt64 hostId { get; set; }
 
         [Key(1)]
+        public global::System.String hostName { get; set; }
+
+        [Key(2)]
 
         public Callback callback
         {
@@ -32,7 +32,10 @@ namespace Shared.Message
         public class Callback : IMessage
         {
             [Key(0)]
-            public global::Shared.Protocol.ErrCode code { get; set; } = ErrCode.ERROR;
+            public global::Fenix.Common.DefaultErrCode code { get; set; } = DefaultErrCode.ERROR;
+
+            [Key(1)]
+            public global::Fenix.HostInfo arg1 { get; set; }
 
             public override byte[] Pack()
             {
@@ -53,18 +56,18 @@ namespace Shared.Message
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<ChangeNameReq>(this);
+            return MessagePackSerializer.Serialize<__Fenix__Host__RegisterClientReq>(this);
         }
 
-        public new static ChangeNameReq Deserialize(byte[] data)
+        public new static __Fenix__Host__RegisterClientReq Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<ChangeNameReq>(data);
+            return MessagePackSerializer.Deserialize<__Fenix__Host__RegisterClientReq>(data);
         }
 
         public override void UnPack(byte[] data)
         {
             var obj = Deserialize(data);
-            Copier<ChangeNameReq>.CopyTo(obj, this);
+            Copier<__Fenix__Host__RegisterClientReq>.CopyTo(obj, this);
         }
     }
 }

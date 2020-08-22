@@ -13,9 +13,9 @@ using System;
 
 namespace Shared.Message
 {
-    [MessageType(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__CREATE_ACCOUNT_REQ)]
+    [MessageType(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__LOGIN_REQ)]
     [MessagePackObject]
-    public class CreateAccountReq : IMessageWithCallback
+    public class __ServerGModule__LoginService__LoginReq : IMessageWithCallback
     {
         [Key(0)]
         public global::System.String username { get; set; }
@@ -37,6 +37,18 @@ namespace Shared.Message
             [Key(0)]
             public global::Shared.Protocol.ErrCode code { get; set; } = ErrCode.ERROR;
 
+            [Key(1)]
+            public global::System.String arg1 { get; set; }
+
+            [Key(2)]
+            public global::System.UInt64 arg2 { get; set; }
+
+            [Key(3)]
+            public global::System.String arg3 { get; set; }
+
+            [Key(4)]
+            public global::System.String arg4 { get; set; }
+
             public override byte[] Pack()
             {
                 return MessagePackSerializer.Serialize<Callback>(this);
@@ -56,18 +68,18 @@ namespace Shared.Message
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<CreateAccountReq>(this);
+            return MessagePackSerializer.Serialize<__ServerGModule__LoginService__LoginReq>(this);
         }
 
-        public new static CreateAccountReq Deserialize(byte[] data)
+        public new static __ServerGModule__LoginService__LoginReq Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<CreateAccountReq>(data);
+            return MessagePackSerializer.Deserialize<__ServerGModule__LoginService__LoginReq>(data);
         }
 
         public override void UnPack(byte[] data)
         {
             var obj = Deserialize(data);
-            Copier<CreateAccountReq>.CopyTo(obj, this);
+            Copier<__ServerGModule__LoginService__LoginReq>.CopyTo(obj, this);
         }
     }
 }

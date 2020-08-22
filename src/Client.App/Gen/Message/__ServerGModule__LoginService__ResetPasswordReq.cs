@@ -15,7 +15,7 @@ namespace Shared.Message
 {
     [MessageType(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__RESET_PASSWORD_REQ)]
     [MessagePackObject]
-    public class ResetPasswordReq : IMessage
+    public class __ServerGModule__LoginService__ResetPasswordReq : IMessage
     {
         [Key(0)]
         public global::System.String username { get; set; }
@@ -25,18 +25,18 @@ namespace Shared.Message
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<ResetPasswordReq>(this);
+            return MessagePackSerializer.Serialize<__ServerGModule__LoginService__ResetPasswordReq>(this);
         }
 
-        public new static ResetPasswordReq Deserialize(byte[] data)
+        public new static __ServerGModule__LoginService__ResetPasswordReq Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<ResetPasswordReq>(data);
+            return MessagePackSerializer.Deserialize<__ServerGModule__LoginService__ResetPasswordReq>(data);
         }
 
         public override void UnPack(byte[] data)
         {
             var obj = Deserialize(data);
-            Copier<ResetPasswordReq>.CopyTo(obj, this);
+            Copier<__ServerGModule__LoginService__ResetPasswordReq>.CopyTo(obj, this);
         }
     }
 }

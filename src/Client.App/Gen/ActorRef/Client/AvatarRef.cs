@@ -23,15 +23,15 @@ namespace Client
     [RefType("Client.Avatar")]
     public partial class AvatarRef : ActorRef
     {
-        public async Task<ApiTestNtf.Callback> client_api_test_async(global::System.String uid, global::System.Action<Shared.Protocol.ErrCode> callback=null)
+        public async Task<__Client__Avatar__ApiTestNtf.Callback> client_api_test_async(global::System.String uid, global::System.Action<Shared.Protocol.ErrCode> callback=null)
         {
-            var t = new TaskCompletionSource<ApiTestNtf.Callback>();
+            var t = new TaskCompletionSource<__Client__Avatar__ApiTestNtf.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
                 global::System.Action<Shared.Protocol.ErrCode> _cb = (code) =>
                 {
-                     var cbMsg = new ApiTestNtf.Callback();
+                     var cbMsg = new __Client__Avatar__ApiTestNtf.Callback();
                      cbMsg.code=code;
                      callback?.Invoke(cbMsg.code);
                      t.TrySetResult(cbMsg);
@@ -48,18 +48,18 @@ namespace Client
             }
             else
             {
-                Action<ApiTestNtf.Callback> _cb = (cbMsg) =>
+                Action<__Client__Avatar__ApiTestNtf.Callback> _cb = (cbMsg) =>
                 {
                     callback?.Invoke(cbMsg.code);
                     t.TrySetResult(cbMsg);
                 };
                 await Task.Run(() => {
-                    var msg = new ApiTestNtf()
+                    var msg = new __Client__Avatar__ApiTestNtf()
                     {
                          uid=uid
                     };
                     var cb = new Action<byte[]>((cbData) => {
-                        var cbMsg = cbData==null ? new ApiTestNtf.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<ApiTestNtf.Callback>(cbData);
+                        var cbMsg = cbData==null ? new __Client__Avatar__ApiTestNtf.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<__Client__Avatar__ApiTestNtf.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
                     this.CallRemoteMethod(ProtocolCode.__CLIENT__AVATAR__API_TEST_NTF, msg, cb);
@@ -85,12 +85,12 @@ namespace Client
                 return;
             }
             Task.Run(() => {
-                var msg = new ApiTestNtf()
+                var msg = new __Client__Avatar__ApiTestNtf()
                 {
                     uid=uid
                 };
                 var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null?new ApiTestNtf.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<ApiTestNtf.Callback>(cbData);
+                    var cbMsg = cbData==null?new __Client__Avatar__ApiTestNtf.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<__Client__Avatar__ApiTestNtf.Callback>(cbData);
                     callback?.Invoke(cbMsg.code);
                 });
                 this.CallRemoteMethod(ProtocolCode.__CLIENT__AVATAR__API_TEST_NTF, msg, cb);
@@ -115,7 +115,7 @@ namespace Client
                return;
            }
            Task.Run(() => {
-               var msg = new ApiTest2Ntf()
+               var msg = new __Client__Avatar__ApiTest2Ntf()
                {
                     uid=uid,
                     match_type=match_type
@@ -142,7 +142,7 @@ namespace Client
                return;
            }
            Task.Run(() => {
-               var msg = new OnSyncUserNtf()
+               var msg = new __Client__Avatar__OnSyncUserNtf()
                {
                     data=data
                };

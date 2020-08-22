@@ -487,7 +487,7 @@ namespace Fenix
                             continue;
                     }
 
-                    using (var sw = new StreamWriter(Path.Combine(sharedPath, "Protocol", string.Format("ProtocolCode.{0}.{1}.cs", type.Name, isServer ? "s" : "c")), false, Encoding.UTF8))
+                    using (var sw = new StreamWriter(Path.Combine(sharedPath, "Protocol", string.Format("ProtocolCode.{0}.{1}.{2}.cs", type.Namespace, type.Name, isServer ? "s" : "c")), false, Encoding.UTF8))
                     {
                         string lines = @"
 //AUTOGEN, do not modify it!
@@ -548,6 +548,11 @@ namespace Shared
             if (api == Api.ServerOnly)
                 return "Req";
             return "";
+        }
+
+        static string GetMessageName(string ns, string entityName, string typeName)
+        {
+            return string.Format("__{0}__{1}__{2}", ns.Replace(".", ""), entityName, typeName);
         }
 
         static void GenFromActorType(TypeDefinition type, string sharedCPath, string sharedSPath, string clientPath, string serverPath)
@@ -613,12 +618,10 @@ namespace Shared
                             newList.Add(methodParameterList[ii]);
                         }
                         methodParameterList = newList;
-                    }
-
-                    
+                    } 
 
                     //现在生成message
-                    string message_type = method.Name + GetApiMessagePostfix(api);
+                    string message_type = GetMessageName(type.Namespace, type.Name, method.Name) + GetApiMessagePostfix(api);
 
                     string message_fields = ParseMessageFields(methodParameterList.ToArray(), "        ");
 
@@ -904,15 +907,15 @@ namespace Shared
 
                     string api_rpc_args = ParseArgs(methodParameterList.ToArray(), "_msg.", "callback");
                     string api_type = "ServerApi";
-                    string api_name = "SERVER_API_" + NameToApi(method.Name);
+                    string api_name = "SERVER_API__" + type.Namespace.Replace(".", "") + "__" + type.Name + "__" + NameToApi(method.Name);
                     if (api == Api.ClientApi)
                     {
-                        api_name = "CLIENT_API_" + NameToApi(method.Name);
+                        api_name = "CLIENT_API__" + type.Namespace.Replace(".", "") + "__" + type.Name + "__" + NameToApi(method.Name);
                         api_type = "ClientApi";
                     }
                     else if (api == Api.ServerOnly)
                     {
-                        api_name = "SERVER_ONLY_" + NameToApi(method.Name);
+                        api_name = "SERVER_ONLY__" + type.Namespace.Replace(".", "") + "__" + type.Name + "__" + NameToApi(method.Name);
                         api_type = "ServerOnly";
                     }
 
@@ -996,15 +999,15 @@ namespace Shared
                     apiDefineDic[api_name] = apiDefineCode;
 
                     api_type = "ServerApi";
-                    api_name = "SERVER_API_NATIVE_" + NameToApi(method.Name);
+                    api_name = "SERVER_API_NATIVE__" + type.Namespace.Replace(".", "") + "__" + type.Name + "__" + NameToApi(method.Name);
                     if (api == Api.ClientApi)
                     {
-                        api_name = "CLIENT_API_NATIVE_" + NameToApi(method.Name);
+                        api_name = "CLIENT_API_NATIVE__" + type.Namespace.Replace(".", "") + "__" + type.Name + "__" + NameToApi(method.Name);
                         api_type = "ClientApi";
                     }
                     else if (api == Api.ServerOnly)
                     {
-                        api_name = "SERVER_ONLY_NATIVE_" + NameToApi(method.Name);
+                        api_name = "SERVER_ONLY_NATIVE__" + type.Namespace.Replace(".", "") + "__" + type.Name + "__" + NameToApi(method.Name);
                         api_type = "ServerOnly";
                     }
 
@@ -1149,7 +1152,7 @@ using System.Threading.Tasks;
             else
             {
                 refBuilder.AppendLine($"    public partial class ActorRef");
-            }
+            } 
 
             if (!isHost)
             {
@@ -1161,21 +1164,22 @@ using System.Threading.Tasks;
                 foreach (var sharedPath in new List<string>() { sharedCPath, sharedSPath })
                 {
                     var pPath = Path.Combine(sharedPath, "ActorRef", root_ns);
-                    //Directory.Delete(pPath, false);
                     if (!Directory.Exists(pPath))
+                    {
                         Directory.CreateDirectory(pPath);
+                    }
 
                     //生成客户端msg时，判断一下actor类型的accesstype，如果是serveronly的就不写客户端msg
-                    if (!isHost && sharedPath == sharedCPath)
+                    if (sharedPath == sharedCPath)
                     {
                         var al = GetAttribute<AccessLevelAttribute>(type);
                         if (al == null)
-                            continue;
+                            continue; 
                         if ((int)al.ConstructorArguments[0].Value == (int)ALevel.SERVER)
                             continue;
                     }
 
-                    using (var sw = new StreamWriter(Path.Combine(sharedPath, "ActorRef", root_ns, type.Name + "Ref.cs"), false, Encoding.UTF8))
+                    using (var sw = new StreamWriter(Path.Combine(pPath, type.Name + "Ref.cs"), false, Encoding.UTF8))
                     {
                         sw.WriteLine(result);
                     }

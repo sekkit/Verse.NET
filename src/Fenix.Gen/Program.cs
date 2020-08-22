@@ -26,8 +26,8 @@ namespace Fenix
 
             string sharedClientPath = Path.GetFullPath(Path.Combine(rootPath, "src/Client.App/Gen"));
             string sharedServerPath = Path.GetFullPath(Path.Combine(rootPath, "src/Server.App/Gen"));
-            
-            if(args.Length != 2 || args.First() == "-r")
+ 
+            if (args.Length != 2 || args.First() == "-r")
             {
                 Assembly asmRuntime = Assembly.LoadFrom(Path.Combine(rootPath, "bin/netcoreapp3.1/Fenix.Runtime.dll"));
                 Gen.AutogenHost(asmRuntime, Path.Combine(rootPath, "src/Fenix.Runtime/Common"),
