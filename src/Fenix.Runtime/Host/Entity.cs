@@ -14,7 +14,7 @@ using System.Text.RegularExpressions;
 
 namespace Fenix
 { 
-    public abstract class Entity//: IMessage
+    public abstract class Entity: IMessage
     { 
         public ulong Id { get; set; }
          

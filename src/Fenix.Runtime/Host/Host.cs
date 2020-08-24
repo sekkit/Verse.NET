@@ -136,11 +136,11 @@ namespace Fenix
 
         double lastTs = 0;
 
-        public override byte[] Pack()
-        {
-            return null;
-            //return MessagePackSerializer.Serialize<Host>(this);
-        }
+        //public override byte[] Pack()
+        //{
+        //    return null;
+        //    //return MessagePackSerializer.Serialize<Host>(this);
+        //}
 
         public sealed override void Update()
         {

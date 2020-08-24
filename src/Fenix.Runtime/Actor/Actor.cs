@@ -225,7 +225,7 @@ namespace Fenix
         //{
             
         //} 
-
+ 
         public void Restore()
         {
             this.onRestore();
@@ -384,10 +384,10 @@ namespace Fenix
             
         }
 
-        //public override byte[] Pack()
-        //{
-        //    return null;
-        //    //return MessagePackSerializer.Serialize<Actor>(this);
-        //}
+        public override byte[] Pack()
+        {
+            return null;
+            //return MessagePackSerializer.Serialize<Actor>(this);
+        }
     }
 }
