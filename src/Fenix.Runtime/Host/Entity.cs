@@ -13,36 +13,21 @@ using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 
 namespace Fenix
-{
-    //[MessagePackObject]
-    //[Serializable]
-    public abstract class Entity: IMessage
-    {
-        //[Key(0)]
-        //[DataMember]
+{ 
+    public abstract class Entity//: IMessage
+    { 
         public ulong Id { get; set; }
-
-        //[Key(2)]
-        //[DataMember]
+         
         public string UniqueName { get; set; }
-
-        //[IgnoreMember]
+         
         public bool IsAlive { get; set; } = true;
-
-        //[IgnoreMember]
-        //[IgnoreDataMember]
+         
         public ConcurrentDictionary<UInt64, RpcCommand> rpcDic     = new ConcurrentDictionary<UInt64, RpcCommand>();
-
-        //[IgnoreMember]
-        //[IgnoreDataMember]
+         
         public ConcurrentDictionary<UInt32, MethodInfo> rpcStubDic = new ConcurrentDictionary<UInt32, MethodInfo>();
-
-        //[IgnoreMember]
-        //[IgnoreDataMember]
+         
         public ConcurrentDictionary<UInt32, MethodInfo> rpcNativeStubDic = new ConcurrentDictionary<uint, MethodInfo>();
-
-        //[IgnoreMember]
-        //[IgnoreDataMember]
+         
         private ConcurrentDictionary<ulong, Timer> mTimerDic = new ConcurrentDictionary<ulong, Timer>();
 
         public Entity()

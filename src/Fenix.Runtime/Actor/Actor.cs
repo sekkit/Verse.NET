@@ -38,7 +38,7 @@ namespace Fenix
 
 #endif
 
-        protected Dictionary<Type, IMessage> mPersistentDic = new Dictionary<Type, IMessage>();
+        protected Dictionary<Type, Tuple<string, IMessage>> mPersistentDic = new Dictionary<Type, Tuple<string, IMessage>>();
          
         protected Dictionary<Type, object> mRuntimeDic = new Dictionary<Type, object>();
 
@@ -56,7 +56,7 @@ namespace Fenix
         public T GetPersist<T>() where T : IMessage
         { 
             if(mPersistentDic.TryGetValue(typeof(T), out var value))
-                return (T)value;
+                return (T)value.Item2;
             return default(T);
         }
 
@@ -116,10 +116,10 @@ namespace Fenix
                 foreach (PersistentDataAttribute attr in attrs)
                 {
 #if !CLIENT
-                    mPersistentDic[attr.DataType] = await LoadDataFromDb(attr.dbName, attr.DataType);
+                    mPersistentDic[attr.DataType] = new Tuple<string, IMessage>(attr.dbName, await LoadDataFromDb(attr.dbName, attr.DataType));
 #endif
                     if (!mPersistentDic.TryGetValue(attr.DataType, out var d) ||  d == null)
-                        mPersistentDic[attr.DataType] = Activator.CreateInstance(attr.DataType) as IMessage; 
+                        mPersistentDic[attr.DataType] = new Tuple<string, IMessage>(attr.dbName, Activator.CreateInstance(attr.DataType) as IMessage); 
                 }
             }
 
@@ -158,6 +158,28 @@ namespace Fenix
             string dbKey = this.UniqueName + ":" + type.FullName;
             var db = Global.DbManager.GetDb(dbName);
             return await db.SetAsync(dbKey, data);
+        }
+
+        protected void SaveAll()
+        {
+            SaveRuntime();
+            SavePersistent();
+        }
+
+        protected void SaveRuntime()
+        {
+            foreach (var kv in this.mRuntimeDic)
+            {
+                SaveDataToDb(DbConf.RUNTIME, kv.Key, kv.Value);
+            } 
+        }
+
+        protected void SavePersistent()
+        {
+            foreach (var kv in this.mPersistentDic)
+            {
+                SaveDataToDb(kv.Value.Item1, kv.Key, kv.Value.Item2);
+            }
         }
 
 #endif
@@ -362,10 +384,10 @@ namespace Fenix
             
         }
 
-        public override byte[] Pack()
-        {
-            return null;
-            //return MessagePackSerializer.Serialize<Actor>(this);
-        }
+        //public override byte[] Pack()
+        //{
+        //    return null;
+        //    //return MessagePackSerializer.Serialize<Actor>(this);
+        //}
     }
 }
