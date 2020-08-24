@@ -44,15 +44,6 @@ namespace Client
             this.ApiTest2(_msg.uid, _msg.match_type);
         }
 
-        [RpcMethod(ProtocolCode.__CLIENT__AVATAR__ON_SYNC_USER_NTF, Api.ClientApi)]
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public void CLIENT_API__Client__Avatar__on_sync_user(IMessage msg)
-        {
-            var _msg = (__Client__Avatar__OnSyncUserNtf)msg;
-            this.OnSyncUser(_msg.data);
-            on_sync_user?.Invoke(_msg.data);
-        }
-
         [RpcMethod(ProtocolCode.__CLIENT__AVATAR__API_TEST_NTF, Api.ClientApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void CLIENT_API_NATIVE__Client__Avatar__api_test(global::System.String uid, global::System.Action<Shared.Protocol.ErrCode> callback)
@@ -65,15 +56,6 @@ namespace Client
         public void CLIENT_API_NATIVE__Client__Avatar__api_test2(global::System.String uid, global::System.Int32 match_type)
         {
             this.ApiTest2(uid, match_type);
-        }
-
-        public event Action<global::System.Byte[]> on_sync_user;
-        [RpcMethod(ProtocolCode.__CLIENT__AVATAR__ON_SYNC_USER_NTF, Api.ClientApi)]
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public void CLIENT_API_NATIVE__Client__Avatar__on_sync_user(global::System.Byte[] data)
-        {
-            this.OnSyncUser(data);
-            on_sync_user?.Invoke(data);
         }
 
 #endif

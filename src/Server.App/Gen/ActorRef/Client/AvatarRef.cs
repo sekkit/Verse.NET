@@ -123,32 +123,6 @@ namespace Client
                this.CallRemoteMethod(ProtocolCode.__CLIENT__AVATAR__API_TEST2_NTF, msg, null);
             });
         }
-
-
-        public void client_on_sync_user(global::System.Byte[] data)
-        {
-           var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
-           if (this.FromHostId == toHostId)
-           {
-                var protoCode = ProtocolCode.__CLIENT__AVATAR__ON_SYNC_USER_NTF;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
-                {
-                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
-                    var context = new RpcContext(null, peer);
-                    Global.Host.CallMethodWithParams(protoCode, new object[] { data, context });
-                }
-                else
-                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { data }); 
-               return;
-           }
-           Task.Run(() => {
-               var msg = new __Client__Avatar__OnSyncUserNtf()
-               {
-                    data=data
-               };
-               this.CallRemoteMethod(ProtocolCode.__CLIENT__AVATAR__ON_SYNC_USER_NTF, msg, null);
-            });
-        }
     }
 }
 

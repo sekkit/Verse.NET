@@ -22,15 +22,15 @@ namespace Fenix
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void CLIENT_API__Fenix__Host__on_before_disconnect(IMessage msg, Action<IMessage> cb, RpcContext context)
         {
-            var _msg = (__Fenix__Host__OnBeforeDisconnectNtf)msg;
+            var _msg = (OnBeforeDisconnectNtf)msg;
             this.OnBeforeDisconnect(_msg.reason, () =>
             {
-                var cbMsg = new __Fenix__Host__OnBeforeDisconnectNtf.Callback();
+                var cbMsg = new OnBeforeDisconnectNtf.Callback();
 
                 cb.Invoke(cbMsg);
             on_before_disconnect?.Invoke(_msg.reason, () =>
             {
-                var cbMsg = new __Fenix__Host__OnBeforeDisconnectNtf.Callback();
+                var cbMsg = new OnBeforeDisconnectNtf.Callback();
 
                 cb.Invoke(cbMsg);
             });
@@ -41,7 +41,7 @@ namespace Fenix
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void CLIENT_API__Fenix__Host__on_server_actor_enable(IMessage msg, RpcContext context)
         {
-            var _msg = (__Fenix__Host__OnServerActorEnableNtf)msg;
+            var _msg = (OnServerActorEnableNtf)msg;
             this.OnServerActorEnable(_msg.actorName, context);
             on_server_actor_enable?.Invoke(_msg.actorName);
         }
@@ -50,10 +50,10 @@ namespace Fenix
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void CLIENT_API__Fenix__Host__reconnect_server_actor(IMessage msg, Action<IMessage> cb, RpcContext context)
         {
-            var _msg = (__Fenix__Host__ReconnectServerActorNtf)msg;
+            var _msg = (ReconnectServerActorNtf)msg;
             this.ReconnectServerActor(_msg.hostId, _msg.hostName, _msg.hostIP, _msg.hostPort, _msg.actorId, _msg.actorName, _msg.aTypeName, (code) =>
             {
-                var cbMsg = new __Fenix__Host__ReconnectServerActorNtf.Callback();
+                var cbMsg = new ReconnectServerActorNtf.Callback();
                 cbMsg.code=code;
                 cb.Invoke(cbMsg);
             }, context);
@@ -90,10 +90,10 @@ namespace Fenix
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API__Fenix__Host__bind_client_actor(IMessage msg, Action<IMessage> cb, RpcContext context)
         {
-            var _msg = (__Fenix__Host__BindClientActorReq)msg;
+            var _msg = (BindClientActorReq)msg;
             this.BindClientActor(_msg.actorName, (code) =>
             {
-                var cbMsg = new __Fenix__Host__BindClientActorReq.Callback();
+                var cbMsg = new BindClientActorReq.Callback();
                 cbMsg.code=code;
                 cb.Invoke(cbMsg);
             }, context);
@@ -103,10 +103,10 @@ namespace Fenix
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API__Fenix__Host__register_client(IMessage msg, Action<IMessage> cb, RpcContext context)
         {
-            var _msg = (__Fenix__Host__RegisterClientReq)msg;
+            var _msg = (RegisterClientReq)msg;
             this.RegisterClient(_msg.hostId, _msg.hostName, (code, arg1) =>
             {
-                var cbMsg = new __Fenix__Host__RegisterClientReq.Callback();
+                var cbMsg = new RegisterClientReq.Callback();
                 cbMsg.code=code;
                 cbMsg.arg1=arg1;
                 cb.Invoke(cbMsg);
@@ -117,10 +117,10 @@ namespace Fenix
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API__Fenix__Host__remove_client_actor(IMessage msg, Action<IMessage> cb, RpcContext context)
         {
-            var _msg = (__Fenix__Host__RemoveClientActorReq)msg;
+            var _msg = (RemoveClientActorReq)msg;
             this.RemoveClientActor(_msg.actorId, _msg.reason, (code) =>
             {
-                var cbMsg = new __Fenix__Host__RemoveClientActorReq.Callback();
+                var cbMsg = new RemoveClientActorReq.Callback();
                 cbMsg.code=code;
                 cb.Invoke(cbMsg);
             }, context);
@@ -130,10 +130,10 @@ namespace Fenix
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_ONLY__Fenix__Host__create_actor(IMessage msg, Action<IMessage> cb, RpcContext context)
         {
-            var _msg = (__Fenix__Host__CreateActorReq)msg;
+            var _msg = (CreateActorReq)msg;
             this.CreateActor(_msg.typename, _msg.name, (code, arg1, arg2) =>
             {
-                var cbMsg = new __Fenix__Host__CreateActorReq.Callback();
+                var cbMsg = new CreateActorReq.Callback();
                 cbMsg.code=code;
                 cbMsg.arg1=arg1;
                 cbMsg.arg2=arg2;
@@ -145,10 +145,10 @@ namespace Fenix
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_ONLY__Fenix__Host__migrate_actor(IMessage msg, Action<IMessage> cb, RpcContext context)
         {
-            var _msg = (__Fenix__Host__MigrateActorReq)msg;
+            var _msg = (MigrateActorReq)msg;
             this.MigrateActor(_msg.actorId, (code, arg1) =>
             {
-                var cbMsg = new __Fenix__Host__MigrateActorReq.Callback();
+                var cbMsg = new MigrateActorReq.Callback();
                 cbMsg.code=code;
                 cbMsg.arg1=arg1;
                 cb.Invoke(cbMsg);
@@ -159,7 +159,7 @@ namespace Fenix
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_ONLY__Fenix__Host__register(IMessage msg, RpcContext context)
         {
-            var _msg = (__Fenix__Host__RegisterReq)msg;
+            var _msg = (RegisterReq)msg;
             this.Register(_msg.hostId, _msg.hostName, context);
         }
 
@@ -167,10 +167,10 @@ namespace Fenix
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_ONLY__Fenix__Host__remove_actor(IMessage msg, Action<IMessage> cb, RpcContext context)
         {
-            var _msg = (__Fenix__Host__RemoveActorReq)msg;
+            var _msg = (RemoveActorReq)msg;
             this.RemoveActor(_msg.actorId, (code) =>
             {
-                var cbMsg = new __Fenix__Host__RemoveActorReq.Callback();
+                var cbMsg = new RemoveActorReq.Callback();
                 cbMsg.code=code;
                 cb.Invoke(cbMsg);
             }, context);

@@ -18,15 +18,15 @@ namespace Fenix
 
     public partial class ActorRef
     {
-        public async Task<__Fenix__Host__BindClientActorReq.Callback> BindClientActorAsync(global::System.String actorName, global::System.Action<global::Fenix.Common.DefaultErrCode> callback=null)
+        public async Task<BindClientActorReq.Callback> BindClientActorAsync(global::System.String actorName, global::System.Action<global::Fenix.Common.DefaultErrCode> callback=null)
         {
-            var t = new TaskCompletionSource<__Fenix__Host__BindClientActorReq.Callback>();
+            var t = new TaskCompletionSource<BindClientActorReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
                 global::System.Action<global::Fenix.Common.DefaultErrCode> _cb = (code) =>
                 {
-                     var cbMsg = new __Fenix__Host__BindClientActorReq.Callback();
+                     var cbMsg = new BindClientActorReq.Callback();
                      cbMsg.code=code;
                      callback?.Invoke(cbMsg.code);
                      t.TrySetResult(cbMsg);
@@ -43,18 +43,18 @@ namespace Fenix
             }
             else
             {
-                Action<__Fenix__Host__BindClientActorReq.Callback> _cb = (cbMsg) =>
+                Action<BindClientActorReq.Callback> _cb = (cbMsg) =>
                 {
                     callback?.Invoke(cbMsg.code);
                     t.TrySetResult(cbMsg);
                 };
                 await Task.Run(() => {
-                    var msg = new __Fenix__Host__BindClientActorReq()
+                    var msg = new BindClientActorReq()
                     {
                          actorName=actorName
                     };
                     var cb = new Action<byte[]>((cbData) => {
-                        var cbMsg = cbData==null ? new __Fenix__Host__BindClientActorReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<__Fenix__Host__BindClientActorReq.Callback>(cbData);
+                        var cbMsg = cbData==null ? new BindClientActorReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<BindClientActorReq.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
                     this.CallRemoteMethod(OpCode.BIND_CLIENT_ACTOR_REQ, msg, cb);
@@ -80,27 +80,27 @@ namespace Fenix
                 return;
             }
             Task.Run(() => {
-                var msg = new __Fenix__Host__BindClientActorReq()
+                var msg = new BindClientActorReq()
                 {
                     actorName=actorName
                 };
                 var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null?new __Fenix__Host__BindClientActorReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<__Fenix__Host__BindClientActorReq.Callback>(cbData);
+                    var cbMsg = cbData==null?new BindClientActorReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<BindClientActorReq.Callback>(cbData);
                     callback?.Invoke(cbMsg.code);
                 });
                 this.CallRemoteMethod(OpCode.BIND_CLIENT_ACTOR_REQ, msg, cb);
             });
         }
 
-        public async Task<__Fenix__Host__CreateActorReq.Callback> CreateActorAsync(global::System.String typename, global::System.String name, global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.String, global::System.UInt64> callback=null)
+        public async Task<CreateActorReq.Callback> CreateActorAsync(global::System.String typename, global::System.String name, global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.String, global::System.UInt64> callback=null)
         {
-            var t = new TaskCompletionSource<__Fenix__Host__CreateActorReq.Callback>();
+            var t = new TaskCompletionSource<CreateActorReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
                 global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.String, global::System.UInt64> _cb = (code, arg1, arg2) =>
                 {
-                     var cbMsg = new __Fenix__Host__CreateActorReq.Callback();
+                     var cbMsg = new CreateActorReq.Callback();
                      cbMsg.code=code;
                      cbMsg.arg1=arg1;
                      cbMsg.arg2=arg2;
@@ -119,19 +119,19 @@ namespace Fenix
             }
             else
             {
-                Action<__Fenix__Host__CreateActorReq.Callback> _cb = (cbMsg) =>
+                Action<CreateActorReq.Callback> _cb = (cbMsg) =>
                 {
                     callback?.Invoke(cbMsg.code, cbMsg.arg1, cbMsg.arg2);
                     t.TrySetResult(cbMsg);
                 };
                 await Task.Run(() => {
-                    var msg = new __Fenix__Host__CreateActorReq()
+                    var msg = new CreateActorReq()
                     {
                          typename=typename,
                          name=name
                     };
                     var cb = new Action<byte[]>((cbData) => {
-                        var cbMsg = cbData==null ? new __Fenix__Host__CreateActorReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<__Fenix__Host__CreateActorReq.Callback>(cbData);
+                        var cbMsg = cbData==null ? new CreateActorReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<CreateActorReq.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
                     this.CallRemoteMethod(OpCode.CREATE_ACTOR_REQ, msg, cb);
@@ -157,28 +157,28 @@ namespace Fenix
                 return;
             }
             Task.Run(() => {
-                var msg = new __Fenix__Host__CreateActorReq()
+                var msg = new CreateActorReq()
                 {
                     typename=typename,
                     name=name
                 };
                 var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null?new __Fenix__Host__CreateActorReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<__Fenix__Host__CreateActorReq.Callback>(cbData);
+                    var cbMsg = cbData==null?new CreateActorReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<CreateActorReq.Callback>(cbData);
                     callback?.Invoke(cbMsg.code, cbMsg.arg1, cbMsg.arg2);
                 });
                 this.CallRemoteMethod(OpCode.CREATE_ACTOR_REQ, msg, cb);
             });
         }
 
-        public async Task<__Fenix__Host__MigrateActorReq.Callback> MigrateActorAsync(global::System.UInt64 actorId, global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.Byte[]> callback=null)
+        public async Task<MigrateActorReq.Callback> MigrateActorAsync(global::System.UInt64 actorId, global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.Byte[]> callback=null)
         {
-            var t = new TaskCompletionSource<__Fenix__Host__MigrateActorReq.Callback>();
+            var t = new TaskCompletionSource<MigrateActorReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
                 global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.Byte[]> _cb = (code, arg1) =>
                 {
-                     var cbMsg = new __Fenix__Host__MigrateActorReq.Callback();
+                     var cbMsg = new MigrateActorReq.Callback();
                      cbMsg.code=code;
                      cbMsg.arg1=arg1;
                      callback?.Invoke(cbMsg.code, cbMsg.arg1);
@@ -196,18 +196,18 @@ namespace Fenix
             }
             else
             {
-                Action<__Fenix__Host__MigrateActorReq.Callback> _cb = (cbMsg) =>
+                Action<MigrateActorReq.Callback> _cb = (cbMsg) =>
                 {
                     callback?.Invoke(cbMsg.code, cbMsg.arg1);
                     t.TrySetResult(cbMsg);
                 };
                 await Task.Run(() => {
-                    var msg = new __Fenix__Host__MigrateActorReq()
+                    var msg = new MigrateActorReq()
                     {
                          actorId=actorId
                     };
                     var cb = new Action<byte[]>((cbData) => {
-                        var cbMsg = cbData==null ? new __Fenix__Host__MigrateActorReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<__Fenix__Host__MigrateActorReq.Callback>(cbData);
+                        var cbMsg = cbData==null ? new MigrateActorReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<MigrateActorReq.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
                     this.CallRemoteMethod(OpCode.MIGRATE_ACTOR_REQ, msg, cb);
@@ -233,27 +233,27 @@ namespace Fenix
                 return;
             }
             Task.Run(() => {
-                var msg = new __Fenix__Host__MigrateActorReq()
+                var msg = new MigrateActorReq()
                 {
                     actorId=actorId
                 };
                 var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null?new __Fenix__Host__MigrateActorReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<__Fenix__Host__MigrateActorReq.Callback>(cbData);
+                    var cbMsg = cbData==null?new MigrateActorReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<MigrateActorReq.Callback>(cbData);
                     callback?.Invoke(cbMsg.code, cbMsg.arg1);
                 });
                 this.CallRemoteMethod(OpCode.MIGRATE_ACTOR_REQ, msg, cb);
             });
         }
 
-        public async Task<__Fenix__Host__OnBeforeDisconnectNtf.Callback> OnBeforeDisconnectAsync(global::Fenix.Common.DisconnectReason reason, global::System.Action callback=null)
+        public async Task<OnBeforeDisconnectNtf.Callback> OnBeforeDisconnectAsync(global::Fenix.Common.DisconnectReason reason, global::System.Action callback=null)
         {
-            var t = new TaskCompletionSource<__Fenix__Host__OnBeforeDisconnectNtf.Callback>();
+            var t = new TaskCompletionSource<OnBeforeDisconnectNtf.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
                 global::System.Action _cb = () =>
                 {
-                     var cbMsg = new __Fenix__Host__OnBeforeDisconnectNtf.Callback();
+                     var cbMsg = new OnBeforeDisconnectNtf.Callback();
 
                      callback?.Invoke();
                      t.TrySetResult(cbMsg);
@@ -270,18 +270,18 @@ namespace Fenix
             }
             else
             {
-                Action<__Fenix__Host__OnBeforeDisconnectNtf.Callback> _cb = (cbMsg) =>
+                Action<OnBeforeDisconnectNtf.Callback> _cb = (cbMsg) =>
                 {
                     callback?.Invoke();
                     t.TrySetResult(cbMsg);
                 };
                 await Task.Run(() => {
-                    var msg = new __Fenix__Host__OnBeforeDisconnectNtf()
+                    var msg = new OnBeforeDisconnectNtf()
                     {
                          reason=reason
                     };
                     var cb = new Action<byte[]>((cbData) => {
-                        var cbMsg = cbData==null ? new __Fenix__Host__OnBeforeDisconnectNtf.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<__Fenix__Host__OnBeforeDisconnectNtf.Callback>(cbData);
+                        var cbMsg = cbData==null ? new OnBeforeDisconnectNtf.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<OnBeforeDisconnectNtf.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
                     this.CallRemoteMethod(OpCode.ON_BEFORE_DISCONNECT_NTF, msg, cb);
@@ -307,12 +307,12 @@ namespace Fenix
                 return;
             }
             Task.Run(() => {
-                var msg = new __Fenix__Host__OnBeforeDisconnectNtf()
+                var msg = new OnBeforeDisconnectNtf()
                 {
                     reason=reason
                 };
                 var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null?new __Fenix__Host__OnBeforeDisconnectNtf.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<__Fenix__Host__OnBeforeDisconnectNtf.Callback>(cbData);
+                    var cbMsg = cbData==null?new OnBeforeDisconnectNtf.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<OnBeforeDisconnectNtf.Callback>(cbData);
                     callback?.Invoke();
                 });
                 this.CallRemoteMethod(OpCode.ON_BEFORE_DISCONNECT_NTF, msg, cb);
@@ -337,7 +337,7 @@ namespace Fenix
                return;
            }
            Task.Run(() => {
-               var msg = new __Fenix__Host__OnServerActorEnableNtf()
+               var msg = new OnServerActorEnableNtf()
                {
                     actorName=actorName
                };
@@ -345,15 +345,15 @@ namespace Fenix
             });
         }
 
-        public async Task<__Fenix__Host__ReconnectServerActorNtf.Callback> ReconnectServerActorAsync(global::System.UInt64 hostId, global::System.String hostName, global::System.String hostIP, global::System.Int32 hostPort, global::System.UInt64 actorId, global::System.String actorName, global::System.String aTypeName, global::System.Action<global::Fenix.Common.DefaultErrCode> callback=null)
+        public async Task<ReconnectServerActorNtf.Callback> ReconnectServerActorAsync(global::System.UInt64 hostId, global::System.String hostName, global::System.String hostIP, global::System.Int32 hostPort, global::System.UInt64 actorId, global::System.String actorName, global::System.String aTypeName, global::System.Action<global::Fenix.Common.DefaultErrCode> callback=null)
         {
-            var t = new TaskCompletionSource<__Fenix__Host__ReconnectServerActorNtf.Callback>();
+            var t = new TaskCompletionSource<ReconnectServerActorNtf.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
                 global::System.Action<global::Fenix.Common.DefaultErrCode> _cb = (code) =>
                 {
-                     var cbMsg = new __Fenix__Host__ReconnectServerActorNtf.Callback();
+                     var cbMsg = new ReconnectServerActorNtf.Callback();
                      cbMsg.code=code;
                      callback?.Invoke(cbMsg.code);
                      t.TrySetResult(cbMsg);
@@ -370,13 +370,13 @@ namespace Fenix
             }
             else
             {
-                Action<__Fenix__Host__ReconnectServerActorNtf.Callback> _cb = (cbMsg) =>
+                Action<ReconnectServerActorNtf.Callback> _cb = (cbMsg) =>
                 {
                     callback?.Invoke(cbMsg.code);
                     t.TrySetResult(cbMsg);
                 };
                 await Task.Run(() => {
-                    var msg = new __Fenix__Host__ReconnectServerActorNtf()
+                    var msg = new ReconnectServerActorNtf()
                     {
                          hostId=hostId,
                          hostName=hostName,
@@ -387,7 +387,7 @@ namespace Fenix
                          aTypeName=aTypeName
                     };
                     var cb = new Action<byte[]>((cbData) => {
-                        var cbMsg = cbData==null ? new __Fenix__Host__ReconnectServerActorNtf.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<__Fenix__Host__ReconnectServerActorNtf.Callback>(cbData);
+                        var cbMsg = cbData==null ? new ReconnectServerActorNtf.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<ReconnectServerActorNtf.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
                     this.CallRemoteMethod(OpCode.RECONNECT_SERVER_ACTOR_NTF, msg, cb);
@@ -413,7 +413,7 @@ namespace Fenix
                 return;
             }
             Task.Run(() => {
-                var msg = new __Fenix__Host__ReconnectServerActorNtf()
+                var msg = new ReconnectServerActorNtf()
                 {
                     hostId=hostId,
                     hostName=hostName,
@@ -424,7 +424,7 @@ namespace Fenix
                     aTypeName=aTypeName
                 };
                 var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null?new __Fenix__Host__ReconnectServerActorNtf.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<__Fenix__Host__ReconnectServerActorNtf.Callback>(cbData);
+                    var cbMsg = cbData==null?new ReconnectServerActorNtf.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<ReconnectServerActorNtf.Callback>(cbData);
                     callback?.Invoke(cbMsg.code);
                 });
                 this.CallRemoteMethod(OpCode.RECONNECT_SERVER_ACTOR_NTF, msg, cb);
@@ -449,7 +449,7 @@ namespace Fenix
                return;
            }
            Task.Run(() => {
-               var msg = new __Fenix__Host__RegisterReq()
+               var msg = new RegisterReq()
                {
                     hostId=hostId,
                     hostName=hostName
@@ -458,15 +458,15 @@ namespace Fenix
             });
         }
 
-        public async Task<__Fenix__Host__RegisterClientReq.Callback> RegisterClientAsync(global::System.UInt64 hostId, global::System.String hostName, global::System.Action<global::Fenix.Common.DefaultErrCode, global::Fenix.HostInfo> callback=null)
+        public async Task<RegisterClientReq.Callback> RegisterClientAsync(global::System.UInt64 hostId, global::System.String hostName, global::System.Action<global::Fenix.Common.DefaultErrCode, global::Fenix.HostInfo> callback=null)
         {
-            var t = new TaskCompletionSource<__Fenix__Host__RegisterClientReq.Callback>();
+            var t = new TaskCompletionSource<RegisterClientReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
                 global::System.Action<global::Fenix.Common.DefaultErrCode, global::Fenix.HostInfo> _cb = (code, arg1) =>
                 {
-                     var cbMsg = new __Fenix__Host__RegisterClientReq.Callback();
+                     var cbMsg = new RegisterClientReq.Callback();
                      cbMsg.code=code;
                      cbMsg.arg1=arg1;
                      callback?.Invoke(cbMsg.code, cbMsg.arg1);
@@ -484,19 +484,19 @@ namespace Fenix
             }
             else
             {
-                Action<__Fenix__Host__RegisterClientReq.Callback> _cb = (cbMsg) =>
+                Action<RegisterClientReq.Callback> _cb = (cbMsg) =>
                 {
                     callback?.Invoke(cbMsg.code, cbMsg.arg1);
                     t.TrySetResult(cbMsg);
                 };
                 await Task.Run(() => {
-                    var msg = new __Fenix__Host__RegisterClientReq()
+                    var msg = new RegisterClientReq()
                     {
                          hostId=hostId,
                          hostName=hostName
                     };
                     var cb = new Action<byte[]>((cbData) => {
-                        var cbMsg = cbData==null ? new __Fenix__Host__RegisterClientReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<__Fenix__Host__RegisterClientReq.Callback>(cbData);
+                        var cbMsg = cbData==null ? new RegisterClientReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<RegisterClientReq.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
                     this.CallRemoteMethod(OpCode.REGISTER_CLIENT_REQ, msg, cb);
@@ -522,28 +522,28 @@ namespace Fenix
                 return;
             }
             Task.Run(() => {
-                var msg = new __Fenix__Host__RegisterClientReq()
+                var msg = new RegisterClientReq()
                 {
                     hostId=hostId,
                     hostName=hostName
                 };
                 var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null?new __Fenix__Host__RegisterClientReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<__Fenix__Host__RegisterClientReq.Callback>(cbData);
+                    var cbMsg = cbData==null?new RegisterClientReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<RegisterClientReq.Callback>(cbData);
                     callback?.Invoke(cbMsg.code, cbMsg.arg1);
                 });
                 this.CallRemoteMethod(OpCode.REGISTER_CLIENT_REQ, msg, cb);
             });
         }
 
-        public async Task<__Fenix__Host__RemoveActorReq.Callback> RemoveActorAsync(global::System.UInt64 actorId, global::System.Action<global::Fenix.Common.DefaultErrCode> callback=null)
+        public async Task<RemoveActorReq.Callback> RemoveActorAsync(global::System.UInt64 actorId, global::System.Action<global::Fenix.Common.DefaultErrCode> callback=null)
         {
-            var t = new TaskCompletionSource<__Fenix__Host__RemoveActorReq.Callback>();
+            var t = new TaskCompletionSource<RemoveActorReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
                 global::System.Action<global::Fenix.Common.DefaultErrCode> _cb = (code) =>
                 {
-                     var cbMsg = new __Fenix__Host__RemoveActorReq.Callback();
+                     var cbMsg = new RemoveActorReq.Callback();
                      cbMsg.code=code;
                      callback?.Invoke(cbMsg.code);
                      t.TrySetResult(cbMsg);
@@ -560,18 +560,18 @@ namespace Fenix
             }
             else
             {
-                Action<__Fenix__Host__RemoveActorReq.Callback> _cb = (cbMsg) =>
+                Action<RemoveActorReq.Callback> _cb = (cbMsg) =>
                 {
                     callback?.Invoke(cbMsg.code);
                     t.TrySetResult(cbMsg);
                 };
                 await Task.Run(() => {
-                    var msg = new __Fenix__Host__RemoveActorReq()
+                    var msg = new RemoveActorReq()
                     {
                          actorId=actorId
                     };
                     var cb = new Action<byte[]>((cbData) => {
-                        var cbMsg = cbData==null ? new __Fenix__Host__RemoveActorReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<__Fenix__Host__RemoveActorReq.Callback>(cbData);
+                        var cbMsg = cbData==null ? new RemoveActorReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<RemoveActorReq.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
                     this.CallRemoteMethod(OpCode.REMOVE_ACTOR_REQ, msg, cb);
@@ -597,27 +597,27 @@ namespace Fenix
                 return;
             }
             Task.Run(() => {
-                var msg = new __Fenix__Host__RemoveActorReq()
+                var msg = new RemoveActorReq()
                 {
                     actorId=actorId
                 };
                 var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null?new __Fenix__Host__RemoveActorReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<__Fenix__Host__RemoveActorReq.Callback>(cbData);
+                    var cbMsg = cbData==null?new RemoveActorReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<RemoveActorReq.Callback>(cbData);
                     callback?.Invoke(cbMsg.code);
                 });
                 this.CallRemoteMethod(OpCode.REMOVE_ACTOR_REQ, msg, cb);
             });
         }
 
-        public async Task<__Fenix__Host__RemoveClientActorReq.Callback> RemoveClientActorAsync(global::System.UInt64 actorId, global::Fenix.Common.DisconnectReason reason, global::System.Action<global::Fenix.Common.DefaultErrCode> callback=null)
+        public async Task<RemoveClientActorReq.Callback> RemoveClientActorAsync(global::System.UInt64 actorId, global::Fenix.Common.DisconnectReason reason, global::System.Action<global::Fenix.Common.DefaultErrCode> callback=null)
         {
-            var t = new TaskCompletionSource<__Fenix__Host__RemoveClientActorReq.Callback>();
+            var t = new TaskCompletionSource<RemoveClientActorReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
                 global::System.Action<global::Fenix.Common.DefaultErrCode> _cb = (code) =>
                 {
-                     var cbMsg = new __Fenix__Host__RemoveClientActorReq.Callback();
+                     var cbMsg = new RemoveClientActorReq.Callback();
                      cbMsg.code=code;
                      callback?.Invoke(cbMsg.code);
                      t.TrySetResult(cbMsg);
@@ -634,19 +634,19 @@ namespace Fenix
             }
             else
             {
-                Action<__Fenix__Host__RemoveClientActorReq.Callback> _cb = (cbMsg) =>
+                Action<RemoveClientActorReq.Callback> _cb = (cbMsg) =>
                 {
                     callback?.Invoke(cbMsg.code);
                     t.TrySetResult(cbMsg);
                 };
                 await Task.Run(() => {
-                    var msg = new __Fenix__Host__RemoveClientActorReq()
+                    var msg = new RemoveClientActorReq()
                     {
                          actorId=actorId,
                          reason=reason
                     };
                     var cb = new Action<byte[]>((cbData) => {
-                        var cbMsg = cbData==null ? new __Fenix__Host__RemoveClientActorReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<__Fenix__Host__RemoveClientActorReq.Callback>(cbData);
+                        var cbMsg = cbData==null ? new RemoveClientActorReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<RemoveClientActorReq.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
                     this.CallRemoteMethod(OpCode.REMOVE_CLIENT_ACTOR_REQ, msg, cb);
@@ -672,13 +672,13 @@ namespace Fenix
                 return;
             }
             Task.Run(() => {
-                var msg = new __Fenix__Host__RemoveClientActorReq()
+                var msg = new RemoveClientActorReq()
                 {
                     actorId=actorId,
                     reason=reason
                 };
                 var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null?new __Fenix__Host__RemoveClientActorReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<__Fenix__Host__RemoveClientActorReq.Callback>(cbData);
+                    var cbMsg = cbData==null?new RemoveClientActorReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<RemoveClientActorReq.Callback>(cbData);
                     callback?.Invoke(cbMsg.code);
                 });
                 this.CallRemoteMethod(OpCode.REMOVE_CLIENT_ACTOR_REQ, msg, cb);

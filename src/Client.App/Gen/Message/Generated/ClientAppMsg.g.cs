@@ -49,22 +49,21 @@ namespace MessagePack.Resolvers
 
         static ClientAppResolverGetFormatterHelper()
         {
-            lookup = new global::System.Collections.Generic.Dictionary<Type, int>(14)
+            lookup = new global::System.Collections.Generic.Dictionary<Type, int>(13)
             {
                 { typeof(global::Shared.Message.__Client__Avatar__ApiTest2Ntf), 0 },
                 { typeof(global::Shared.Message.__Client__Avatar__ApiTestNtf), 1 },
                 { typeof(global::Shared.Message.__Client__Avatar__ApiTestNtf.Callback), 2 },
-                { typeof(global::Shared.Message.__Client__Avatar__OnSyncUserNtf), 3 },
-                { typeof(global::Shared.Message.__ServerGModule__LoginService__CreateAccountReq), 4 },
-                { typeof(global::Shared.Message.__ServerGModule__LoginService__CreateAccountReq.Callback), 5 },
-                { typeof(global::Shared.Message.__ServerGModule__LoginService__DeleteAccountReq), 6 },
-                { typeof(global::Shared.Message.__ServerGModule__LoginService__DeleteAccountReq.Callback), 7 },
-                { typeof(global::Shared.Message.__ServerGModule__LoginService__LoginReq), 8 },
-                { typeof(global::Shared.Message.__ServerGModule__LoginService__LoginReq.Callback), 9 },
-                { typeof(global::Shared.Message.__ServerGModule__LoginService__ResetPasswordReq), 10 },
-                { typeof(global::Shared.Message.__ServerUModule__Avatar__ChangeNameReq), 11 },
-                { typeof(global::Shared.Message.__ServerUModule__Avatar__ChangeNameReq.Callback), 12 },
-                { typeof(global::Shared.Message.__ServerUModule__Avatar__OnMatchOkReq), 13 },
+                { typeof(global::Shared.Message.__ServerGModule__LoginService__CreateAccountReq), 3 },
+                { typeof(global::Shared.Message.__ServerGModule__LoginService__CreateAccountReq.Callback), 4 },
+                { typeof(global::Shared.Message.__ServerGModule__LoginService__DeleteAccountReq), 5 },
+                { typeof(global::Shared.Message.__ServerGModule__LoginService__DeleteAccountReq.Callback), 6 },
+                { typeof(global::Shared.Message.__ServerGModule__LoginService__LoginReq), 7 },
+                { typeof(global::Shared.Message.__ServerGModule__LoginService__LoginReq.Callback), 8 },
+                { typeof(global::Shared.Message.__ServerGModule__LoginService__ResetPasswordReq), 9 },
+                { typeof(global::Shared.Message.__ServerUModule__Avatar__ChangeNameReq), 10 },
+                { typeof(global::Shared.Message.__ServerUModule__Avatar__ChangeNameReq.Callback), 11 },
+                { typeof(global::Shared.Message.__ServerUModule__Avatar__OnMatchOkReq), 12 },
             };
         }
 
@@ -81,17 +80,16 @@ namespace MessagePack.Resolvers
                 case 0: return new MessagePack.Formatters.Shared.Message.__Client__Avatar__ApiTest2NtfFormatter();
                 case 1: return new MessagePack.Formatters.Shared.Message.__Client__Avatar__ApiTestNtfFormatter();
                 case 2: return new MessagePack.Formatters.Shared.Message.__Client__Avatar__ApiTestNtf_CallbackFormatter();
-                case 3: return new MessagePack.Formatters.Shared.Message.__Client__Avatar__OnSyncUserNtfFormatter();
-                case 4: return new MessagePack.Formatters.Shared.Message.__ServerGModule__LoginService__CreateAccountReqFormatter();
-                case 5: return new MessagePack.Formatters.Shared.Message.__ServerGModule__LoginService__CreateAccountReq_CallbackFormatter();
-                case 6: return new MessagePack.Formatters.Shared.Message.__ServerGModule__LoginService__DeleteAccountReqFormatter();
-                case 7: return new MessagePack.Formatters.Shared.Message.__ServerGModule__LoginService__DeleteAccountReq_CallbackFormatter();
-                case 8: return new MessagePack.Formatters.Shared.Message.__ServerGModule__LoginService__LoginReqFormatter();
-                case 9: return new MessagePack.Formatters.Shared.Message.__ServerGModule__LoginService__LoginReq_CallbackFormatter();
-                case 10: return new MessagePack.Formatters.Shared.Message.__ServerGModule__LoginService__ResetPasswordReqFormatter();
-                case 11: return new MessagePack.Formatters.Shared.Message.__ServerUModule__Avatar__ChangeNameReqFormatter();
-                case 12: return new MessagePack.Formatters.Shared.Message.__ServerUModule__Avatar__ChangeNameReq_CallbackFormatter();
-                case 13: return new MessagePack.Formatters.Shared.Message.__ServerUModule__Avatar__OnMatchOkReqFormatter();
+                case 3: return new MessagePack.Formatters.Shared.Message.__ServerGModule__LoginService__CreateAccountReqFormatter();
+                case 4: return new MessagePack.Formatters.Shared.Message.__ServerGModule__LoginService__CreateAccountReq_CallbackFormatter();
+                case 5: return new MessagePack.Formatters.Shared.Message.__ServerGModule__LoginService__DeleteAccountReqFormatter();
+                case 6: return new MessagePack.Formatters.Shared.Message.__ServerGModule__LoginService__DeleteAccountReq_CallbackFormatter();
+                case 7: return new MessagePack.Formatters.Shared.Message.__ServerGModule__LoginService__LoginReqFormatter();
+                case 8: return new MessagePack.Formatters.Shared.Message.__ServerGModule__LoginService__LoginReq_CallbackFormatter();
+                case 9: return new MessagePack.Formatters.Shared.Message.__ServerGModule__LoginService__ResetPasswordReqFormatter();
+                case 10: return new MessagePack.Formatters.Shared.Message.__ServerUModule__Avatar__ChangeNameReqFormatter();
+                case 11: return new MessagePack.Formatters.Shared.Message.__ServerUModule__Avatar__ChangeNameReq_CallbackFormatter();
+                case 12: return new MessagePack.Formatters.Shared.Message.__ServerUModule__Avatar__OnMatchOkReqFormatter();
                 default: return null;
             }
         }
@@ -292,57 +290,6 @@ namespace MessagePack.Formatters.Shared.Message
 
             var ____result = new global::Shared.Message.__Client__Avatar__ApiTestNtf.Callback();
             ____result.code = __code__;
-            reader.Depth--;
-            return ____result;
-        }
-    }
-
-    public sealed class __Client__Avatar__OnSyncUserNtfFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.__Client__Avatar__OnSyncUserNtf>
-    {
-
-
-        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.__Client__Avatar__OnSyncUserNtf value, global::MessagePack.MessagePackSerializerOptions options)
-        {
-            if (value == null)
-            {
-                writer.WriteNil();
-                return;
-            }
-
-            IFormatterResolver formatterResolver = options.Resolver;
-            writer.WriteArrayHeader(1);
-            formatterResolver.GetFormatterWithVerify<byte[]>().Serialize(ref writer, value.data, options);
-        }
-
-        public global::Shared.Message.__Client__Avatar__OnSyncUserNtf Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
-        {
-            if (reader.TryReadNil())
-            {
-                return null;
-            }
-
-            options.Security.DepthStep(ref reader);
-            IFormatterResolver formatterResolver = options.Resolver;
-            var length = reader.ReadArrayHeader();
-            var __data__ = default(byte[]);
-
-            for (int i = 0; i < length; i++)
-            {
-                var key = i;
-
-                switch (key)
-                {
-                    case 0:
-                        __data__ = formatterResolver.GetFormatterWithVerify<byte[]>().Deserialize(ref reader, options);
-                        break;
-                    default:
-                        reader.Skip();
-                        break;
-                }
-            }
-
-            var ____result = new global::Shared.Message.__Client__Avatar__OnSyncUserNtf();
-            ____result.data = __data__;
             reader.Depth--;
             return ____result;
         }
