@@ -7,6 +7,12 @@ set MPCBIN=%cwdpath%/mpc/win/mpc.exe
 
 set CLIENT_PATH=%curpath%/src/Fenix.Gen/bin/Debug/netcoreapp3.1/Fenix.Gen.exe
 
+echo %curpath%/src/Client.App/Gen
+echo %curpath%/src/Server.App/Gen
+
+rd /s /Q "%curpath%\src\Client.App\Gen"
+rd /s /Q "%curpath%\src\Server.App\Gen"
+ 
 %CLIENT_PATH% -r %curpath%
 %CLIENT_PATH% -c %curpath%
 %CLIENT_PATH% -s %curpath% 
