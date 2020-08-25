@@ -118,7 +118,7 @@ namespace Fenix
 #if !CLIENT
                     mPersistentDic[attr.DataType] = new Tuple<string, IMessage>(attr.dbName, await LoadDataFromDb(attr.dbName, attr.DataType));
 #endif
-                    if (!mPersistentDic.TryGetValue(attr.DataType, out var d) ||  d == null)
+                    if (!mPersistentDic.TryGetValue(attr.DataType, out var d) ||  (d == null || d.Item2 == null))
                         mPersistentDic[attr.DataType] = new Tuple<string, IMessage>(attr.dbName, Activator.CreateInstance(attr.DataType) as IMessage); 
                 }
             }
@@ -128,7 +128,7 @@ namespace Fenix
             {
                 foreach (VolatileDataAttribute attr in attrs)
                 {
-                    if (!mVolatileDic.TryGetValue(attr.DataType, out var d) || d == null)
+                    if (!mVolatileDic.TryGetValue(attr.DataType, out var d) || (d == null))
                         mVolatileDic[attr.DataType] = Activator.CreateInstance(attr.DataType) as IMessage;
                 }
             }
@@ -138,7 +138,7 @@ namespace Fenix
             {
                 foreach (RequireModuleAttribute attr in attrs)
                 { 
-                    if (!mModuleDic.TryGetValue(attr.ModuleType, out var d) || d == null)
+                    if (!mModuleDic.TryGetValue(attr.ModuleType, out var d) || (d == null))
                         mModuleDic[attr.ModuleType] = (IActor)Activator.CreateInstance(attr.ModuleType, new object[] { this });
                 }
             }
