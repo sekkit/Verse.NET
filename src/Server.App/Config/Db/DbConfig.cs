@@ -19,7 +19,7 @@ namespace Server.Config
         public new static void Init()
         {
             Instance.AddDbConfig(ACCOUNT, "127.0.0.1", 7380, ACCOUNT, 3, type: "Kedis");
-            Instance.AddDbConfig(LOGIN, "127.0.0.1", 7381, LOGIN, 3, validTime: 3600000, type: "Redis");
+            Instance.AddDbConfig(LOGIN, "127.0.0.1", 7381, LOGIN, 3, validTime: 3600, type: "Redis");
             Instance.AddDbConfig(USER, "127.0.0.1", 7382, USER, 3, type: "Kedis");
             Instance.AddDbConfig(RUNTIME, "127.0.0.1", 7383, RUNTIME, 3, type: "Redis");
             Instance.AddDbConfig(SEQ, "127.0.0.1", 7384, SEQ, 3, type: "Redis");

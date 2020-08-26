@@ -115,7 +115,7 @@ namespace Server
                 //Bootstrap.StartSingleProcess(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfgList, OnInit); //单进程模式
                 
                 foreach (var cfg in cfgList)
-                    if (cfg.AppName == "Master.App")
+                    if (cfg.AppName == "Login.App")
                         Bootstrap.StartMultiProcess(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfg, OnInit); //分布式
                
             }
