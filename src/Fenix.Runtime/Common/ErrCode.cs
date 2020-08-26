@@ -16,6 +16,6 @@ namespace Fenix.Common
         migrate_actor_not_exists = -100,
         create_actor_already_exists = -101,
         create_actor_remote_exists = -102,
-
+        client_host_already_exists = -200
     }
 }

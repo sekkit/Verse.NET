@@ -17,6 +17,7 @@ namespace Shared.Protocol
         LOGIN_KICKOUT             = -1001,
         LOGIN_CREATE_ACCOUNT_FAIL = -1002,
         LOGIN_IN_PROGRESS         = -1003,
+        LOGIN_USER_IS_ACTIVE      = -1004,
 
         DOWN_CODE                  = -32768
     }

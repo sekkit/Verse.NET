@@ -44,13 +44,19 @@ namespace Server.GModule
         {
             Log.Info(string.Format("login {0} {1}", username, password));
             
-            if (LoginDb.HasKey(username))
+            if (LoginDb.Get(username) == LoginState.InLogin)
             {
                 callback(ErrCode.LOGIN_IN_PROGRESS, null, 0, null, null);
                 return;
             }
 
-            LoginDb.Set(username, TimeUtil.GetTimeStampMS());
+            //if (LoginDb.Get(username) == LoginState.Active)
+            //{
+            //    callback(ErrCode.LOGIN_USER_IS_ACTIVE, null, 0, null, null);
+            //    return;
+            //}
+
+            LoginDb.Set(username, LoginState.InLogin);
 
             //验证用户db，成功则登陆
             var account = AccountDb.Get<Account>(username);

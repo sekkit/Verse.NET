@@ -64,7 +64,7 @@ namespace Client
             //注册客户端，初始化路由表信息 
 
             loginapp.RegisterClient(host.Id, host.UniqueName, (code, hostInfo) =>
-            {
+            { 
                 if (code == DefaultErrCode.ERROR)
                 {
                     Log.Error("register_client_error, plz try again later");
@@ -90,7 +90,7 @@ namespace Client
                     {
                         if (code2 != ErrCode.OK)
                         {
-                            Log.Error("login_failed");
+                            Log.Error("login_failed", code2);
                             loginapp.Disconnect();
                             callback?.Invoke(code2, null);
                             return;

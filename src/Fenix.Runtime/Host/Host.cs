@@ -542,17 +542,24 @@ namespace Fenix
 
         [ServerApi]
         public void RegisterClient(ulong hostId, string hostName, Action<DefaultErrCode, HostInfo> callback, RpcContext __context)
-        {
+        { 
+            //var _oldId = Global.IdManager.GetHostId(__context.Peer.RemoteAddress.ToIPv4String());
+            //if (_oldId == hostId && Global.IdManager.GetHostAddr(hostId) != __context.Peer.RemoteAddress.ToIPv4String())
+            //{
+            //    Global.NetManager.Deregister(__context.Peer);
+            //    callback(DefaultErrCode.client_host_already_exists, Global.IdManager.GetHostInfo(this.Id));
+            //    return;
+            //}
+
             if (__context.Peer.ConnId != hostId)
             {
-                Global.NetManager.ChangePeerId(__context.Peer.ConnId, hostId, hostName, __context.Peer.RemoteAddress.ToIPv4String());
+                Global.NetManager.ChangePeerId(__context.Peer.ConnId, hostId, hostName, 
+                    __context.Peer.RemoteAddress.ToIPv4String());
             }
 
             Global.NetManager.RegisterClient(hostId, hostName, __context.Peer);
-
-            var hostInfo = Global.IdManager.GetHostInfo(this.Id);
-
-            callback(DefaultErrCode.OK, hostInfo);
+             
+            callback(DefaultErrCode.OK, Global.IdManager.GetHostInfo(this.Id));
         }
 
         [ServerApi]
