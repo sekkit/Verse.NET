@@ -9,9 +9,12 @@ namespace Fenix.Common.Attributes
     {
         public Type ModuleType;
 
-        public RequireModuleAttribute(Type type)
+        public string Tag;
+
+        public RequireModuleAttribute(Type type, string tag="")
         {
             this.ModuleType = type;
+            this.Tag = tag;
         }
     }
 }

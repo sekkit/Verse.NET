@@ -95,32 +95,59 @@ namespace Fenix
             return Basic.GenID64FromName(type.FullName);
         }
 
-        public virtual async void Init()
-        { 
+        public virtual void Init()
+        {
+            InitData();
+
+            InitModule();
+        }
+#if !CLIENT
+        protected virtual async Task InitData()
+#else
+        protected virtual void InitData()
+#endif
+        {
             var attrs = GetType().GetCustomAttributes(typeof(RuntimeDataAttribute), true);
             if (attrs.Count() > 0)
             {
+                bool needSave = false;
                 foreach (RuntimeDataAttribute attr in attrs)
                 {
 #if !CLIENT
                     mRuntimeDic[attr.DataType] = await LoadDataFromDb(DbConf.RUNTIME, attr.DataType);
 #endif
-                    if(!mRuntimeDic.TryGetValue(attr.DataType, out var d) || d == null)
+                    if (!mRuntimeDic.TryGetValue(attr.DataType, out var d) || (d == null))
+                    {
                         mRuntimeDic[attr.DataType] = Activator.CreateInstance(attr.DataType) as IMessage;
+                        needSave = true;
+                    }
                 }
+#if !CLIENT
+                if (needSave)
+                    this.SaveRuntime();
+#endif
             }
-            
+
             attrs = GetType().GetCustomAttributes(typeof(PersistentDataAttribute), true);
             if (attrs.Count() > 0)
             {
+                bool needSave = false;
                 foreach (PersistentDataAttribute attr in attrs)
                 {
 #if !CLIENT
                     mPersistentDic[attr.DataType] = new Tuple<string, IMessage>(attr.dbName, await LoadDataFromDb(attr.dbName, attr.DataType));
 #endif
-                    if (!mPersistentDic.TryGetValue(attr.DataType, out var d) ||  (d == null || d.Item2 == null))
-                        mPersistentDic[attr.DataType] = new Tuple<string, IMessage>(attr.dbName, Activator.CreateInstance(attr.DataType) as IMessage); 
+
+                    if (!mPersistentDic.TryGetValue(attr.DataType, out var d) || (d == null || d.Item2 == null))
+                    {
+                        mPersistentDic[attr.DataType] = new Tuple<string, IMessage>(attr.dbName, Activator.CreateInstance(attr.DataType) as IMessage);
+                        needSave = true;
+                    }
                 }
+#if !CLIENT
+                if (needSave)
+                    this.SavePersistent();
+#endif
             }
 
             attrs = GetType().GetCustomAttributes(typeof(VolatileDataAttribute), true);
@@ -132,12 +159,15 @@ namespace Fenix
                         mVolatileDic[attr.DataType] = Activator.CreateInstance(attr.DataType) as IMessage;
                 }
             }
+        }
 
-            attrs = GetType().GetCustomAttributes(typeof(RequireModuleAttribute), true);
+        protected virtual void InitModule()
+        {
+            var attrs = GetType().GetCustomAttributes(typeof(RequireModuleAttribute), true);
             if (attrs.Count() > 0)
             {
                 foreach (RequireModuleAttribute attr in attrs)
-                { 
+                {
                     if (!mModuleDic.TryGetValue(attr.ModuleType, out var d) || (d == null))
                         mModuleDic[attr.ModuleType] = (IActor)Activator.CreateInstance(attr.ModuleType, new object[] { this });
                 }
@@ -148,14 +178,14 @@ namespace Fenix
 
         protected async Task<IMessage> LoadDataFromDb(string dbName, Type type) 
         {
-            string dbKey = this.UniqueName + ":" + type.FullName;
+            string dbKey = this.UniqueName;// + ":" + type.FullName;
             var db = Global.DbManager.GetDb(dbName);
             return (IMessage)(await db.GetAsync(type, dbKey));
         }
 
         protected async Task<bool> SaveDataToDb(string dbName, Type type, object data)
         {
-            string dbKey = this.UniqueName + ":" + type.FullName;
+            string dbKey = this.UniqueName;// + ":" + type.FullName;
             var db = Global.DbManager.GetDb(dbName);
             return await db.SetAsync(dbKey, data);
         }
@@ -166,7 +196,7 @@ namespace Fenix
             SavePersistent();
         }
 
-        protected void SaveRuntime()
+        protected virtual void SaveRuntime()
         {
             foreach (var kv in this.mRuntimeDic)
             {
@@ -174,7 +204,7 @@ namespace Fenix
             } 
         }
 
-        protected void SavePersistent()
+        protected virtual void SavePersistent()
         {
             foreach (var kv in this.mPersistentDic)
             {
@@ -328,7 +358,7 @@ namespace Fenix
                 refType = Global.TypeManager.GetActorRefType(this.GetType().FullName);
 
             this.serverActor = GetActorRef(refType, this.UniqueName);
-            Log.Info(string.Format("on_server_enable", this.UniqueName, this.UniqueName));
+            Log.Info("on_server_enable", this.UniqueName);
 
             this.onServerEnable();
         }

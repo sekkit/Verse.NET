@@ -181,8 +181,8 @@ namespace Fenix
 
         public void Rpc(uint protoCode, ulong fromHostId, ulong fromActorId, ulong toHostId, ulong toActorId, 
             IPEndPoint toPeerAddr, NetworkType netType, IMessage msg, Action<byte[]> cb)
-        { 
-            var packet = Packet.Create(Basic.GenID64(), protoCode, fromHostId, toHostId, fromActorId, toActorId, netType, msg.GetType(), RpcUtil.Serialize(msg));
+        {  
+            var packet = Packet.Create(Basic.GenID64(), protoCode, fromHostId, toHostId, fromActorId, toActorId, netType, msg.GetType(), msg.Pack());
 
             /*创建一个等待回调的rpc_command*/
             var cmd = RpcCommand.Create(
