@@ -2,7 +2,10 @@
 
 using Fenix;
 using Fenix.Common;
-using Fenix.Common.Attributes; 
+using Fenix.Common.Attributes;
+using Fenix.Common.Utils;
+using Fenix.Redis;
+using Server.Config;
 using Server.DataModel;
 using Server.UModule;
 using Shared.DataModel;
@@ -15,6 +18,7 @@ namespace Server.GModule
     [AccessLevel(ALevel.CLIENT_AND_SERVER)]
     public partial class LoginService : Service
     {
+        private RedisDb LoginDb => Global.DbManager.GetDb(DbConfig.LOGIN);
 
         [ServerApi] 
         public void CreateAccount(string username, string password, string extra, Action<ErrCode> callback)
@@ -32,13 +36,21 @@ namespace Server.GModule
         public void DeleteAccount(string username, string password, Action<ErrCode> callback)
         {
 
-        }
+        } 
 
         //callback: code, actorName, actorHostId, actorHostName, actorHostAddress, 
         [ServerApi]
         public async Task Login(string username, string password, Action<ErrCode, string, ulong, string, string> callback)
         {
             Log.Info(string.Format("login {0} {1}", username, password));
+            
+            if (LoginDb.HasKey(username))
+            {
+                callback(ErrCode.LOGIN_IN_PROGRESS, null, 0, null, null);
+                return;
+            }
+
+            LoginDb.Set(username, TimeUtil.GetTimeStampMS());
 
             //验证用户db，成功则登陆
             var account = AccountDb.Get<Account>(username);
@@ -47,6 +59,7 @@ namespace Server.GModule
                 if(account.password != password)
                 {
                     callback(ErrCode.LOGIN_WRONG_USR_OR_PSW, null, 0, null, null);
+                    LoginDb.Delete(username);
                     return;
                 }
             } 
@@ -62,6 +75,7 @@ namespace Server.GModule
                 if(!AccountDb.Set(username, account))
                 {
                     callback(ErrCode.LOGIN_CREATE_ACCOUNT_FAIL, null, 0, null, null);
+                    LoginDb.Delete(username);
                     return;
                 }
             }
@@ -89,11 +103,12 @@ namespace Server.GModule
                             hostId,
                             Global.IdManager.GetHostName(hostId),
                             Global.IdManager.GetExtAddress(hostAddr));
+                        LoginDb.Delete(username);
                         return;
                     }
                 }
 
-                Log.Info(string.Format("login.get_actor@Master.App {0} {1} {2} {3}", account.uid, actorId,
+                Log.Info(string.Format("login.GetActorFrom@Master.App {0} {1} {2} {3}", account.uid, actorId,
                     Global.IdManager.GetHostName(hostId), hostAddr));
 
                 callback(
@@ -104,6 +119,7 @@ namespace Server.GModule
                     Global.IdManager.GetExtAddress(hostAddr)
                 );
 
+                LoginDb.Delete(username);
                 return;
             }
 
@@ -111,13 +127,14 @@ namespace Server.GModule
             var svc = GetService<MasterServiceRef>();
             svc.CreateActor(nameof(Avatar), account.uid, (code, actorName, actorId) =>
             {
-                if(code != DefaultErrCode.OK)
+                if (code != DefaultErrCode.OK)
                 {
                     callback(ErrCode.ERROR, actorName, 0, null, null);
+                    LoginDb.Delete(username);
                     return;
                 }
 
-                var hostId = Global.IdManager.GetHostIdByActorId(actorId);//, false); 
+                var hostId = Global.IdManager.GetHostIdByActorId(actorId); //, false);
                 //创建成功后，把客户端的avatar注册到服务端
                 var hostAddr = Global.IdManager.GetHostAddrByActorId(actorId);
                 Log.Info(string.Format("login.create_actor@Master.App {0} {1} {2} {3} {4}", code, actorName, actorId,
@@ -131,6 +148,7 @@ namespace Server.GModule
                     Global.IdManager.GetHostName(hostId),
                     Global.IdManager.GetExtAddress(hostAddr)
                 );
+                LoginDb.Delete(username);
             });
         }
 

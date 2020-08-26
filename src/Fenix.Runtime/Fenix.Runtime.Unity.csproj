@@ -84,6 +84,9 @@
     <Reference Include="MessagePack">
       <HintPath>..\..\Libs\Unity\MessagePack.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\Unity\Assets\Plugins\Fenix\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(OS)' == 'Windows_NT' ">

@@ -10,9 +10,11 @@ namespace Fenix.Common
 	{
 		public static OneThreadSynchronizationContext Instance { get; } = new OneThreadSynchronizationContext();
 
-		private readonly int mainThreadId = Thread.CurrentThread.ManagedThreadId;
+		private readonly int selfThreadId = Thread.CurrentThread.ManagedThreadId;
 
+		// 
 		// 线程同步队列,发送接收socket回调都放到该队列,由poll线程统一执行
+		// 
 		private readonly ConcurrentQueue<Action> queue = new ConcurrentQueue<Action>();
 
 		private Action a;
@@ -22,16 +24,14 @@ namespace Fenix.Common
 			while (true)
 			{
 				if (!this.queue.TryDequeue(out a))
-				{
-					return;
-				}
+					return; 
 				a();
 			}
 		}
 
 		public override void Post(SendOrPostCallback callback, object state)
 		{
-			if (Thread.CurrentThread.ManagedThreadId == this.mainThreadId)
+			if (Thread.CurrentThread.ManagedThreadId == this.selfThreadId)
 			{
 				callback(state);
 				return;

@@ -1,5 +1,4 @@
-﻿
-//using Shared;
+﻿ 
 using System;
 using System.IO;
 using System.Linq;
@@ -29,7 +28,7 @@ namespace Fenix
  
             if (args.Length != 2 || args.First() == "-r")
             {
-                Assembly asmRuntime = Assembly.LoadFrom(Path.Combine(rootPath, "bin/netcoreapp3.1/Fenix.Runtime.dll"));
+                var asmRuntime = Assembly.LoadFrom(Path.Combine(rootPath, "bin/netcoreapp3.1/Fenix.Runtime.dll"));
                 Gen.AutogenHost(asmRuntime, Path.Combine(rootPath, "src/Fenix.Runtime/Common"),
                     Path.Combine(rootPath, "src/Client.App"),
                     Path.Combine(rootPath, "src/Server.App"));
@@ -39,7 +38,7 @@ namespace Fenix
                 var resolver = new DefaultAssemblyResolver();
                 resolver.AddSearchDirectory(Path.Combine(rootPath, @"src/Client.App/bin/Debug/netcoreapp3.1/Client.App/netcoreapp3.1/"));
                 //Assembly asmClientApp = Assembly.LoadFrom(Path.Combine(rootPath, @"src\Client.App\bin\Debug\netcoreapp3.1\Client.App\netcoreapp3.1\Client.App.dll"));
-                AssemblyDefinition ad = AssemblyDefinition.ReadAssembly(
+                var ad = AssemblyDefinition.ReadAssembly(
                     Path.Combine(rootPath, @"src/Client.App/bin/Debug/netcoreapp3.1/Client.App/netcoreapp3.1/Client.App.dll"),
                     new ReaderParameters() { AssemblyResolver = resolver });
                 //Gen.AutogenActor(asmClientApp, false, sharedClientPath, sharedServerPath, clientPath, serverPath);
