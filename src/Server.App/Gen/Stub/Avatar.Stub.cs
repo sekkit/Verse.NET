@@ -42,6 +42,19 @@ namespace Server.UModule
             });
         }
 
+        [RpcMethod(ProtocolCode.__ServerUModule__Avatar__M__SERVERUMODULE__ITEMMODULE__TEST_ITEM_API_REQ, Api.ServerApi)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SERVER_API__ServerUModule__Avatar__M__ServerUModule__ItemModule__test_item_api(IMessage msg, Action<IMessage> cb)
+        {
+            var _msg = (__ServerUModule__Avatar__M__ServerUModule__ItemModule__TestItemApiReq)msg;
+            GetModule<ItemModule>().TestItemApi( () =>
+            {
+                var cbMsg = new __ServerUModule__Avatar__M__ServerUModule__ItemModule__TestItemApiReq.Callback();
+
+                cb.Invoke(cbMsg);
+            });
+        }
+
         [RpcMethod(ProtocolCode.__SERVERUMODULE__AVATAR__ON_MATCH_OK_REQ, Api.ServerOnly)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_ONLY__ServerUModule__Avatar__on_match_ok(IMessage msg)
@@ -55,6 +68,13 @@ namespace Server.UModule
         public void SERVER_API_NATIVE__ServerUModule__Avatar__change_name(global::System.String name, global::System.Action<global::Shared.Protocol.ErrCode> callback)
         {
             this.ChangeName(name, callback);
+        }
+
+        [RpcMethod(ProtocolCode.__ServerUModule__Avatar__M__SERVERUMODULE__ITEMMODULE__TEST_ITEM_API_REQ, Api.ServerApi)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SERVER_API_NATIVE__ServerUModule__Avatar__M__ServerUModule__ItemModule__test_item_api(global::System.Action callback)
+        {
+            GetModule<ItemModule>().TestItemApi(callback);
         }
 
         [RpcMethod(ProtocolCode.__SERVERUMODULE__AVATAR__ON_MATCH_OK_REQ, Api.ServerOnly)]

@@ -49,7 +49,7 @@ namespace MessagePack.Resolvers
 
         static ClientAppResolverGetFormatterHelper()
         {
-            lookup = new global::System.Collections.Generic.Dictionary<Type, int>(14)
+            lookup = new global::System.Collections.Generic.Dictionary<Type, int>(16)
             {
                 { typeof(global::Shared.Message.__Client__Avatar__ApiTest2Ntf), 0 },
                 { typeof(global::Shared.Message.__Client__Avatar__ApiTestNtf), 1 },
@@ -64,7 +64,9 @@ namespace MessagePack.Resolvers
                 { typeof(global::Shared.Message.__ServerGModule__LoginService__ResetPasswordReq), 10 },
                 { typeof(global::Shared.Message.__ServerUModule__Avatar__ChangeNameReq), 11 },
                 { typeof(global::Shared.Message.__ServerUModule__Avatar__ChangeNameReq.Callback), 12 },
-                { typeof(global::Shared.Message.__ServerUModule__Avatar__OnMatchOkReq), 13 },
+                { typeof(global::Shared.Message.__ServerUModule__Avatar__M__ServerUModule__ItemModule__TestItemApiReq), 13 },
+                { typeof(global::Shared.Message.__ServerUModule__Avatar__M__ServerUModule__ItemModule__TestItemApiReq.Callback), 14 },
+                { typeof(global::Shared.Message.__ServerUModule__Avatar__OnMatchOkReq), 15 },
             };
         }
 
@@ -91,7 +93,9 @@ namespace MessagePack.Resolvers
                 case 10: return new MessagePack.Formatters.Shared.Message.__ServerGModule__LoginService__ResetPasswordReqFormatter();
                 case 11: return new MessagePack.Formatters.Shared.Message.__ServerUModule__Avatar__ChangeNameReqFormatter();
                 case 12: return new MessagePack.Formatters.Shared.Message.__ServerUModule__Avatar__ChangeNameReq_CallbackFormatter();
-                case 13: return new MessagePack.Formatters.Shared.Message.__ServerUModule__Avatar__OnMatchOkReqFormatter();
+                case 13: return new MessagePack.Formatters.Shared.Message.__ServerUModule__Avatar__M__ServerUModule__ItemModule__TestItemApiReqFormatter();
+                case 14: return new MessagePack.Formatters.Shared.Message.__ServerUModule__Avatar__M__ServerUModule__ItemModule__TestItemApiReq_CallbackFormatter();
+                case 15: return new MessagePack.Formatters.Shared.Message.__ServerUModule__Avatar__OnMatchOkReqFormatter();
                 default: return null;
             }
         }
@@ -874,6 +878,102 @@ namespace MessagePack.Formatters.Shared.Message
 
             var ____result = new global::Shared.Message.__ServerUModule__Avatar__ChangeNameReq.Callback();
             ____result.code = __code__;
+            reader.Depth--;
+            return ____result;
+        }
+    }
+
+    public sealed class __ServerUModule__Avatar__M__ServerUModule__ItemModule__TestItemApiReqFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.__ServerUModule__Avatar__M__ServerUModule__ItemModule__TestItemApiReq>
+    {
+
+
+        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.__ServerUModule__Avatar__M__ServerUModule__ItemModule__TestItemApiReq value, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (value == null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
+            IFormatterResolver formatterResolver = options.Resolver;
+            writer.WriteArrayHeader(1);
+            formatterResolver.GetFormatterWithVerify<global::Shared.Message.__ServerUModule__Avatar__M__ServerUModule__ItemModule__TestItemApiReq.Callback>().Serialize(ref writer, value.callback, options);
+        }
+
+        public global::Shared.Message.__ServerUModule__Avatar__M__ServerUModule__ItemModule__TestItemApiReq Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (reader.TryReadNil())
+            {
+                return null;
+            }
+
+            options.Security.DepthStep(ref reader);
+            IFormatterResolver formatterResolver = options.Resolver;
+            var length = reader.ReadArrayHeader();
+            var __callback__ = default(global::Shared.Message.__ServerUModule__Avatar__M__ServerUModule__ItemModule__TestItemApiReq.Callback);
+
+            for (int i = 0; i < length; i++)
+            {
+                var key = i;
+
+                switch (key)
+                {
+                    case 0:
+                        __callback__ = formatterResolver.GetFormatterWithVerify<global::Shared.Message.__ServerUModule__Avatar__M__ServerUModule__ItemModule__TestItemApiReq.Callback>().Deserialize(ref reader, options);
+                        break;
+                    default:
+                        reader.Skip();
+                        break;
+                }
+            }
+
+            var ____result = new global::Shared.Message.__ServerUModule__Avatar__M__ServerUModule__ItemModule__TestItemApiReq();
+            ____result.callback = __callback__;
+            reader.Depth--;
+            return ____result;
+        }
+    }
+
+    public sealed class __ServerUModule__Avatar__M__ServerUModule__ItemModule__TestItemApiReq_CallbackFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Message.__ServerUModule__Avatar__M__ServerUModule__ItemModule__TestItemApiReq.Callback>
+    {
+
+
+        public void Serialize(ref MessagePackWriter writer, global::Shared.Message.__ServerUModule__Avatar__M__ServerUModule__ItemModule__TestItemApiReq.Callback value, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (value == null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
+            IFormatterResolver formatterResolver = options.Resolver;
+            writer.WriteArrayHeader(0);
+        }
+
+        public global::Shared.Message.__ServerUModule__Avatar__M__ServerUModule__ItemModule__TestItemApiReq.Callback Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (reader.TryReadNil())
+            {
+                return null;
+            }
+
+            options.Security.DepthStep(ref reader);
+            IFormatterResolver formatterResolver = options.Resolver;
+            var length = reader.ReadArrayHeader();
+
+            for (int i = 0; i < length; i++)
+            {
+                var key = i;
+
+                switch (key)
+                {
+                    default:
+                        reader.Skip();
+                        break;
+                }
+            }
+
+            var ____result = new global::Shared.Message.__ServerUModule__Avatar__M__ServerUModule__ItemModule__TestItemApiReq.Callback();
             reader.Depth--;
             return ____result;
         }

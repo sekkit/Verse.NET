@@ -112,12 +112,13 @@ namespace Server
 
                 //for Debug purpose
                 Environment.SetEnvironmentVariable("AppPath", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../"));
-                //Bootstrap.StartSingleProcess(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfgList, OnInit); //单进程模式
+                Bootstrap.StartSingleProcess(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfgList, OnInit); //单进程模式
                 
-                foreach (var cfg in cfgList)
+                /*
+                 foreach (var cfg in cfgList)
                     if (cfg.AppName == "Login.App")
                         Bootstrap.StartMultiProcess(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfg, OnInit); //分布式
-               
+                */
             }
             else
             {
