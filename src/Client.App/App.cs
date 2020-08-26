@@ -114,7 +114,8 @@ namespace Client
 
                             callback?.Invoke((ErrCode)code3, avatar);
                         });
-                        loginapp.Disconnect();
+                        
+                        //loginapp.Disconnect();
                     });
                 }
             }); 

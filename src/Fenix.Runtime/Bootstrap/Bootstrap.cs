@@ -68,7 +68,7 @@ namespace Fenix
             if (Global.Config.InternalIP == "auto")
                 localAddrV4 = Basic.GetLocalIPv4(NetworkInterfaceType.Ethernet);
 
-            host = Host.Create("App", "0.0.0.0", Global.Config.ExternalIP, 17777, false);
+            host = Host.Create("Login.App", "0.0.0.0", Global.Config.ExternalIP, 17777, false);
             foreach(var cfg in cfgList)
                 foreach (var aName in cfg.DefaultActorNames)
                     host.CreateActorLocally(aName, aName); 

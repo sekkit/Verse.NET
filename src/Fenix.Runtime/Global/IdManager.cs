@@ -283,9 +283,9 @@ namespace Fenix
             AddNameId(aName, actorId);
 
             mANAME2HNAME[aName] = hName;
-            if (!mHNAME2ANAME.ContainsKey(aName))
+            if (!mHNAME2ANAME.ContainsKey(hName))
                 mHNAME2ANAME[hName] = new List<string>();
-            if (!mHNAME2ANAME.ContainsKey(aName))
+            if (!mHNAME2ANAME[hName].Any(m=>m == aName))
                 mHNAME2ANAME[hName].Add(aName);
      
             mANAME2TNAME[aName] = aTypeName;
@@ -456,7 +456,7 @@ namespace Fenix
             hostInfo.HostAddr = Global.IdManager.GetHostAddr(hostId);//, false);
             hostInfo.ServiceId2Name = svcNameList.ToDictionary(m => GetId(m), m => m);
             hostInfo.ServiceId2TName = svcNameList.ToDictionary(m => GetId(m), m => m);
-
+            Log.Warn("GetHostInfo", Newtonsoft.Json.JsonConvert.SerializeObject(hostInfo));
             return hostInfo;
         }
 

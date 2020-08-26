@@ -17,26 +17,12 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>TRACE;NET_3_5_GREATER;SIGNED</DefineConstants>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Model\**" />
-    <Compile Remove="Stub\**" />
-    <EmbeddedResource Remove="Model\**" />
-    <EmbeddedResource Remove="Stub\**" />
-    <None Remove="Model\**" />
-    <None Remove="Stub\**" />
-  </ItemGroup>
+ 
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Gen\" />
-    <Folder Include="UModule\Item\" />
-    <Folder Include="UModule\Reward\" />
-  </ItemGroup>
+  </ItemGroup> 
 
   <ItemGroup>
     <ProjectReference Include="..\DotNetty.Buffers\DotNetty.Buffers.csproj" />
