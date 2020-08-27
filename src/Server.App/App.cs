@@ -41,6 +41,8 @@ namespace Server
                  MessagePack.Unity.UnityResolver.Instance,
                  MessagePack.Unity.Extension.UnityBlitResolver.Instance,
                  MessagePack.Unity.Extension.UnityBlitWithPrimitiveArrayResolver.Instance,
+                 MessagePack.Resolvers.AttributeFormatterResolver.Instance,
+                 MessagePack.Resolvers.BuiltinResolver.Instance,
                  MessagePack.Resolvers.StandardResolver.Instance
             );
 
@@ -120,6 +122,8 @@ namespace Server
             }
             else
             {
+                Environment.SetEnvironmentVariable("AppPath", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../"));
+
                 Parser.Default.ParseArguments<Options>(args)
                    .WithParsed<Options>(o =>
                    { 

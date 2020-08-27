@@ -250,13 +250,13 @@ namespace Fenix
         public void Send(IByteBuffer buffer)
         {
             if (kcpChannel != null) 
-            { kcpChannel.write(buffer);  Log.Info("SEND_END:" + (Fenix.Common.Utils.TimeUtil.GetTimeStampMS2() - lastTickTime).ToString()); return; }
+            { kcpChannel.write(buffer); return; }
             if (kcpClient != null) 
-            { kcpClient.Send(buffer);  Log.Info("SEND_END:" + (Fenix.Common.Utils.TimeUtil.GetTimeStampMS2() - lastTickTime).ToString()); return; }
+            { kcpClient.Send(buffer); return; }
             if (tcpChannel != null) 
-            { tcpChannel.WriteAndFlushAsync(buffer); Log.Info("SEND_END:" + (Fenix.Common.Utils.TimeUtil.GetTimeStampMS2() - lastTickTime).ToString(), buffer.ToArray()); return; }
+            { tcpChannel.WriteAndFlushAsync(buffer); return; }
             if (tcpClient != null) 
-            { tcpClient.Send(buffer);  Log.Info("SEND_END:" + (Fenix.Common.Utils.TimeUtil.GetTimeStampMS2() - lastTickTime).ToString()); return; }
+            { tcpClient.Send(buffer); return; }
         }
 
         //public async Task SendAsync(byte[] bytes)
