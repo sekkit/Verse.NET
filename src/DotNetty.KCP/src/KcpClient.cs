@@ -169,7 +169,7 @@ namespace DotNetty.KCP
         }
 
 
-        public void stop()
+        public async Task stop()
         {
             foreach (var ukcp in _channelManager.getAll())
             {
@@ -178,7 +178,7 @@ namespace DotNetty.KCP
             _executorPool?.stop(false);
             if (_eventLoopGroup != null&&!_eventLoopGroup.IsShuttingDown)
             {
-                Task.Run(()=>_eventLoopGroup?.ShutdownGracefullyAsync()).Wait();
+                await _eventLoopGroup.ShutdownGracefullyAsync();
             }
             _scheduleThread.stop();
         }

@@ -22,7 +22,10 @@ namespace Client
         {
             var app = new App();
             app.Init(null);
-            app.Login("sekkit", "password", (code, avatar) =>
+            var rnd = new Random((int)TimeUtil.GetTimeStamp());
+            
+            var next = rnd.Next(0, int.MaxValue);
+            app.Login("sekkit"+rnd.ToString(), "password", (code, avatar) =>
             {
                 
             });
@@ -62,7 +65,7 @@ namespace Client
             Log.Info("Connecting", Global.Config.HostIP, Global.Config.Port);
             var loginapp = host.GetHost("Login.App", Global.Config.HostIP, Global.Config.Port);
             //注册客户端，初始化路由表信息 
-
+            var lastTs = TimeUtil.GetTimeStampMS();
             loginapp.RegisterClient(host.Id, host.UniqueName, (code, hostInfo) =>
             { 
                 if (code == DefaultErrCode.ERROR)
@@ -77,7 +80,7 @@ namespace Client
                     hostInfo.HostId, hostInfo.HostName, hostInfo.HostAddr));
 
                 if (loginapp.toHostId != hostInfo.HostId)
-                    Global.NetManager.ChangePeerId(loginapp.toHostId, hostInfo.HostId, hostInfo.HostName, hostInfo.HostAddr);
+                    Global.NetManager.ChangePeerId(loginapp.toHostId, hostInfo.HostId, hostInfo.HostName, hostInfo.HostAddr); 
 
                 Global.IdManager.RegisterHostInfo(hostInfo);
 
@@ -86,8 +89,9 @@ namespace Client
                     //发起登陆请求，得到玩家entity所在host信息
                     Log.Info("Request Login", username, password);
                     var svc = host.GetService<LoginServiceRef>();
+                    
                     svc.rpc_login(username, password, (code2, uid, hostId, hostName, hostAddress) =>
-                    {
+                    { 
                         if (code2 != ErrCode.OK)
                         {
                             Log.Error("login_failed", code2);
@@ -95,7 +99,7 @@ namespace Client
                             callback?.Invoke(code2, null);
                             return;
                         }
-
+ 
                         Log.Info(string.Format("ServerAvatar host: {0}@{1} {2} {3}", uid, hostId, hostName, hostAddress));
                         var avatar = host.CreateActorLocally<Client.Avatar>(uid);
 
@@ -107,6 +111,7 @@ namespace Client
                         var port = int.Parse(parts[1]);
                         var avatarHost = host.GetHost(hostName, ip, port);
                         Global.NetManager.PrintPeerInfo("# Master.App: hostref created");
+                         
                         avatarHost.BindClientActor(avatar.Uid, (code3) =>
                         {
                             Global.NetManager.PrintPeerInfo("# Master.App: BindClientActor called");

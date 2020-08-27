@@ -80,7 +80,7 @@ namespace Fenix.Common.Utils
                 {
                     return true;
                 }
-
+                 
                 if (type.Name == "Object" || type.BaseType == null || type.BaseType.Name == "Object")
                 {
                     return false;

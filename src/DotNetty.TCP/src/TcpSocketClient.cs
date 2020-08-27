@@ -99,7 +99,7 @@ namespace DotNetty.TCP
             } 
         } 
         
-        public async void Shutdown()
+        public async Task Shutdown()
         {
             await group.ShutdownGracefullyAsync(TimeSpan.FromMilliseconds(100), TimeSpan.FromSeconds(1));
         }
@@ -139,14 +139,14 @@ namespace DotNetty.TCP
                 listener?.handleException(channel, ex);
         }
 
-        public void StopChannel(IChannel channel)
+        public async Task StopChannel(IChannel channel)
         {
             var chId = channel.Id.AsLongText();
             clientListenerDic.TryRemove(chId, out var listener);
             //if (clientListenerDic.TryGetValue(chId, out var listener))
             //    listener?.handleClose(channel);
             //Task.Run(()=>channel.CloseAsync());
-            channel.CloseAsync();
+            await channel.CloseAsync();
         }
 
         protected ConcurrentDictionary<string, ITcpListener> clientListenerDic = new ConcurrentDictionary<string, ITcpListener>();

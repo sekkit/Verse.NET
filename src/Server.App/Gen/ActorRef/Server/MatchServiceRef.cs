@@ -23,6 +23,7 @@ namespace Server
     [RefType("MatchService")]
     public partial class MatchServiceRef : ActorRef
     {
+        public new bool isClient => false;
         public async Task<__ServerGModule__MatchService__FindMatchReq.Callback> rpc_find_match_async(global::System.String uid, global::System.Action<global::Shared.Protocol.ErrCode, global::Server.DataModel.Account> callback=null)
         {
             var t = new TaskCompletionSource<__ServerGModule__MatchService__FindMatchReq.Callback>();

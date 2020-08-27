@@ -35,7 +35,7 @@ namespace Fenix
                 {
                     if (h == null || h.IsAlive == false)
                         return; 
-                    Thread.Sleep(100);
+                    Thread.Sleep(10);
                     Update(h);
                 }
                 catch (Exception e)

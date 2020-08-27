@@ -23,6 +23,7 @@ namespace Server
     [RefType("ZoneService")]
     public partial class ZoneServiceRef : ActorRef
     {
+        public new bool isClient => false;
     }
 }
 

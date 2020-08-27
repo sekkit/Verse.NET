@@ -294,9 +294,6 @@
     <Reference Include="SyntaxTree.VisualStudio.Unity.Bridge">
       <HintPath>C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\16.0\Editor\SyntaxTree.VisualStudio.Unity.Bridge.dll</HintPath>
     </Reference>
-    <Reference Include="Client.App.Unity">
-      <HintPath>Assets\Plugins\Fenix\Client.App.Unity.dll</HintPath>
-    </Reference>
     <Reference Include="DotNetty.Buffers">
       <HintPath>Assets\Plugins\Fenix\DotNetty.Buffers.dll</HintPath>
     </Reference>
@@ -318,9 +315,6 @@
     <Reference Include="DotNetty.Transport">
       <HintPath>Assets\Plugins\Fenix\DotNetty.Transport.dll</HintPath>
     </Reference>
-    <Reference Include="Fenix.Runtime.Unity">
-      <HintPath>Assets\Plugins\Fenix\Fenix.Runtime.Unity.dll</HintPath>
-    </Reference>
     <Reference Include="MessagePack">
       <HintPath>Assets\Plugins\Fenix\MessagePack.dll</HintPath>
     </Reference>
@@ -333,14 +327,14 @@
     <Reference Include="Microsoft.Extensions.Logging">
       <HintPath>Assets\Plugins\Fenix\Microsoft.Extensions.Logging.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>Assets\Plugins\Fenix\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="NLog">
       <HintPath>Assets\Plugins\Fenix\NLog.dll</HintPath>
     </Reference>
     <Reference Include="reedsolomon_csharp">
       <HintPath>Assets\Plugins\Fenix\reedsolomon_csharp.dll</HintPath>
-    </Reference>
-    <Reference Include="Shared.Unity">
-      <HintPath>Assets\Plugins\Fenix\Shared.Unity.dll</HintPath>
     </Reference>
     <Reference Include="System.Buffers">
       <HintPath>Assets\Plugins\Fenix\System.Buffers.dll</HintPath>
@@ -356,9 +350,6 @@
     </Reference>
     <Reference Include="System.Threading.Tasks.Extensions">
       <HintPath>Assets\Plugins\Fenix\System.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>Assets\Plugins\Fenix\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.2.0a21\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\mscorlib.dll</HintPath>

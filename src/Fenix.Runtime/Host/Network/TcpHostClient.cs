@@ -122,9 +122,9 @@ namespace Fenix
             clientChannel?.WriteAndFlushAsync(buffer); 
         }
 
-        public void Stop()
+        public async Task Stop()
         {
-            client.StopChannel(clientChannel); 
+            await client.StopChannel(clientChannel); 
         }
     }
 }

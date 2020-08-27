@@ -122,6 +122,11 @@ namespace Fenix.Redis
         public long Delete(string key)
         {
             return this.client.Del(key);
+        } 
+
+        public async Task<long> DeleteAsync(string key)
+        {
+            return await this.client.DelAsync(key);
         }
 
         public long NewSeqId(string key)

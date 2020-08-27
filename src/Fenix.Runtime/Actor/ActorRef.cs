@@ -17,23 +17,34 @@ namespace Fenix
 
         public ulong FromHostId => fromHost.Id;
 
-        public Host fromHost;
+        public Host fromHost { get; set; }
 
-        public Actor fromActor;
+        public Actor fromActor { get; set; }
 
-        public ulong toHostId;
+        public ulong toHostId { get; set; }
 
-        public ulong toActorId;
+        public ulong toActorId { get; set; }
 
-        public IPEndPoint toAddr;
+        public IPEndPoint toAddr { get; set; }
 
         public bool isClient;
-
-        public NetworkType NetType => (isClient || Global.Host.IsClientMode)? Global.Config.ClientNetwork : NetworkType.TCP;
+         
+        public NetworkType NetType => (isClient || Global.Host.IsClientMode) ? Global.Config.ClientNetwork : Global.Config.ServerNetwork;
+        
+        //{
+        //    get
+        //    {
+        //        netType = (isClient || Global.Host.IsClientMode) ? Global.Config.ClientNetwork : NetworkType.TCP;
+        //        return netType;
+        //    }
+        //    set
+        //    {
+        //        netType = value;
+        //    }
+        //}
 
         public static ActorRef Create(ulong toHostId, ulong toActorId, Type refType, Actor fromActor, Host fromHost, bool isClient, IPEndPoint toPeerEP=null)
         {
-
             //要检测一下fromActor.HostId和fromHost.Id是不是相等
             if(fromActor!=null && fromActor.HostId != fromHost.Id)
             {
@@ -49,7 +60,7 @@ namespace Fenix
                 if (toHostId != 0)
                     toAddr = Basic.ToAddress(Global.IdManager.GetHostAddr(toHostId));//, isClient));
                 else if (toActorId != 0)
-                    toAddr = Basic.ToAddress(Global.IdManager.GetHostAddrByActorId(toActorId, isClient));//);
+                    toAddr = Basic.ToAddress(Global.IdManager.GetHostAddrByActorId(toActorId, isClient));
             }
 
             if (toAddr == null)
@@ -74,10 +85,10 @@ namespace Fenix
             //var netType = NetworkType.TCP;
             //if (isClient)
             //    netType = NetworkType.KCP;
-
-            //var api = Global.TypeManager.GetApiType(protocolCode); 
+            
+            //var api = Global.TypeManager.GetRpcType(protocolCode);
             //if (api == Common.Attributes.Api.ClientApi)
-            //    netType = NetworkType.KCP;
+            //    this.NetType = Global.Config.ClientNetwork;
 
             //if (Global.Host.IsClientMode)
             //    netType = NetworkType.KCP;

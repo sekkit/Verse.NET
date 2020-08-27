@@ -31,10 +31,9 @@ namespace DotNetty.KCP
         public void init(int workSize, KcpListener kcpListener, ChannelConfig channelConfig, params int[] ports)
         {
             _executorPool = new ExecutorPool();
-            for (int i = 0; i < workSize; i++)
-            {
+            for (int i = 0; i < workSize; i++) 
                 _executorPool.CreateMessageExecutor();
-            }
+
             init(_executorPool, kcpListener, channelConfig, ports);
         }
 
@@ -85,22 +84,23 @@ namespace DotNetty.KCP
             //TODO 如何启动关闭进程的钩子??
         }
 
-
         /**
          * 同步关闭服务器
          */
-        public void stop() 
+        public async Task stop() 
         {
             foreach (var channel in _localAddress)
             {
                 //channel.CloseAsync().Wait();
-                Task.Run(() => channel.CloseAsync()).Wait();
+                await channel.CloseAsync();
             }
             foreach (var ukcp in _channelManager.getAll())
             {
                 ukcp.close();
             }
-            _eventLoopGroup?.ShutdownGracefullyAsync();
+
+            if(_eventLoopGroup != null)
+                await _eventLoopGroup.ShutdownGracefullyAsync();
             _executorPool?.stop(false);
             _scheduleThread.stop();
         }

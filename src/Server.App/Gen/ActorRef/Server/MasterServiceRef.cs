@@ -23,6 +23,7 @@ namespace Server
     [RefType("MasterService")]
     public partial class MasterServiceRef : ActorRef
     {
+        public new bool isClient => false;
     }
 }
 

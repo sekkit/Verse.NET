@@ -30,7 +30,10 @@ namespace Fenix.Config
         public long HeartbeatIntervalMS { get; set; }
 
         [Key(7)]
-        public NetworkType ClientNetwork { get; set; }
+        public NetworkType ClientNetwork { get; set; } = NetworkType.TCP;
+
+        [Key(8)]
+        public NetworkType ServerNetwork { get; set; } = NetworkType.TCP;
 
         [IgnoreMember]
         public readonly int MAX_PACKET_SIZE = 64*1024;

@@ -1244,12 +1244,15 @@ using System.Threading.Tasks;
             else
             {
                 refBuilder.AppendLine($"    public partial class ActorRef");
-            } 
+            }
+
+            string isClientStr = isServer ? "false" : "true";
 
             if (!isHost)
             {
                 refBuilder.AppendLine($"    {{")
                     //.AppendLine($"        public {tname}Ref() {{}}")
+                    .AppendLine($"        public new bool isClient => {isClientStr};")
                     .AppendLine($"{refCode}    }}")
                     .AppendLine($"}}");
                 var result = refBuilder.ToString();
@@ -1278,8 +1281,10 @@ using System.Threading.Tasks;
             else
             {
                 var preludePart = refBuilder.ToString();
-                var clientCode = "#if CLIENT\n" + preludePart + string.Format("    {{\n{0}    }}\n}}", clientRefCode) + "\n#endif\n";
-                var serverCode = "#if !CLIENT\n" + preludePart + string.Format("    {{\n{0}    }}\n}}", serverRefCode) + "\n#endif\n";
+                var clientCode = "#if CLIENT\n" + preludePart + string.Format("    {{\n{0}    }}\n}}",
+                    /*string.Format("        public new bool isClient => {0};", !isServer),*/ clientRefCode) + "\n#endif\n";
+                var serverCode = "#if !CLIENT\n" + preludePart + string.Format("    {{\n{0}    }}\n}}",
+                    /*string.Format("        public new bool isClient => {0};", !isServer),*/ serverRefCode) + "\n#endif\n";
 
                 if (!Directory.Exists(Path.Combine(sharedCPath, "../Actor")))
                     Directory.CreateDirectory(Path.Combine(sharedCPath, "../Actor"));
