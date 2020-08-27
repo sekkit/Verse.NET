@@ -8,6 +8,7 @@ using Fenix.Common.Rpc;
 using Fenix.Common.Utils;
 using MessagePack;
 using System;
+using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -312,11 +313,23 @@ namespace Fenix
 
         public void Register()
         {
-            var buffer = Unpooled.DirectBuffer();
-            buffer.WriteIntLE((int)OpCode.REGISTER_REQ);
-            buffer.WriteLongLE((long)Global.Host.Id);
-            buffer.WriteBytes(Encoding.UTF8.GetBytes(Global.Host.UniqueName)); 
-            this.Send(buffer);
+            //var buffer = Unpooled.DirectBuffer();
+            //buffer.WriteIntLE((int)OpCode.REGISTER_REQ);
+            //buffer.WriteLongLE((long)Global.Host.Id);
+            //buffer.WriteBytes(Encoding.UTF8.GetBytes(Global.Host.UniqueName));
+
+            using (var m = new MemoryStream())
+            {
+                using (var writer = new MiscUtil.IO.EndianBinaryWriter(MiscUtil.Conversion.EndianBitConverter.Little, m))
+                {
+                    writer.Write(OpCode.REGISTER_REQ);
+                    writer.Write(Global.Host.Id);
+                    writer.Write(Encoding.UTF8.GetBytes(Global.Host.UniqueName));
+                    this.Send(m.ToArray());
+                }
+            }
+
+            //this.Send(buffer);
             //buffer.Release();
         }
     }

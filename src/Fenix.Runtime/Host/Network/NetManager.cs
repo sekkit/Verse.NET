@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net; 
 using System.Threading;
@@ -420,16 +421,32 @@ namespace Fenix
             for (short i = 0; i < parts.Count(); ++i)
             {
                 var part = parts.ElementAt(i);
-                var partialBuf = Unpooled.DirectBuffer();
-                partialBuf.WriteIntLE((int)OpCode.PARTIAL);
-                partialBuf.WriteLongLE((long)partialId);
-                partialBuf.WriteByte(i);
-                partialBuf.WriteByte(parts.Count());
-                partialBuf.WriteBytes(part);
-                peer.Send(partialBuf);
-                //partialBuf.Release();
-                await Task.Delay(10);
-                Log.Info("send_part", i, parts.Count(), part.Length);
+
+                using (var m = new MemoryStream())
+                {
+                    using (var writer = new MiscUtil.IO.EndianBinaryWriter(MiscUtil.Conversion.EndianBitConverter.Little, m))
+                    {
+                        writer.Write(OpCode.PARTIAL);
+                        writer.Write(partialId);
+                        writer.Write(i);
+                        writer.Write(parts.Count());
+                        writer.Write(part);
+                        peer.Send(m.ToArray());
+                        await Task.Delay(1);
+                        Log.Info("send_part", i, parts.Count(), part.Length);
+                    }
+                } 
+
+                //var partialBuf = Unpooled.DirectBuffer();
+                //partialBuf.WriteIntLE((int)OpCode.PARTIAL);
+                //partialBuf.WriteLongLE((long)partialId);
+                //partialBuf.WriteByte(i);
+                //partialBuf.WriteByte(parts.Count());
+                //partialBuf.WriteBytes(part);
+                //peer.Send(partialBuf);
+                ////partialBuf.Release();
+                //await Task.Delay(10);
+                //Log.Info("send_part", i, parts.Count(), part.Length);
             }
         }
 

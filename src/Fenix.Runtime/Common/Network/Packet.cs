@@ -6,7 +6,9 @@ using Fenix.Common.Rpc;
 using Fenix.Common.Utils;
 using MessagePack;
 using System;
+using System.IO;
 using System.Net;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Fenix
 {  
@@ -86,20 +88,47 @@ namespace Fenix
 
         public override byte[] Pack()
         {
-            var buf = Unpooled.DirectBuffer();
-            buf.WriteIntLE((int)this.ProtoCode);
-            buf.WriteLongLE((long)this.Id);
-            buf.WriteLongLE((long)this.FromActorId);
-            buf.WriteLongLE((long)this.ToActorId); 
-            buf.WriteBytes(this.Payload);
-            var bytes = buf.ToArray();
+            //var buf = Unpooled.DirectBuffer();
+            //buf.WriteIntLE((int)this.ProtoCode);
+            //buf.WriteLongLE((long)this.Id);
+            //buf.WriteLongLE((long)this.FromActorId);
+            //buf.WriteLongLE((long)this.ToActorId); 
+            //buf.WriteBytes(this.Payload);
+            //var bytes = buf.ToArray();
             //buf.Release();
-            return bytes;
+            //return bytes;
+
+            using (var m = new MemoryStream())
+            {
+                using (var writer = new MiscUtil.IO.EndianBinaryWriter(MiscUtil.Conversion.EndianBitConverter.Little, m))
+                {
+                    writer.Write(this.ProtoCode);
+                    writer.Write(this.Id);
+                    writer.Write(this.FromActorId);
+                    writer.Write(this.ToActorId);
+                    writer.Write(this.Payload);
+                    return m.ToArray();
+                }
+            }
+
+            //using (var m = new MemoryStream())
+            //{
+            //    using (BinaryWriter writer = new BinaryWriter(m))
+            //    {
+            //        writer.Write(this.ProtoCode);
+            //        writer.Write(this.Id);
+            //        writer.Write(this.FromActorId);
+            //        writer.Write(this.ToActorId);
+            //        writer.Write(this.Payload);
+            //    }
+            //    return m.ToArray();
+            //}
         }
 
         public void Unpack(byte[] bytes)
         {
             //
+
         }
     } 
 }

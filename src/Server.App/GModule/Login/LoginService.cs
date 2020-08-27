@@ -43,21 +43,21 @@ namespace Server.GModule
         public async Task Login(string username, string password, Action<ErrCode, string, ulong, string, string> callback)
         {
             Log.Info(string.Format("login {0} {1}", username, password));
-            var loginData = LoginDb.Get<long>(username);
-            if (loginData == -1)
-            {
-                callback(ErrCode.LOGIN_IN_PROGRESS, null, 0, null, null);
-                return;
-            }
+            //var loginData = LoginDb.Get<long>(username);
+            //if (loginData == -1)
+            //{
+            //    callback(ErrCode.LOGIN_IN_PROGRESS, null, 0, null, null);
+            //    return;
+            //}
 
-            Log.Error(TimeUtil.GetTimeStampMS() - loginData);
-            if(TimeUtil.GetTimeStampMS() - loginData < 3000)
-            {
-                callback(ErrCode.LOGIN_TOO_FREQ, null, 0, null, null);
-                return;
-            }
+            //Log.Error(TimeUtil.GetTimeStampMS() - loginData);
+            //if(TimeUtil.GetTimeStampMS() - loginData < 3000)
+            //{
+            //    callback(ErrCode.LOGIN_TOO_FREQ, null, 0, null, null);
+            //    return;
+            //}
 
-            await LoginDb.SetAsync(username, (long)-1, expireSec:3);
+            //await LoginDb.SetAsync(username, (long)-1, expireSec:3);
 
             //验证用户db，成功则登陆
             var account = AccountDb.Get<Account>(username);
