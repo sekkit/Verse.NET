@@ -22,8 +22,8 @@ namespace Client
 
         public int Port = 17777;
 
-        public NetworkType NetType = NetworkType.TCP;
-
+        public NetworkType NetType => NetworkType.TCP;
+        
         public void Start()
         {
             DontDestroyOnLoad(this.gameObject);
