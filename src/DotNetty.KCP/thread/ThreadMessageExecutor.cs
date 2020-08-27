@@ -15,7 +15,7 @@ namespace DotNetty.KCP.thread
 
         private MpscArrayQueue<ITask> _queue;
 
-        private const int MAX_QUEUE_SIZE = 2 << 10;
+        private const int MAX_QUEUE_SIZE = 2 << 16;
 
 
         /**

@@ -30,6 +30,7 @@ namespace Fenix.Common
     public enum DisconnectReason
     {
         DEFAULT = 0x1,
-        KICKED = 0x2
+        KICKED = 0x2,
+        SERVER_ACTOR_DESTROY = 0x3,
     }
 }

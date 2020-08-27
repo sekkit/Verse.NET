@@ -319,6 +319,8 @@ namespace Fenix
         public void RemoveHostId(ulong hostId)
         {
             var hName = GetName(hostId);
+            if (hName == null)
+                return;
             if (this.mHNAME2ADDR.TryRemove(hName, out var addr))
                 this.mADDR2HNAME.TryRemove(addr, out var _);
              
@@ -404,6 +406,8 @@ namespace Fenix
         public ulong GetClientActorId(ulong clientHostId)
         {
             var cName = GetName(clientHostId);
+            if (cName == null)
+                return 0;
             if (mCNAME2ANAME.TryGetValue(cName, out var aName))
                 return GetId(aName);
             return 0;

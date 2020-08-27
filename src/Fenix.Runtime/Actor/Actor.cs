@@ -266,13 +266,24 @@ namespace Fenix
 
         public override void Destroy()
         {
+            Log.Info("Actor.Destory>", this.Id, this.UniqueName);
             //actor api
             this.onDestroy();
+#if !CLIENT
+            var clientId = Global.IdManager.GetHostIdByActorId(this.Id, isClient: true);
+            if(clientId != 0)
+            {
+                Global.Host.RemoveClientActor(this.Id, DisconnectReason.SERVER_ACTOR_DESTROY, (code) => { }, null);
+            }
+
+            Global.IdManager.RemoveHostId(clientId);
+#endif
+            Global.IdManager.RemoveActorId(this.Id);
 
             foreach (var m in this.mModuleDic.Values)
                 m.onDestory();
 
-            base.Destroy(); 
+            base.Destroy();  
         }
 
         public T GetService<T>(string name) where T : ActorRef
@@ -391,7 +402,7 @@ namespace Fenix
 
         protected virtual void onClientDisable()
         {
-            AddTimer(0, 15000, Destroy); 
+            destroyTimerId = AddTimer(0, 15000, Destroy); 
         } 
 #else
         protected virtual void onServerEnable()

@@ -69,7 +69,7 @@ namespace DotNetty.KCP
             //默认2<<11   可以修改
             _writeQueue = new ConcurrentQueue<IByteBuffer>();
                 // <IByteBuffer>(2<<10);
-            _readQueue = new MpscArrayQueue<IByteBuffer>(2<<10);
+            _readQueue = new MpscArrayQueue<IByteBuffer>(2<<16);
             //recieveList = new SpscLinkedQueue<>();
             int headerSize = 0;
 
