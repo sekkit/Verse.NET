@@ -57,7 +57,7 @@ namespace Server.GModule
                 return;
             }
 
-            await LoginDb.SetAsync(username, (long)-1, expireSec:3);
+            LoginDb.Set(username, (long)-1, expireSec:3);
 
             //验证用户db，成功则登陆
             var account = AccountDb.Get<Account>(username);
@@ -66,7 +66,7 @@ namespace Server.GModule
                 if(account.password != password)
                 {
                     callback(ErrCode.LOGIN_WRONG_USR_OR_PSW, null, 0, null, null);
-                    await LoginDb.DeleteAsync(username);
+                    LoginDb.Delete(username);
                     return;
                 }
             } 
@@ -82,7 +82,7 @@ namespace Server.GModule
                 if(!AccountDb.Set(username, account))
                 {
                     callback(ErrCode.LOGIN_CREATE_ACCOUNT_FAIL, null, 0, null, null);
-                    await LoginDb.DeleteAsync(username);
+                    LoginDb.Delete(username);
                     return;
                 }
             }
@@ -100,10 +100,8 @@ namespace Server.GModule
                 if(clientId != 0)
                 {
                     //踢掉之前的客户端
-                    var self = ActorRef();
-                    var lastTs = TimeUtil.GetTimeStampMS();
+                    var self = ActorRef(); 
                     var result = await self.RemoveClientActorAsync(actorId, DisconnectReason.KICKED);
-                    Log.Error(TimeUtil.GetTimeStampMS() - lastTs);
                     if (result.code != DefaultErrCode.OK)
                     {
                         callback(
@@ -112,7 +110,7 @@ namespace Server.GModule
                             hostId,
                             Global.IdManager.GetHostName(hostId),
                             Global.IdManager.GetExtAddress(hostAddr));
-                        await LoginDb.DeleteAsync(username);
+                        LoginDb.Delete(username);
                         return;
                     }
                 }
@@ -128,7 +126,7 @@ namespace Server.GModule
                     Global.IdManager.GetExtAddress(hostAddr)
                 );
 
-                await LoginDb.SetAsync(username, TimeUtil.GetTimeStampMS(), expireSec: 3600);
+                LoginDb.Set(username, TimeUtil.GetTimeStampMS(), expireSec: 3600);
                 return;
             }
 
@@ -139,7 +137,7 @@ namespace Server.GModule
                 if (code != DefaultErrCode.OK)
                 {
                     callback(ErrCode.ERROR, actorName, 0, null, null);
-                    LoginDb.DeleteAsync(username);
+                    LoginDb.Delete(username);
                     return;
                 }
 
@@ -158,7 +156,7 @@ namespace Server.GModule
                     Global.IdManager.GetExtAddress(hostAddr)
                 );
 
-                LoginDb.SetAsync(username, TimeUtil.GetTimeStampMS(), expireSec: 3600);
+                LoginDb.Set(username, TimeUtil.GetTimeStampMS(), expireSec: 3600);
             });
         }
 

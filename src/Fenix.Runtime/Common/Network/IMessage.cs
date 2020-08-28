@@ -86,6 +86,12 @@ namespace Fenix.Common.Rpc
             return MessagePackSerializer.Deserialize<IMessage>(data);
         }
 
+        //public static IMessage DeserializeJson(string json)
+        //{
+        //    byte[] bytes = MessagePackSerializer.ConvertFromJson(json);
+        //    return Deserialize(bytes);
+        //}
+
         public virtual bool HasCallback()
         {
             return false;

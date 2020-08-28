@@ -759,7 +759,7 @@ namespace Shared
 
                         if (isHost)
                         {
-                            using (var sw = new StreamWriter(Path.Combine(pPath, method.Name + ".cs"), false, Encoding.UTF8))
+                            using (var sw = new StreamWriter(Path.Combine(pPath, message_type + ".cs"), false, Encoding.UTF8))
                                 sw.WriteLine(msgCode.Replace("\r", ""));
                         }
                         else

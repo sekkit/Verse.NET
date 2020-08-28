@@ -217,6 +217,8 @@ namespace Fenix
                     Global.NetManager.Deregister(peer); 
                     return;
                 }
+
+                return;
             } 
 
             uint protoCode = buffer.ReadUnsignedIntLE();

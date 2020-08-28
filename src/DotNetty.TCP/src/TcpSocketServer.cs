@@ -102,7 +102,7 @@ namespace DotNetty.TCP
             return true;
         }
     
-        public async void Shutdown()
+        public async Task Shutdown()
         {
             await Task.WhenAll(
                     bossGroup?.ShutdownGracefullyAsync(TimeSpan.FromMilliseconds(100), TimeSpan.FromSeconds(1)),
