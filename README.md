@@ -176,15 +176,7 @@ namespace Server.UModule
        //When disaster happens, the actor can be recovered from previous state
        public partial class Avatar : Actor
        {
-           public Client.AvatarRef Client => (Client.AvatarRef)this.client;
-
-           public Avatar()
-           { 
-           }
-
-           public Avatar(string uid) : base(uid)
-           { 
-           }
+           public Client.AvatarRef Client => (Client.AvatarRef)this.client; 
 
            public override void onLoad()
            { 
