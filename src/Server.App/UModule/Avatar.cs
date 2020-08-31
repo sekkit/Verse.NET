@@ -24,10 +24,8 @@ namespace Server.UModule
         {
             Log.Info("Avatar.User>", GetPersist<User>());
 
-            if(User.Exp == 0)
-            {
+            if(User.Exp == 0) 
                 User.Exp = 1; 
-            }
         }
 
         protected override void onClientEnable()

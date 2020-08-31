@@ -37,9 +37,9 @@ namespace Fenix
         {
             this.IsClientMode = clientMode;
 
-            Global.NetManager.OnConnect += OnConnect;
-            Global.NetManager.OnReceive += OnReceive;
-            Global.NetManager.OnClose += OnClose;
+            Global.NetManager.OnConnect   += OnConnect;
+            Global.NetManager.OnReceive   += OnReceive;
+            Global.NetManager.OnClose     += OnClose;
             Global.NetManager.OnException += OnExcept;
             Global.NetManager.OnHeartBeat += OnHeartBeat;
 
@@ -159,7 +159,7 @@ namespace Fenix
         {
             //先销毁所有的actor, netpeer
             //再销毁自己
-
+            //
             foreach (var a in this.actorDic.Values)
                 a.Destroy();
 
@@ -388,27 +388,36 @@ namespace Fenix
             Global.IdManager.RegisterHost(host, this.LocalAddress.ToIPv4String(), this.ExternalAddress.ToIPv4String());
         }
 
-        protected void RegisterGlobalManagerAsync(Actor actor)
+        protected void RegisterGlobalManagerAsync(Actor a)
         {
             Task.Run(() =>
             {
-                Global.IdManager.RegisterActor(actor, this.Id);
-                Global.TypeManager.RegisterActorType(actor);
+                Global.IdManager.RegisterActor(a, this.Id);
+                Global.TypeManager.RegisterActorType(a);
             });
         }
 
-        protected void RegisterGlobalManager(Actor actor)
+        protected void RegisterGlobalManager(Actor a)
         { 
-            Global.IdManager.RegisterActor(actor, this.Id);
-            Global.TypeManager.RegisterActorType(actor); 
+            Global.IdManager.RegisterActor(a, this.Id);
+            Global.TypeManager.RegisterActorType(a); 
+        }
+
+        public void RemoveActor(string uid)
+        {
+            var aId = Global.IdManager.GetActorId(uid);
+            Global.IdManager.RemoveActorId(aId);
+            this.actorDic.TryRemove(aId, out var _); 
         }
 
         public override void CallMethod(Packet packet)
         {
             bool isCallback = rpcDic.ContainsKey(packet.Id);
             if (!isCallback)
-            { 
-                isCallback = Global.IdManager.GetRpcId(packet.Id) != 0;
+            {
+                isCallback = Global.IdManager.GetRpcId(packet.Id) != 0; 
+                if(!isCallback) 
+                    isCallback =  rpcTimeoutDic.ContainsKey(packet.Id); 
             }
 
             if (isCallback)
@@ -577,12 +586,20 @@ namespace Fenix
             Global.IdManager.RegisterClientActor(actorId, actorName, __context.Packet.FromHostId, __context.Peer.RemoteAddress.ToIPv4String());
              
             //give actor.server hostId, ipaddr to client
-            callback(DefaultErrCode.OK);
-
+             
             //Set actor.server's client property
             Log.Info("binding_client_actor", actorId);
             var a = Global.Host.GetActor(actorId);
-            a.OnClientEnable();
+
+            if (a != null)
+            {
+                callback(DefaultErrCode.OK);
+                a.OnClientEnable();
+            }
+            else
+            {
+                callback(DefaultErrCode.ERROR);
+            }
         }
 
         [ServerApi]

@@ -25,10 +25,15 @@ namespace Client
             var rnd = new Random((int)Basic.GenID32FromName(TimeUtil.GetTimeStamp().ToString()));
             
             var next = rnd.Next(0, int.MaxValue);
-            app.Login("sekkit"+next.ToString(), "password", (code, avatar) =>
+            app.Login("sekkit" + next.ToString(), "password", (code, avatar) =>
             {
-                
+
             });
+
+            //app.Login("sekkit", "password", (code, avatar) =>
+            //{
+
+            //});
         } 
 #endif
         public void Init(RuntimeConfig cfg, bool threaded = true)
@@ -100,18 +105,32 @@ namespace Client
                         }
 
                         Log.Info(string.Format("ServerAvatar host: {0}@{1} {2} {3}", uid, hostId, hostName, hostAddress));
-                        var avatar = host.CreateActorLocally<Client.Avatar>(uid);
-
-                        Global.IdManager.RegisterHost(hostId, hostName, hostAddress, hostAddress);
-                        Global.IdManager.RegisterActor(avatar, hostId);
-
+                         
                         var parts = hostAddress.Split(':');
                         var ip = parts[0];
                         var port = int.Parse(parts[1]);
                         var avatarHost = host.GetHost(hostName, ip, port);
                         Global.NetManager.PrintPeerInfo("# Master.App: hostref created");
-                        avatarHost.BindClientActor(avatar.Uid, (code3) =>
+
+                        var avatar = host.CreateActorLocally<Client.Avatar>(uid);
+
+                        Global.IdManager.RegisterHost(hostId, hostName, hostAddress, hostAddress);
+                        Global.IdManager.RegisterActor(avatar, hostId);
+
+                        avatarHost.BindClientActor(uid, (code3) =>
                         {
+                            if(code3 != DefaultErrCode.OK)
+                            {
+                                Log.Error(code3);
+
+                                host.RemoveActor(uid);
+
+                                //Global.IdManager.RemoveHostId(hostId);
+
+                                callback?.Invoke((ErrCode)code3, null);
+                                return;
+                            }
+
                             Global.NetManager.PrintPeerInfo("# Master.App: BindClientActor called");
                             Log.Info("Avatar已经和服务端绑定");
 

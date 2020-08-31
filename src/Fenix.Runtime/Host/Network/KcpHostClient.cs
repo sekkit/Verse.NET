@@ -30,14 +30,22 @@ namespace Fenix
 
         public string ChannelId => _ukcp?.user().Channel.Id.AsLongText();
 
-        public bool IsActive => _ukcp.isActive(); 
+        public bool IsActive => _ukcp.isActive();
+
+        static object lockObj = new object();
 
         public KcpHostClient(ChannelConfig channelConfig, IPEndPoint remoteAddress)
         {
             if(client == null)
             {
-                client = new KcpClient();
-                client.init(channelConfig);
+                lock (lockObj)
+                {
+                    if (client == null)
+                    {
+                        client = new KcpClient();
+                        client.init(channelConfig);
+                    }
+                }
             }
 
             this._ukcp = client.connect(remoteAddress, channelConfig, this);
@@ -45,7 +53,7 @@ namespace Fenix
 
         public static KcpHostClient Create(IPEndPoint remoteAddress)
         {
-            ChannelConfig channelConfig = new ChannelConfig(); 
+            var channelConfig = new ChannelConfig(); 
             channelConfig.Crc32Check = false;
             channelConfig.initNodelay(true, 10, 2, true);
             channelConfig.Sndwnd = 512;

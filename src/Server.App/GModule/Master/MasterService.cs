@@ -5,6 +5,6 @@ namespace Server.GModule.Master
 {
     [AccessLevel(ALevel.SERVER)]
     public partial class MasterService : Service
-    { 
+    {
     }
 }

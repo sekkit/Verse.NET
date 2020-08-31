@@ -23,12 +23,14 @@ namespace Fenix
         public bool IsAlive { get; set; } = true;
          
         public ConcurrentDictionary<UInt64, RpcCommand> rpcDic     = new ConcurrentDictionary<UInt64, RpcCommand>();
+
+        public ConcurrentDictionary<ulong, long> rpcTimeoutDic = new ConcurrentDictionary<ulong, long>();
          
         public ConcurrentDictionary<UInt32, MethodInfo> rpcStubDic = new ConcurrentDictionary<UInt32, MethodInfo>();
          
-        public ConcurrentDictionary<UInt32, MethodInfo> rpcNativeStubDic = new ConcurrentDictionary<uint, MethodInfo>();
+        public ConcurrentDictionary<UInt32, MethodInfo> rpcNativeStubDic = new ConcurrentDictionary<UInt32, MethodInfo>();
          
-        private ConcurrentDictionary<ulong, Timer> mTimerDic = new ConcurrentDictionary<ulong, Timer>();
+        private ConcurrentDictionary<UInt64, Timer> mTimerDic = new ConcurrentDictionary<ulong, Timer>();
 
         public Entity()
         {
@@ -121,6 +123,7 @@ namespace Fenix
         public void RemoveRpc(ulong rpcId)
         {
             Global.IdManager.RemoveRpcId(rpcId);
+
             rpcDic.TryRemove(rpcId, out var _);
         }
 
@@ -146,7 +149,7 @@ namespace Fenix
             }
             else
             { 
-                var cmd = RpcCommand.Create(packet, null, this) ; 
+                var cmd = RpcCommand.Create(packet, null, this); 
                 cmd.Call(()=> {
                     RemoveRpc(cmd.Id);
                 });
@@ -297,17 +300,30 @@ namespace Fenix
         protected void CheckRpc()
         {
             var curTime = TimeUtil.GetTimeStampMS();
+
+            foreach (var key in rpcTimeoutDic.Keys.ToArray())
+            {
+                var ts = rpcTimeoutDic[key];
+                if (curTime - ts >= 30000)
+                {
+                    rpcTimeoutDic.TryRemove(key, out var _);
+                }
+            }
+
             foreach (var cmd in rpcDic.Values.ToArray())
             {
-                if(curTime - cmd.CallTime > 15000)
+                if (curTime - cmd.CallTime > 15000)
                 {
                     Log.Info("CheckRpc->timeout", cmd.ProtoCode);
                     if (!IsAlive)
                         return;
+
                     cmd.Callback(null);
+
+                    rpcTimeoutDic[cmd.Id] = curTime;
                     RemoveRpc(cmd.Id);
                 }
-            }
+            } 
         }
 
         protected void CheckTimer()
@@ -346,5 +362,6 @@ namespace Fenix
             CheckTimer();
             CheckRpc();
         }
+
     }
 }

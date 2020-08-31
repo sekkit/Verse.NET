@@ -18,12 +18,12 @@ namespace Server.Config
 
         public new static void Init()
         {
-            Instance.AddDbConfig(HNAME2ADDR, "127.0.0.1", 7379, HNAME2ADDR, validTime: 6);
-            Instance.AddDbConfig(ANAME2HNAME, "127.0.0.1", 7379, ANAME2HNAME, validTime: 6);
-            Instance.AddDbConfig(ANAME2TNAME, "127.0.0.1", 7379, ANAME2TNAME, validTime: 6);
-            Instance.AddDbConfig(ID2NAME, "127.0.0.1", 7379, ID2NAME, validTime: 6);
-            Instance.AddDbConfig(ANAME2CNAME, "127.0.0.1", 7379, ANAME2CNAME, validTime: 6);
-            Instance.AddDbConfig(ADDR2EXTADDR, "127.0.0.1", 7379, ADDR2EXTADDR, validTime: 6);
+            Instance.AddDbConfig(HNAME2ADDR, "127.0.0.1", 7379, HNAME2ADDR, validTime: 60);
+            Instance.AddDbConfig(ANAME2HNAME, "127.0.0.1", 7379, ANAME2HNAME, validTime: 60);
+            Instance.AddDbConfig(ANAME2TNAME, "127.0.0.1", 7379, ANAME2TNAME, validTime: 60);
+            Instance.AddDbConfig(ID2NAME, "127.0.0.1", 7379, ID2NAME, validTime: 60);
+            Instance.AddDbConfig(ANAME2CNAME, "127.0.0.1", 7379, ANAME2CNAME, validTime: 60);
+            Instance.AddDbConfig(ADDR2EXTADDR, "127.0.0.1", 7379, ADDR2EXTADDR, validTime: -1);
         }
     }
 }

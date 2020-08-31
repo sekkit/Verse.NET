@@ -51,7 +51,7 @@ namespace Server.GModule
             }
 
             Log.Error(TimeUtil.GetTimeStampMS() - loginData);
-            if(TimeUtil.GetTimeStampMS() - loginData < 3000)
+            if (TimeUtil.GetTimeStampMS() - loginData < 3000)
             {
                 callback(ErrCode.LOGIN_TOO_FREQ, null, 0, null, null);
                 return;

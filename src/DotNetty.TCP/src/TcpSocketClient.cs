@@ -65,7 +65,6 @@ namespace DotNetty.TCP
                     pipeline.AddLast("framing-dec", new LengthFieldBasedFrameDecoder(ushort.MaxValue, 0, 2, 0, 2));
                     pipeline.AddLast("tcp-handler", new TcpChannelHandler(this));
                 }));
-
             }
             catch (Exception ex)
             {

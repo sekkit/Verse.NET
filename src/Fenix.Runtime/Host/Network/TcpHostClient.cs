@@ -38,17 +38,26 @@ namespace Fenix
 
         public string ChannelId => clientChannel.Id.AsLongText();
 
+        static object lockObj = new object();
+
         public bool Init(TcpChannelConfig channelConfig, IPEndPoint ep)
-        {
-            if (client == null)
+        {  
+            if(client == null)
             {
-                client = new TcpSocketClient();
-                if (!client.init(channelConfig))
+                lock (lockObj)
                 {
-                    client = null;
-                    return false;
+                    if (client == null)
+                    {
+                        client = new TcpSocketClient();
+                        if (!client.init(channelConfig))
+                        {
+                            client = null;
+                            return false;
+                        }
+                    }
                 }
-            }  
+            }
+
             this.clientChannel = client.Connect(ep, this);
             if (this.clientChannel == null)
                 return false;
