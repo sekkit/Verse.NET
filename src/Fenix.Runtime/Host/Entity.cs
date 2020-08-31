@@ -135,7 +135,13 @@ namespace Fenix
 
         public virtual void CallMethod(Packet packet)
         {
-            bool isCallback = rpcDic.ContainsKey(packet.Id); 
+            bool isCallback = rpcDic.ContainsKey(packet.Id);
+            if (!isCallback)
+            { 
+                if (!isCallback)
+                    isCallback = rpcTimeoutDic.ContainsKey(packet.Id);
+            }
+
             if (isCallback)
             { 
                 if(!rpcDic.TryGetValue(packet.Id, out var cmd))
