@@ -40,7 +40,7 @@ namespace Server
                 var protoCode = ProtocolCode.__SERVERGMODULE__LOGINSERVICE__CREATE_ACCOUNT_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { username, password, _cb, context });
                 }
@@ -78,7 +78,7 @@ namespace Server
                 var protoCode = ProtocolCode.__SERVERGMODULE__LOGINSERVICE__CREATE_ACCOUNT_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { username, password, callback, context });
                 }
@@ -116,7 +116,7 @@ namespace Server
                 var protoCode = ProtocolCode.__SERVERGMODULE__LOGINSERVICE__DELETE_ACCOUNT_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { username, password, _cb, context });
                 }
@@ -154,7 +154,7 @@ namespace Server
                 var protoCode = ProtocolCode.__SERVERGMODULE__LOGINSERVICE__DELETE_ACCOUNT_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { username, password, callback, context });
                 }
@@ -176,7 +176,7 @@ namespace Server
             });
         }
 
-        public async Task<__ServerGModule__LoginService__LoginReq.Callback> rpc_login_async(global::System.String username, global::System.String password, global::System.Action<global::Shared.Protocol.ErrCode, global::System.String, global::System.UInt64, global::System.String, global::System.String> callback=null)
+        public async Task<__ServerGModule__LoginService__LoginReq.Callback> rpc_login_async(global::System.String username, global::System.String password, global::System.String extraData, global::System.Action<global::Shared.Protocol.ErrCode, global::System.String, global::System.UInt64, global::System.String, global::System.String> callback=null)
         {
             var t = new TaskCompletionSource<__ServerGModule__LoginService__LoginReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
@@ -196,12 +196,12 @@ namespace Server
                 var protoCode = ProtocolCode.__SERVERGMODULE__LOGINSERVICE__LOGIN_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
-                    Global.Host.CallMethodWithParams(protoCode, new object[] { username, password, _cb, context });
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { username, password, extraData, _cb, context });
                 }
                 else
-                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { username, password, _cb });
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { username, password, extraData, _cb });
             }
             else
             {
@@ -214,7 +214,8 @@ namespace Server
                     var msg = new __ServerGModule__LoginService__LoginReq()
                     {
                          username=username,
-                         password=password
+                         password=password,
+                         extraData=extraData
                     };
                     var cb = new Action<byte[]>((cbData) => {
                         var cbMsg = cbData==null ? new __ServerGModule__LoginService__LoginReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<__ServerGModule__LoginService__LoginReq.Callback>(cbData);
@@ -226,7 +227,7 @@ namespace Server
              return await t.Task;
         }
 
-        public void rpc_login(global::System.String username, global::System.String password, global::System.Action<global::Shared.Protocol.ErrCode, global::System.String, global::System.UInt64, global::System.String, global::System.String> callback)
+        public void rpc_login(global::System.String username, global::System.String password, global::System.String extraData, global::System.Action<global::Shared.Protocol.ErrCode, global::System.String, global::System.UInt64, global::System.String, global::System.String> callback)
         {
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -234,19 +235,20 @@ namespace Server
                 var protoCode = ProtocolCode.__SERVERGMODULE__LOGINSERVICE__LOGIN_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
-                    Global.Host.CallMethodWithParams(protoCode, new object[] { username, password, callback, context });
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { username, password, extraData, callback, context });
                 }
                 else
-                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { username, password, callback });
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { username, password, extraData, callback });
                 return;
             }
             Task.Run(() => {
                 var msg = new __ServerGModule__LoginService__LoginReq()
                 {
                     username=username,
-                    password=password
+                    password=password,
+                    extraData=extraData
                 };
                 var cb = new Action<byte[]>((cbData) => {
                     var cbMsg = cbData==null?new __ServerGModule__LoginService__LoginReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<__ServerGModule__LoginService__LoginReq.Callback>(cbData);
@@ -265,7 +267,7 @@ namespace Server
                 var protoCode = ProtocolCode.__SERVERGMODULE__LOGINSERVICE__RESET_PASSWORD_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { username, email, context });
                 }

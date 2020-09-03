@@ -71,9 +71,10 @@ namespace DotNetty.KCP
 
             bootstrap = new Bootstrap();
             bootstrap.Group(_eventLoopGroup);
+            bootstrap.Option(ChannelOption.SoReuseport, false);
+            bootstrap.Option(ChannelOption.SoReuseaddr, true);
             bootstrap.ChannelFactory(() => new SocketDatagramChannel(AddressFamily.InterNetwork));
-            bootstrap.Handler(new ActionChannelInitializer<SocketDatagramChannel>(channel =>
-            {
+            bootstrap.Handler(new ActionChannelInitializer<SocketDatagramChannel>(channel => {
                 var pipeline = channel.Pipeline;
                 pipeline.AddLast(new ClientChannelHandler(_channelManager,channelConfig));
             }));

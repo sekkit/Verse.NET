@@ -40,7 +40,7 @@ namespace Server.GModule
 
         //callback: code, actorName, actorHostId, actorHostName, actorHostAddress, 
         [ServerApi]
-        public async Task Login(string username, string password, Action<ErrCode, string, ulong, string, string> callback)
+        public async Task Login(string username, string password, string extraData, Action<ErrCode, string, ulong, string, string> callback)
         {
             Log.Info(string.Format("login {0} {1}", username, password));
             var loginData = LoginDb.Get<long>(username);
@@ -100,8 +100,10 @@ namespace Server.GModule
                 if(clientId != 0)
                 {
                     //踢掉之前的客户端
+                    Log.Info("kick_begin");
                     var self = ActorRef(); 
                     var result = await self.RemoveClientActorAsync(actorId, DisconnectReason.KICKED);
+                    Log.Info("kick_end", result.code);
                     if (result.code != DefaultErrCode.OK)
                     {
                         callback(
@@ -134,8 +136,10 @@ namespace Server.GModule
             var svc = GetService<MasterServiceRef>();
             svc.CreateActor(nameof(Avatar), account.uid, (code, actorName, actorId) =>
             {
-                if (code != DefaultErrCode.OK)
+                Log.Info("create_actor:", code, actorName, actorId);
+                if (code != DefaultErrCode.OK && code != DefaultErrCode.create_actor_already_exists)
                 {
+                    Log.Error("create_actor_fail", code);
                     callback(ErrCode.ERROR, actorName, 0, null, null);
                     LoginDb.Delete(username);
                     return;

@@ -16,11 +16,17 @@ namespace Fenix
 
         [Key(2)]
         public string HostAddr { get; set; }
-        
+
         [Key(3)]
-        public Dictionary<ulong, string> ServiceId2Name { get; set; }
+        public string HostExtAddr { get; set; }
 
         [Key(4)]
+        public bool IsClient { get; set; }
+        
+        [Key(5)]
+        public Dictionary<ulong, string> ServiceId2Name { get; set; }
+
+        [Key(6)]
         public Dictionary<ulong, string> ServiceId2TName { get; set; } 
     }
 }

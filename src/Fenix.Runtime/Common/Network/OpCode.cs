@@ -24,6 +24,7 @@ namespace Fenix.Common
         public const uint ON_SERVER_ACTOR_ENABLE_NTF = 0x18;
         public const uint SYNC_NTF = 0x20;
         public const uint SYNC_FIELD_NTF = 0x21;
+        public const uint SAY_HELLO_REQ = 0x30;
         public const uint CALL_ACTOR_METHOD = 0xff;
     }
 

@@ -32,12 +32,20 @@ namespace Fenix
 
         void ITcpListener.handleConnect(IChannel channel)
         {
-            OnConnect?.Invoke(channel); 
+            OneThreadSynchronizationContext.Instance.Post((obj) =>
+            {
+                OnConnect?.Invoke((IChannel)obj);
+            }, channel);
+            //OnConnect?.Invoke(channel); 
         }
 
         void ITcpListener.handleDisconnect(IChannel channel)
         {
-            OnDisconnect?.Invoke(channel);
+            OneThreadSynchronizationContext.Instance.Post((obj) =>
+            {
+                OnDisconnect?.Invoke((IChannel)obj);
+            }, channel);
+            //OnDisconnect?.Invoke(channel);
         }
 
         void ITcpListener.handleException(IChannel channel, Exception ex)
@@ -47,7 +55,13 @@ namespace Fenix
 
         void ITcpListener.handleReceive(IChannel channel, IByteBuffer buffer)
         {
-            OnReceive?.Invoke(channel, buffer); 
+            OneThreadSynchronizationContext.Instance.Post((obj) =>
+            {
+                var objs = (object[])obj;
+                OnReceive?.Invoke((IChannel)objs[0], (IByteBuffer)objs[1]);
+            }, new object[] { channel, buffer });
+
+            //OnReceive?.Invoke(channel, buffer); 
         }
 
         //public static TcpHostServer Create(IPEndPoint ep)
@@ -75,7 +89,7 @@ namespace Fenix
             if (!obj.Init(channelConfig, ep))
                 return null;
             return obj;
-        } 
+        }
 
         //public void Send(NetPeer peer, byte[] bytes)
         //{

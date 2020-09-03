@@ -85,7 +85,7 @@ namespace Fenix
 
             if (this.ProtoCode <= OpCode.CALL_ACTOR_METHOD)
             {
-                var peer = Global.NetManager.GetPeerById(packet.FromHostId, this.netType);
+                var peer = Global.NetManager.GetRemotePeerById(packet.FromHostId, this.netType);
                 var context = new RpcContext(this.packet, peer);
                 args.Add(context);
             }
@@ -106,6 +106,7 @@ namespace Fenix
 
         public void Callback(byte[] cbData)
         {
+            Log.Info("callback>", this.callbackMethod?.Method.Name);
 #if CLIENT
             OneThreadSynchronizationContext.Instance.Post((obj) =>
             {

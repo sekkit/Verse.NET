@@ -29,15 +29,15 @@ namespace Fenix.Common
 			}
 		}
 
-		public override void Post(SendOrPostCallback callback, object state)
-		{
-			if (Thread.CurrentThread.ManagedThreadId == this.selfThreadId)
-			{
-				callback(state);
-				return;
-			}
+        public override void Post(SendOrPostCallback callback, object state)
+        {
+            if (Thread.CurrentThread.ManagedThreadId == this.selfThreadId)
+            {
+                callback(state);
+                return;
+            }
 
-			this.queue.Enqueue(() => { callback(state); });
-		}
-	}
+            this.queue.Enqueue(() => { callback(state); });
+        }
+    }
 }

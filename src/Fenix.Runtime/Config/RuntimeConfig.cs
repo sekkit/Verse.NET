@@ -1,10 +1,12 @@
-﻿using MessagePack; 
+﻿using MessagePack;
+using System;
 using System.Collections.Generic; 
 
 
 namespace Fenix.Config
 {
     [MessagePackObject]
+    [Serializable]
     public class RuntimeConfig
     {
         [Key(0)]

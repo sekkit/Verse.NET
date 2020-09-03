@@ -65,18 +65,30 @@ namespace Fenix
         }
 
         public void handleConnect(IChannel channel)
-        { 
-            OnConnect?.Invoke(channel); 
+        {
+            OneThreadSynchronizationContext.Instance.Post((obj) =>
+            {
+                OnConnect?.Invoke((IChannel)obj);
+            }, channel);
         }
 
         public void handleDisconnect(IChannel channel)
-        {
-            OnDisconnect?.Invoke(channel);
+        { 
+            OneThreadSynchronizationContext.Instance.Post((obj) =>
+            {
+                OnDisconnect?.Invoke((IChannel)obj);
+            }, channel);
         }
 
         void ITcpListener.handleReceive(IChannel channel, IByteBuffer buffer)
         {
-            OnReceive?.Invoke(channel, buffer); 
+            OneThreadSynchronizationContext.Instance.Post((obj) =>
+            {
+                var objs = (object[])obj;
+                OnReceive?.Invoke((IChannel)objs[0], (IByteBuffer)objs[1]);
+            }, new object[] { channel, buffer });
+
+            //OnReceive?.Invoke(channel, buffer); 
         }
 
         void ITcpListener.handleClose(IChannel channel)
@@ -86,11 +98,21 @@ namespace Fenix
 
             IsAlive = false;
 
+            OneThreadSynchronizationContext.Instance.Post((obj) =>
+            {
+                OnClose?.Invoke((IChannel)obj);
+            }, channel);
+
             OnClose?.Invoke(channel); 
         }
 
         void ITcpListener.handleException(IChannel channel, Exception ex)
         {
+            //OneThreadSynchronizationContext.Instance.Post((obj) =>
+            //{
+            //    OnDisconnect?.Invoke((IChannel)obj);
+            //}, channel);
+
             OnException?.Invoke(channel, ex);  
         }
 

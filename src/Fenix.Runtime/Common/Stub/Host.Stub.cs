@@ -28,13 +28,13 @@ namespace Fenix
                 var cbMsg = new OnBeforeDisconnectNtf.Callback();
 
                 cb.Invoke(cbMsg);
+            }, context);
             on_before_disconnect?.Invoke(_msg.reason, () =>
             {
                 var cbMsg = new OnBeforeDisconnectNtf.Callback();
 
                 cb.Invoke(cbMsg);
             });
-            }, context);
         }
 
         [RpcMethod(OpCode.ON_SERVER_ACTOR_ENABLE_NTF, Api.ClientApi)]
@@ -126,6 +126,20 @@ namespace Fenix
             }, context);
         }
 
+        [RpcMethod(OpCode.SAY_HELLO_REQ, Api.ServerApi)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SERVER_API__Fenix__Host__say_hello(IMessage msg, Action<IMessage> cb, RpcContext context)
+        {
+            var _msg = (SayHelloReq)msg;
+            this.SayHello( (code, arg1) =>
+            {
+                var cbMsg = new SayHelloReq.Callback();
+                cbMsg.code=code;
+                cbMsg.arg1=arg1;
+                cb.Invoke(cbMsg);
+            }, context);
+        }
+
         [RpcMethod(OpCode.CREATE_ACTOR_REQ, Api.ServerOnly)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_ONLY__Fenix__Host__create_actor(IMessage msg, Action<IMessage> cb, RpcContext context)
@@ -157,10 +171,16 @@ namespace Fenix
 
         [RpcMethod(OpCode.REGISTER_REQ, Api.ServerOnly)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_ONLY__Fenix__Host__register(IMessage msg, RpcContext context)
+        public void SERVER_ONLY__Fenix__Host__register(IMessage msg, Action<IMessage> cb, RpcContext context)
         {
             var _msg = (RegisterReq)msg;
-            this.Register(_msg.hostId, _msg.hostName, context);
+            this.Register(_msg.hostId, _msg.hostName, (code, arg1) =>
+            {
+                var cbMsg = new RegisterReq.Callback();
+                cbMsg.code=code;
+                cbMsg.arg1=arg1;
+                cb.Invoke(cbMsg);
+            }, context);
         }
 
         [RpcMethod(OpCode.REMOVE_ACTOR_REQ, Api.ServerOnly)]
@@ -197,6 +217,13 @@ namespace Fenix
             this.RemoveClientActor(actorId, reason, callback, context);
         }
 
+        [RpcMethod(OpCode.SAY_HELLO_REQ, Api.ServerApi)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SERVER_API_NATIVE__Fenix__Host__say_hello(global::System.Action<global::Fenix.Common.DefaultErrCode, global::Fenix.HostInfo> callback, RpcContext context)
+        {
+            this.SayHello(callback, context);
+        }
+
         [RpcMethod(OpCode.CREATE_ACTOR_REQ, Api.ServerOnly)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_ONLY_NATIVE__Fenix__Host__create_actor(global::System.String typename, global::System.String name, global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.String, global::System.UInt64> callback, RpcContext context)
@@ -213,9 +240,9 @@ namespace Fenix
 
         [RpcMethod(OpCode.REGISTER_REQ, Api.ServerOnly)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_ONLY_NATIVE__Fenix__Host__register(global::System.UInt64 hostId, global::System.String hostName, RpcContext context)
+        public void SERVER_ONLY_NATIVE__Fenix__Host__register(global::System.UInt64 hostId, global::System.String hostName, global::System.Action<global::Fenix.Common.DefaultErrCode, global::Fenix.HostInfo> callback, RpcContext context)
         {
-            this.Register(hostId, hostName, context);
+            this.Register(hostId, hostName, callback, context);
         }
 
         [RpcMethod(OpCode.REMOVE_ACTOR_REQ, Api.ServerOnly)]

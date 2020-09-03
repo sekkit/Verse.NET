@@ -56,28 +56,55 @@ namespace Fenix
 #else
             var rootFolder = Directory.GetCurrentDirectory();
 
-            string rootPath = Path.Combine(Path.Combine(rootFolder, "../../../../../../../"));
+            //if (args.Length != 2)
+            //   return; 
+            string rootPath = Path.Combine(Path.Combine(rootFolder, "../../../../../"));
+            if(args.Length >= 2)
+                rootPath = args[1]; 
             string unityPath = Path.Combine(rootPath, "Unity");
-
-            var asmClientApp = Assembly.LoadFrom(Path.Combine(unityPath, "Assets/Plugins/Fenix/Client.App.dll"));
-            var asmServerApp = Assembly.LoadFrom(Path.Combine(rootPath, "bin/netcoreapp3.1/Server.App.dll"));
-            var asmRuntime = Assembly.LoadFrom(Path.Combine(rootPath, "bin/netcoreapp3.1/Fenix.Runtime.dll"));
-
-            string sharedClientPath = Path.GetFullPath(Path.Combine(unityPath, "Assets/Scripts/Client/Gen"));
+            string sharedClientPath = Path.GetFullPath(Path.Combine(unityPath, "Assets/Client.App/Gen"));
             string sharedServerPath = Path.GetFullPath(Path.Combine(rootPath, "src/Server.App/Gen"));
-
-            string clientPath = Path.GetFullPath(Path.Combine(unityPath, "Assets/Scripts/Client"));
+            
+            string clientPath = Path.GetFullPath(Path.Combine(unityPath, "Assets/Client.App/"));
             string serverPath = Path.GetFullPath(Path.Combine(rootPath, "src/Server.App"));
 
-            Gen.AutogenHost(asmRuntime, Path.GetFullPath(Path.Combine(rootPath, "src/Fenix.Runtime/Common")), clientPath, serverPath);
-             
-            Gen.AutogenActor(asmServerApp, true, sharedClientPath, sharedServerPath, clientPath, serverPath);
+            var resolver = new DefaultAssemblyResolver(); 
+            resolver.AddSearchDirectory(Path.Combine(rootPath, @"Libs/Unity/"));
+            resolver.AddSearchDirectory(Path.Combine(unityPath, @"Library/ScriptAssemblies/"));
+            resolver.AddSearchDirectory(Path.Combine(rootPath, @"bin/netcoreapp3.1/"));
 
-            Assembly.LoadFrom(Path.Combine(unityPath, "Assets/Plugins/Fenix/Fenix.Runtime.Unity.dll"));
-            Assembly.LoadFrom(Path.Combine(unityPath, "Assets/Plugins/Fenix/Shared.Unity.dll"));
+            AssemblyDefinition adClient = AssemblyDefinition.ReadAssembly(
+               Path.Combine(unityPath, @"Library/ScriptAssemblies/Assembly-CSharp.dll"), 
+                new ReaderParameters { AssemblyResolver = resolver });
 
-            Gen.AutogenActor(asmClientApp, false, sharedClientPath, sharedServerPath, clientPath, serverPath);
+            if (args.Length == 0 || (args.Length >= 2 && args.First() == "-c"))
+            {
+                //Assembly.LoadFrom(Path.Combine(rootPath, @"Libs/Unity/Fenix.Runtime.Unity.dll"));
+                //var asmClientApp = Assembly.LoadFrom(Path.Combine(rootPath, @"Libs/Unity/Assembly-CSharp.dll"));
+                //Gen.AutogenActor(asmClientApp, false, sharedClientPath, sharedServerPath, clientPath, serverPath);
+                Gen2.AutogenActor(adClient, false, sharedClientPath, sharedServerPath, clientPath, serverPath);
+
+            }
             
+            if (args.Length == 0 || (args.Length >= 2 && args.First() == "-r"))
+            {
+                Assembly.LoadFrom(Path.Combine(rootPath, "bin/netcoreapp3.1/MessagePack.dll"));
+                var asmRuntime = Assembly.LoadFrom(Path.Combine(rootPath, "bin/netcoreapp3.1/Fenix.Runtime.dll"));
+                Gen.AutogenHost(asmRuntime, Path.GetFullPath(Path.Combine(rootPath, "src/Fenix.Runtime/Common")), clientPath, serverPath);
+            }
+            
+            if (args.Length == 0 || (args.Length >= 2 && args.First() == "-s"))
+            {
+                AssemblyDefinition adServerApp = AssemblyDefinition.ReadAssembly(
+                   Path.Combine(rootPath, @"bin/netcoreapp3.1/Server.App.dll"),
+                    new ReaderParameters { AssemblyResolver = resolver });
+
+                //Gen2.AutogenActor(adServerApp, true, sharedClientPath, sharedServerPath, clientPath, serverPath);
+
+                var asmServerApp = Assembly.LoadFrom(Path.Combine(rootPath, "bin/netcoreapp3.1/Server.App.dll"));
+                Gen.AutogenActor(asmServerApp, true, sharedClientPath, sharedServerPath, clientPath, serverPath);
+            }
+
             //var p = new ProtocolCode();
             //p.Validate();
 #endif

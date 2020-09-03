@@ -42,7 +42,7 @@ namespace Server.UModule
             });
         }
 
-        [RpcMethod(ProtocolCode.__ServerUModule__Avatar__M__SERVERUMODULE__ITEMMODULE__TEST_ITEM_API_REQ, Api.ServerApi)]
+        [RpcMethod(ProtocolCode.__SERVERUMODULE__AVATAR__M__SERVERUMODULE__ITEMMODULE__TEST_ITEM_API_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API__ServerUModule__Avatar__M__ServerUModule__ItemModule__test_item_api(IMessage msg, Action<IMessage> cb)
         {
@@ -70,7 +70,7 @@ namespace Server.UModule
             this.ChangeName(name, callback);
         }
 
-        [RpcMethod(ProtocolCode.__ServerUModule__Avatar__M__SERVERUMODULE__ITEMMODULE__TEST_ITEM_API_REQ, Api.ServerApi)]
+        [RpcMethod(ProtocolCode.__SERVERUMODULE__AVATAR__M__SERVERUMODULE__ITEMMODULE__TEST_ITEM_API_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API_NATIVE__ServerUModule__Avatar__M__ServerUModule__ItemModule__test_item_api(global::System.Action callback)
         {

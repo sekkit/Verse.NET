@@ -54,7 +54,7 @@ namespace Fenix
                 {
                     string protoCode = (isHost ? NameToProtoCode(method.Name) : NameToProtoCode(ns, tname, method.Name)) + "_" + GetApiMessagePostfix(Api.ServerOnly).ToUpper();
                     uint code = Basic.GenID32FromName(protoCode);
-                    Global.TypeManager.RegisterApi(code, Api.ServerOnly);
+                    Global.TypeManager.RegisterApi(code, Api.ServerOnly); 
                 }
 
                 attrs = method.GetCustomAttributes(typeof(ClientApiAttribute));
@@ -62,7 +62,7 @@ namespace Fenix
                 {
                     string protoCode = (isHost ? NameToProtoCode(method.Name) : NameToProtoCode(ns, tname, method.Name)) + "_" + GetApiMessagePostfix(Api.ClientApi).ToUpper();
                     uint code = Basic.GenID32FromName(protoCode);
-                    Global.TypeManager.RegisterApi(code, Api.ClientApi);
+                    Global.TypeManager.RegisterApi(code, Api.ClientApi); 
                 }
 
                 attrs = method.GetCustomAttributes(typeof(RpcMethodAttribute));
@@ -137,9 +137,8 @@ namespace Fenix
         {
             bool isCallback = rpcDic.ContainsKey(packet.Id);
             if (!isCallback)
-            { 
-                if (!isCallback)
-                    isCallback = rpcTimeoutDic.ContainsKey(packet.Id);
+            {  
+                isCallback = rpcTimeoutDic.ContainsKey(packet.Id);
             }
 
             if (isCallback)
@@ -166,6 +165,8 @@ namespace Fenix
         {
             try
             {
+                Log.Info("CallMethodWithParams:Code", protoCode, this.UniqueName);
+                Log.Info("CallMethodWithParams:Name", rpcNativeStubDic[protoCode].Name);
                 rpcNativeStubDic[protoCode].Invoke(this, args);
             }
             catch(Exception ex)
@@ -179,6 +180,8 @@ namespace Fenix
         {
             try
             {
+                Log.Info("CallMethodWithMsg:Code", protoCode, this.UniqueName);
+                Log.Info("CallMethodWithMsg:Name", rpcStubDic[protoCode].Name);
                 rpcStubDic[protoCode].Invoke(this, args);
             }
             catch (Exception ex)
@@ -197,23 +200,26 @@ namespace Fenix
             var cmd = RpcCommand.Create(
                 packet,
                 (data) => { RemoveRpc(packet.Id); cb?.Invoke(data);  },
-                this); 
-
+                this);
+             
             //如果是同进程，则本地调用
             if (fromHostId == toHostId)
             {
                 var toActor = Global.Host.GetActor(toActorId);
 
-                if (msg.HasCallback())
-                {
+                if (msg.HasCallback()) 
                     AddCallbackRpc(cmd);
-                }
+
                 toActor.CallMethod(packet);
                 return;
             }
 
+            bool isClient = Global.IdManager.IsClientHost(toHostId);
+
             //否则通过网络调用
-            var peer = Global.NetManager.GetPeerById(toHostId, netType);
+            //如果是客户端，则直接用remote netpeer返回包
+            //如果是服务端，则用local netpeer返回包
+            var peer = isClient? Global.NetManager.GetRemotePeerById(toHostId, netType):Global.NetManager.GetLocalPeerById(toHostId, netType);
             //Log.Info(string.Format("{0} {1} {2} {3} {4}", fromHostId, toHostId, fromActorId, toActorId, peer==null?"NULL":""));
             if (peer == null)
             {
@@ -253,8 +259,12 @@ namespace Fenix
                 return;
             }
 
+            //如果是客户端，则直接用remote netpeer返回包
+            //如果是服务端，则用local netpeer返回包
+            bool isClient = Global.IdManager.IsClientHost(toHostId);
+
             //否则通过网络调用
-            var peer = Global.NetManager.GetPeerById(toHostId, netType);
+            var peer = isClient ? Global.NetManager.GetRemotePeerById(toHostId, netType) : Global.NetManager.GetLocalPeerById(toHostId, netType);
 
             if (peer == null)
             {
@@ -301,6 +311,26 @@ namespace Fenix
         public bool CancelTimer(ulong timerId)
         {
             return this.mTimerDic.TryRemove(timerId, out var _);
+        }
+
+        public bool ResetTimer(ulong timerId, long resetInterval)
+        {
+            if(this.mTimerDic.TryGetValue(timerId, out var tmr))
+            {
+                tmr.Interval = resetInterval;
+                return true;
+            }
+            return false;
+        }
+
+        public bool ExtendTimer(ulong timerId, long extendInterval)
+        {
+            if (this.mTimerDic.TryGetValue(timerId, out var tmr))
+            {
+                tmr.Interval = extendInterval;
+                return true;
+            }
+            return false;
         }
 
         protected void CheckRpc()
@@ -368,6 +398,5 @@ namespace Fenix
             CheckTimer();
             CheckRpc();
         }
-
     }
 }

@@ -48,6 +48,11 @@ namespace DotNetty.TCP
                 .Group(group)
                 .Channel<TcpSocketChannel>()
                 .Option(ChannelOption.TcpNodelay, true)
+                .Option(ChannelOption.SoReuseaddr, true)
+                .Option(ChannelOption.SoReuseport, false)
+                .Option(ChannelOption.SoSndbuf, 2048)
+                .Option(ChannelOption.SoRcvbuf, 8096)
+                .Option(ChannelOption.SoKeepalive, true)
                 .Handler(new ActionChannelInitializer<ISocketChannel>(channel =>
                 {
                     IChannelPipeline pipeline = channel.Pipeline;

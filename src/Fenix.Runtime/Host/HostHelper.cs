@@ -1,14 +1,18 @@
 ﻿using Fenix.Common;
+using Fenix.Config;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq.Expressions;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Fenix
 {
     public class HostHelper
     {
-        static Thread th;
+        static Thread hostThread;
+        static Thread singleThread;
 
         public static void Run(Host host)
         {
@@ -17,18 +21,60 @@ namespace Fenix
             Loop(host);
         }
 
-        public static void RunThread(Host host)
+        public static void RunThread(Host host, List<RuntimeConfig> cfgList=null)
         {
             SynchronizationContext.SetSynchronizationContext(OneThreadSynchronizationContext.Instance);
 
-            th = new Thread(new ParameterizedThreadStart(Loop));
-            th.Start(host);
+            hostThread = new Thread(new ParameterizedThreadStart(Loop));
+            hostThread.Start(new object[] { host, cfgList });
+
+            singleThread = new Thread(new ThreadStart(Loop2));
+            singleThread.Start();
         }
 
-        static void Loop(object host)
+#if !CLIENT
+        static bool RegisterHosts(Host host, List<RuntimeConfig> cfgList)
         {
-            var h = (Host)host;
-             
+            return true;
+            bool result = true;
+            foreach (var otherCfg in cfgList)
+            {    
+                try
+                {
+                    if(host.UniqueName == "Master.App")
+                    {
+                        var hostRef = host.GetHost(otherCfg.AppName, otherCfg.InternalIP, otherCfg.Port);
+                        var task = hostRef.SayHelloAsync();
+                        task.Wait();
+                        if (task.Result.code == DefaultErrCode.OK)
+                        {
+                            Log.Info("found host:", otherCfg.AppName, otherCfg.InternalIP, otherCfg.Port);
+                        }
+                        else
+                        {
+                            result = false;
+                        }
+                    }                    
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                } 
+            };
+
+            return result;
+        }
+#endif
+
+        static void Loop(object param)
+        {
+            var paramList = (object[])param;
+
+            var h = (Host)paramList[0];
+            var cfgList = (List<RuntimeConfig>)paramList[1];
+
+            bool registered = false;
+
             while (true)
             {
                 try
@@ -36,7 +82,31 @@ namespace Fenix
                     if (h == null || h.IsAlive == false)
                         return; 
                     Thread.Sleep(10);
-                    Update(h);
+                    h.Update();
+#if !CLIENT
+                    if(cfgList != null && !registered)
+                    {
+                        registered = RegisterHosts(h, cfgList);
+                        if (!registered)
+                            Thread.Sleep(1000);
+                    }
+#endif
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e.ToString());
+                }
+            }
+        }
+
+        static void Loop2()
+        {
+            while (true)
+            {
+                try
+                { 
+                    Thread.Sleep(1);
+                    OneThreadSynchronizationContext.Instance.Update();
                 }
                 catch (Exception e)
                 {
@@ -46,7 +116,7 @@ namespace Fenix
         }
 
         public static void Update(Host host)
-        {
+        { 
             OneThreadSynchronizationContext.Instance.Update();
             host.Update();
         }
@@ -55,8 +125,10 @@ namespace Fenix
         { 
             host.Destroy();
             host = null;
-            th?.Abort();
-            th = null;
+            hostThread?.Abort();
+            hostThread = null;
+            singleThread?.Abort();
+            singleThread = null;
         }
     }
 }

@@ -24,6 +24,9 @@ namespace Shared.Message
         public global::System.String password { get; set; }
 
         [Key(2)]
+        public global::System.String extraData { get; set; }
+
+        [Key(3)]
 
         public Callback callback
         {

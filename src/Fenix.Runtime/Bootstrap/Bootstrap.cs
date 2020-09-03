@@ -7,8 +7,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Reflection;
-using System.Text; 
- 
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace Fenix
 {
     public class Bootstrap
@@ -24,7 +26,7 @@ namespace Fenix
             Log.Error(e);
         }
 
-        public static void StartMultiProcess(Assembly[] asmList, RuntimeConfig cfg, Action init)
+        public static void StartMultiProcess(Assembly[] asmList, RuntimeConfig cfg, Action init, List<RuntimeConfig> allCfgs)
         {
             Environment.SetEnvironmentVariable("AppName", cfg.AppName);
 
@@ -33,12 +35,12 @@ namespace Fenix
             Global.Init(cfg, asmList);
 
             init();
-             
+
             Host host = null;
-          
-            
+
+
             string appName = Environment.GetEnvironmentVariable("AppName");
-         
+
             if (host == null)
             {
                 //if(cfg.InternalIp == "auto")
@@ -47,12 +49,13 @@ namespace Fenix
             }
 
             foreach (var aName in cfg.DefaultActorNames)
-                host.CreateActorLocally(aName, aName); 
+                host.CreateActorLocally(aName, aName);
 
-            HostHelper.RunThread(host);
+            HostHelper.RunThread(host, allCfgs); 
 #endif
         }
 
+        //Debug purpose only
         public static void StartSingleProcess(Assembly[] asmList, List<RuntimeConfig> cfgList, Action init)
         {
             Environment.SetEnvironmentVariable("AppName", "Login.App");

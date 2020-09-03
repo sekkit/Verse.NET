@@ -54,11 +54,13 @@ namespace Fenix
 
             IPEndPoint toAddr = null;
             if (toPeerEP != null)
+            {
                 toAddr = toPeerEP;
+            }
             else
             {
                 if (toHostId != 0)
-                    toAddr = Basic.ToAddress(Global.IdManager.GetHostAddr(toHostId));//, isClient));
+                    toAddr = Basic.ToAddress(Global.IdManager.GetHostAddr(toHostId));
                 else if (toActorId != 0)
                     toAddr = Basic.ToAddress(Global.IdManager.GetHostAddrByActorId(toActorId, isClient));
             }
@@ -101,8 +103,10 @@ namespace Fenix
 
         public bool Disconnect()
         {
-            var peer = Global.NetManager.GetPeerById(this.toHostId, this.NetType);
-            return Global.NetManager.Deregister(peer);
+            var peer = Global.NetManager.GetLocalPeerById(this.toHostId, this.NetType);
+            bool result = Global.NetManager.Deregister(peer);
+            var peer2 = Global.NetManager.GetRemotePeerById(this.toHostId, this.NetType);
+            return result || Global.NetManager.Deregister(peer2);
         }
     }
 }

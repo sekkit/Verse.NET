@@ -34,7 +34,7 @@ namespace Fenix
                 var protoCode = OpCode.BIND_CLIENT_ACTOR_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { actorName, _cb, context });
                 }
@@ -71,7 +71,7 @@ namespace Fenix
                 var protoCode = OpCode.BIND_CLIENT_ACTOR_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { actorName, callback, context });
                 }
@@ -109,7 +109,7 @@ namespace Fenix
                 var protoCode = OpCode.REGISTER_CLIENT_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { hostId, hostName, _cb, context });
                 }
@@ -147,7 +147,7 @@ namespace Fenix
                 var protoCode = OpCode.REGISTER_CLIENT_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { hostId, hostName, callback, context });
                 }
@@ -185,7 +185,7 @@ namespace Fenix
                 var protoCode = OpCode.REMOVE_CLIENT_ACTOR_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { actorId, reason, _cb, context });
                 }
@@ -223,7 +223,7 @@ namespace Fenix
                 var protoCode = OpCode.REMOVE_CLIENT_ACTOR_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { actorId, reason, callback, context });
                 }
@@ -242,6 +242,81 @@ namespace Fenix
                     callback?.Invoke(cbMsg.code);
                 });
                 this.CallRemoteMethod(OpCode.REMOVE_CLIENT_ACTOR_REQ, msg, cb);
+            });
+        }
+
+        public async Task<SayHelloReq.Callback> SayHelloAsync(global::System.Action<global::Fenix.Common.DefaultErrCode, global::Fenix.HostInfo> callback=null)
+        {
+            var t = new TaskCompletionSource<SayHelloReq.Callback>();
+            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
+            if (this.FromHostId == toHostId)
+            {
+                global::System.Action<global::Fenix.Common.DefaultErrCode, global::Fenix.HostInfo> _cb = (code, arg1) =>
+                {
+                     var cbMsg = new SayHelloReq.Callback();
+                     cbMsg.code=code;
+                     cbMsg.arg1=arg1;
+                     callback?.Invoke(cbMsg.code, cbMsg.arg1);
+                     t.TrySetResult(cbMsg);
+                }; 
+                var protoCode = OpCode.SAY_HELLO_REQ;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { _cb, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { _cb });
+            }
+            else
+            {
+                Action<SayHelloReq.Callback> _cb = (cbMsg) =>
+                {
+                    callback?.Invoke(cbMsg.code, cbMsg.arg1);
+                    t.TrySetResult(cbMsg);
+                };
+                await Task.Run(() => {
+                    var msg = new SayHelloReq()
+                    {
+
+                    };
+                    var cb = new Action<byte[]>((cbData) => {
+                        var cbMsg = cbData==null ? new SayHelloReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<SayHelloReq.Callback>(cbData);
+                        _cb?.Invoke(cbMsg);
+                    });
+                    this.CallRemoteMethod(OpCode.SAY_HELLO_REQ, msg, cb);
+                 });
+             }
+             return await t.Task;
+        }
+
+        public void SayHello(global::System.Action<global::Fenix.Common.DefaultErrCode, global::Fenix.HostInfo> callback)
+        {
+            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
+            if (this.FromHostId == toHostId)
+            {
+                var protoCode = OpCode.SAY_HELLO_REQ;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { callback, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { callback });
+                return;
+            }
+            Task.Run(() => {
+                var msg = new SayHelloReq()
+                {
+
+                };
+                var cb = new Action<byte[]>((cbData) => {
+                    var cbMsg = cbData==null?new SayHelloReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<SayHelloReq.Callback>(cbData);
+                    callback?.Invoke(cbMsg.code, cbMsg.arg1);
+                });
+                this.CallRemoteMethod(OpCode.SAY_HELLO_REQ, msg, cb);
             });
         }
     }

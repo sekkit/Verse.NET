@@ -337,7 +337,7 @@ namespace Fenix
                 refType = Global.TypeManager.GetActorRefType(this.GetType().FullName);
 
             this.clientActor = GetActorRef(refType, this.UniqueName);
-            Log.Info(string.Format("on_client_enable", this.UniqueName, this.UniqueName));
+            Log.Info(string.Format("on_client_enable", this.UniqueName, this.clientActor));
 
             this.onClientEnable();
 
@@ -369,13 +369,21 @@ namespace Fenix
                 refType = Global.TypeManager.GetActorRefType(this.GetType().FullName);
 
             this.serverActor = GetActorRef(refType, this.UniqueName);
-            Log.Info("on_server_enable", this.UniqueName);
+
+            Log.Info("on_server_enable", this.UniqueName, this.serverActor, this.serverActor.FromHostId);
 
             this.onServerEnable();
         }
 
 #endif
          
+        public virtual void Activate()
+        {
+            IsAlive = true;
+            if (destroyTimerId != 0)
+                ExtendTimer(destroyTimerId, 15000);
+        }
+
         public void OnLoad()
         {
             Log.Info(string.Format("on_load", this.UniqueName, this.UniqueName));
@@ -390,14 +398,15 @@ namespace Fenix
         {
 
         }
- 
 
         protected ulong destroyTimerId = 0;
 
 #if !CLIENT
         protected virtual void onClientEnable()
         {
-            CancelTimer(destroyTimerId);
+            IsAlive = true;
+            if (destroyTimerId != 0)
+                CancelTimer(destroyTimerId);
         }
 
         protected virtual void onClientDisable()

@@ -16,15 +16,25 @@ namespace Fenix.Common.Utils
 
         public static void Init()
         {
+#if !CLIENT
+            var option = MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4BlockArray); 
+            MessagePackSerializer.DefaultOptions = option;
+#else
             var option = MessagePackSerializerOptions.Standard.WithResolver(StaticCompositeResolver.Instance).WithCompression(MessagePackCompression.Lz4BlockArray); 
             MessagePackSerializer.DefaultOptions = option;
+#endif
         }
 
         public delegate IMessage MsgDeserialize(byte[] data);
 
-//#if ENABLE_IL2CPP
+        //public delegate IMessage MsgJsonDeserialize(string data);
+
+        //#if ENABLE_IL2CPP
         public volatile static ConcurrentDictionary<Type, MsgDeserialize> _msgCache = new ConcurrentDictionary<Type, MsgDeserialize>();
-//#endif
+
+        //public volatile static ConcurrentDictionary<Type, MsgJsonDeserialize> _msgJsonCache = new ConcurrentDictionary<Type, MsgJsonDeserialize>();
+
+        //#endif
 
         public static byte[] Serialize(IMessage msg)
         {
@@ -58,6 +68,21 @@ namespace Fenix.Common.Utils
 //#endif
         }
 
+        //public static IMessage DeserializeJson(Type type, string json)
+        //{
+        //    //#if ENABLE_IL2CPP
+        //    if (_msgJsonCache.ContainsKey(type))
+        //    {
+        //        return _msgJsonCache[type](json);
+        //    }
+        //    else
+        //    {
+        //        var d = (MsgJsonDeserialize)Delegate.CreateDelegate(typeof(MsgJsonDeserialize), type.GetMethod("DeserializeJson"));
+        //        _msgJsonCache[type] = d;
+        //        return d(json);
+        //    } 
+        //}
+
         public static Type GetBaseType(Type type)
         {
             if (type.Name == "Object")
@@ -80,7 +105,7 @@ namespace Fenix.Common.Utils
                 {
                     return true;
                 }
-                 
+
                 if (type.Name == "Object" || type.BaseType == null || type.BaseType.Name == "Object")
                 {
                     return false;

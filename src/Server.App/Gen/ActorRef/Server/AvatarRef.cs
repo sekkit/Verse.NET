@@ -40,7 +40,7 @@ namespace Server
                 var protoCode = ProtocolCode.__SERVERUMODULE__AVATAR__CHANGE_NAME_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { name, _cb, context });
                 }
@@ -77,7 +77,7 @@ namespace Server
                 var protoCode = ProtocolCode.__SERVERUMODULE__AVATAR__CHANGE_NAME_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { name, callback, context });
                 }
@@ -107,7 +107,7 @@ namespace Server
                 var protoCode = ProtocolCode.__SERVERUMODULE__AVATAR__ON_MATCH_OK_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { context });
                 }
@@ -137,10 +137,10 @@ namespace Server
                      callback?.Invoke();
                      t.TrySetResult(cbMsg);
                 }; 
-                var protoCode = ProtocolCode.__ServerUModule__Avatar__M__SERVERUMODULE__ITEMMODULE__TEST_ITEM_API_REQ;
+                var protoCode = ProtocolCode.__SERVERUMODULE__AVATAR__M__SERVERUMODULE__ITEMMODULE__TEST_ITEM_API_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { _cb, context });
                 }
@@ -163,7 +163,7 @@ namespace Server
                         var cbMsg = cbData==null ? new __ServerUModule__Avatar__M__ServerUModule__ItemModule__TestItemApiReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<__ServerUModule__Avatar__M__ServerUModule__ItemModule__TestItemApiReq.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
-                    this.CallRemoteMethod(ProtocolCode.__ServerUModule__Avatar__M__SERVERUMODULE__ITEMMODULE__TEST_ITEM_API_REQ, msg, cb);
+                    this.CallRemoteMethod(ProtocolCode.__SERVERUMODULE__AVATAR__M__SERVERUMODULE__ITEMMODULE__TEST_ITEM_API_REQ, msg, cb);
                  });
              }
              return await t.Task;
@@ -174,10 +174,10 @@ namespace Server
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                var protoCode = ProtocolCode.__ServerUModule__Avatar__M__SERVERUMODULE__ITEMMODULE__TEST_ITEM_API_REQ;
+                var protoCode = ProtocolCode.__SERVERUMODULE__AVATAR__M__SERVERUMODULE__ITEMMODULE__TEST_ITEM_API_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { callback, context });
                 }
@@ -194,7 +194,7 @@ namespace Server
                     var cbMsg = cbData==null?new __ServerUModule__Avatar__M__ServerUModule__ItemModule__TestItemApiReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<__ServerUModule__Avatar__M__ServerUModule__ItemModule__TestItemApiReq.Callback>(cbData);
                     callback?.Invoke();
                 });
-                this.CallRemoteMethod(ProtocolCode.__ServerUModule__Avatar__M__SERVERUMODULE__ITEMMODULE__TEST_ITEM_API_REQ, msg, cb);
+                this.CallRemoteMethod(ProtocolCode.__SERVERUMODULE__AVATAR__M__SERVERUMODULE__ITEMMODULE__TEST_ITEM_API_REQ, msg, cb);
             });
         }
     }

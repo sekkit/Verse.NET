@@ -41,7 +41,7 @@ namespace Server
                 var protoCode = ProtocolCode.__SERVERGMODULE__MATCHSERVICE__FIND_MATCH_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { uid, _cb, context });
                 }
@@ -78,7 +78,7 @@ namespace Server
                 var protoCode = ProtocolCode.__SERVERGMODULE__MATCHSERVICE__FIND_MATCH_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { uid, callback, context });
                 }
@@ -115,7 +115,7 @@ namespace Server
                 var protoCode = ProtocolCode.__SERVERGMODULE__MATCHSERVICE__JOIN_MATCH_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { uid, match_type, _cb, context });
                 }
@@ -153,7 +153,7 @@ namespace Server
                 var protoCode = ProtocolCode.__SERVERGMODULE__MATCHSERVICE__JOIN_MATCH_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
-                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
                     Global.Host.CallMethodWithParams(protoCode, new object[] { uid, match_type, callback, context });
                 }

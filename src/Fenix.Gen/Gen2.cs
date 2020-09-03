@@ -132,7 +132,7 @@ namespace Fenix
             var parts = SplitCamelCase(apiName);
             for (int i = 0; i < parts.Length; ++i)
                 parts[i] = parts[i].ToUpper();
-            return string.Format("{0}__{1}__{2}__{3}", prefix==null?"":prefix, ns==null?"":ns.Replace(".", "").ToUpper(), entityName.ToUpper(), string.Join("_", parts));
+            return string.Format("{0}__{1}__{2}__{3}", prefix == null ? "" : prefix, ns == null ? "" : ns.Replace(".", "").ToUpper(), entityName.ToUpper(), string.Join("_", parts)).ToUpper();
         }
 
         static string NameToProtoCode(string prefix, string apiName)
@@ -140,7 +140,7 @@ namespace Fenix
             var parts = SplitCamelCase(apiName);
             for (int i = 0; i < parts.Length; ++i)
                 parts[i] = parts[i].ToUpper();
-            return prefix == null ? string.Format("{0}", string.Join("_", parts)) : string.Format("{0}{1}", prefix, apiName);
+            return (prefix == null ? string.Format("{0}", string.Join("_", parts)) : string.Format("{0}{1}", prefix, apiName)).ToUpper();
         }
 
         static string ParseGenericDecl(TypeReference genericType)
@@ -513,7 +513,7 @@ namespace Shared
                 {
                     string proto_code =  (isHost ? NameToProtoCode(tPrefix, method.Name) : NameToProtoCode(tPrefix, type.Namespace, type.Name, method.Name)) + "_REQ";
                     uint code = Basic.GenID32FromName(proto_code);
-                    codes[proto_code] = code;
+                    codes[proto_code.ToUpper()] = code;
                 }
             }
 
@@ -525,7 +525,7 @@ namespace Shared
                 {
                     string proto_code = (isHost ? NameToProtoCode(tPrefix, method.Name) : NameToProtoCode(tPrefix, type.Namespace, type.Name, method.Name)) + "_REQ";
                     uint code = Basic.GenID32FromName(proto_code);
-                    codes[proto_code] = code;
+                    codes[proto_code.ToUpper()] = code;
                 }
             }
 
@@ -537,7 +537,7 @@ namespace Shared
                 {
                     string proto_code = (isHost ? NameToProtoCode(tPrefix, method.Name) : NameToProtoCode(tPrefix, type.Namespace, type.Name, method.Name)) + "_NTF";
                     uint code = Basic.GenID32FromName(proto_code);
-                    codes[proto_code] = code;
+                    codes[proto_code.ToUpper()] = code;
                 }
             }
 
@@ -583,7 +583,7 @@ namespace Shared
 
         static string GetMessageName(string prefix, string ns, string entityName, string typeName)
         {
-            return string.Format("{0}__{1}__{2}__{3}", prefix==null?"":prefix, ns==null?"":ns.Replace(".", ""), entityName, typeName); 
+            return string.Format("{0}__{1}__{2}__{3}", (prefix == null ? "" : prefix), ns == null ? "" : ns.Replace(".", ""), entityName, typeName);
         }
 
         static Dictionary<string, SortedDictionary<string, string>> ParseActorType(TypeDefinition type, TypeDefinition parentType, string sharedCPath, string sharedSPath, string clientPath, string serverPath)
@@ -812,7 +812,7 @@ namespace Shared
                         .AppendLine($"                var protoCode = {pc_cls}.{proto_code};")
                         .AppendLine($"                if (protoCode < OpCode.CALL_ACTOR_METHOD)")
                         .AppendLine($"                {{")
-                        .AppendLine($"                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);")
+                        .AppendLine($"                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);")
                         .AppendLine($"                    var context = new RpcContext(null, peer);");
                         if (args.Trim().Length == 0)
                             builder.AppendLine($"                    Global.Host.CallMethodWithParams(protoCode, new object[] {{ context }});");
@@ -849,7 +849,7 @@ namespace Shared
                         .AppendLine($"                var protoCode = {pc_cls}.{proto_code};")
                         .AppendLine($"                if (protoCode < OpCode.CALL_ACTOR_METHOD)")
                         .AppendLine($"                {{")
-                        .AppendLine($"                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);")
+                        .AppendLine($"                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);")
                         .AppendLine($"                    var context = new RpcContext(null, peer);");
                         if (args.Trim().Length == 0)
                             builder.AppendLine($"                    Global.Host.CallMethodWithParams(protoCode, new object[] {{ context }});");
@@ -912,7 +912,7 @@ namespace Shared
                         .AppendLine($"                var protoCode = {pc_cls}.{proto_code};")
                         .AppendLine($"                if (protoCode < OpCode.CALL_ACTOR_METHOD)")
                         .AppendLine($"                {{")
-                        .AppendLine($"                    var peer = Global.NetManager.GetPeerById(this.FromHostId, this.NetType);")
+                        .AppendLine($"                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);")
                         .AppendLine($"                    var context = new RpcContext(null, peer);");
                         if (async_args.Trim().Length == 0)
                             builder.AppendLine($"                    Global.Host.CallMethodWithParams(protoCode, new object[] {{ context }});");
@@ -1013,6 +1013,11 @@ namespace Shared
                             .AppendLine($"                var cbMsg = new {message_type}.Callback();")
                             .AppendLine($"{api_cb_assign}")
                             .AppendLine($"                cb.Invoke(cbMsg);");
+                         
+                        if (isHost)
+                            builder.AppendLine($"            }}, context);");
+                        else
+                            builder.AppendLine($"            }});");
 
                         if (hasEvent)
                         {
@@ -1023,11 +1028,6 @@ namespace Shared
                             .AppendLine($"                cb.Invoke(cbMsg);")
                             .AppendLine($"            }});");
                         }
-
-                        if (isHost)
-                            builder.AppendLine($"            }}, context);");
-                        else
-                            builder.AppendLine($"            }});");
                     }
                     else
                     {

@@ -60,7 +60,7 @@ namespace Server.GModule
         public void SERVER_API__ServerGModule__LoginService__login(IMessage msg, Action<IMessage> cb)
         {
             var _msg = (__ServerGModule__LoginService__LoginReq)msg;
-            this.Login(_msg.username, _msg.password, (code, arg1, arg2, arg3, arg4) =>
+            this.Login(_msg.username, _msg.password, _msg.extraData, (code, arg1, arg2, arg3, arg4) =>
             {
                 var cbMsg = new __ServerGModule__LoginService__LoginReq.Callback();
                 cbMsg.code=code;
@@ -96,9 +96,9 @@ namespace Server.GModule
 
         [RpcMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__LOGIN_REQ, Api.ServerApi)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SERVER_API_NATIVE__ServerGModule__LoginService__login(global::System.String username, global::System.String password, global::System.Action<global::Shared.Protocol.ErrCode, global::System.String, global::System.UInt64, global::System.String, global::System.String> callback)
+        public void SERVER_API_NATIVE__ServerGModule__LoginService__login(global::System.String username, global::System.String password, global::System.String extraData, global::System.Action<global::Shared.Protocol.ErrCode, global::System.String, global::System.UInt64, global::System.String, global::System.String> callback)
         {
-            this.Login(username, password, callback);
+            this.Login(username, password, extraData, callback);
         }
 
         [RpcMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__RESET_PASSWORD_REQ, Api.ServerApi)]

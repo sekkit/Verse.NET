@@ -40,7 +40,7 @@ namespace Fenix.Common.Utils
                 return "";
             var ip = ep.Address.MapToIPv4().ToString().Trim();
 #if !CLIENT
-            if (ip == "0.0.0.0")
+            if (ip == "0.0.0.0" || ip == "127.0.0.1")
                 ip = Basic.GetLocalIPv4(System.Net.NetworkInformation.NetworkInterfaceType.Ethernet);
 #endif
             return string.Format("{0}:{1}", ip, ep.Port);
@@ -51,7 +51,7 @@ namespace Fenix.Common.Utils
             var newEp = (IPEndPoint)ep;
             var ip = newEp.Address.MapToIPv4().ToString().Trim();
 #if !CLIENT
-            if (ip == "0.0.0.0")
+            if (ip == "0.0.0.0" || ip == "127.0.0.1")
                 ip = Basic.GetLocalIPv4(System.Net.NetworkInformation.NetworkInterfaceType.Ethernet);
 #endif
             return string.Format("{0}:{1}", ip, newEp.Port);

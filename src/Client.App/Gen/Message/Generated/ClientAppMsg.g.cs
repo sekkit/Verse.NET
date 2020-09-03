@@ -593,9 +593,10 @@ namespace MessagePack.Formatters.Shared.Message
             }
 
             IFormatterResolver formatterResolver = options.Resolver;
-            writer.WriteArrayHeader(3);
+            writer.WriteArrayHeader(4);
             formatterResolver.GetFormatterWithVerify<string>().Serialize(ref writer, value.username, options);
             formatterResolver.GetFormatterWithVerify<string>().Serialize(ref writer, value.password, options);
+            formatterResolver.GetFormatterWithVerify<string>().Serialize(ref writer, value.extraData, options);
             formatterResolver.GetFormatterWithVerify<global::Shared.Message.__ServerGModule__LoginService__LoginReq.Callback>().Serialize(ref writer, value.callback, options);
         }
 
@@ -611,6 +612,7 @@ namespace MessagePack.Formatters.Shared.Message
             var length = reader.ReadArrayHeader();
             var __username__ = default(string);
             var __password__ = default(string);
+            var __extraData__ = default(string);
             var __callback__ = default(global::Shared.Message.__ServerGModule__LoginService__LoginReq.Callback);
 
             for (int i = 0; i < length; i++)
@@ -626,6 +628,9 @@ namespace MessagePack.Formatters.Shared.Message
                         __password__ = formatterResolver.GetFormatterWithVerify<string>().Deserialize(ref reader, options);
                         break;
                     case 2:
+                        __extraData__ = formatterResolver.GetFormatterWithVerify<string>().Deserialize(ref reader, options);
+                        break;
+                    case 3:
                         __callback__ = formatterResolver.GetFormatterWithVerify<global::Shared.Message.__ServerGModule__LoginService__LoginReq.Callback>().Deserialize(ref reader, options);
                         break;
                     default:
@@ -637,6 +642,7 @@ namespace MessagePack.Formatters.Shared.Message
             var ____result = new global::Shared.Message.__ServerGModule__LoginService__LoginReq();
             ____result.username = __username__;
             ____result.password = __password__;
+            ____result.extraData = __extraData__;
             ____result.callback = __callback__;
             reader.Depth--;
             return ____result;

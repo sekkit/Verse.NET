@@ -13,7 +13,7 @@ using System;
 
 namespace Shared.Message
 {
-    [MessageType(ProtocolCode.__ServerUModule__Avatar__M__SERVERUMODULE__ITEMMODULE__TEST_ITEM_API_REQ)]
+    [MessageType(ProtocolCode.__SERVERUMODULE__AVATAR__M__SERVERUMODULE__ITEMMODULE__TEST_ITEM_API_REQ)]
     [MessagePackObject]
     public class __ServerUModule__Avatar__M__ServerUModule__ItemModule__TestItemApiReq : IMessageWithCallback
     {

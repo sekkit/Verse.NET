@@ -18,6 +18,9 @@ using Server.Config;
 using CommandLine;
 using MessagePack.Resolvers;
 using MessagePack;
+using System.Linq;
+using DotNetty.Common;
+using static DotNetty.Common.ResourceLeakDetector;
 
 namespace Server
 {
@@ -34,7 +37,9 @@ namespace Server
     { 
         static void Main(string[] args)
         {
-            StaticCompositeResolver.Instance.Register(
+            ResourceLeakDetector.Level = DetectionLevel.Disabled;
+
+            StaticCompositeResolver.Instance.Register( 
                  MessagePack.Resolvers.ClientAppResolver.Instance,
                  MessagePack.Resolvers.FenixRuntimeResolver.Instance,
                  MessagePack.Resolvers.SharedResolver.Instance,
@@ -134,7 +139,8 @@ namespace Server
                            var cfgList = JsonConvert.DeserializeObject<List<RuntimeConfig>>(sr.ReadToEnd());
                            foreach (var cfg in cfgList)
                                if(cfg.AppName == o.AppName)
-                                   Bootstrap.StartMultiProcess(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfg, OnInit);  
+                                   Bootstrap.StartMultiProcess(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfg, OnInit, 
+                                       cfgList.Where(m=>m.AppName != o.AppName).ToList()); //分布式
                        }
                    });
             }

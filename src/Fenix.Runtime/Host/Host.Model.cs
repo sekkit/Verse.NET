@@ -23,7 +23,11 @@ namespace Fenix
         public Actor CreateActorLocally(Type type, string name)
         {
             if (name == "" || name == null)
+            {
+                Log.Error("actor_name_invalid", type.Name, name);
                 return null;
+            }
+
             var actorId = Global.IdManager.GetActorId(name);
             if (this.actorDic.TryGetValue(actorId, out var a))
                 return a;
@@ -37,7 +41,10 @@ namespace Fenix
         public Actor CreateActorLocally(string typename, string name)
         {
             if (name == "" || name == null)
+            {
+                Log.Error("actor_name_invalid", typename, name);
                 return null;
+            }
             var type = Global.TypeManager.Get(typename);
             return CreateActorLocally(type, name);
         }
@@ -60,7 +67,7 @@ namespace Fenix
 
         public Actor GetActor(ulong actorId)
         {
-            if (this.actorDic.TryGetValue(actorId, out Actor a))
+            if (this.actorDic.TryGetValue(actorId, out var a))
                 return a;
             return null;
         }
@@ -96,7 +103,10 @@ namespace Fenix
 
         public ActorRef GetHost(string hostName, string ip, int port)
         {
-            IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
+            string _ip = ip;
+            if (_ip == "0.0.0.0" || _ip == "127.0.0.1")
+                _ip = Basic.GetLocalIPv4(System.Net.NetworkInformation.NetworkInterfaceType.Ethernet);
+            IPEndPoint ep = new IPEndPoint(IPAddress.Parse(_ip), port);
             return Global.GetActorRefByAddr(typeof(ActorRef), ep, hostName, "", null, Global.Host);
         }
 

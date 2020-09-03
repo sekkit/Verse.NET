@@ -22,9 +22,9 @@ namespace Fenix
 
         protected ConcurrentDictionary<ulong, NetPeer> kcpPeers = new ConcurrentDictionary<ulong, NetPeer>();
 
-        protected ConcurrentDictionary<ulong, NetPeer> channelPeers = new ConcurrentDictionary<ulong, NetPeer>();
+        protected ConcurrentDictionary<ulong, NetPeer> channelPeers = new ConcurrentDictionary<ulong, NetPeer>(); 
 
-        public ConcurrentDictionary<ulong, byte[][]> PartialRpcDic = new ConcurrentDictionary<ulong, byte[][]>();
+        public ConcurrentDictionary<ulong, byte[][]> partialRpcDic = new ConcurrentDictionary<ulong, byte[][]>();
 
         protected ConcurrentDictionary<ulong, long> partialRpcTimeDic = new ConcurrentDictionary<ulong, long>();
 
@@ -192,37 +192,41 @@ namespace Fenix
                 peer.ConnId = newHostId;
                 tcpPeers.TryRemove(oldHostId, out var _);
                 tcpPeers[newHostId] = peer;
-                var hostInfo = Global.IdManager.GetHostInfo(oldHostId);
-                
-                //Global.IdManager.RemoveHostId(oldHostId);
-                //Global.IdManager.RegisterHost(newHostId, hostName, address);
-                hostInfo.HostId = newHostId;
-                hostInfo.HostName = hostName;
-                hostInfo.HostAddr = address;
-                //Global.IdManager.RegisterHostInfo(hostInfo); 
+
+                //var hostInfo = Global.IdManager.GetHostInfo(oldHostId);                
+                ////Global.IdManager.RemoveHostId(oldHostId);
+                ////Global.IdManager.RegisterHost(newHostId, hostName, address);
+                //hostInfo.HostId = newHostId;
+                //hostInfo.HostName = hostName;
+                //hostInfo.HostAddr = address;
+                ////Global.IdManager.RegisterHostInfo(hostInfo);
             }
+
             if (kcpPeers.ContainsKey(oldHostId))
             {
                 var peer = kcpPeers[oldHostId];
                 peer.ConnId = newHostId;
                 kcpPeers.TryRemove(oldHostId, out var _);
                 kcpPeers[newHostId] = peer;
-                var hostInfo = Global.IdManager.GetHostInfo(oldHostId);
-                //Global.IdManager.RemoveHostId(oldHostId);
-                //Global.IdManager.RegisterHost(newHostId, hostName, address);
-                hostInfo.HostId = newHostId;
-                hostInfo.HostName = hostName;
-                hostInfo.HostAddr = address;
-                //Global.IdManager.RegisterHostInfo(hostInfo); 
-            } 
+
+                //var hostInfo = Global.IdManager.GetHostInfo(oldHostId);
+                ////Global.IdManager.RemoveHostId(oldHostId);
+                ////Global.IdManager.RegisterHost(newHostId, hostName, address);
+                //hostInfo.HostId = newHostId;
+                //hostInfo.HostName = hostName;
+                //hostInfo.HostAddr = address;
+                ////Global.IdManager.RegisterHostInfo(hostInfo);
+            }
+
             if (channelPeers.ContainsKey(oldHostId))
             {
                 var peer = channelPeers[oldHostId];
-                peer.ConnId = newHostId; 
-                if (peer.netType == NetworkType.KCP)
-                    kcpPeers[newHostId] = peer;
-                else
-                    tcpPeers[newHostId] = peer;
+                peer.ConnId = newHostId;
+                channelPeers[newHostId] = peer;
+                //if (peer.netType == NetworkType.KCP)
+                //    kcpPeers[newHostId] = peer;
+                //else
+                //    tcpPeers[newHostId] = peer;
                  
                 //Global.IdManager.RegisterHost(newHostId, hostName, address); 
             }
@@ -302,7 +306,7 @@ namespace Fenix
             return peer;
         }
 
-        public NetPeer GetPeerById(ulong peerId, NetworkType netType)
+        public NetPeer GetLocalPeerById(ulong peerId, NetworkType netType)
         {
             NetPeer peer;
             if (netType == NetworkType.TCP)
@@ -316,15 +320,19 @@ namespace Fenix
                     return peer;
             }
 
-            if (channelPeers.ContainsKey(peerId))
-                channelPeers.TryGetValue(peerId, out peer);
+            return null;
+        }
 
+        public NetPeer GetRemotePeerById(ulong peerId, NetworkType netType)
+        {
+            NetPeer peer = null;
+            channelPeers.TryGetValue(peerId, out peer); 
             return peer;
         }
 
         public NetPeer CreatePeer(ulong remoteHostId, IPEndPoint addr, NetworkType netType)
         { 
-            var peer = GetPeerById(remoteHostId, netType);
+            var peer = GetLocalPeerById(remoteHostId, netType);
             if (peer != null)
                 return peer;
             peer = NetPeer.Create(remoteHostId, addr, netType);
@@ -350,7 +358,7 @@ namespace Fenix
 
             var hostId = Global.IdManager.GetHostId(addr);
             if (hostId != 0)
-                return Global.NetManager.GetPeerById(hostId, netType);
+                return Global.NetManager.GetLocalPeerById(hostId, netType);
 //#endif
 
             var peer = NetPeer.Create(ep, netType);
@@ -397,7 +405,7 @@ namespace Fenix
         {
             var bytes = packet.Pack();
 
-            Log.Info("SEND_PROTOCOL", packet.ProtoCode, StringUtil.ToHexString(bytes));
+            Log.Info("SEND_PROTOCOL", packet.ProtoCode, Global.Host.Id, peer.ConnId, peer.LocalAddress, peer.RemoteAddress, StringUtil.ToHexString(bytes), peer.IsActive, peer.IsAlive);
 
             if (bytes.Length > Global.Config.MAX_PACKET_SIZE)
             {
@@ -452,15 +460,15 @@ namespace Fenix
 
         public byte[] AddPartialRpc(ulong partialId, int partIndex, int totPartCount, byte[] payload)
         {
-            if (!PartialRpcDic.ContainsKey(partialId))
-                PartialRpcDic[partialId] = new byte[totPartCount][];
-            PartialRpcDic[partialId][partIndex] = payload;
+            if (!partialRpcDic.ContainsKey(partialId))
+                partialRpcDic[partialId] = new byte[totPartCount][];
+            partialRpcDic[partialId][partIndex] = payload;
             partialRpcTimeDic[partialId] = Fenix.Common.Utils.TimeUtil.GetTimeStampMS();
             Log.Info("recv_part", partIndex, totPartCount, payload.Length);
-            if (PartialRpcDic[partialId].Count(m => m != null) == totPartCount)
+            if (partialRpcDic[partialId].Count(m => m != null) == totPartCount)
             {
-                byte[] finalBytes = DataUtil.ConcatBytes(PartialRpcDic[partialId]);
-                PartialRpcDic.TryRemove(partialId, out var _);
+                byte[] finalBytes = DataUtil.ConcatBytes(partialRpcDic[partialId]);
+                partialRpcDic.TryRemove(partialId, out var _);
                 partialRpcTimeDic.TryRemove(partialId, out var _);
                 return finalBytes;
             }
@@ -488,7 +496,7 @@ namespace Fenix
                 if (curTime - ts > 15000)
                 {
                     Log.Info("CheckPartialRpc->timeout");
-                    PartialRpcDic.TryRemove(partialId, out var _);
+                    partialRpcDic.TryRemove(partialId, out var _);
                     partialRpcTimeDic.TryRemove(partialId, out var _);
                 }
             }

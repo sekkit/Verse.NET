@@ -302,6 +302,7 @@ namespace Fenix
 
         public void Pong()
         {
+            Log.Warn("Pong from", this.RemoteAddress);
             this.Send(pongBytes);
             this.lastTickTime = Fenix.Common.Utils.TimeUtil.GetTimeStampMS2();
         }

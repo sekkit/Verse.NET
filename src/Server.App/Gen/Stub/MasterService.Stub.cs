@@ -20,7 +20,7 @@ using System.ComponentModel;
 using System.Text;
 
 
-namespace Server.GModule.Master
+namespace Server.GModule
 {
     public partial class MasterService
     {
