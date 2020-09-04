@@ -531,12 +531,12 @@ namespace Fenix
 
             foreach (var p in tcpPeers.Values)
             {
-                Log.Info(string.Format("========Peer({0}): {1} {2} {3} active:{4}", p.netType, p.ConnId, p.RemoteAddress.ToIPv4String(), p.LocalAddress.ToIPv4String(), p.IsActive)); 
+                Log.Info(string.Format("========Peer0({0}): {1} {2} {3} active:{4}", p.netType, p.ConnId, p.RemoteAddress.ToIPv4String(), p.LocalAddress.ToIPv4String(), p.IsActive)); 
             }
 
             foreach (var p in kcpPeers.Values)
             {
-                Log.Info(string.Format("========Peer({0}): {1} {2} {3} active:{4}", p.netType, p.ConnId, p.RemoteAddress.ToIPv4String(), p.LocalAddress.ToIPv4String(), p.IsActive));
+                Log.Info(string.Format("========Peer1({0}): {1} {2} {3} active:{4}", p.netType, p.ConnId, p.RemoteAddress.ToIPv4String(), p.LocalAddress.ToIPv4String(), p.IsActive));
             } 
         }
 
