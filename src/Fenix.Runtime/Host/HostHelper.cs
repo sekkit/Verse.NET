@@ -122,9 +122,13 @@ namespace Fenix
         }
 
         public static void Stop(Host host)
-        { 
-            host.Destroy();
-            host = null;
+        {
+            if (host != null)
+            {
+                host.Destroy();
+                //host = null;
+                Global.Host = null;
+            }
             hostThread?.Abort();
             hostThread = null;
             singleThread?.Abort();

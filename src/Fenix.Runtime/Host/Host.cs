@@ -181,19 +181,15 @@ namespace Fenix
         public override void Destroy()
         {
             //先销毁所有的actor, netpeer
-            //再销毁自己
-
-            internalThread.Abort();
-            internalThread = null;
-
+            //再销毁自己 
+            internalThread?.Abort();
+            internalThread = null; 
             foreach (var a in this.actorDic.Values)
-                a.Destroy();
-
+                a.Destroy(); 
             this.actorDic.Clear();
-
-            Global.NetManager.Destroy();
-
             base.Destroy(); 
+            Global.NetManager.Destroy();
+            Global.NetManager = new NetManager();
         } 
 
         protected void OnReceive(NetPeer peer, IByteBuffer buffer)

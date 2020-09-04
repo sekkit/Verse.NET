@@ -36,17 +36,30 @@ namespace Client
             //});
         } 
 #endif
+
+        bool inited = false;
+
         public void Init(RuntimeConfig cfg, bool threaded = true)
         { 
-            StaticCompositeResolver.Instance.Register(
-                 MessagePack.Resolvers.ClientAppResolver.Instance,
-                 MessagePack.Resolvers.FenixRuntimeResolver.Instance,
-                 MessagePack.Resolvers.SharedResolver.Instance,
-                 MessagePack.Unity.UnityResolver.Instance,
-                 MessagePack.Unity.Extension.UnityBlitResolver.Instance,
-                 MessagePack.Unity.Extension.UnityBlitWithPrimitiveArrayResolver.Instance,
-                 MessagePack.Resolvers.StandardResolver.Instance
-            );
+			if (!inited)
+            {
+			    StaticCompositeResolver.Instance.Register(
+	                 MessagePack.Resolvers.ClientAppResolver.Instance,
+	                 MessagePack.Resolvers.FenixRuntimeResolver.Instance,
+	                 MessagePack.Resolvers.SharedResolver.Instance,
+	                 MessagePack.Unity.UnityResolver.Instance,
+	                 MessagePack.Unity.Extension.UnityBlitResolver.Instance,
+	                 MessagePack.Unity.Extension.UnityBlitWithPrimitiveArrayResolver.Instance,
+	                 MessagePack.Resolvers.StandardResolver.Instance
+	            );
+				inited = true;
+			}
+
+            if(host != null)
+            {
+                this.Close();
+                host = null;
+            }
 
             Environment.SetEnvironmentVariable("AppName", "Client.App");
             Global.Init(cfg, new Assembly[] { typeof(App).Assembly });
@@ -140,12 +153,11 @@ namespace Client
 
                             callback?.Invoke((ErrCode)code3, avatar);
                         });
-                        
                         //loginapp.Disconnect();
                     });
                 }
             }); 
-        }
+        } 
 
         public void Close()
         {
