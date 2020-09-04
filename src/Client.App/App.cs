@@ -151,6 +151,7 @@ namespace Client
                             Global.NetManager.PrintPeerInfo("# Master.App: BindClientActor called");
                             Log.Info("Avatar已经和服务端绑定");
 
+                            loginapp.Disconnect();
                             callback?.Invoke((ErrCode)code3, avatar);
                         });
                         //loginapp.Disconnect();
