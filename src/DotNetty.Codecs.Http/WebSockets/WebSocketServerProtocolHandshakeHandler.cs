@@ -1,5 +1,30 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) The DotNetty Project (Microsoft). All rights reserved.
+ *
+ *   https://github.com/azure/dotnetty
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Codecs.Http.WebSockets
 {
@@ -69,7 +94,7 @@ namespace DotNetty.Codecs.Http.WebSockets
                     _ = ctx.Pipeline.Remove(this);
 
                     Task task = handshaker.HandshakeAsync(ctx.Channel, req);
-                    _ = task.ContinueWith(FireUserEventTriggeredAction, Tuple.Create(ctx, req, handshaker, _handshakePromise), TaskContinuationOptions.ExecuteSynchronously);
+                    _ = task.ContinueWith(FireUserEventTriggeredAction, (ctx, req, handshaker, _handshakePromise), TaskContinuationOptions.ExecuteSynchronously);
                     ApplyHandshakeTimeout();
                 }
             }
@@ -79,10 +104,10 @@ namespace DotNetty.Codecs.Http.WebSockets
             }
         }
 
-        static readonly Action<Task, object> FireUserEventTriggeredAction = OnFireUserEventTriggered;
+        static readonly Action<Task, object> FireUserEventTriggeredAction = (t, s) => OnFireUserEventTriggered(t, s);
         static void OnFireUserEventTriggered(Task t, object state)
         {
-            var wrapped = (Tuple<IChannelHandlerContext, IFullHttpRequest, WebSocketServerHandshaker, IPromise>)state;
+            var wrapped = ((IChannelHandlerContext, IFullHttpRequest, WebSocketServerHandshaker, IPromise))state;
             if (t.IsSuccess())
             {
                 _ = wrapped.Item4.TryComplete();
@@ -152,7 +177,7 @@ namespace DotNetty.Codecs.Http.WebSockets
             _ = localHandshakePromise.Task.ContinueWith(AbortHandshakeTimeoutAfterHandshakeCompletedAction, timeoutTask, TaskContinuationOptions.ExecuteSynchronously);
         }
 
-        private static readonly Action<object, object> FireHandshakeTimeoutAction = FireHandshakeTimeout;
+        private static readonly Action<object, object> FireHandshakeTimeoutAction = (c, p) => FireHandshakeTimeout(c, p);
         private static void FireHandshakeTimeout(object c, object p)
         {
             var handshakePromise = (IPromise)p;
@@ -166,7 +191,7 @@ namespace DotNetty.Codecs.Http.WebSockets
             }
         }
 
-        private static readonly Action<Task, object> AbortHandshakeTimeoutAfterHandshakeCompletedAction = AbortHandshakeTimeoutAfterHandshakeCompleted;
+        private static readonly Action<Task, object> AbortHandshakeTimeoutAfterHandshakeCompletedAction = (t, s) => AbortHandshakeTimeoutAfterHandshakeCompleted(t, s);
         private static void AbortHandshakeTimeoutAfterHandshakeCompleted(Task t, object s)
         {
             _ = ((IScheduledTask)s).Cancel();

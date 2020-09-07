@@ -1,5 +1,30 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) The DotNetty Project (Microsoft). All rights reserved.
+ *
+ *   https://github.com/azure/dotnetty
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Codecs.Http.WebSockets
 {
@@ -87,7 +112,7 @@ namespace DotNetty.Codecs.Http.WebSockets
         /// <param name="req"></param>
         /// <param name="headers"></param>
         /// <returns></returns>
-        protected override IFullHttpResponse NewHandshakeResponse(IFullHttpRequest req, HttpHeaders headers)
+        protected internal override IFullHttpResponse NewHandshakeResponse(IFullHttpRequest req, HttpHeaders headers)
         {
             // Serve the WebSocket handshake request.
             if (!req.Headers.ContainsValue(HttpHeaderNames.Connection, HttpHeaderValues.Upgrade, true)
@@ -117,8 +142,8 @@ namespace DotNetty.Codecs.Http.WebSockets
                 _ = res.Headers.Add(headers);
             }
 
-            _ = res.Headers.Add(HttpHeaderNames.Upgrade, HttpHeaderValues.Websocket);
-            _ = res.Headers.Add(HttpHeaderNames.Connection, HttpHeaderValues.Upgrade);
+            _ = res.Headers.Set(HttpHeaderNames.Upgrade, HttpHeaderValues.Websocket)
+                           .Set(HttpHeaderNames.Connection, HttpHeaderValues.Upgrade);
 
             // Fill in the headers and contents depending on handshake getMethod.
             if (isHixie76)
@@ -132,10 +157,12 @@ namespace DotNetty.Codecs.Http.WebSockets
                     string selectedSubprotocol = this.SelectSubprotocol(subprotocols.ToString());
                     if (selectedSubprotocol is null)
                     {
+#if DEBUG
                         if (Logger.DebugEnabled)
                         {
                             Logger.RequestedSubprotocolNotSupported(subprotocols);
                         }
+#endif
                     }
                     else
                     {

@@ -1,5 +1,30 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) The DotNetty Project (Microsoft). All rights reserved.
+ *
+ *   https://github.com/azure/dotnetty
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Transport.Libuv.Native
 {
@@ -13,16 +38,17 @@ namespace DotNetty.Transport.Libuv.Native
     /// </summary>
     sealed class PipeListener : PipeHandle
     {
-        const int DefaultPipeBacklog = 128;
-        static readonly uv_watcher_cb ConnectionCallback = OnConnectionCallback;
+        private const int DefaultPipeBacklog = 128;
+        private static readonly uv_watcher_cb ConnectionCallback = (h, s) => OnConnectionCallback(h, s);
 
-        readonly List<Pipe> _pipes;
-        readonly WindowsApi _windowsApi;
-        int _requestId;
+        private readonly Action<Pipe, int> _onReadAction;
+        private readonly List<Pipe> _pipes;
+        private readonly WindowsApi _windowsApi;
+        private int _requestId;
 
         public PipeListener(Loop loop, bool ipc) : base(loop, ipc)
         {
-            onReadAction = OnRead;
+            _onReadAction = (p, s) => OnRead(p, s);
 
             _pipes = new List<Pipe>();
             _windowsApi = new WindowsApi();
@@ -68,7 +94,7 @@ namespace DotNetty.Transport.Libuv.Native
             pipe.Send(handle);
         }
 
-        unsafe void OnConnectionCallback(int status)
+        private unsafe void OnConnectionCallback(int status)
         {
             Pipe client = null;
             try
@@ -87,7 +113,7 @@ namespace DotNetty.Transport.Libuv.Native
                     NativeMethods.ThrowIfError(result);
 
                     _pipes.Add(client);
-                    client.ReadStart(onReadAction);
+                    client.ReadStart(_onReadAction);
                 }
             }
             catch (Exception exception)
@@ -97,8 +123,7 @@ namespace DotNetty.Transport.Libuv.Native
             }
         }
 
-        readonly Action<Pipe, int> onReadAction;
-        void OnRead(Pipe pipe, int status)
+        private void OnRead(Pipe pipe, int status)
         {
             // The server connection is never meant to read anything back
             // it is only used for passing handles over to different loops
@@ -119,7 +144,7 @@ namespace DotNetty.Transport.Libuv.Native
             }
         }
 
-        static void OnConnectionCallback(IntPtr handle, int status)
+        private static void OnConnectionCallback(IntPtr handle, int status)
         {
             var server = GetTarget<PipeListener>(handle);
             server.OnConnectionCallback(status);

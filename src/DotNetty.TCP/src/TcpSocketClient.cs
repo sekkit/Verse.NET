@@ -52,24 +52,49 @@ namespace DotNetty.TCP
                 .Option(ChannelOption.SoReuseport, false)
                 .Option(ChannelOption.SoSndbuf, 2048)
                 .Option(ChannelOption.SoRcvbuf, 8096)
-                .Option(ChannelOption.SoKeepalive, true)
-                .Handler(new ActionChannelInitializer<ISocketChannel>(channel =>
-                {
-                    IChannelPipeline pipeline = channel.Pipeline;
-
-                    if (cert != null)
+                .Option(ChannelOption.SoKeepalive, true);
+//#if !CLIENT
+//                if (channelConfig.UseLibuv)
+//                {
+                    bootstrap.Handler(new ActionChannelInitializer<IChannel>(channel =>
                     {
-                        pipeline.AddLast("tls",
-                            new TlsHandler(
-                                stream => new SslStream(stream, true, (sender, certificate, chain, errors) => true),
-                                new ClientTlsSettings(targetHost)));
-                    }
+                        IChannelPipeline pipeline = channel.Pipeline;
 
-                    pipeline.AddLast(new LoggingHandler());
-                    pipeline.AddLast("framing-enc", new LengthFieldPrepender(2));
-                    pipeline.AddLast("framing-dec", new LengthFieldBasedFrameDecoder(ushort.MaxValue, 0, 2, 0, 2));
-                    pipeline.AddLast("tcp-handler", new TcpChannelHandler(this));
-                }));
+                        if (cert != null)
+                        {
+                            pipeline.AddLast("tls",
+                                new TlsHandler(
+                                    stream => new SslStream(stream, true, (sender, certificate, chain, errors) => true),
+                                    new ClientTlsSettings(targetHost)));
+                        }
+
+                        pipeline.AddLast(new LoggingHandler());
+                        pipeline.AddLast("framing-enc", new LengthFieldPrepender(2));
+                        pipeline.AddLast("framing-dec", new LengthFieldBasedFrameDecoder(ushort.MaxValue, 0, 2, 0, 2));
+                        pipeline.AddLast("tcp-handler", new TcpChannelHandler(this));
+                    }));
+//                }
+//                else
+//#endif
+//                {
+//                    bootstrap.Handler(new ActionChannelInitializer<ISocketChannel>(channel =>
+//                    {
+//                        IChannelPipeline pipeline = channel.Pipeline;
+
+//                        if (cert != null)
+//                        {
+//                            pipeline.AddLast("tls",
+//                                new TlsHandler(
+//                                    stream => new SslStream(stream, true, (sender, certificate, chain, errors) => true),
+//                                    new ClientTlsSettings(targetHost)));
+//                        }
+
+//                        pipeline.AddLast(new LoggingHandler());
+//                        pipeline.AddLast("framing-enc", new LengthFieldPrepender(2));
+//                        pipeline.AddLast("framing-dec", new LengthFieldBasedFrameDecoder(ushort.MaxValue, 0, 2, 0, 2));
+//                        pipeline.AddLast("tcp-handler", new TcpChannelHandler(this));
+//                    }));
+//                }
             }
             catch (Exception ex)
             {

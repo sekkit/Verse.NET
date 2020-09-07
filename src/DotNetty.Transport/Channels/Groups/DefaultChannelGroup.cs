@@ -1,5 +1,30 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) The DotNetty Project (Microsoft). All rights reserved.
+ *
+ *   https://github.com/azure/dotnetty
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Transport.Channels.Groups
 {
@@ -15,7 +40,7 @@ namespace DotNetty.Transport.Channels.Groups
 
     public class DefaultChannelGroup : IChannelGroup, IComparable<IChannelGroup>
     {
-        private static readonly Action<Task, object> RemoveChannelAfterCloseAction = RemoveChannelAfterClose;
+        private static readonly Action<Task, object> RemoveChannelAfterCloseAction = (t, s) => RemoveChannelAfterClose(t, s);
         private static int s_nextId;
 
         private readonly IEventExecutor _executor;
@@ -24,18 +49,33 @@ namespace DotNetty.Transport.Channels.Groups
         private readonly bool _stayClosed;
         private int _closed;
 
+        public DefaultChannelGroup()
+            : this(false)
+        {
+        }
+
+        public DefaultChannelGroup(bool stayClosed)
+            : this(executor: null, stayClosed)
+        {
+        }
+
         public DefaultChannelGroup(IEventExecutor executor)
             : this(executor, false)
         {
         }
 
-        public DefaultChannelGroup(string name, IEventExecutor executor)
-            : this(name, executor, false)
+        public DefaultChannelGroup(IEventExecutor executor, bool stayClosed)
+            : this($"group-{Interlocked.Increment(ref s_nextId):X2}", executor, stayClosed)
         {
         }
 
-        public DefaultChannelGroup(IEventExecutor executor, bool stayClosed)
-            : this($"group-{Interlocked.Increment(ref s_nextId):X2}", executor, stayClosed)
+        public DefaultChannelGroup(string name, bool stayClosed)
+            : this(name, null, stayClosed)
+        {
+        }
+
+        public DefaultChannelGroup(string name, IEventExecutor executor)
+            : this(name, executor, false)
         {
         }
 
@@ -350,7 +390,7 @@ namespace DotNetty.Transport.Channels.Groups
             bool added = map.TryAdd(channel.Id, channel);
             if (added)
             {
-                _ = channel.CloseCompletion.ContinueWith(RemoveChannelAfterCloseAction, new Tuple<DefaultChannelGroup, IChannel>(this, channel), TaskContinuationOptions.ExecuteSynchronously);
+                _ = channel.CloseCompletion.ContinueWith(RemoveChannelAfterCloseAction, (this, channel), TaskContinuationOptions.ExecuteSynchronously);
             }
 
             if (_stayClosed && (SharedConstants.False < (uint)Volatile.Read(ref _closed)))
@@ -375,7 +415,7 @@ namespace DotNetty.Transport.Channels.Groups
 
         static void RemoveChannelAfterClose(Task t, object s)
         {
-            var wrapped = (Tuple<DefaultChannelGroup, IChannel>)s;
+            var wrapped = ((DefaultChannelGroup, IChannel))s;
             _ = wrapped.Item1.Remove(wrapped.Item2);
         }
 

@@ -1,14 +1,39 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) The DotNetty Project (Microsoft). All rights reserved.
+ *
+ *   https://github.com/azure/dotnetty
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Transport.Channels
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Threading.Tasks;
     using DotNetty.Common;
     using DotNetty.Common.Concurrency;
+    using DotNetty.Common.Internal;
     using DotNetty.Common.Internal.Logging;
     using DotNetty.Common.Utilities;
 
@@ -20,6 +45,12 @@ namespace DotNetty.Transport.Channels
     public sealed class PendingWriteQueue
     {
         static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<PendingWriteQueue>();
+        // Assuming a 64-bit JVM:
+        //  - 16 bytes object header
+        //  - 4 reference fields
+        //  - 1 long fields
+        internal static readonly int PendingWriteOverhead =
+                SystemPropertyUtil.GetInt("io.netty.transport.pendingWriteSizeOverhead", 64);
 
         readonly IChannelHandlerContext _ctx;
         readonly PendingBytesTracker _tracker;
@@ -78,6 +109,19 @@ namespace DotNetty.Transport.Channels
             }
         }
 
+        private int GetSize(object msg)
+        {
+            // It is possible for writes to be triggered from removeAndFailAll(). To preserve ordering,
+            // we should add them to the queue and let removeAndFailAll() fail them later.
+            int messageSize = _tracker.Size(msg);
+            if (messageSize < 0)
+            {
+                // Size may be unknown so just use 0
+                messageSize = 0;
+            }
+            return messageSize + PendingWriteOverhead;
+        }
+
         /// <summary>
         /// Adds the given message to this <see cref="PendingWriteQueue"/>.
         /// </summary>
@@ -91,12 +135,7 @@ namespace DotNetty.Transport.Channels
 
             // It is possible for writes to be triggered from removeAndFailAll(). To preserve ordering,
             // we should add them to the queue and let removeAndFailAll() fail them later.
-            int messageSize = _tracker.Size(msg);
-            if (messageSize < 0)
-            {
-                // Size may be unknow so just use 0
-                messageSize = 0;
-            }
+            int messageSize = GetSize(msg);
 
             PendingWrite write = PendingWrite.NewInstance(msg, messageSize, promise);
             PendingWrite currentTail = _tail;
@@ -169,38 +208,45 @@ namespace DotNetty.Transport.Channels
         /// <summary>
         /// Removes all pending write operation and performs them via <see cref="IChannelHandlerContext.WriteAsync(object, IPromise)"/>
         /// </summary>
-        /// <returns>An await-able task.</returns>
+        /// <returns><see cref="Task"/> if something was written and <c>null</c>
+        /// if the <see cref="PendingWriteQueue"/> is empty.</returns>
         public Task RemoveAndWriteAllAsync()
         {
             Debug.Assert(_ctx.Executor.InEventLoop);
 
-            if (IsEmpty) { return TaskUtil.Completed; }
+            if (IsEmpty) { return null; }
 
-            // Guard against re-entrance by directly reset
-            int currentSize = _size;
-            var tasks = new List<Task>(currentSize);
-
-            // It is possible for some of the written promises to trigger more writes. The new writes
-            // will "revive" the queue, so we need to write them up until the queue is empty.
-            for (PendingWrite write = _head; write is object; write = _head)
+            var p = _ctx.NewPromise();
+            PromiseCombiner combiner = new PromiseCombiner(_ctx.Executor);
+            try
             {
-                _head = _tail = null;
-                _size = 0;
-                _bytes = 0;
-
-                while (write is object)
+                // It is possible for some of the written promises to trigger more writes. The new writes
+                // will "revive" the queue, so we need to write them up until the queue is empty.
+                for (PendingWrite write = _head; write is object; write = _head)
                 {
-                    PendingWrite next = write.Next;
-                    object msg = write.Msg;
-                    IPromise promise = write.Promise;
-                    Recycle(write, false);
-                    if (!promise.IsVoid) { tasks.Add(promise.Task); }
-                    _ = _ctx.WriteAsync(msg, promise);
-                    write = next;
+                    _head = _tail = null;
+                    _size = 0;
+                    _bytes = 0;
+
+                    while (write is object)
+                    {
+                        PendingWrite next = write.Next;
+                        object msg = write.Msg;
+                        IPromise promise = write.Promise;
+                        Recycle(write, false);
+                        if (!promise.IsVoid) { combiner.Add(promise.Task); }
+                        _ = _ctx.WriteAsync(msg, promise);
+                        write = next;
+                    }
                 }
+                combiner.Finish(p);
+            }
+            catch (Exception exc)
+            {
+                p.SetException(exc);
             }
             AssertEmpty();
-            return Task.WhenAll(tasks);
+            return p.Task;
         }
 
         [Conditional("DEBUG")]
@@ -209,7 +255,8 @@ namespace DotNetty.Transport.Channels
         /// <summary>
         /// Removes a pending write operation and performs it via <see cref="IChannelHandlerContext.WriteAsync(object, IPromise)"/>.
         /// </summary>
-        /// <returns>An await-able task.</returns>
+        /// <returns><see cref="Task"/> if something was written and <c>null</c>
+        /// if the <see cref="PendingWriteQueue"/> is empty.</returns>
         public Task RemoveAndWriteAsync()
         {
             Debug.Assert(_ctx.Executor.InEventLoop);
@@ -293,9 +340,9 @@ namespace DotNetty.Transport.Channels
         /// </summary>
         sealed class PendingWrite
         {
-            static readonly ThreadLocalPool<PendingWrite> Pool = new ThreadLocalPool<PendingWrite>(handle => new PendingWrite(handle));
+            private static readonly ThreadLocalPool<PendingWrite> Pool = new ThreadLocalPool<PendingWrite>(handle => new PendingWrite(handle));
 
-            readonly ThreadLocalPool.Handle _handle;
+            private readonly ThreadLocalPool.Handle _handle;
             public PendingWrite Next;
             public long Size;
             public IPromise Promise;

@@ -1,5 +1,30 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) The DotNetty Project (Microsoft). All rights reserved.
+ *
+ *   https://github.com/azure/dotnetty
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Codecs.Http
 {
@@ -83,7 +108,7 @@ namespace DotNetty.Codecs.Http
         /// <param name="maxContentLength">the maximum length of the aggregated content in bytes.
         /// If the length of the aggregated content exceeds this value,
         /// <see cref="HandleOversizedMessage(IChannelHandlerContext, IHttpMessage)"/> will be called.</param>
-        public HttpObjectAggregator(int maxContentLength) 
+        public HttpObjectAggregator(int maxContentLength)
             : this(maxContentLength, false)
         {
         }
@@ -95,7 +120,7 @@ namespace DotNetty.Codecs.Http
         /// <param name="closeOnExpectationFailed">If a 100-continue response is detected but the content length is too large
         /// then <c>true</c> means close the connection. otherwise the connection will remain open and data will be
         /// consumed and discarded until the next request is received.</param>
-        public HttpObjectAggregator(int maxContentLength, bool closeOnExpectationFailed) 
+        public HttpObjectAggregator(int maxContentLength, bool closeOnExpectationFailed)
             : base(maxContentLength)
         {
             _closeOnExpectationFailed = closeOnExpectationFailed;
@@ -162,11 +187,11 @@ namespace DotNetty.Codecs.Http
         }
 
         /// <inheritdoc />
-        protected override bool CloseAfterContinueResponse(object msg) => 
+        protected override bool CloseAfterContinueResponse(object msg) =>
             _closeOnExpectationFailed && IgnoreContentAfterContinueResponse(msg);
 
         /// <inheritdoc />
-        protected override bool IgnoreContentAfterContinueResponse(object msg) => 
+        protected override bool IgnoreContentAfterContinueResponse(object msg) =>
             msg is IHttpResponse response && response.Status.CodeClass.Equals(HttpStatusClass.ClientError);
 
         /// <inheritdoc />
@@ -244,22 +269,26 @@ namespace DotNetty.Codecs.Http
             }
         }
 
-        static readonly Action<Task, object> CloseOnCompleteAction = CloseOnComplete;
+        static readonly Action<Task, object> CloseOnCompleteAction = (t, s) => CloseOnComplete(t, s);
         static void CloseOnComplete(Task t, object s)
         {
+#if DEBUG
             if (t.IsFaulted)
             {
                 if (Logger.DebugEnabled) Logger.FailedToSendA413RequestEntityTooLarge(t);
             }
+#endif
             _ = ((IChannelHandlerContext)s).CloseAsync();
         }
 
-        static readonly Action<Task, object> CloseOnFaultAction = CloseOnFault;
+        static readonly Action<Task, object> CloseOnFaultAction = (t, s) => CloseOnFault(t, s);
         static void CloseOnFault(Task t, object s)
         {
             if (t.IsFaulted)
             {
+#if DEBUG
                 if (Logger.DebugEnabled) Logger.FailedToSendA413RequestEntityTooLarge(t);
+#endif
                 _ = ((IChannelHandlerContext)s).CloseAsync();
             }
         }
@@ -359,7 +388,7 @@ namespace DotNetty.Codecs.Http
 
             public override IByteBufferHolder Replace(IByteBuffer content)
             {
-                var dup = new DefaultFullHttpRequest(ProtocolVersion, Method, Uri, content, 
+                var dup = new DefaultFullHttpRequest(ProtocolVersion, Method, Uri, content,
                     Headers.Copy(), TrailingHeaders.Copy());
                 dup.Result = Result;
                 return dup;
@@ -399,7 +428,7 @@ namespace DotNetty.Codecs.Http
 
             public override IByteBufferHolder Replace(IByteBuffer content)
             {
-                var dup = new DefaultFullHttpResponse(ProtocolVersion, Status, content, 
+                var dup = new DefaultFullHttpResponse(ProtocolVersion, Status, content,
                     Headers.Copy(), TrailingHeaders.Copy());
                 dup.Result = Result;
                 return dup;

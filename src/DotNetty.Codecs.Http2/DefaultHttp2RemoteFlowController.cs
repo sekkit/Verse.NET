@@ -1,5 +1,24 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Codecs.Http2
 {
@@ -358,7 +377,7 @@ namespace DotNetty.Codecs.Http2
                                 // This frame has been fully written, remove this frame and notify it.
                                 // Since we remove this frame first, we're guaranteed that its error
                                 // method will not be called when we call cancel.
-                                _ = _pendingWriteQueue.TryRemoveFromFront(out _);
+                                _ = _pendingWriteQueue.TryRemoveFirst(out _);
                                 frame.WriteComplete();
                             }
                         }
@@ -455,7 +474,7 @@ namespace DotNetty.Codecs.Http2
 
             void EnqueueFrameWithoutMerge(IHttp2RemoteFlowControlled frame)
             {
-                _pendingWriteQueue.AddToBack(frame);
+                _pendingWriteQueue.AddLast​(frame);
                 // This must be called after adding to the queue in order so that hasFrame() is
                 // updated before updating the stream state.
                 IncrementPendingBytes(frame.Size, true);
@@ -483,7 +502,7 @@ namespace DotNetty.Codecs.Http2
                 // Ensure that the queue can't be modified while we are writing.
                 if (_writing) { return; }
 
-                if (_pendingWriteQueue.TryRemoveFromFront(out IHttp2RemoteFlowControlled frame))
+                if (_pendingWriteQueue.TryRemoveFirst(out IHttp2RemoteFlowControlled frame))
                 {
                     // Only create exception once and reuse to reduce overhead of filling in the stacktrace.
                     Http2Exception exception = ThrowHelper.GetStreamError_StreamClosedBeforeWriteCouldTakePlace(
@@ -491,7 +510,7 @@ namespace DotNetty.Codecs.Http2
                     do
                     {
                         WriteError(frame, exception);
-                    } while (_pendingWriteQueue.TryRemoveFromFront(out frame));
+                    } while (_pendingWriteQueue.TryRemoveFirst(out frame));
                 }
 
                 _controller._streamByteDistributor.UpdateStreamableBytes(this);

@@ -1,5 +1,24 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Transport.Channels.Sockets
 {
@@ -29,19 +48,16 @@ namespace DotNetty.Transport.Channels.Sockets
 
         public abstract class AbstractSocketUnsafe : AbstractUnsafe, ISocketChannelUnsafe
         {
-            protected AbstractSocketUnsafe() //(AbstractSocketChannel channel)
-                : base() //(channel)
+            protected AbstractSocketUnsafe()
+                : base()
             {
             }
-
-            //public AbstractSocketChannel Channel => (AbstractSocketChannel)this.channel;
-            //public TChannel Channel => this.channel;
 
             public sealed override Task ConnectAsync(EndPoint remoteAddress, EndPoint localAddress)
             {
                 // todo: handle cancellation
                 var ch = _channel;
-                if (!ch.Open)
+                if (!ch.IsOpen)
                 {
                     return CreateClosedChannelExceptionTask();
                 }
@@ -53,7 +69,7 @@ namespace DotNetty.Transport.Channels.Sockets
                         ThrowHelper.ThrowInvalidOperationException_ConnAttemptAlreadyMade();
                     }
 
-                    bool wasActive = _channel.Active;
+                    bool wasActive = _channel.IsActive;
                     if (ch.DoConnect(remoteAddress, localAddress))
                     {
                         FulfillConnectPromise(ch._connectPromise, wasActive);
@@ -97,7 +113,7 @@ namespace DotNetty.Transport.Channels.Sockets
 
                 // Get the state as trySuccess() may trigger an ChannelFutureListener that will close the Channel.
                 // We still need to ensure we call fireChannelActive() in this case.
-                bool active = ch.Active;
+                bool active = ch.IsActive;
 
                 // trySuccess() will return false if a user cancelled the connection attempt.
                 bool promiseSet = promise.TryComplete();
@@ -136,7 +152,7 @@ namespace DotNetty.Transport.Channels.Sockets
 
                 try
                 {
-                    bool wasActive = ch.Active;
+                    bool wasActive = ch.IsActive;
                     ch.DoFinishConnect(operation);
                     FulfillConnectPromise(ch._connectPromise, wasActive);
                 }

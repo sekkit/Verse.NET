@@ -1,5 +1,30 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) The DotNetty Project (Microsoft). All rights reserved.
+ *
+ *   https://github.com/azure/dotnetty
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Transport.Channels.Embedded
 {
@@ -9,11 +34,12 @@ namespace DotNetty.Transport.Channels.Embedded
     using DotNetty.Common;
     using DotNetty.Common.Concurrency;
     using DotNetty.Common.Internal;
+    using DotNetty.Common.Utilities;
     using Thread = DotNetty.Common.Concurrency.XThread;
 
     sealed class EmbeddedEventLoop : AbstractScheduledEventExecutor, IEventLoop
     {
-        readonly QueueX<IRunnable> _tasks = new QueueX<IRunnable>(2);
+        readonly Deque<IRunnable> _tasks = new Deque<IRunnable>(2);
 
         public new IEventLoop GetNext() => this;
 
@@ -21,7 +47,7 @@ namespace DotNetty.Transport.Channels.Embedded
 
         public override bool IsShuttingDown => false;
 
-        public override Task TerminationCompletion => throw new NotSupportedException();
+        public override Task TerminationCompletion => throw ThrowHelper.GetNotSupportedException();
 
         public override bool IsShutdown => false;
 
@@ -41,27 +67,27 @@ namespace DotNetty.Transport.Channels.Embedded
             {
                 ThrowHelper.ThrowNullReferenceException_Command();
             }
-            _tasks.Enqueue(command);
+            _tasks.AddLast​(command);
         }
 
         public override Task ShutdownGracefullyAsync(TimeSpan quietPeriod, TimeSpan timeout)
         {
-            throw new NotSupportedException();
+            throw ThrowHelper.GetNotSupportedException();
         }
 
-        internal PreciseTimeSpan NextScheduledTask() => NextScheduledTaskNanos();
+        internal long NextScheduledTask() => NextScheduledTaskNanos();
 
         internal void RunTasks()
         {
-            while (_tasks.TryDequeue(out var task))
+            while (_tasks.TryRemoveFirst(out var task))
             {
                 task.Run();
             }
         }
 
-        internal PreciseTimeSpan RunScheduledTasks()
+        internal long RunScheduledTasks()
         {
-            PreciseTimeSpan time = GetNanos();
+            var time = PreciseTime.NanoTime();
             while (true)
             {
                 IRunnable task = PollScheduledTask(time);
@@ -74,5 +100,10 @@ namespace DotNetty.Transport.Channels.Embedded
         }
 
         internal new void CancelScheduledTasks() => base.CancelScheduledTasks();
+
+        public override bool WaitTermination(TimeSpan timeout)
+        {
+            return false;
+        }
     }
 }

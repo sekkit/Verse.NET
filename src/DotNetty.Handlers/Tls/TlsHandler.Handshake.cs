@@ -1,4 +1,31 @@
-﻿
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) The DotNetty Project (Microsoft). All rights reserved.
+ *
+ *   https://github.com/azure/dotnetty
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
+
 namespace DotNetty.Handlers.Tls
 {
     using System;
@@ -14,7 +41,7 @@ namespace DotNetty.Handlers.Tls
 
     partial class TlsHandler
     {
-        private static readonly Action<Task, object> s_handshakeCompletionCallback = new Action<Task, object>(HandleHandshakeCompleted);
+        private static readonly Action<Task, object> s_handshakeCompletionCallback = (t, s) => HandleHandshakeCompleted(t, s);
         public static readonly AttributeKey<SslStream> SslStreamAttrKey = AttributeKey<SslStream>.ValueOf("SSLSTREAM");
 
         private bool EnsureAuthenticated(IChannelHandlerContext ctx)
@@ -33,12 +60,7 @@ namespace DotNetty.Handlers.Tls
                         X509Certificate LocalServerCertificateSelection(object sender, string name)
                         {
                             ctx.GetAttribute(SslStreamAttrKey).Set(_sslStream);
-                            var cert = _serverCertificateSelector(ctx, name);
-                            if (cert is object)
-                            {
-                                EnsureCertificateIsAllowedForServerAuth(cert);
-                            }
-                            return cert;
+                            return _serverCertificateSelector(ctx, name);
                         }
                         selector = new ServerCertificateSelectionCallback(LocalServerCertificateSelection);
                     }
@@ -60,18 +82,7 @@ namespace DotNetty.Handlers.Tls
                     _sslStream.AuthenticateAsServerAsync(sslOptions, CancellationToken.None)
                               .ContinueWith(s_handshakeCompletionCallback, this, TaskContinuationOptions.ExecuteSynchronously);
 #else
-                    var serverCert = _serverCertificate;
-                    if (_serverCertificateSelector is object)
-                    {
-                        ctx.GetAttribute(SslStreamAttrKey).Set(_sslStream);
-                        var serverCert2 = _serverCertificateSelector(ctx, null);
-                        if (serverCert2 is object)
-                        {
-                            EnsureCertificateIsAllowedForServerAuth(serverCert2);
-                            serverCert = serverCert2;
-                        }
-                    }
-                    _sslStream.AuthenticateAsServerAsync(serverCert,
+                    _sslStream.AuthenticateAsServerAsync(_serverCertificate,
                                                          _serverSettings.NegotiateClientCertificate,
                                                          _serverSettings.EnabledProtocols,
                                                          _serverSettings.CheckCertificateRevocation)
@@ -134,7 +145,7 @@ namespace DotNetty.Handlers.Tls
                 var capturedContext = self.CapturedContext;
                 _ = capturedContext.FireUserEventTriggered(TlsHandshakeCompletionEvent.Success);
 
-                if (oldState.Has(TlsHandlerState.ReadRequestedBeforeAuthenticated) && !capturedContext.Channel.Configuration.AutoRead)
+                if (oldState.Has(TlsHandlerState.ReadRequestedBeforeAuthenticated) && !capturedContext.Channel.Configuration.IsAutoRead)
                 {
                     _ = capturedContext.Read();
                 }

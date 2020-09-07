@@ -1,4 +1,26 @@
-﻿using System;
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com)
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
+
+using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -252,9 +274,9 @@ namespace DotNetty.Buffers
         public override int Read(byte[] buffer, int offset, int count)
         {
             if (buffer is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.buffer); }
-            if (offset < 0) { ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(ExceptionArgument.offset); }
-            if (count < 0) { ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(ExceptionArgument.count); }
-            if (buffer.Length - offset < count) { ThrowHelper.ThrowArgumentException_InvalidOffLen(); }
+            if ((uint)offset > SharedConstants.TooBigOrNegative) { ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(ExceptionArgument.offset); }
+            if ((uint)count > SharedConstants.TooBigOrNegative) { ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(ExceptionArgument.count); }
+            if ((uint)buffer.Length < (uint)(offset + count)) { ThrowHelper.ThrowArgumentException_InvalidOffLen(); }
 
             EnsureNotClosed();
 
@@ -300,9 +322,9 @@ namespace DotNetty.Buffers
         public override void Write(byte[] buffer, int offset, int count)
         {
             if (buffer is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.buffer); }
-            if (offset < 0) { ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(ExceptionArgument.offset); }
-            if (count < 0) { ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(ExceptionArgument.count); }
-            if (buffer.Length - offset < count) { ThrowHelper.ThrowArgumentException_InvalidOffLen(); }
+            if ((uint)offset > SharedConstants.TooBigOrNegative) { ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(ExceptionArgument.offset); }
+            if ((uint)count > SharedConstants.TooBigOrNegative) { ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(ExceptionArgument.count); }
+            if ((uint)buffer.Length < (uint)(offset + count)) { ThrowHelper.ThrowArgumentException_InvalidOffLen(); }
 
             EnsureNotClosed();
             EnsureWriteable();
@@ -313,9 +335,9 @@ namespace DotNetty.Buffers
         public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
             if (buffer is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.buffer); }
-            if (offset < 0) { ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(ExceptionArgument.offset); }
-            if (count < 0) { ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(ExceptionArgument.count); }
-            if (buffer.Length - offset < count) { ThrowHelper.ThrowArgumentException_InvalidOffLen(); }
+            if ((uint)offset > SharedConstants.TooBigOrNegative) { ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(ExceptionArgument.offset); }
+            if ((uint)count > SharedConstants.TooBigOrNegative) { ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(ExceptionArgument.count); }
+            if ((uint)buffer.Length < (uint)(offset + count)) { ThrowHelper.ThrowArgumentException_InvalidOffLen(); }
 
             EnsureNotClosed();
             EnsureWriteable();
@@ -404,13 +426,13 @@ namespace DotNetty.Buffers
 
         #region ** Helper **
 
-        [MethodImpl(InlineMethod.AggressiveInlining)]
+        [MethodImpl(InlineMethod.AggressiveOptimization)]
         private void EnsureNotClosed()
         {
             if (!_isOpen) { ThrowHelper.ThrowObjectDisposedException_StreamIsClosed(); }
         }
 
-        [MethodImpl(InlineMethod.AggressiveInlining)]
+        [MethodImpl(InlineMethod.AggressiveOptimization)]
         private void EnsureWriteable()
         {
             if (!_writable) { ThrowHelper.ThrowNotSupportedException_UnwritableStream(); }

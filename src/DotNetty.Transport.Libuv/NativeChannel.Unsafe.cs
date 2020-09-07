@@ -1,5 +1,30 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) The DotNetty Project (Microsoft). All rights reserved.
+ *
+ *   https://github.com/azure/dotnetty
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Transport.Libuv
 {
@@ -16,16 +41,16 @@ namespace DotNetty.Transport.Libuv
     {
         public abstract class NativeChannelUnsafe : AbstractUnsafe, INativeUnsafe
         {
-            private static readonly Action<object, object> CancelConnectAction = CancelConnect;
+            private static readonly Action<object, object> CancelConnectAction = (c, s) => CancelConnect(c, s);
 
-            protected NativeChannelUnsafe() : base() //(NativeChannel channel) : base(channel)
+            protected NativeChannelUnsafe() : base()
             {
             }
 
             public override Task ConnectAsync(EndPoint remoteAddress, EndPoint localAddress)
             {
                 var ch = _channel;
-                if (!ch.Open)
+                if (!ch.IsOpen)
                 {
                     return CreateClosedChannelExceptionTask();
                 }
@@ -96,13 +121,13 @@ namespace DotNetty.Transport.Libuv
                         }
                         else
                         {
-                            bool wasActive = ch.Active;
+                            bool wasActive = ch.IsActive;
                             ch.DoFinishConnect();
                             success = promise.TryComplete();
 
                             // Regardless if the connection attempt was cancelled, channelActive() 
                             // event should be triggered, because what happened is what happened.
-                            if (!wasActive && ch.Active)
+                            if (!wasActive && ch.IsActive)
                             {
                                 _ = ch.Pipeline.FireChannelActive();
                             }
@@ -183,13 +208,13 @@ namespace DotNetty.Transport.Libuv
                     {
                         _ = pipeline.FireExceptionCaught(ThrowHelper.GetChannelException(error));
                     }
-                    if (ch.Open) { Close(VoidPromise()); } // ## 苦竹 修改 this.CloseSafe(); ##
+                    if (ch.IsOpen) { Close(VoidPromise()); }
                 }
                 else
                 {
                     // If read is called from channel read or read complete
                     // do not stop reading
-                    if (!ch.ReadPending && !config.AutoRead)
+                    if (!ch.ReadPending && !config.IsAutoRead)
                     {
                         ch.DoStopRead();
                     }
@@ -207,6 +232,7 @@ namespace DotNetty.Transport.Libuv
                 catch (TaskCanceledException)
                 {
                 }
+#if DEBUG
                 catch (Exception ex)
                 {
                     if (Logger.DebugEnabled)
@@ -214,6 +240,9 @@ namespace DotNetty.Transport.Libuv
                         Logger.FailedToCloseChannelCleanly(channelObject, ex);
                     }
                 }
+#else
+                catch (Exception) { }
+#endif
             }
 
             protected sealed override void Flush0()
@@ -245,7 +274,7 @@ namespace DotNetty.Transport.Libuv
                     {
                         if (bytesWritten > 0)
                         {
-                            input?.RemoveBytes(bytesWritten);
+                            input.RemoveBytes(bytesWritten);
                         }
                     }
                 }

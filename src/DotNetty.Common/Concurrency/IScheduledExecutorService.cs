@@ -1,5 +1,30 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) The DotNetty Project (Microsoft). All rights reserved.
+ *
+ *   https://github.com/azure/dotnetty
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Common.Concurrency
 {
@@ -45,15 +70,41 @@ namespace DotNetty.Common.Concurrency
         /// </remarks>
         IScheduledTask Schedule(Action<object, object> action, object context, object state, TimeSpan delay);
 
+        IScheduledTask ScheduleAtFixedRate(IRunnable action, TimeSpan initialDelay, TimeSpan period);
+
+        IScheduledTask ScheduleAtFixedRate(Action action, TimeSpan initialDelay, TimeSpan period);
+
+        IScheduledTask ScheduleAtFixedRate(Action<object> action, object state, TimeSpan initialDelay, TimeSpan period);
+
+        IScheduledTask ScheduleAtFixedRate(Action<object, object> action, object context, object state, TimeSpan initialDelay, TimeSpan period);
+
+        IScheduledTask ScheduleWithFixedDelay(IRunnable action, TimeSpan initialDelay, TimeSpan delay);
+
+        IScheduledTask ScheduleWithFixedDelay(Action action, TimeSpan initialDelay, TimeSpan delay);
+
+        IScheduledTask ScheduleWithFixedDelay(Action<object> action, object state, TimeSpan initialDelay, TimeSpan delay);
+
+        IScheduledTask ScheduleWithFixedDelay(Action<object, object> action, object context, object state, TimeSpan initialDelay, TimeSpan delay);
+
+        Task ScheduleAsync(IRunnable action, TimeSpan delay);
+
+        Task ScheduleAsync(IRunnable action, TimeSpan delay, CancellationToken cancellationToken);
+
         /// <summary>
         ///     Schedules the given action for execution after the specified delay would pass.
         /// </summary>
         /// <remarks>
-        ///     <paramref name="state" /> parameter is useful to when repeated execution of an action against
-        ///     different objects is needed.
         ///     <para>Threading specifics are determined by <c>IEventExecutor</c> implementation.</para>
         /// </remarks>
-        Task ScheduleAsync(Action<object> action, object state, TimeSpan delay, CancellationToken cancellationToken);
+        Task ScheduleAsync(Action action, TimeSpan delay);
+
+        /// <summary>
+        ///     Schedules the given action for execution after the specified delay would pass.
+        /// </summary>
+        /// <remarks>
+        ///     <para>Threading specifics are determined by <c>IEventExecutor</c> implementation.</para>
+        /// </remarks>
+        Task ScheduleAsync(Action action, TimeSpan delay, CancellationToken cancellationToken);
 
         /// <summary>
         ///     Schedules the given action for execution after the specified delay would pass.
@@ -69,17 +120,11 @@ namespace DotNetty.Common.Concurrency
         ///     Schedules the given action for execution after the specified delay would pass.
         /// </summary>
         /// <remarks>
+        ///     <paramref name="state" /> parameter is useful to when repeated execution of an action against
+        ///     different objects is needed.
         ///     <para>Threading specifics are determined by <c>IEventExecutor</c> implementation.</para>
         /// </remarks>
-        Task ScheduleAsync(Action action, TimeSpan delay, CancellationToken cancellationToken);
-
-        /// <summary>
-        ///     Schedules the given action for execution after the specified delay would pass.
-        /// </summary>
-        /// <remarks>
-        ///     <para>Threading specifics are determined by <c>IEventExecutor</c> implementation.</para>
-        /// </remarks>
-        Task ScheduleAsync(Action action, TimeSpan delay);
+        Task ScheduleAsync(Action<object> action, object state, TimeSpan delay, CancellationToken cancellationToken);
 
         /// <summary>
         ///     Schedules the given action for execution after the specified delay would pass.
@@ -100,5 +145,37 @@ namespace DotNetty.Common.Concurrency
         ///     <para>Threading specifics are determined by <c>IEventExecutor</c> implementation.</para>
         /// </remarks>
         Task ScheduleAsync(Action<object, object> action, object context, object state, TimeSpan delay, CancellationToken cancellationToken);
+
+        Task ScheduleAtFixedRateAsync(IRunnable action, TimeSpan initialDelay, TimeSpan period);
+
+        Task ScheduleAtFixedRateAsync(IRunnable action, TimeSpan initialDelay, TimeSpan period, CancellationToken cancellationToken);
+
+        Task ScheduleAtFixedRateAsync(Action action, TimeSpan initialDelay, TimeSpan period);
+
+        Task ScheduleAtFixedRateAsync(Action action, TimeSpan initialDelay, TimeSpan period, CancellationToken cancellationToken);
+
+        Task ScheduleAtFixedRateAsync(Action<object> action, object state, TimeSpan initialDelay, TimeSpan period);
+
+        Task ScheduleAtFixedRateAsync(Action<object> action, object state, TimeSpan initialDelay, TimeSpan period, CancellationToken cancellationToken);
+
+        Task ScheduleAtFixedRateAsync(Action<object, object> action, object context, object state, TimeSpan initialDelay, TimeSpan period);
+
+        Task ScheduleAtFixedRateAsync(Action<object, object> action, object context, object state, TimeSpan initialDelay, TimeSpan period, CancellationToken cancellationToken);
+
+        Task ScheduleWithFixedDelayAsync(IRunnable action, TimeSpan initialDelay, TimeSpan delay);
+
+        Task ScheduleWithFixedDelayAsync(IRunnable action, TimeSpan initialDelay, TimeSpan delay, CancellationToken cancellationToken);
+
+        Task ScheduleWithFixedDelayAsync(Action action, TimeSpan initialDelay, TimeSpan delay);
+
+        Task ScheduleWithFixedDelayAsync(Action action, TimeSpan initialDelay, TimeSpan delay, CancellationToken cancellationToken);
+
+        Task ScheduleWithFixedDelayAsync(Action<object> action, object state, TimeSpan initialDelay, TimeSpan delay);
+
+        Task ScheduleWithFixedDelayAsync(Action<object> action, object state, TimeSpan initialDelay, TimeSpan delay, CancellationToken cancellationToken);
+
+        Task ScheduleWithFixedDelayAsync(Action<object, object> action, object context, object state, TimeSpan initialDelay, TimeSpan delay);
+
+        Task ScheduleWithFixedDelayAsync(Action<object, object> action, object context, object state, TimeSpan initialDelay, TimeSpan delay, CancellationToken cancellationToken);
     }
 }

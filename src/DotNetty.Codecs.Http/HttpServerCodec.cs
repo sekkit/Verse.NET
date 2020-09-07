@@ -1,5 +1,30 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) The DotNetty Project (Microsoft). All rights reserved.
+ *
+ *   https://github.com/azure/dotnetty
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Codecs.Http
 {
@@ -14,14 +39,15 @@ namespace DotNetty.Codecs.Http
         /// <summary>
         /// A queue that is used for correlating a request and a response.
         /// </summary>
-        readonly Deque<HttpMethod> queue = new Deque<HttpMethod>();
+        private readonly Deque<HttpMethod> _queue = new Deque<HttpMethod>();
 
         /// <summary>
         /// Creates a new instance with the default decoder options
         /// ({@code maxInitialLineLength (4096}}, {@code maxHeaderSize (8192)}, and
         /// {@code maxChunkSize (8192)}).
         /// </summary>
-        public HttpServerCodec() : this(4096, 8192, 8192)
+        public HttpServerCodec()
+            : this(HttpObjectDecoder.DefaultMaxInitialLineLength, HttpObjectDecoder.DefaultMaxHeaderSize, HttpObjectDecoder.DefaultMaxChunkSize)
         {
         }
 
@@ -33,7 +59,7 @@ namespace DotNetty.Codecs.Http
         /// <param name="maxChunkSize"></param>
         public HttpServerCodec(int maxInitialLineLength, int maxHeaderSize, int maxChunkSize)
         {
-            this.Init(new HttpServerRequestDecoder(this, maxInitialLineLength, maxHeaderSize, maxChunkSize),
+            Init(new HttpServerRequestDecoder(this, maxInitialLineLength, maxHeaderSize, maxChunkSize),
                 new HttpServerResponseEncoder(this));
         }
 
@@ -46,7 +72,7 @@ namespace DotNetty.Codecs.Http
         /// <param name="validateHeaders"></param>
         public HttpServerCodec(int maxInitialLineLength, int maxHeaderSize, int maxChunkSize, bool validateHeaders)
         {
-            this.Init(new HttpServerRequestDecoder(this, maxInitialLineLength, maxHeaderSize, maxChunkSize, validateHeaders),
+            Init(new HttpServerRequestDecoder(this, maxInitialLineLength, maxHeaderSize, maxChunkSize, validateHeaders),
                 new HttpServerResponseEncoder(this));
         }
 
@@ -60,8 +86,16 @@ namespace DotNetty.Codecs.Http
         /// <param name="initialBufferSize"></param>
         public HttpServerCodec(int maxInitialLineLength, int maxHeaderSize, int maxChunkSize, bool validateHeaders, int initialBufferSize)
         {
-            this.Init(new HttpServerRequestDecoder(this, maxInitialLineLength, maxHeaderSize, maxChunkSize, validateHeaders, initialBufferSize),
+            Init(new HttpServerRequestDecoder(this, maxInitialLineLength, maxHeaderSize, maxChunkSize, validateHeaders, initialBufferSize),
                 new HttpServerResponseEncoder(this));
+        }
+
+        public HttpServerCodec(int maxInitialLineLength, int maxHeaderSize, int maxChunkSize, bool validateHeaders,
+                               int initialBufferSize, bool allowDuplicateContentLengths)
+        {
+            Init(new HttpServerRequestDecoder(this, maxInitialLineLength, maxHeaderSize, maxChunkSize, validateHeaders,
+                                              initialBufferSize, allowDuplicateContentLengths),
+                 new HttpServerResponseEncoder(this));
         }
 
         /// <summary>
@@ -73,25 +107,33 @@ namespace DotNetty.Codecs.Http
 
         sealed class HttpServerRequestDecoder : HttpRequestDecoder
         {
-            readonly HttpServerCodec serverCodec;
+            private readonly HttpServerCodec _serverCodec;
 
             public HttpServerRequestDecoder(HttpServerCodec serverCodec, int maxInitialLineLength, int maxHeaderSize, int maxChunkSize)
                 : base(maxInitialLineLength, maxHeaderSize, maxChunkSize)
             {
-                this.serverCodec = serverCodec;
+                _serverCodec = serverCodec;
             }
 
             public HttpServerRequestDecoder(HttpServerCodec serverCodec, int maxInitialLineLength, int maxHeaderSize, int maxChunkSize, bool validateHeaders)
                 : base(maxInitialLineLength, maxHeaderSize, maxChunkSize, validateHeaders)
             {
-                this.serverCodec = serverCodec;
+                _serverCodec = serverCodec;
             }
 
             public HttpServerRequestDecoder(HttpServerCodec serverCodec,
                 int maxInitialLineLength, int maxHeaderSize, int maxChunkSize, bool validateHeaders, int initialBufferSize)
                 : base(maxInitialLineLength, maxHeaderSize, maxChunkSize, validateHeaders, initialBufferSize)
             {
-                this.serverCodec = serverCodec;
+                _serverCodec = serverCodec;
+            }
+
+            public HttpServerRequestDecoder(HttpServerCodec serverCodec,
+                int maxInitialLineLength, int maxHeaderSize, int maxChunkSize,
+                bool validateHeaders, int initialBufferSize, bool allowDuplicateContentLengths)
+                : base(maxInitialLineLength, maxHeaderSize, maxChunkSize, validateHeaders, initialBufferSize, allowDuplicateContentLengths)
+            {
+                _serverCodec = serverCodec;
             }
 
             protected override void Decode(IChannelHandlerContext context, IByteBuffer buffer, List<object> output)
@@ -103,7 +145,7 @@ namespace DotNetty.Codecs.Http
                 {
                     if (output[i] is IHttpRequest request)
                     {
-                        this.serverCodec.queue.AddToBack(request.Method);
+                        _serverCodec._queue.AddLast​(request.Method);
                     }
                 }
             }
@@ -111,17 +153,17 @@ namespace DotNetty.Codecs.Http
 
         sealed class HttpServerResponseEncoder : HttpResponseEncoder
         {
-            readonly HttpServerCodec serverCodec;
-            HttpMethod method;
+            private readonly HttpServerCodec _serverCodec;
+            private HttpMethod _method;
 
             public HttpServerResponseEncoder(HttpServerCodec serverCodec)
             {
-                this.serverCodec = serverCodec;
+                _serverCodec = serverCodec;
             }
 
             protected override void SanitizeHeadersBeforeEncode(IHttpResponse msg, bool isAlwaysEmpty)
             {
-                if (!isAlwaysEmpty && ReferenceEquals(this.method, HttpMethod.Connect) &&
+                if (!isAlwaysEmpty && ReferenceEquals(_method, HttpMethod.Connect) &&
                     msg.Status.CodeClass == HttpStatusClass.Success)
                 {
                     // Stripping Transfer-Encoding:
@@ -135,8 +177,8 @@ namespace DotNetty.Codecs.Http
 
             protected override bool IsContentAlwaysEmpty(IHttpResponse msg)
             {
-                _ = this.serverCodec.queue.TryRemoveFromFront(out this.method);
-                return HttpMethod.Head.Equals(this.method) || base.IsContentAlwaysEmpty(msg);
+                _ = _serverCodec._queue.TryRemoveFirst(out _method);
+                return HttpMethod.Head.Equals(_method) || base.IsContentAlwaysEmpty(msg);
             }
         }
     }

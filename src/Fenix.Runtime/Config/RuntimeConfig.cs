@@ -30,11 +30,14 @@ namespace Fenix.Config
 
         [Key(6)]
         public long HeartbeatIntervalMS { get; set; }
-
+#if !CLIENT
         [Key(7)]
+        public bool DuplexMode { get; set; } = false;
+#endif
+        [Key(8)]
         public NetworkType ClientNetwork { get; set; } = NetworkType.TCP;
 
-        [Key(8)]
+        [Key(9)]
         public NetworkType ServerNetwork { get; set; } = NetworkType.TCP;
 
         [IgnoreMember]
@@ -50,7 +53,8 @@ namespace Fenix.Config
             obj.AppName = "Login.App";
             obj.HeartbeatIntervalMS = 5000;
             obj.ClientNetwork = NetworkType.TCP;
-            
+            obj.DuplexMode = false;
+
             obj.DefaultActorNames = new List<string>()
             {
                 "LoginService",

@@ -1,5 +1,31 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) The DotNetty Project (Microsoft). All rights reserved.
+ *
+ *   https://github.com/azure/dotnetty
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
+
 
 namespace DotNetty.Transport.Channels
 {
@@ -43,11 +69,11 @@ namespace DotNetty.Transport.Channels
 
         /// <summary>Gets or sets if <see cref="IChannelHandlerContext.Read()"/> will be invoked automatically so that a user application doesn't
         /// need to call it at all. The default value is <c>true</c>.</summary>
-        bool AutoRead { get; set; }
+        bool IsAutoRead { get; set; }
 
         /// <summary>Gets or sets whether the <see cref="IChannel"/> should be closed automatically and immediately on write failure.
         /// The default is <c>true</c>.</summary>
-        bool AutoClose { get; set; }
+        bool IsAutoClose { get; set; }
 
         /// <summary>Gets or sets the high water mark of the write buffer.  If the number of bytes
         /// queued in the write buffer exceeds this value, <see cref="IChannel.IsWritable"/>
@@ -63,5 +89,7 @@ namespace DotNetty.Transport.Channels
         /// <summary>Gets or sets the <see cref="IMessageSizeEstimator"/> which is used for the channel
         /// to detect the size of a message.</summary>
         IMessageSizeEstimator MessageSizeEstimator { get; set; }
+
+        bool PinEventExecutorPerGroup { get; set; }
     }
 }

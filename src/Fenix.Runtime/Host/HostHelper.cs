@@ -29,32 +29,29 @@ namespace Fenix
             hostThread.Start(new object[] { host, cfgList });
 
             singleThread = new Thread(new ThreadStart(Loop2));
-            singleThread.Start();
+            singleThread.Start(); 
         }
 
 #if !CLIENT
         static bool RegisterHosts(Host host, List<RuntimeConfig> cfgList)
         {
-            return true;
             bool result = true;
             foreach (var otherCfg in cfgList)
             {    
                 try
-                {
-                    if(host.UniqueName == "Master.App")
+                { 
+                    var hostRef = host.GetHost(otherCfg.AppName, otherCfg.InternalIP, otherCfg.Port);
+                    var task = hostRef.SayHelloAsync();
+                    task.Wait();
+                    if (task.Result.code == DefaultErrCode.OK)
                     {
-                        var hostRef = host.GetHost(otherCfg.AppName, otherCfg.InternalIP, otherCfg.Port);
-                        var task = hostRef.SayHelloAsync();
-                        task.Wait();
-                        if (task.Result.code == DefaultErrCode.OK)
-                        {
-                            Log.Info("found host:", otherCfg.AppName, otherCfg.InternalIP, otherCfg.Port);
-                        }
-                        else
-                        {
-                            result = false;
-                        }
-                    }                    
+                        Log.Info("found host:", otherCfg.AppName, otherCfg.InternalIP, otherCfg.Port);
+                    }
+                    else
+                    {
+                        Log.Error("waiting for host:", otherCfg.AppName, otherCfg.InternalIP, otherCfg.Port);
+                        result = false;
+                    }              
                 }
                 catch (Exception ex)
                 {
@@ -73,7 +70,25 @@ namespace Fenix
             var h = (Host)paramList[0];
             var cfgList = (List<RuntimeConfig>)paramList[1];
 
-            bool registered = false;
+#if !CLIENT
+            ThreadPool.QueueUserWorkItem((param2) =>
+            {
+                bool registered = false;
+                var h2 = (Host)paramList[0];
+                var cfgList2 = (List<RuntimeConfig>)paramList[1];
+                while (!registered)
+                {
+                    if (cfgList2 != null && !registered)
+                    {
+                        registered = RegisterHosts(h2, cfgList2);
+                        if (registered)
+                            return;
+                        Thread.Sleep(500);
+                    }
+                };
+            }, param);
+
+#endif
 
             while (true)
             {
@@ -82,15 +97,7 @@ namespace Fenix
                     if (h == null || h.IsAlive == false)
                         return; 
                     Thread.Sleep(10);
-                    h.Update();
-#if !CLIENT
-                    if(cfgList != null && !registered)
-                    {
-                        registered = RegisterHosts(h, cfgList);
-                        if (!registered)
-                            Thread.Sleep(1000);
-                    }
-#endif
+                    h.Update(); 
                 }
                 catch (Exception e)
                 {

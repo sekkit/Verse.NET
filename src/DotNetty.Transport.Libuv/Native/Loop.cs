@@ -1,5 +1,30 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) The DotNetty Project (Microsoft). All rights reserved.
+ *
+ *   https://github.com/azure/dotnetty
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Transport.Libuv.Native
 {
@@ -11,7 +36,7 @@ namespace DotNetty.Transport.Libuv.Native
     sealed unsafe class Loop : IDisposable
     {
         private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<Loop>();
-        private static readonly uv_walk_cb WalkCallback = OnWalkCallback;
+        private static readonly uv_walk_cb WalkCallback = (h, s) => OnWalkCallback(h, s);
 
         private IntPtr _handle;
 
@@ -72,10 +97,14 @@ namespace DotNetty.Transport.Libuv.Native
             return NativeMethods.uv_backend_timeout(_handle);
         }
 
-        public int ActiveHandleCount() => 
-            _handle != IntPtr.Zero
-            ? (int)((uv_loop_t*)_handle)->active_handles 
-            : 0;
+        public int ActiveHandleCount()
+        {
+            if (_handle != IntPtr.Zero)
+            {
+                return (int)((uv_loop_t*)_handle)->active_handles;
+            }
+            return 0;
+        }
 
         public int Run(uv_run_mode mode)
         {
@@ -91,7 +120,7 @@ namespace DotNetty.Transport.Libuv.Native
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(InlineMethod.AggressiveOptimization)]
         void Validate()
         {
             if (_handle == IntPtr.Zero)
@@ -138,17 +167,25 @@ namespace DotNetty.Transport.Libuv.Native
             //https://github.com/libuv/libuv/blob/v1.x/test/task.h#L190
 
             int count = 0;
+#if DEBUG
             var debugEnabled = Logger.DebugEnabled;
+#endif
             while (true)
             {
+#if DEBUG
                 if (debugEnabled) Logger.LoopWalkingHandles(handle, count);
+#endif
                 NativeMethods.uv_walk(handle, WalkCallback, handle);
 
+#if DEBUG
                 if (debugEnabled) Logger.LoopRunningDefaultToCallCloseCallbacks(handle, count);
+#endif
                 _ = NativeMethods.uv_run(handle, uv_run_mode.UV_RUN_DEFAULT);
 
                 int result = NativeMethods.uv_loop_close(handle);
+#if DEBUG
                 if (debugEnabled) Logger.LoopCloseResult(handle, result, count);
+#endif
                 if (0u >= (uint)result)
                 {
                     break;
@@ -193,7 +230,9 @@ namespace DotNetty.Transport.Libuv.Native
                 // All handles must implement IDisposable
                 var target = NativeHandle.GetTarget<IDisposable>(handle);
                 target?.Dispose();
+#if DEBUG
                 if (Logger.DebugEnabled) Logger.LoopWalkCallbackDisposed(handle, loopHandle, target);
+#endif
             }
             catch (Exception exception)
             {

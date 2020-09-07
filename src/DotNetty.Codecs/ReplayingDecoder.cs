@@ -1,5 +1,27 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) Microsoft. All rights reserved.
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com)
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Codecs
 {
@@ -9,6 +31,7 @@ namespace DotNetty.Codecs
     using DotNetty.Common.Utilities;
     using DotNetty.Transport.Channels;
 
+    /// <inheritdoc cref="ReplayingDecoder{T}" />
     public abstract class ReplayingDecoder : ReplayingDecoder<ReplayingDecoder.Void>
     {
         public enum Void
@@ -381,7 +404,7 @@ namespace DotNetty.Codecs
                         //
                         // See:
                         // - https://github.com/netty/netty/issues/4635
-                        if (context.Removed) { break; }
+                        if (context.IsRemoved) { break; }
                         outSize = 0;
                     }
 
@@ -395,7 +418,7 @@ namespace DotNetty.Codecs
                         // If it was removed, it is not safe to continue to operate on the buffer.
                         //
                         // See https://github.com/netty/netty/issues/1664
-                        if (context.Removed) { break; }
+                        if (context.IsRemoved) { break; }
 
                         if (_replayRequested)
                         {
@@ -435,7 +458,7 @@ namespace DotNetty.Codecs
                         // If it was removed, it is not safe to continue to operate on the buffer.
                         //
                         // See https://github.com/netty/netty/issues/1664
-                        if (context.Removed) { break; }
+                        if (context.IsRemoved) { break; }
 
                         // Return to the checkpoint (or oldPosition) and retry.
                         int restorationPoint = _checkpoint;

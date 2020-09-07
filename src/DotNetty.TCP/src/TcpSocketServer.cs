@@ -73,20 +73,41 @@ namespace DotNetty.TCP
                   .ChildOption(ChannelOption.TcpNodelay, true)
                   .ChildOption(ChannelOption.SoSndbuf, 2048)
                   .ChildOption(ChannelOption.SoRcvbuf, 8096)
-                  .Handler(new LoggingHandler())
-                  .ChildHandler(new ActionChannelInitializer<ISocketChannel>(channel =>
-                  {
-                      IChannelPipeline pipeline = channel.Pipeline;
-                      if (tlsCertificate != null)
-                      {
-                          pipeline.AddLast("tls", TlsHandler.Server(tlsCertificate));
-                      }
+                  .Handler(new LoggingHandler());
+//#if !CLIENT
+//                if (channelConfig.UseLibuv)
+//                {
+                    bootstrap.ChildHandler(new ActionChannelInitializer<IChannel>(channel =>
+                    {
+                        IChannelPipeline pipeline = channel.Pipeline;
+                        if (tlsCertificate != null)
+                        {
+                            pipeline.AddLast("tls", TlsHandler.Server(tlsCertificate));
+                        }
 
-                      pipeline.AddLast(new LoggingHandler("SRV-CONN"));
-                      pipeline.AddLast("framing-enc", new LengthFieldPrepender(2));
-                      pipeline.AddLast("framing-dec", new LengthFieldBasedFrameDecoder(ushort.MaxValue, 0, 2, 0, 2));
-                      pipeline.AddLast("tcp-handler", new TcpChannelHandler(listener));
-                  }));
+                        pipeline.AddLast(new LoggingHandler("SRV-CONN"));
+                        pipeline.AddLast("framing-enc", new LengthFieldPrepender(2));
+                        pipeline.AddLast("framing-dec", new LengthFieldBasedFrameDecoder(ushort.MaxValue, 0, 2, 0, 2));
+                        pipeline.AddLast("tcp-handler", new TcpChannelHandler(listener));
+                    }));
+//                }
+//                else
+//#endif
+//                {
+//                    bootstrap.ChildHandler(new ActionChannelInitializer<ISocketChannel>(channel =>
+//                    {
+//                        IChannelPipeline pipeline = channel.Pipeline;
+//                        if (tlsCertificate != null)
+//                        {
+//                            pipeline.AddLast("tls", TlsHandler.Server(tlsCertificate));
+//                        }
+
+//                        pipeline.AddLast(new LoggingHandler("SRV-CONN"));
+//                        pipeline.AddLast("framing-enc", new LengthFieldPrepender(2));
+//                        pipeline.AddLast("framing-dec", new LengthFieldBasedFrameDecoder(ushort.MaxValue, 0, 2, 0, 2));
+//                        pipeline.AddLast("tcp-handler", new TcpChannelHandler(listener));
+//                    }));
+//                }
  
                 var task = Task<IChannel>.Run(() => bootstrap.BindAsync(channelConfig.Address));
                 task.Wait();

@@ -1,5 +1,24 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) Microsoft. All rights reserved.
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com)
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Codecs.Compression
 {
@@ -121,7 +140,7 @@ namespace DotNetty.Codecs.Compression
             else
             {
                 var p = ctx.NewPromise();
-                executor.Execute(InvokeFinishEncode, this, Tuple.Create(p, promise));
+                executor.Execute((e, p) => InvokeFinishEncode(e, p), this, (p, promise));
                 return p.Task;
             }
         }
@@ -129,7 +148,7 @@ namespace DotNetty.Codecs.Compression
         static void InvokeFinishEncode(object e, object p)
         {
             var self = (JZlibEncoder)e;
-            var promise = (Tuple<IPromise, IPromise>)p;
+            var promise = ((IPromise, IPromise))p;
             var f = self.FinishEncode(self.CurrentContext(), promise.Item1);
             f.LinkOutcome(promise.Item2);
         }
@@ -219,7 +238,7 @@ namespace DotNetty.Codecs.Compression
         public override void Close(IChannelHandlerContext context, IPromise promise)
         {
             var completion = this.FinishEncode(context, context.NewPromise());
-            _ = completion.ContinueWith(CloseOnCompleteAction, Tuple.Create(context, promise), TaskContinuationOptions.ExecuteSynchronously);
+            _ = completion.ContinueWith(CloseOnCompleteAction, (context, promise), TaskContinuationOptions.ExecuteSynchronously);
             if (!completion.IsCompleted)
             {
                 _ = ctx.Executor.Schedule(CloseHandlerContextAction, context, promise, TimeSpan.FromSeconds(10));
@@ -276,10 +295,10 @@ namespace DotNetty.Codecs.Compression
             return context.WriteAndFlushAsync(footer, promise);
         }
 
-        static readonly Action<Task, object> CloseOnCompleteAction = CloseOnComplete;
+        static readonly Action<Task, object> CloseOnCompleteAction = (t, s) => CloseOnComplete(t, s);
         static void CloseOnComplete(Task t, object s)
         {
-            var wrapped = (Tuple<IChannelHandlerContext, IPromise>)s;
+            var wrapped = ((IChannelHandlerContext, IPromise))s;
             if (t.IsFaulted)
             {
                 _ = wrapped.Item1.FireExceptionCaught(t.Exception.InnerException);
@@ -287,7 +306,7 @@ namespace DotNetty.Codecs.Compression
             _ = wrapped.Item1.CloseAsync(wrapped.Item2);
         }
 
-        static readonly Action<object, object> CloseHandlerContextAction = CloseHandlerContext;
+        static readonly Action<object, object> CloseHandlerContextAction = (c, p) => CloseHandlerContext(c, p);
         static void CloseHandlerContext(object ctx, object p) => ((IChannelHandlerContext)ctx).CloseAsync((IPromise)p);
 
         public override void HandlerAdded(IChannelHandlerContext context) => Interlocked.Exchange(ref this.ctx, context);

@@ -1,5 +1,30 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) The DotNetty Project (Microsoft). All rights reserved.
+ *
+ *   https://github.com/azure/dotnetty
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Transport.Channels.Sockets
 {
@@ -11,12 +36,10 @@ namespace DotNetty.Transport.Channels.Sockets
     {
         public sealed class TcpServerSocketChannelUnsafe : AbstractSocketUnsafe
         {
-            public TcpServerSocketChannelUnsafe() //TcpServerSocketChannel channel)
-                : base() //channel)
+            public TcpServerSocketChannelUnsafe()
+                : base()
             {
             }
-
-            //new TcpServerSocketChannel Channel => (TcpServerSocketChannel)this.channel;
 
             public override void FinishRead(SocketChannelAsyncOperation<TServerChannel, TcpServerSocketChannelUnsafe> operation)
             {
@@ -52,7 +75,7 @@ namespace DotNetty.Transport.Channels.Sockets
                         _ = pipeline.FireChannelRead(message);
                         allocHandle.IncMessagesRead(1);
 
-                        if (!config.AutoRead && !ch.ReadPending)
+                        if (!config.IsAutoRead && !ch.ReadPending)
                         {
                             // ChannelConfig.setAutoRead(false) was called in the meantime.
                             // Completed Accept has to be processed though.
@@ -105,7 +128,7 @@ namespace DotNetty.Transport.Channels.Sockets
                         _ = pipeline.FireExceptionCaught(exception);
                     }
 
-                    if (ch.Open)
+                    if (ch.IsOpen)
                     {
                         if (closed) { Close(VoidPromise()); }
                         else if (aborted) { ch.CloseSafe(); }
@@ -114,7 +137,7 @@ namespace DotNetty.Transport.Channels.Sockets
                 finally
                 {
                     // Check if there is a readPending which was not processed yet.
-                    if (!closed && (ch.ReadPending || config.AutoRead))
+                    if (!closed && (ch.ReadPending || config.IsAutoRead))
                     {
                         ch.DoBeginRead();
                     }
@@ -125,7 +148,7 @@ namespace DotNetty.Transport.Channels.Sockets
             {
                 try
                 {
-                    return _channel._channelFactory.CreateChannel(_channel, socket); // ## 苦竹 修改 ## return new TcpSocketChannel(this.channel, socket, true);
+                    return _channel._channelFactory.CreateChannel(_channel, socket);
                 }
                 catch (Exception ex)
                 {

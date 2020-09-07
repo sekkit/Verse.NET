@@ -1,5 +1,27 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) Microsoft. All rights reserved.
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com)
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Codecs.Http.WebSockets
 {
@@ -17,10 +39,10 @@ namespace DotNetty.Codecs.Http.WebSockets
     /// </summary>
     public class WebSocket00FrameDecoder : ReplayingDecoder, IWebSocketFrameDecoder
     {
-        const int DefaultMaxFrameSize = 16384;
+        private const int DefaultMaxFrameSize = 16384;
 
-        readonly long maxFrameSize;
-        bool receivedClosingHandshake;
+        private readonly long _maxFrameSize;
+        private bool _receivedClosingHandshake;
 
         public WebSocket00FrameDecoder() : this(DefaultMaxFrameSize)
         {
@@ -33,21 +55,21 @@ namespace DotNetty.Codecs.Http.WebSockets
         /// <param name="maxFrameSize">the maximum frame size to decode</param>
         public WebSocket00FrameDecoder(int maxFrameSize) : base()
         {
-            this.maxFrameSize = maxFrameSize;
+            _maxFrameSize = maxFrameSize;
         }
 
         public WebSocket00FrameDecoder(WebSocketDecoderConfig decoderConfig) : base()
         {
             if (decoderConfig is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.decoderConfig); }
-            this.maxFrameSize = decoderConfig.MaxFramePayloadLength;
+            _maxFrameSize = decoderConfig.MaxFramePayloadLength;
         }
 
         protected override void Decode(IChannelHandlerContext context, IByteBuffer input, List<object> output)
         {
             // Discard all data received if closing handshake was received before.
-            if (this.receivedClosingHandshake)
+            if (_receivedClosingHandshake)
             {
-                _ = input.SkipBytes(this.ActualReadableBytes);
+                _ = input.SkipBytes(ActualReadableBytes);
                 return;
             }
 
@@ -57,12 +79,12 @@ namespace DotNetty.Codecs.Http.WebSockets
             if ((type & 0x80) == 0x80)
             {
                 // If the MSB on type is set, decode the frame length
-                frame = this.DecodeBinaryFrame(context, type, input);
+                frame = DecodeBinaryFrame(context, type, input);
             }
             else
             {
                 // Decode a 0xff terminated UTF-8 string
-                frame = this.DecodeTextFrame(context, input);
+                frame = DecodeTextFrame(context, input);
             }
 
             if (frame is object)
@@ -81,7 +103,7 @@ namespace DotNetty.Codecs.Http.WebSockets
                 b = buffer.ReadByte();
                 frameSize <<= 7;
                 frameSize |= (uint)(b & 0x7f);
-                if (frameSize > this.maxFrameSize)
+                if (frameSize > _maxFrameSize)
                 {
                     ThrowHelper.ThrowTooLongFrameException_WebSocket00FrameDecoder();
                 }
@@ -95,7 +117,7 @@ namespace DotNetty.Codecs.Http.WebSockets
 
             if (type == 0xFF && 0ul >= (ulong)frameSize)
             {
-                this.receivedClosingHandshake = true;
+                _receivedClosingHandshake = true;
                 return new CloseWebSocketFrame(true, 0, ctx.Allocator.Buffer(0));
             }
             IByteBuffer payload = ReadBytes(ctx.Allocator, buffer, (int)frameSize);
@@ -105,12 +127,12 @@ namespace DotNetty.Codecs.Http.WebSockets
         WebSocketFrame DecodeTextFrame(IChannelHandlerContext ctx, IByteBuffer buffer)
         {
             int ridx = buffer.ReaderIndex;
-            int rbytes = this.ActualReadableBytes;
+            int rbytes = ActualReadableBytes;
             int delimPos = buffer.IndexOf(ridx, ridx + rbytes, 0xFF);
             if ((uint)delimPos > SharedConstants.TooBigOrNegative) // == -1
             {
                 // Frame delimiter (0xFF) not found
-                if (rbytes > this.maxFrameSize)
+                if (rbytes > _maxFrameSize)
                 {
                     // Frame length exceeded the maximum
                     ThrowHelper.ThrowTooLongFrameException_WebSocket00FrameDecoder();
@@ -123,7 +145,7 @@ namespace DotNetty.Codecs.Http.WebSockets
             }
 
             int frameSize = delimPos - ridx;
-            if (frameSize > this.maxFrameSize)
+            if (frameSize > _maxFrameSize)
             {
                 ThrowHelper.ThrowTooLongFrameException_WebSocket00FrameDecoder();
             }

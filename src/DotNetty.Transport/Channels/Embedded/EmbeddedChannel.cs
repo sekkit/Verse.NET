@@ -1,5 +1,30 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) The DotNetty Project (Microsoft). All rights reserved.
+ *
+ *   https://github.com/azure/dotnetty
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Transport.Channels.Embedded
 {
@@ -47,8 +72,8 @@ namespace DotNetty.Transport.Channels.Embedded
 
         private readonly EmbeddedEventLoop _loop = new EmbeddedEventLoop();
 
-        private readonly QueueX<object> _inboundMessages = new QueueX<object>();
-        private readonly QueueX<object> _outboundMessages = new QueueX<object>();
+        private readonly Deque<object> _inboundMessages = new Deque<object>();
+        private readonly Deque<object> _outboundMessages = new Deque<object>();
         private Exception _lastException;
         private State _state;
 
@@ -141,8 +166,9 @@ namespace DotNetty.Transport.Channels.Embedded
             p.AddLast(new ActionChannelInitializer<IChannel>(channel =>
             {
                 IChannelPipeline pipeline = channel.Pipeline;
-                foreach (IChannelHandler h in handlers)
+                for (int i = 0; i < handlers.Length; i++)
                 {
+                    IChannelHandler h = handlers[i];
                     if (h is null) { break; }
                     pipeline.AddLast(h);
                 }
@@ -176,53 +202,63 @@ namespace DotNetty.Transport.Channels.Embedded
         ///     Returns the <see cref="Queue{T}" /> which holds all of the <see cref="object" />s that
         ///     were received by this <see cref="IChannel" />.
         /// </summary>
-        public QueueX<object> InboundMessages => _inboundMessages;
+        public Deque<object> InboundMessages => _inboundMessages;
 
         /// <summary>
         ///     Returns the <see cref="Queue{T}" /> which holds all of the <see cref="object" />s that
         ///     were written by this <see cref="IChannel" />.
         /// </summary>
-        public QueueX<object> OutboundMessages => _outboundMessages;
+        public Deque<object> OutboundMessages => _outboundMessages;
 
         /// <summary>
         /// Return received data from this <see cref="IChannel"/>.
         /// </summary>
-        public T ReadInbound<T>()
+        [MethodImpl(InlineMethod.AggressiveOptimization)]
+        public T ReadInbound<T>() => (T)ReadInbound();
+
+        /// <summary>
+        /// Return received data from this <see cref="IChannel"/>.
+        /// </summary>
+        public object ReadInbound()
         {
 #if DEBUG
-            var message = (T)Poll(_inboundMessages);
+            var message = Poll(_inboundMessages);
             if (message is object)
             {
                 _ = ReferenceCountUtil.Touch(message, "Caller of readInbound() will handle the message from this point");
             }
             return message;
 #else
-            return (T)Poll(_inboundMessages);
+            return Poll(_inboundMessages);
 #endif
         }
 
         /// <summary>
         /// Read data from the outbound. This may return <c>null</c> if nothing is readable.
         /// </summary>
-        public T ReadOutbound<T>()
+        [MethodImpl(InlineMethod.AggressiveOptimization)]
+        public T ReadOutbound<T>() => (T)ReadOutbound();
+
+        /// <summary>
+        /// Read data from the outbound. This may return <c>null</c> if nothing is readable.
+        /// </summary>
+        public object ReadOutbound()
         {
 #if DEBUG
-            var message = (T)Poll(_outboundMessages);
+            var message = Poll(_outboundMessages);
             if (message is object)
             {
                 _ = ReferenceCountUtil.Touch(message, "Caller of readOutbound() will handle the message from this point.");
             }
             return message;
 #else
-            return (T)Poll(_outboundMessages);
+            return Poll(_outboundMessages);
 #endif
         }
 
-        protected override EndPoint LocalAddressInternal => Active ? LOCAL_ADDRESS : null;
+        protected override EndPoint LocalAddressInternal => IsActive ? LOCAL_ADDRESS : null;
 
-        protected override EndPoint RemoteAddressInternal => Active ? REMOTE_ADDRESS : null;
-
-        //protected override IChannelUnsafe NewUnsafe() => new EmbeddedUnsafe(this); ## 苦竹 屏蔽 ##
+        protected override EndPoint RemoteAddressInternal => IsActive ? REMOTE_ADDRESS : null;
 
         protected override bool IsCompatible(IEventLoop eventLoop) => eventLoop is EmbeddedEventLoop;
 
@@ -261,9 +297,11 @@ namespace DotNetty.Transport.Channels.Embedded
             }
         }
 
-        public override bool Open => _state != State.Closed;
+        public override bool IsOpen => _state != State.Closed;
 
-        public override bool Active => _state == State.Active;
+        public override bool IsActive => _state == State.Active;
+
+        public override bool Active => IsActive;
 
         /// <summary>
         ///     Run all tasks (which also includes scheduled tasks) that are pending in the <see cref="IEventLoop" />
@@ -294,10 +332,10 @@ namespace DotNetty.Transport.Channels.Embedded
         ///     Run all pending scheduled tasks in the <see cref="IEventLoop" /> for this <see cref="IChannel" />.
         /// </summary>
         /// <returns>
-        ///     The <see cref="PreciseTimeSpan" /> when the next scheduled task is ready to run. If no other task is
-        ///     scheduled then it will return <see cref="PreciseTimeSpan.Zero" />.
+        ///     The nanoseconds when the next scheduled task is ready to run. If no other task is
+        ///     scheduled then it will return <see cref="PreciseTime.MinusOne" />.
         /// </returns>
-        public PreciseTimeSpan RunScheduledPendingTasks()
+        public long RunScheduledPendingTasks()
         {
             try
             {
@@ -382,8 +420,9 @@ namespace DotNetty.Transport.Channels.Embedded
 
             try
             {
-                foreach (object m in msgs)
+                for (int i = 0; i < msgs.Length; i++)
                 {
+                    object m = msgs[i];
                     if (m is null)
                     {
                         break;
@@ -404,7 +443,7 @@ namespace DotNetty.Transport.Channels.Embedded
                     else
                     {
                         // The write may be delayed to run later by RunPendingTasks()
-                        future.ContinueWith(t => RecordException(t));
+                        future.ContinueWith(t => RecordException(t), TaskContinuationOptions.ExecuteSynchronously);
                     }
                 }
 
@@ -417,6 +456,7 @@ namespace DotNetty.Transport.Channels.Embedded
             }
         }
 
+        [MethodImpl(InlineMethod.AggressiveOptimization)]
         void RecordException(Task future)
         {
             if (future.IsCanceled || future.IsFaulted)
@@ -425,7 +465,7 @@ namespace DotNetty.Transport.Channels.Embedded
             }
         }
 
-        [MethodImpl(InlineMethod.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         void RecordException(Exception cause)
         {
             if (_lastException is null)
@@ -525,11 +565,11 @@ namespace DotNetty.Transport.Channels.Embedded
         /// <returns><c>true</c> if any were in the outbound buffer, otherwise <c>false</c>.</returns>
         public bool ReleaseOutbound() => ReleaseAll(_outboundMessages);
 
-        static bool ReleaseAll(QueueX<object> queue)
+        static bool ReleaseAll(Deque<object> queue)
         {
             if (queue.IsEmpty) { return false; }
 
-            while (queue.TryDequeue(out var msg))
+            while (queue.TryRemoveFirst(out var msg))
             {
                 _ = ReferenceCountUtil.Release(msg);
             }
@@ -607,7 +647,7 @@ namespace DotNetty.Transport.Channels.Embedded
         [MethodImpl(InlineMethod.AggressiveInlining)]
         bool CheckOpen(bool recordException)
         {
-            if (!Open)
+            if (!IsOpen)
             {
                 if (recordException)
                 {
@@ -630,25 +670,24 @@ namespace DotNetty.Transport.Channels.Embedded
             }
         }
 
-        [MethodImpl(InlineMethod.AggressiveInlining)]
-        static object Poll(QueueX<object> queue)
+        [MethodImpl(InlineMethod.AggressiveOptimization)]
+        static object Poll(Deque<object> queue)
         {
-            _ = queue.TryDequeue(out var result);
-            return result;
+            return queue.TryRemoveFirst(out var result) ? result : null;
         }
 
         /// <summary>Called for each outbound message.</summary>
         /// <param name="msg"></param>
         protected virtual void HandleOutboundMessage(object msg)
         {
-            _outboundMessages.Enqueue(msg);
+            _outboundMessages.AddLast​(msg);
         }
 
         /// <summary>Called for each inbound message.</summary>
         /// <param name="msg"></param>
         protected virtual void HandleInboundMessage(object msg)
         {
-            _inboundMessages.Enqueue(msg);
+            _inboundMessages.AddLast​(msg);
         }
 
         protected override WrappingEmbeddedUnsafe NewUnsafe()

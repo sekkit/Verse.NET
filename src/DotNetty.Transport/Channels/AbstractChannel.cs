@@ -1,5 +1,30 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) The DotNetty Project (Microsoft). All rights reserved.
+ *
+ *   https://github.com/azure/dotnetty
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Transport.Channels
 {
@@ -33,7 +58,7 @@ namespace DotNetty.Transport.Channels
 
         private EndPoint v_localAddress;
         private EndPoint v_remoteAddress;
-        private IEventLoop eventLoop;
+        private IEventLoop v_eventLoop;
         private int v_registered;
         private int v_closeInitiated;
 
@@ -116,7 +141,7 @@ namespace DotNetty.Transport.Channels
         {
             get
             {
-                IEventLoop eventLoop = Volatile.Read(ref this.eventLoop);
+                IEventLoop eventLoop = Volatile.Read(ref v_eventLoop);
                 if (eventLoop is null)
                 {
                     ThrowHelper.ThrowInvalidOperationException_ChannelNotReg();
@@ -125,9 +150,11 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        public abstract bool Open { get; }
+        public abstract bool IsOpen { get; }
 
-        public abstract bool Active { get; }
+        public abstract bool IsActive { get; }
+
+        public virtual bool Active => IsActive;
 
         public abstract ChannelMetadata Metadata { get; }
 
@@ -190,7 +217,7 @@ namespace DotNetty.Transport.Channels
             }
         }
 
-        public bool Registered => SharedConstants.False < (uint)Volatile.Read(ref v_registered);
+        public bool IsRegistered => SharedConstants.False < (uint)Volatile.Read(ref v_registered);
 
         /// <summary>
         /// Returns a new <see cref="DefaultChannelId"/> instance. Subclasses may override this method to assign custom
@@ -284,7 +311,7 @@ namespace DotNetty.Transport.Channels
         /// </summary>
         public override string ToString()
         {
-            bool active = Active;
+            bool active = IsActive;
             if (_strValActive == active && _strVal is object)
             {
                 return _strVal;

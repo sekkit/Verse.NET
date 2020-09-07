@@ -1,9 +1,30 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) Microsoft. All rights reserved.
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com)
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Codecs.Protobuf
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Runtime.CompilerServices;
     using DotNetty.Buffers;
     using DotNetty.Transport.Channels;
 
@@ -31,30 +52,31 @@ namespace DotNetty.Codecs.Protobuf
             int preIndex = input.ReaderIndex;
             int length = ReadRawVarint32(input);
 
-            if (preIndex == input.ReaderIndex)
+            if (0u >= (uint)(preIndex - input.ReaderIndex))
             {
                 return;
             }
 
-            if (length < 0)
+            uint uLen = (uint)length;
+            if (uLen > SharedConstants.TooBigOrNegative)
             {
-                throw new CorruptedFrameException($"Negative length: {length}");
+                ThrowCorruptedFrameException_Negative_length(length);
             }
 
-            if (input.ReadableBytes < length)
-            {
-                _ = input.ResetReaderIndex();
-            }
-            else
+            if ((uint)input.ReadableBytes >= uLen)
             {
                 IByteBuffer byteBuffer = input.ReadSlice(length);
                 output.Add(byteBuffer.Retain());
             }
+            else
+            {
+                _ = input.ResetReaderIndex();
+            }
         }
 
-        static int ReadRawVarint32(IByteBuffer buffer)
+        private static int ReadRawVarint32(IByteBuffer buffer)
         {
-            if (buffer is null) { CThrowHelper.ThrowArgumentNullException(CExceptionArgument.buffer); }
+            Debug.Assert(buffer is object);
 
             if (!buffer.IsReadable())
             {
@@ -63,7 +85,7 @@ namespace DotNetty.Codecs.Protobuf
 
             _ = buffer.MarkReaderIndex();
             byte rawByte = buffer.ReadByte();
-            if (rawByte < 128)
+            if (rawByte < 128u)
             {
                 return rawByte;
             }
@@ -76,7 +98,7 @@ namespace DotNetty.Codecs.Protobuf
             }
 
             rawByte = buffer.ReadByte();
-            if (rawByte < 128)
+            if (rawByte < 128u)
             {
                 result |= rawByte << 7;
             }
@@ -90,7 +112,7 @@ namespace DotNetty.Codecs.Protobuf
                 }
 
                 rawByte = buffer.ReadByte();
-                if (rawByte < 128)
+                if (rawByte < 128u)
                 {
                     result |= rawByte << 14;
                 }
@@ -104,7 +126,7 @@ namespace DotNetty.Codecs.Protobuf
                     }
 
                     rawByte = buffer.ReadByte();
-                    if (rawByte < 128)
+                    if (rawByte < 128u)
                     {
                         result |= rawByte << 21;
                     }
@@ -120,15 +142,35 @@ namespace DotNetty.Codecs.Protobuf
                         rawByte = buffer.ReadByte();
                         result |= rawByte << 28;
 
-                        if (rawByte >= 128)
+                        if (rawByte >= 128u)
                         {
-                            throw new CorruptedFrameException("Malformed varint.");
+                            ThrowCorruptedFrameException_Malformed_varint();
                         }
                     }
                 }
             }
 
             return result;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void ThrowCorruptedFrameException_Malformed_varint()
+        {
+            throw GetException();
+            static CorruptedFrameException GetException()
+            {
+                return new CorruptedFrameException("Malformed varint.");
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void ThrowCorruptedFrameException_Negative_length(int length)
+        {
+            throw GetException();
+            CorruptedFrameException GetException()
+            {
+                return new CorruptedFrameException($"Negative length: {length}");
+            }
         }
     }
 }

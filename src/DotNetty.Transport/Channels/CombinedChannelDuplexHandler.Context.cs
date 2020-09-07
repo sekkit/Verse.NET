@@ -1,5 +1,24 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Transport.Channels
 {
@@ -14,7 +33,7 @@ namespace DotNetty.Transport.Channels
     {
         sealed class DelegatingChannelHandlerContext : IChannelHandlerContext
         {
-            private static readonly Action<object> s_removeAction = OnRemove;
+            private static readonly Action<object> s_removeAction = o => OnRemove(o);
 
             private readonly IChannelHandlerContext _ctx;
             private readonly IChannelHandler _handler;
@@ -42,7 +61,7 @@ namespace DotNetty.Transport.Channels
 
             public IChannelHandler Handler => _ctx.Handler;
 
-            public bool Removed => _removed || _ctx.Removed;
+            public bool IsRemoved => _removed || _ctx.IsRemoved;
 
             public IChannelHandlerContext FireChannelRegistered()
             {

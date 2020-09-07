@@ -25,19 +25,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'"> 
     <DefineConstants>TRACE;NET_3_5_GREATER;SIGNED;NETSTANDARD;NET_4_0_GREATER;NET_4_5_GREATER;NET_4_6_GREATER;UNITY_5_3_OR_NEWER;CLIENT;</DefineConstants>
   </PropertyGroup> 
-    
-    <PropertyGroup Condition=" '$(OS)' != 'Windows_NT' ">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <CustomCommands>
-      <CustomCommands>
-        <Command>
-          <type>AfterBuild</type>
-          <command>cp -rf ${TargetPath} ${SolutionDir}/Unity/Assets/Plugins/Fenix/;cp -rf ${TargetPath} ${SolutionDir}/Libs/Unity/</command>
-          <externalConsole>True</externalConsole>
-        </Command>
-      </CustomCommands>
-    </CustomCommands>
-  </PropertyGroup> 
 
     <ItemGroup>
       <Reference Include="DotNetty.Buffers">
@@ -61,7 +48,7 @@
     </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(OS)' == 'Windows_NT' ">
-    <Exec Command="xcopy /K /D /H /Y $(TargetPath) $(SolutionDir)Unity\Assets\Plugins\Fenix\&#xD;&#xA;xcopy /K /D /H /Y $(TargetPath) $(SolutionDir)Libs\Unity\" />
+    <Exec Command="xcopy /K /D /H /Y $(TargetPath) $(SolutionDir)Unity\trunk\oasis-anchang\Assets\Plugins\Fenix\&#xD;&#xA;xcopy /K /D /H /Y $(TargetPath) $(SolutionDir)Libs\Unity\" />
   </Target>
 
   <!--<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(OS)' == 'Darwin' ">

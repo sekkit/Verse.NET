@@ -1,5 +1,30 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) The DotNetty Project (Microsoft). All rights reserved.
+ *
+ *   https://github.com/azure/dotnetty
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Handlers.Timeout
 {
@@ -95,7 +120,7 @@ namespace DotNetty.Handlers.Timeout
     public partial class IdleStateHandler : ChannelDuplexHandler
     {
         static readonly TimeSpan MinTimeout = TimeSpan.FromMilliseconds(1);
-        static readonly Action<Task, object> writeListener = WrappingWriteListener;
+        static readonly Action<Task, object> writeListener = (t, s) => WrappingWriteListener(t, s);
 
         readonly bool _observeOutput;
         readonly TimeSpan _readerIdleTime;
@@ -122,9 +147,9 @@ namespace DotNetty.Handlers.Timeout
         long _lastPendingWriteBytes;
         long _lastFlushProgress;
 
-        static readonly Action<object, object> ReadTimeoutAction = WrappingHandleReadTimeout; // WrapperTimeoutHandler(HandleReadTimeout);
-        static readonly Action<object, object> WriteTimeoutAction = WrappingHandleWriteTimeout; // WrapperTimeoutHandler(HandleWriteTimeout);
-        static readonly Action<object, object> AllTimeoutAction = WrappingHandleAllTimeout; // WrapperTimeoutHandler(HandleAllTimeout);
+        static readonly Action<object, object> ReadTimeoutAction = (h, c) => WrappingHandleReadTimeout(h, c); // WrapperTimeoutHandler(HandleReadTimeout);
+        static readonly Action<object, object> WriteTimeoutAction = (h, c) => WrappingHandleWriteTimeout(h, c); // WrapperTimeoutHandler(HandleWriteTimeout);
+        static readonly Action<object, object> AllTimeoutAction = (h, c) => WrappingHandleAllTimeout(h, c); // WrapperTimeoutHandler(HandleAllTimeout);
 
         /// <summary>
         /// Initializes a new instance firing <see cref="IdleStateEvent"/>s.
@@ -148,8 +173,8 @@ namespace DotNetty.Handlers.Timeout
             int readerIdleTimeSeconds,
             int writerIdleTimeSeconds,
             int allIdleTimeSeconds)
-            : this(TimeSpan.FromSeconds(readerIdleTimeSeconds), 
-                   TimeSpan.FromSeconds(writerIdleTimeSeconds), 
+            : this(TimeSpan.FromSeconds(readerIdleTimeSeconds),
+                   TimeSpan.FromSeconds(writerIdleTimeSeconds),
                    TimeSpan.FromSeconds(allIdleTimeSeconds))
         {
         }
@@ -208,7 +233,7 @@ namespace DotNetty.Handlers.Timeout
         /// <returns>The reader idle time in millis.</returns>
         public TimeSpan ReaderIdleTime
         {
-            get{ return _readerIdleTime; }
+            get { return _readerIdleTime; }
         }
 
         /// <summary>
@@ -217,7 +242,7 @@ namespace DotNetty.Handlers.Timeout
         /// <returns>The writer idle time in millis.</returns>
         public TimeSpan WriterIdleTime
         {
-            get{ return _writerIdleTime; }
+            get { return _writerIdleTime; }
         }
 
         /// <summary>
@@ -226,12 +251,12 @@ namespace DotNetty.Handlers.Timeout
         /// <returns>The all idle time in millis.</returns>
         public TimeSpan AllIdleTime
         {
-            get{ return _allIdleTime; }
+            get { return _allIdleTime; }
         }
 
         public override void HandlerAdded(IChannelHandlerContext context)
         {
-            if (context.Channel.Active && context.Channel.Registered)
+            if (context.Channel.IsActive && context.Channel.IsRegistered)
             {
                 // channelActive() event has been fired already, which means this.channelActive() will
                 // not be invoked. We have to initialize here instead.
@@ -252,7 +277,7 @@ namespace DotNetty.Handlers.Timeout
         public override void ChannelRegistered(IChannelHandlerContext context)
         {
             // Initialize early if channel is active already.
-            if (context.Channel.Active)
+            if (context.Channel.IsActive)
             {
                 Initialize(context);
             }
@@ -327,19 +352,19 @@ namespace DotNetty.Handlers.Timeout
             _lastReadTime = _lastWriteTime = Ticks();
             if (_readerIdleTime.Ticks > 0)
             {
-                _readerIdleTimeout = Schedule(context, ReadTimeoutAction, this, context, 
+                _readerIdleTimeout = Schedule(context, ReadTimeoutAction, this, context,
                     _readerIdleTime);
             }
 
             if (_writerIdleTime.Ticks > 0)
             {
-                _writerIdleTimeout = Schedule(context, WriteTimeoutAction, this, context, 
+                _writerIdleTimeout = Schedule(context, WriteTimeoutAction, this, context,
                     _writerIdleTime);
             }
 
             if (_allIdleTime.Ticks > 0)
             {
-                _allIdleTimeout = Schedule(context, AllTimeoutAction, this, context, 
+                _allIdleTimeout = Schedule(context, AllTimeoutAction, this, context,
                     _allIdleTime);
             }
         }
@@ -433,7 +458,7 @@ namespace DotNetty.Handlers.Timeout
                 if (buf is object)
                 {
                     _lastMessageHashCode = RuntimeHelpers.GetHashCode(buf.Current);
-                    _lastPendingWriteBytes = buf.TotalPendingWriteBytes();
+                    _lastPendingWriteBytes = buf.TotalPendingWriteBytes;
                     _lastFlushProgress = buf.CurrentProgress();
                 }
             }
@@ -475,7 +500,7 @@ namespace DotNetty.Handlers.Timeout
                 if (buf is object)
                 {
                     int messageHashCode = RuntimeHelpers.GetHashCode(buf.Current);
-                    long pendingWriteBytes = buf.TotalPendingWriteBytes();
+                    long pendingWriteBytes = buf.TotalPendingWriteBytes;
 
                     if (messageHashCode != _lastMessageHashCode || pendingWriteBytes != _lastPendingWriteBytes)
                     {
@@ -532,8 +557,8 @@ namespace DotNetty.Handlers.Timeout
             if (nextDelay.Ticks <= 0)
             {
                 // Reader is idle - set a new timeout and notify the callback.
-                self._readerIdleTimeout = 
-                    self.Schedule(context, ReadTimeoutAction, self, context, 
+                self._readerIdleTimeout =
+                    self.Schedule(context, ReadTimeoutAction, self, context,
                         self._readerIdleTime);
 
                 bool first = self._firstReaderIdleEvent;
@@ -552,7 +577,7 @@ namespace DotNetty.Handlers.Timeout
             else
             {
                 // Read occurred before the timeout - set a new timeout with shorter delay.
-                self._readerIdleTimeout = self.Schedule(context, ReadTimeoutAction, self, context, 
+                self._readerIdleTimeout = self.Schedule(context, ReadTimeoutAction, self, context,
                     nextDelay);
             }
         }
@@ -592,7 +617,7 @@ namespace DotNetty.Handlers.Timeout
                 self._writerIdleTimeout = self.Schedule(context, WriteTimeoutAction, self, context, nextDelay);
             }
         }
-           
+
         static void HandleAllTimeout(IdleStateHandler self, IChannelHandlerContext context)
         {
             TimeSpan nextDelay = self._allIdleTime;
@@ -605,7 +630,7 @@ namespace DotNetty.Handlers.Timeout
             {
                 // Both reader and writer are idle - set a new timeout and
                 // notify the callback.
-                self._allIdleTimeout = self.Schedule(context, AllTimeoutAction, self, context, 
+                self._allIdleTimeout = self.Schedule(context, AllTimeoutAction, self, context,
                     self._allIdleTime);
 
                 bool first = self._firstAllIdleEvent;

@@ -2,45 +2,16 @@
   <Import Project="..\nuget.props" />
   
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard2.1;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net471;net451;netstandard2.0;netcoreapp3.1</TargetFrameworks>
     <RootNamespace>DotNetty.Transport.Libuv</RootNamespace>
     <AssemblyName>DotNetty.Transport.Libuv</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
-    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
-    <OutputPath></OutputPath>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
-    <OutputPath></OutputPath>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.1|AnyCPU'">
-    <OutputPath>..\..\Libs</OutputPath>
-  </PropertyGroup>
-
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.1|AnyCPU'">
-    <OutputPath>..\..\Libs</OutputPath>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp3.1|AnyCPU'">
-    <OutputPath>..\..\Libs</OutputPath>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.1|AnyCPU'">
-    <OutputPath>..\..\Libs</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup Label="NuGet">
     <PackageId>SpanNetty.Transport.Libuv</PackageId>
     <Title>SpanNetty.Transport.Libuv</Title>
-    <Description>Libuv transport model in DotNetty.</Description>
+    <Description>Libuv transport model.</Description>
     <PackageTags>socket;tcp;protocol;netty;dotnetty;network</PackageTags>
   </PropertyGroup>
 
@@ -50,9 +21,11 @@
   <ItemGroup>
     <PackageReference Include="Libuv" Version="$(LibuvPackageVersion)" />
   </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\DotNetty.Transport\DotNetty.Transport.csproj" />
   </ItemGroup>
+
   <ItemGroup>
     <Compile Update="Internal\Strings.Designer.cs">
       <DesignTime>True</DesignTime>
@@ -67,8 +40,5 @@
     </EmbeddedResource>
   </ItemGroup>
 
-  <ItemGroup>
-    <None Include="..\..\.editorconfig" />
-  </ItemGroup>
   <Import Project="..\version.props" />
 </Project>

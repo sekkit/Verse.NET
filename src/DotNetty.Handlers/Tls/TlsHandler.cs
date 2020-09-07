@@ -1,5 +1,30 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) The DotNetty Project (Microsoft). All rights reserved.
+ *
+ *   https://github.com/azure/dotnetty
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Handlers.Tls
 {
@@ -25,9 +50,9 @@ namespace DotNetty.Handlers.Tls
         private readonly ServerTlsSettings _serverSettings;
         private readonly ClientTlsSettings _clientSettings;
         private readonly X509Certificate _serverCertificate;
-        private readonly Func<IChannelHandlerContext, string, X509Certificate2> _serverCertificateSelector;
 #if NETCOREAPP_2_0_GREATER || NETSTANDARD_2_0_GREATER
         private readonly bool _hasHttp2Protocol;
+        private readonly Func<IChannelHandlerContext, string, X509Certificate2> _serverCertificateSelector;
         private readonly Func<IChannelHandlerContext, string, X509CertificateCollection, X509Certificate, string[], X509Certificate2> _userCertSelector;
 #endif
 
@@ -79,30 +104,23 @@ namespace DotNetty.Handlers.Tls
 
                 // capture the certificate now so it can't be switched after validation
                 _serverCertificate = _serverSettings.Certificate;
+#if NETCOREAPP_2_0_GREATER || NETSTANDARD_2_0_GREATER
                 _serverCertificateSelector = _serverSettings.ServerCertificateSelector;
                 if (_serverCertificate is null && _serverCertificateSelector is null)
                 {
                     ThrowHelper.ThrowArgumentException_ServerCertificateRequired();
                 }
-
-#if NETCOREAPP_2_0_GREATER || NETSTANDARD_2_0_GREATER
                 var serverApplicationProtocols = _serverSettings.ApplicationProtocols;
                 if (serverApplicationProtocols is object)
                 {
                     _hasHttp2Protocol = serverApplicationProtocols.Contains(SslApplicationProtocol.Http2);
                 }
+#else
+                if (_serverCertificate is null)
+                {
+                    ThrowHelper.ThrowArgumentException_ServerCertificateRequired();
+                }
 #endif
-
-                // If a selector is provided then ignore the cert, it may be a default cert.
-                if (_serverCertificateSelector is object)
-                {
-                    // SslStream doesn't allow both.
-                    _serverCertificate = null;
-                }
-                else
-                {
-                    EnsureCertificateIsAllowedForServerAuth(ConvertToX509Certificate2(_serverCertificate));
-                }
             }
             _clientSettings = settings as ClientTlsSettings;
 #if NETCOREAPP_2_0_GREATER || NETSTANDARD_2_0_GREATER
@@ -157,7 +175,7 @@ namespace DotNetty.Handlers.Tls
             {
                 // Close the connection explicitly just in case the transport
                 // did not close the connection automatically.
-                if (context.Channel.Active)
+                if (context.Channel.IsActive)
                 {
                     _ = context.CloseAsync();
                 }
@@ -178,7 +196,7 @@ namespace DotNetty.Handlers.Tls
             base.HandlerAdded(context);
             CapturedContext = context;
             _pendingUnencryptedWrites = new BatchingPendingWriteQueue(context, c_unencryptedWriteBatchSize);
-            if (context.Channel.Active && !_isServer)
+            if (context.Channel.IsActive && !_isServer)
             {
                 // todo: support delayed initialization on an existing/active channel if in client mode
                 _ = EnsureAuthenticated(context);

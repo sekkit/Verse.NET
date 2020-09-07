@@ -1,5 +1,24 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Codecs.Http2
 {
@@ -480,7 +499,7 @@ namespace DotNetty.Codecs.Http2
                     _ = Interlocked.Increment(ref v_numBufferedStreams);
                     // Clean up the stream being initialized if writing the headers fails and also
                     // decrement the number of buffered streams.
-                    _ = promise.Task.ContinueWith(ResetNufferedStreamsAction, Tuple.Create(this, streamId), TaskContinuationOptions.ExecuteSynchronously);
+                    _ = promise.Task.ContinueWith(ResetNufferedStreamsAction, (this, streamId), TaskContinuationOptions.ExecuteSynchronously);
                 }
                 else
                 {
@@ -489,10 +508,10 @@ namespace DotNetty.Codecs.Http2
             }
         }
 
-        private static readonly Action<Task, object> ResetNufferedStreamsAction = ResetNufferedStreams;
+        private static readonly Action<Task, object> ResetNufferedStreamsAction = (t, s) => ResetNufferedStreams(t, s);
         private static void ResetNufferedStreams(Task t, object s)
         {
-            var wrapped = (Tuple<Http2FrameCodec, int>)s;
+            var wrapped = ((Http2FrameCodec, int))s;
             var self = wrapped.Item1;
             _ = Interlocked.Decrement(ref self.v_numBufferedStreams);
             self.HandleHeaderFuture(t, wrapped.Item2);
@@ -612,7 +631,9 @@ namespace DotNetty.Codecs.Http2
             // Since this is likely to be normal we log at DEBUG level.
             if (streamException.Error == Http2Error.StreamClosed)
             {
+#if DEBUG
                 if (Logger.DebugEnabled) { Logger.StreamExceptionThrownForUnkownStreamD(streamException.StreamId, cause); }
+#endif
             }
             else
             {

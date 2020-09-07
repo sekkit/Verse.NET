@@ -200,8 +200,8 @@ namespace Fenix
             var cmd = RpcCommand.Create(
                 packet,
                 (data) => { RemoveRpc(packet.Id); cb?.Invoke(data);  },
-                this);
-             
+                this); 
+
             //如果是同进程，则本地调用
             if (fromHostId == toHostId)
             {
@@ -367,7 +367,6 @@ namespace Fenix
             var curTime = TimeUtil.GetTimeStampMS();
 
             var keys = this.mTimerDic.Keys;
-
             foreach (var key in keys)
             {
                 if (this.mTimerDic.TryGetValue(key, out var t))

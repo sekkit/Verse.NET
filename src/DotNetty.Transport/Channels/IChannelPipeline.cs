@@ -1,5 +1,31 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) The DotNetty Project (Microsoft). All rights reserved.
+ *
+ *   https://github.com/azure/dotnetty
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
+
 
 namespace DotNetty.Transport.Channels
 {
@@ -157,7 +183,7 @@ namespace DotNetty.Transport.Channels
     /// <para>
     ///     and it could be represented as shown in the following example:
     ///     <code>
-    ///         static readonly <see cref="IEventExecutorGroup"/> group = new <see cref="MultithreadEventLoopGroup"/>();
+    ///         static readonly <see cref="IEventExecutorGroup"/> group = new <see cref="MultithreadEventLoopGroup{T1,T2}"/>();
     ///         ...
     ///         <see cref="IChannelPipeline"/> pipeline = ch.Pipeline;
     ///         pipeline.AddLast("decoder", new MyProtocolDecoder());
@@ -171,6 +197,11 @@ namespace DotNetty.Transport.Channels
     ///         pipeline.AddLast(group, "handler", new MyBusinessLogicHandler());
     ///     </code>
     /// </para>
+    /// Be aware that while using <see cref="DefaultEventLoopGroup"/> will offload the operation from the {<see cref="IEventLoop"/> it will
+    /// still process tasks in a serial fashion per {@link ChannelHandlerContext} and so guarantee ordering. Due the ordering
+    /// it may still become a bottle-neck. If ordering is not a requirement for your use-case you may want to consider using
+    /// <see cref="T:UnorderedThreadPoolEventExecutor"/> to maximize the parallelism of the task execution.
+    ///
     /// <para>Thread safety</para>
     /// <para>
     /// An <see cref="IChannelHandler"/> can be added or removed at any time because an <see cref="IChannelPipeline"/>
@@ -313,6 +344,13 @@ namespace DotNetty.Transport.Channels
         IChannelPipeline AddAfter(IEventExecutorGroup group, string baseName, string name, IChannelHandler handler);
 
         /// <summary>
+        /// Inserts a <see cref="IChannelHandler"/> at the first position of this pipeline.
+        /// </summary>
+        /// <param name="handler">The <see cref="IChannelHandler"/> to insert.</param>
+        /// <returns>This <see cref="IChannelPipeline"/>.</returns>
+        IChannelPipeline AddFirst(IChannelHandler handler);
+
+        /// <summary>
         /// Inserts multiple <see cref="IChannelHandler"/>s at the first position of this pipeline.
         /// </summary>
         /// <param name="handlers">The <see cref="IChannelHandler"/>s to insert.</param>
@@ -328,6 +366,13 @@ namespace DotNetty.Transport.Channels
         /// <param name="handlers">The <see cref="IChannelHandler"/>s to insert.</param>
         /// <returns>This <see cref="IChannelPipeline"/>.</returns>
         IChannelPipeline AddFirst(IEventExecutorGroup group, params IChannelHandler[] handlers);
+
+        /// <summary>
+        /// Inserts a <see cref="IChannelHandler"/> at the last position of this pipeline.
+        /// </summary>
+        /// <param name="handler">The <see cref="IChannelHandler"/> to insert.</param>
+        /// <returns>This <see cref="IChannelPipeline"/>.</returns>
+        IChannelPipeline AddLast(IChannelHandler handler);
 
         /// <summary>
         /// Inserts multiple <see cref="IChannelHandler"/>s at the last position of this pipeline.

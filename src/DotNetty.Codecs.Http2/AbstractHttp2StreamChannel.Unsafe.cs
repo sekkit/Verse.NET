@@ -1,4 +1,26 @@
-﻿namespace DotNetty.Codecs.Http2
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
+
+namespace DotNetty.Codecs.Http2
 {
     using System;
     using System.IO;
@@ -76,7 +98,7 @@
                 var pipeline = ch.Pipeline;
 
                 _ = pipeline.FireChannelRegistered();
-                if (ch.Active)
+                if (ch.IsActive)
                 {
                     _ = pipeline.FireChannelActive();
                 }
@@ -117,14 +139,14 @@
                 // Just set to false as removing from an underlying queue would even be more expensive.
                 ch._readCompletePending = false;
 
-                bool wasActive = ch.Active;
+                bool wasActive = ch.IsActive;
 
                 // There is no need to update the local window as once the stream is closed all the pending bytes will be
                 // given back to the connection window by the controller itself.
 
                 // Only ever send a reset frame if the connection is still alive and if the stream was created before
                 // as otherwise we may send a RST on a stream in an invalid state and cause a connection error.
-                if (ch.Parent.Active && !ReadEOS && Http2CodecUtil.IsStreamIdValid(ch._stream.Id))
+                if (ch.Parent.IsActive && !ReadEOS && Http2CodecUtil.IsStreamIdValid(ch._stream.Id))
                 {
                     IHttp2StreamFrame resetFrame = new DefaultHttp2ResetFrame(Http2Error.Cancel) { Stream = ch._stream };
                     Write(resetFrame, VoidPromise());
@@ -134,7 +156,7 @@
                 var inboundBuffer = ch._inboundBuffer;
                 if (inboundBuffer is object)
                 {
-                    while (inboundBuffer.TryRemoveFromFront(out var msg))
+                    while (inboundBuffer.TryRemoveFirst(out var msg))
                     {
                         _ = ReferenceCountUtil.Release(msg);
                     }
@@ -214,7 +236,7 @@
             public void BeginRead()
             {
                 var ch = _channel;
-                if (!ch.Active) { return; }
+                if (!ch.IsActive) { return; }
 
                 UpdateLocalWindowIfNeeded();
 
@@ -239,7 +261,7 @@
                 while (ch._readStatus != ReadStatus.Idle)
                 {
                     var inboundBuffer = ch._inboundBuffer;
-                    if (inboundBuffer is null || (!inboundBuffer.TryRemoveFromFront(out var message)))
+                    if (inboundBuffer is null || (!inboundBuffer.TryRemoveFirst(out var message)))
                     {
                         if (ReadEOS)
                         {
@@ -258,7 +280,7 @@
                     {
                         DoRead0((IHttp2Frame)message, allocHandle);
                     } while ((ReadEOS || (continueReading = allocHandle.ContinueReading())) &&
-                             inboundBuffer.TryRemoveFromFront(out message));
+                             inboundBuffer.TryRemoveFirst(out message));
 
                     if (continueReading && ch.IsParentReadInProgress && !ReadEOS)
                     {
@@ -370,7 +392,7 @@
                 }
 
                 var ch = _channel;
-                if (!ch.Active ||
+                if (!ch.IsActive ||
                     // Once the outbound side was closed we should not allow header / data frames
                     ch.OutboundClosed && (msg is IHttp2HeadersFrame || msg is IHttp2DataFrame))
                 {
@@ -430,15 +452,15 @@
                     long bytes = FlowControlledFrameSizeEstimatorHandle.Instance.Size(frame);
                     ch.IncrementPendingOutboundBytes(bytes, false);
                     _ = future.ContinueWith(InvokeWriteCompleteAfterWriteAction,
-                        Tuple.Create(this, promise, bytes, firstWrite), TaskContinuationOptions.ExecuteSynchronously);
+                        (this, promise, bytes, firstWrite), TaskContinuationOptions.ExecuteSynchronously);
                     _writeDoneAndNoFlush = true;
                 }
             }
 
-            private static readonly Action<Task, object> InvokeWriteCompleteAfterWriteAction = InvokeWriteCompleteAfterWrite;
+            private static readonly Action<Task, object> InvokeWriteCompleteAfterWriteAction = (t, s) => InvokeWriteCompleteAfterWrite(t, s);
             private static void InvokeWriteCompleteAfterWrite(Task t, object s)
             {
-                var wrapped = (Tuple<Http2ChannelUnsafe, IPromise, long, bool>)s;
+                var wrapped = ((Http2ChannelUnsafe, IPromise, long, bool))s;
                 var self = wrapped.Item1;
                 self.InvokeWriteComplete(t, wrapped.Item2, wrapped.Item4);
                 self._channel.DecrementPendingOutboundBytes(wrapped.Item3, false);
@@ -483,7 +505,7 @@
                     var error = WrapStreamClosedError(cause);
                     if (error is IOException)
                     {
-                        if (_channel._config.AutoClose)
+                        if (_channel._config.IsAutoClose)
                         {
                             // Close channel if needed.
                             CloseForcibly();

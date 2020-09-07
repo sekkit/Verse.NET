@@ -1,67 +1,99 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) The DotNetty Project (Microsoft). All rights reserved.
+ *
+ *   https://github.com/azure/dotnetty
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Handlers.Flow
 {
+    using System;
+    using DotNetty.Codecs;
     using DotNetty.Common;
     using DotNetty.Common.Internal;
     using DotNetty.Common.Internal.Logging;
     using DotNetty.Common.Utilities;
     using DotNetty.Transport.Channels;
 
-    /**
-     * The {@link FlowControlHandler} ensures that only one message per {@code read()} is sent downstream.
-     *
-     * Classes such as {@link ByteToMessageDecoder} or {@link MessageToByteEncoder} are free to emit as
-     * many events as they like for any given input. A channel's auto reading configuration doesn't usually
-     * apply in these scenarios. This is causing problems in downstream {@link ChannelHandler}s that would
-     * like to hold subsequent events while they're processing one event. It's a common problem with the
-     * {@code HttpObjectDecoder} that will very often fire an {@code HttpRequest} that is immediately followed
-     * by a {@code LastHttpContent} event.
-     *
-     * <pre>{@code
-     * ChannelPipeline pipeline = ...;
-     *
-     * pipeline.addLast(new HttpServerCodec());
-     * pipeline.addLast(new FlowControlHandler());
-     *
-     * pipeline.addLast(new MyExampleHandler());
-     *
-     * class MyExampleHandler extends ChannelInboundHandlerAdapter {
-     *   @Override
-     *   public void channelRead(IChannelHandlerContext ctx, Object msg) {
-     *     if (msg instanceof HttpRequest) {
-     *       ctx.channel().config().setAutoRead(false);
-     *
-     *       // The FlowControlHandler will hold any subsequent events that
-     *       // were emitted by HttpObjectDecoder until auto reading is turned
-     *       // back on or Channel#read() is being called.
-     *     }
-     *   }
-     * }
-     * }</pre>
-     *
-     * @see ChannelConfig#setAutoRead(bool)
-     */
+    /// <summary>
+    /// The <see cref="FlowControlHandler"/> ensures that only one message per {@code read()} is sent downstream.
+    ///
+    /// Classes such as <see cref="ByteToMessageDecoder"/> or <see cref="MessageToByteEncoder{T}"/> are free to emit as
+    /// many events as they like for any given input. A channel's auto reading configuration doesn't usually
+    /// apply in these scenarios. This is causing problems in downstream <see cref="IChannelHandler"/>s that would
+    /// like to hold subsequent events while they're processing one event. It's a common problem with the
+    /// <see cref="T:DotNetty.Codecs.Http.HttpObjectDecoder"/> that will very often fire an
+    /// <see cref="T:DotNetty.Codecs.Http.IHttpRequest"/> that is immediately followed
+    /// by a <see cref="T:DotNetty.Codecs.Http.ILastHttpContent"/> event.
+    ///
+    /// <code>
+    /// ChannelPipeline pipeline = ...;
+    ///
+    /// pipeline.addLast(new HttpServerCodec());
+    /// pipeline.addLast(new FlowControlHandler());
+    ///
+    /// pipeline.addLast(new MyExampleHandler());
+    ///
+    /// class MyExampleHandler extends ChannelInboundHandlerAdapter {
+    ///   @Override
+    ///   public void channelRead(ChannelHandlerContext ctx, Object msg) {
+    ///     if (msg instanceof HttpRequest) {
+    ///       ctx.channel().config().setAutoRead(false);
+    ///
+    ///       // The FlowControlHandler will hold any subsequent events that
+    ///       // were emitted by HttpObjectDecoder until auto reading is turned
+    ///       // back on or Channel#read() is being called.
+    ///     }
+    ///   }
+    /// }
+    /// }</code>
+    ///
+    /// @see ChannelConfig#setAutoRead(boolean)
+    /// </summary>
     public class FlowControlHandler : ChannelDuplexHandler
     {
-        static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<FlowControlHandler>();
+        private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<FlowControlHandler>();
 
-        static readonly ThreadLocalPool<RecyclableQueue> Recycler = new ThreadLocalPool<RecyclableQueue>(h => new RecyclableQueue(h));
+        private static readonly ThreadLocalPool<RecyclableQueue> Recycler = new ThreadLocalPool<RecyclableQueue>(h => new RecyclableQueue(h));
 
-        readonly bool _releaseMessages;
+        private readonly bool _releaseMessages;
 
-        RecyclableQueue _queue;
+        private RecyclableQueue _queue;
 
-        IChannelConfiguration _config;
+        private IChannelConfiguration _config;
 
-        bool _shouldConsume;
+        private int _readRequestCount;
 
+        /// <summary>Create new instance.</summary>
         public FlowControlHandler()
             : this(true)
         {
         }
 
+        /// <summary>Create new instance.</summary>
+        /// <param name="releaseMessages">If <c>false</c>, the handler won't release the buffered messages
+        /// when the handler is removed.</param>
         public FlowControlHandler(bool releaseMessages)
         {
             _releaseMessages = releaseMessages;
@@ -82,7 +114,9 @@ namespace DotNetty.Handlers.Flow
             {
                 if (_queue.NonEmpty)
                 {
+#if DEBUG
                     if (Logger.TraceEnabled) Logger.NonEmptyQueue(_queue);
+#endif
 
                     if (_releaseMessages)
                     {
@@ -103,6 +137,16 @@ namespace DotNetty.Handlers.Flow
             _config = ctx.Channel.Configuration;
         }
 
+        public override void HandlerRemoved(IChannelHandlerContext ctx)
+        {
+            base.HandlerRemoved(ctx);
+            if (!IsQueueEmpty)
+            {
+                Dequeue(ctx, _queue.Count);
+            }
+            Destroy();
+        }
+
         public override void ChannelInactive(IChannelHandlerContext ctx)
         {
             Destroy();
@@ -116,7 +160,7 @@ namespace DotNetty.Handlers.Flow
                 // It seems no messages were consumed. We need to read() some
                 // messages from upstream and once one arrives it need to be
                 // relayed to downstream to keep the flow going.
-                _shouldConsume = true;
+                ++_readRequestCount;
                 _ = ctx.Read();
             }
         }
@@ -133,8 +177,8 @@ namespace DotNetty.Handlers.Flow
             // We just received one message. Do we need to relay it regardless
             // of the auto reading configuration? The answer is yes if this
             // method was called as a result of a prior read() call.
-            int minConsume = _shouldConsume ? 1 : 0;
-            _shouldConsume = false;
+            int minConsume = Math.Min(_readRequestCount, _queue.Count);
+            _readRequestCount -= minConsume;
 
             _ = Dequeue(ctx, minConsume);
         }
@@ -165,13 +209,13 @@ namespace DotNetty.Handlers.Flow
          * @see #read(ChannelHandlerContext)
          * @see #channelRead(ChannelHandlerContext, Object)
          */
-        int Dequeue(IChannelHandlerContext ctx, int minConsume)
+        private int Dequeue(IChannelHandlerContext ctx, int minConsume)
         {
             int consumed = 0;
 
             // fireChannelRead(...) may call ctx.read() and so this method may reentrance. Because of this we need to
             // check if queue was set to null in the meantime and if so break the loop.
-            while (_queue is object && (consumed < minConsume || _config.AutoRead))
+            while (_queue is object && (consumed < minConsume || _config.IsAutoRead))
             {
                 if (!_queue.TryDequeue(out object msg) || msg is null) { break; }
 

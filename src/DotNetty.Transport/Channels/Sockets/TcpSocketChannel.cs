@@ -1,5 +1,30 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) The DotNetty Project (Microsoft). All rights reserved.
+ *
+ *   https://github.com/azure/dotnetty
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Transport.Channels.Sockets
 {
@@ -7,6 +32,7 @@ namespace DotNetty.Transport.Channels.Sockets
     using System.Collections.Generic;
     using System.Net;
     using System.Net.Sockets;
+    using System.Threading;
     using System.Threading.Tasks;
     using DotNetty.Buffers;
     using DotNetty.Common.Concurrency;
@@ -39,21 +65,26 @@ namespace DotNetty.Transport.Channels.Sockets
     public partial class TcpSocketChannel<TChannel> : AbstractSocketByteChannel<TChannel, TcpSocketChannel<TChannel>.TcpSocketChannelUnsafe>, ISocketChannel
         where TChannel : TcpSocketChannel<TChannel>
     {
-        private static readonly Action<object, object> ShutdownOutputAction = OnShutdownOutput;
+        private static readonly Action<object, object> ShutdownOutputAction = (c, p) => OnShutdownOutput(c, p);
+        private static readonly Action<object, object> ShutdownInputAction = (c, p) => OnShutdownInput(c, p);
+        private static readonly Action<object, object> ShutdownAction = (c, p) => OnShutdown(c, p);
 
         private static readonly ChannelMetadata METADATA = new ChannelMetadata(false, 16);
 
         private readonly ISocketChannelConfiguration _config;
 
+        private int v_inputShutdown;
+        private int v_outputShutdown;
+
         /// <summary>Create a new instance</summary>
         public TcpSocketChannel()
-            : this(null, SocketEx.CreateSocket(), false) //new Socket(SocketType.Stream, ProtocolType.Tcp))
+            : this(null, SocketEx.CreateSocket(), false)
         {
         }
 
         /// <summary>Create a new instance</summary>
         public TcpSocketChannel(AddressFamily addressFamily)
-            : this(null, SocketEx.CreateSocket(addressFamily), false) //new Socket(addressFamily, SocketType.Stream, ProtocolType.Tcp))
+            : this(null, SocketEx.CreateSocket(addressFamily), false)
         {
         }
 
@@ -86,41 +117,68 @@ namespace DotNetty.Transport.Channels.Sockets
 
         public override ChannelMetadata Metadata => METADATA;
 
+        ISocketChannelConfiguration ISocketChannel.Configuration => _config;
         public override IChannelConfiguration Configuration => _config;
 
         protected override EndPoint LocalAddressInternal => Socket.LocalEndPoint;
 
         protected override EndPoint RemoteAddressInternal => Socket.RemoteEndPoint;
 
-        public bool IsOutputShutdown
-        {
-            get { throw new NotImplementedException(); } // todo: impl with stateflags
-        }
+        public override bool IsInputShutdown => SharedConstants.False < (uint)Volatile.Read(ref v_inputShutdown) || !IsActive;
 
-        public Task ShutdownOutputAsync()
-        {
-            var tcs = NewPromise();
-            // todo: use closeExecutor if available
-            //Executor closeExecutor = ((TcpSocketChannelUnsafe) unsafe()).closeExecutor();
-            //if (closeExecutor is object) {
-            //    closeExecutor.execute(new OneTimeTask() {
+        public bool IsOutputShutdown => SharedConstants.False < (uint)Volatile.Read(ref v_outputShutdown) || !IsActive;
 
-            //        public void run() {
-            //            shutdownOutput0(promise);
-            //        }
-            //    });
-            //} else {
+        public bool IsShutdown => (IsInputShutdown && IsOutputShutdown) || !IsActive;
+
+        public override Task ShutdownInputAsync() => ShutdownInputAsync(NewPromise());
+
+        public Task ShutdownInputAsync(IPromise promise)
+        {
             IEventLoop loop = EventLoop;
             if (loop.InEventLoop)
             {
-                ShutdownOutput0(tcs);
+                ShutdownInput0(promise);
             }
             else
             {
-                loop.Execute(ShutdownOutputAction, this, tcs);
+                loop.Execute(ShutdownInputAction, this, promise);
             }
-            //}
-            return tcs.Task;
+            return promise.Task;
+        }
+
+        void ShutdownInput0(IPromise promise)
+        {
+            try
+            {
+                Socket.Shutdown(SocketShutdown.Receive);
+                _ = Interlocked.Exchange(ref v_inputShutdown, SharedConstants.True);
+                promise.TryComplete();
+            }
+            catch (Exception ex)
+            {
+                promise.TrySetException(ex);
+            }
+        }
+
+        private static void OnShutdownInput(object channel, object promise)
+        {
+            ((TcpSocketChannel<TChannel>)channel).ShutdownInput0((IPromise)promise);
+        }
+
+        public Task ShutdownOutputAsync() => ShutdownOutputAsync(NewPromise());
+
+        public Task ShutdownOutputAsync(IPromise promise)
+        {
+            IEventLoop loop = EventLoop;
+            if (loop.InEventLoop)
+            {
+                ShutdownOutput0(promise);
+            }
+            else
+            {
+                loop.Execute(ShutdownOutputAction, this, promise);
+            }
+            return promise.Task;
         }
 
         void ShutdownOutput0(IPromise promise)
@@ -128,15 +186,52 @@ namespace DotNetty.Transport.Channels.Sockets
             try
             {
                 Socket.Shutdown(SocketShutdown.Send);
-                promise.Complete();
+                _ = Interlocked.Exchange(ref v_outputShutdown, SharedConstants.True);
+                promise.TryComplete();
             }
             catch (Exception ex)
             {
-                promise.SetException(ex);
+                promise.TrySetException(ex);
             }
         }
 
         private static void OnShutdownOutput(object channel, object promise)
+        {
+            ((TcpSocketChannel<TChannel>)channel).ShutdownOutput0((IPromise)promise);
+        }
+
+        public Task ShutdownAsync() => ShutdownAsync(NewPromise());
+
+        public Task ShutdownAsync(IPromise promise)
+        {
+            IEventLoop loop = EventLoop;
+            if (loop.InEventLoop)
+            {
+                Shutdown0(promise);
+            }
+            else
+            {
+                loop.Execute(ShutdownAction, this, promise);
+            }
+            return promise.Task;
+        }
+
+        void Shutdown0(IPromise promise)
+        {
+            try
+            {
+                Socket.Shutdown(SocketShutdown.Both);
+                _ = Interlocked.Exchange(ref v_inputShutdown, SharedConstants.True);
+                _ = Interlocked.Exchange(ref v_outputShutdown, SharedConstants.True);
+                promise.TryComplete();
+            }
+            catch (Exception ex)
+            {
+                promise.TrySetException(ex);
+            }
+        }
+
+        private static void OnShutdown(object channel, object promise)
         {
             ((TcpSocketChannel<TChannel>)channel).ShutdownOutput0((IPromise)promise);
         }
@@ -208,7 +303,7 @@ namespace DotNetty.Transport.Channels.Sockets
                     {
                         Socket.Shutdown(SocketShutdown.Both);
                     }
-                    Socket.SafeClose(); //this.Socket.Dispose();
+                    Socket.SafeClose();
                 }
             }
             finally
@@ -314,39 +409,36 @@ namespace DotNetty.Transport.Channels.Sockets
                     List<ArraySegment<byte>> bufferList = sharedBufferList;
                     // Always us nioBuffers() to workaround data-corruption.
                     // See https://github.com/netty/netty/issues/2761
-                    switch (nioBufferCnt)
+                    if(0u >= (uint)nioBufferCnt)
                     {
-                        case 0:
-                            // We have something else beside ByteBuffers to write so fallback to normal writes.
-                            base.DoWrite(input);
-                            return;
-                        default:
-                            for (int i = writeSpinCount - 1; i >= 0; i--)
-                            {
-                                long localWrittenBytes = socket.Send(bufferList, SocketFlags.None, out SocketError errorCode);
-                                if (errorCode != SocketError.Success && errorCode != SocketError.WouldBlock)
-                                {
-                                    ThrowHelper.ThrowSocketException(errorCode);
-                                }
+                        // We have something else beside ByteBuffers to write so fallback to normal writes.
+                        base.DoWrite(input);
+                        return;
+                    }
+                    for (int i = writeSpinCount - 1; i >= 0; i--)
+                    {
+                        long localWrittenBytes = socket.Send(bufferList, SocketFlags.None, out SocketError errorCode);
+                        if (errorCode != SocketError.Success && errorCode != SocketError.WouldBlock)
+                        {
+                            ThrowHelper.ThrowSocketException(errorCode);
+                        }
 
-                                if (0ul >= (ulong)localWrittenBytes)
-                                {
-                                    break;
-                                }
-
-                                expectedWrittenBytes -= localWrittenBytes;
-                                writtenBytes += localWrittenBytes;
-                                if (0ul >= (ulong)expectedWrittenBytes)
-                                {
-                                    done = true;
-                                    break;
-                                }
-                                else
-                                {
-                                    bufferList = AdjustBufferList(localWrittenBytes, bufferList);
-                                }
-                            }
+                        if (0ul >= (ulong)localWrittenBytes)
+                        {
                             break;
+                        }
+
+                        expectedWrittenBytes -= localWrittenBytes;
+                        writtenBytes += localWrittenBytes;
+                        if (0ul >= (ulong)expectedWrittenBytes)
+                        {
+                            done = true;
+                            break;
+                        }
+                        else
+                        {
+                            bufferList = AdjustBufferList(localWrittenBytes, bufferList);
+                        }
                     }
 
                     if (writtenBytes > 0)
@@ -382,8 +474,9 @@ namespace DotNetty.Transport.Channels.Sockets
         List<ArraySegment<byte>> AdjustBufferList(long localWrittenBytes, List<ArraySegment<byte>> bufferList)
         {
             var adjusted = new List<ArraySegment<byte>>(bufferList.Count);
-            foreach (ArraySegment<byte> buffer in bufferList)
+            for (int i = 0; i < bufferList.Count; i++)
             {
+                ArraySegment<byte> buffer = bufferList[i];
                 if (localWrittenBytes > 0)
                 {
                     long leftBytes = localWrittenBytes - buffer.Count;
@@ -406,7 +499,5 @@ namespace DotNetty.Transport.Channels.Sockets
             }
             return adjusted;
         }
-
-        //protected override IChannelUnsafe NewUnsafe() => new TcpSocketChannelUnsafe(this); ## 苦竹 屏蔽 ##
     }
 }

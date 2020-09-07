@@ -1,5 +1,27 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) Microsoft. All rights reserved.
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com)
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Codecs.Http.WebSockets.Extensions
 {
@@ -23,8 +45,8 @@ namespace DotNetty.Codecs.Http.WebSockets.Extensions
     /// </summary>
     public class WebSocketServerExtensionHandler : ChannelHandlerAdapter
     {
-        private static readonly Action<Task, object> s_switchWebSocketExtensionHandlerAction = SwitchWebSocketExtensionHandler;
-        private static readonly Action<Task, object> s_removeWebSocketExtensionHandlerAction = RemoveWebSocketExtensionHandler;
+        private static readonly Action<Task, object> s_switchWebSocketExtensionHandlerAction = (t, s) => SwitchWebSocketExtensionHandler(t, s);
+        private static readonly Action<Task, object> s_removeWebSocketExtensionHandlerAction = (t, s) => RemoveWebSocketExtensionHandler(t, s);
 
         private readonly List<IWebSocketServerExtensionHandshaker> _extensionHandshakers;
 
@@ -110,7 +132,7 @@ namespace DotNetty.Codecs.Http.WebSockets.Extensions
                                 extensionData.Name, extensionData.Parameters);
                         }
 
-                        _ = promise.Task.ContinueWith(s_switchWebSocketExtensionHandlerAction, Tuple.Create(ctx, _validExtensions), TaskContinuationOptions.ExecuteSynchronously);
+                        _ = promise.Task.ContinueWith(s_switchWebSocketExtensionHandlerAction, (ctx, _validExtensions), TaskContinuationOptions.ExecuteSynchronously);
 
                         if (headerValue is object)
                         {
@@ -118,7 +140,7 @@ namespace DotNetty.Codecs.Http.WebSockets.Extensions
                         }
                     }
                 }
-                _ = promise.Task.ContinueWith(s_removeWebSocketExtensionHandlerAction, Tuple.Create(ctx, this), TaskContinuationOptions.ExecuteSynchronously);
+                _ = promise.Task.ContinueWith(s_removeWebSocketExtensionHandlerAction, (ctx, this), TaskContinuationOptions.ExecuteSynchronously);
             }
 
             base.Write(ctx, msg, promise);
@@ -126,7 +148,7 @@ namespace DotNetty.Codecs.Http.WebSockets.Extensions
 
         private static void SwitchWebSocketExtensionHandler(Task promise, object state)
         {
-            var wrapped = (Tuple<IChannelHandlerContext, List<IWebSocketServerExtension>>)state;
+            var wrapped = ((IChannelHandlerContext, List<IWebSocketServerExtension>))state;
             var ctx = wrapped.Item1;
             var validExtensions = wrapped.Item2;
             var pipeline = ctx.Pipeline;
@@ -146,7 +168,7 @@ namespace DotNetty.Codecs.Http.WebSockets.Extensions
 
         private static void RemoveWebSocketExtensionHandler(Task future, object state)
         {
-            var wrapped = (Tuple<IChannelHandlerContext, WebSocketServerExtensionHandler>)state;
+            var wrapped = ((IChannelHandlerContext, WebSocketServerExtensionHandler))state;
             if (future.IsSuccess())
             {
                 _ = wrapped.Item1.Pipeline.Remove(wrapped.Item2);

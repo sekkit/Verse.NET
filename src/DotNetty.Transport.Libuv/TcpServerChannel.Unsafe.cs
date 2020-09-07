@@ -1,5 +1,30 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) The DotNetty Project (Microsoft). All rights reserved.
+ *
+ *   https://github.com/azure/dotnetty
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Transport.Libuv
 {
@@ -18,9 +43,9 @@ namespace DotNetty.Transport.Libuv
     {
         public sealed class TcpServerChannelUnsafe : NativeChannelUnsafe, IServerNativeUnsafe
         {
-            static readonly Action<object, object> AcceptAction = OnAccept;
+            static readonly Action<object, object> AcceptAction = (u, e) => OnAccept(u, e);
 
-            public TcpServerChannelUnsafe() : base() // TcpServerChannel channel) : base(channel)
+            public TcpServerChannelUnsafe() : base()
             {
             }
 
@@ -34,7 +59,7 @@ namespace DotNetty.Transport.Libuv
 
                 var connError = connection.Error;
                 // If the AutoRead is false, reject the connection
-                if (!ch._config.AutoRead || connError is object)
+                if (!ch._config.IsAutoRead || connError is object)
                 {
                     if (connError is object)
                     {
@@ -94,7 +119,7 @@ namespace DotNetty.Transport.Libuv
                 Exception exception = null;
                 try
                 {
-                    var tcpChannel = ch._channelFactory.CreateChannel(ch, tcp); // ## 苦竹 修改 ## new TcpChannel(ch, tcp);
+                    var tcpChannel = ch._channelFactory.CreateChannel(ch, tcp);
                     _ = ch.Pipeline.FireChannelRead(tcpChannel);
                     allocHandle.IncMessagesRead(1);
                 }
@@ -115,7 +140,7 @@ namespace DotNetty.Transport.Libuv
                     _ = pipeline.FireExceptionCaught(exception);
                 }
 
-                if (closed && ch.Open)
+                if (closed && ch.IsOpen)
                 {
                     CloseSafe();
                 }

@@ -1,13 +1,42 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) The DotNetty Project (Microsoft). All rights reserved.
+ *
+ *   https://github.com/azure/dotnetty
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Transport.Channels.Sockets
 {
     using System;
     using System.Net.Sockets;
-    using System.Threading;
+    using System.Runtime.CompilerServices;
+    using System.Threading.Tasks;
     using DotNetty.Buffers;
     using DotNetty.Common.Utilities;
+#if DESKTOPCLR
+    using System.Threading;
+#endif
 
     /// <summary>
     /// <see cref="AbstractSocketChannel{TChannel, TUnsafe}"/> base class for <see cref="IChannel"/>s that operate on bytes.
@@ -22,8 +51,10 @@ namespace DotNetty.Transport.Channels.Sockets
         // todo: FileRegion support        
         //typeof(FileRegion).Name + ')';
 
-        private static readonly Action<object> FlushAction = OnFlushSync;
-        private static readonly Action<object, object> ReadCompletedSyncCallback = OnReadCompletedSync;
+        private static readonly Action<object> FlushAction = c => OnFlushSync(c);
+        private static readonly Action<object, object> ReadCompletedSyncCallback = (u, e) => OnReadCompletedSync(u, e);
+
+        private bool _inputClosedSeenErrorOnRead;
 
         /// <summary>Create a new instance</summary>
         /// <param name="parent">the parent <see cref="IChannel"/> by which this instance was created. May be <c>null</c></param>
@@ -33,7 +64,23 @@ namespace DotNetty.Transport.Channels.Sockets
         {
         }
 
-        //protected override IChannelUnsafe NewUnsafe() => new SocketByteChannelUnsafe(this); ## 苦竹 屏蔽 ##
+        /// <summary>
+        /// Shutdown the input side of the channel.
+        /// </summary>
+        public abstract Task ShutdownInputAsync();
+
+        public virtual bool IsInputShutdown => false;
+
+        internal bool ShouldBreakReadReady(IChannelConfiguration config)
+        {
+            return IsInputShutdown && (_inputClosedSeenErrorOnRead || !IsAllowHalfClosure(config));
+        }
+
+        private static bool IsAllowHalfClosure(IChannelConfiguration config)
+        {
+            return config is ISocketChannelConfiguration socketChannelConfiguration &&
+                    socketChannelConfiguration.AllowHalfClosure;
+        }
 
         protected override void ScheduleSocketRead()
         {
@@ -189,7 +236,14 @@ namespace DotNetty.Transport.Channels.Sockets
             //    return msg;
             //}
 
-            return ThrowHelper.ThrowNotSupportedException_UnsupportedMsgType(msg);
+            throw GetUnsupportedMsgTypeException(msg);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static NotSupportedException GetUnsupportedMsgTypeException(object msg)
+        {
+            return new NotSupportedException(
+                $"unsupported message type: {msg.GetType().Name} (expected: {StringUtil.SimpleClassName<IByteBuffer>()})");
         }
 
         protected bool IncompleteWrite(bool scheduleAsync, SocketChannelAsyncOperation<TChannel, TUnsafe> operation)
@@ -218,7 +272,7 @@ namespace DotNetty.Transport.Channels.Sockets
 
                 if (!pending)
                 {
-                    Unsafe.FinishWrite(operation); // ## 苦竹 修改 ## ((ISocketChannelUnsafe)this.Unsafe).FinishWrite(operation);
+                    Unsafe.FinishWrite(operation);
                 }
 
                 return pending;

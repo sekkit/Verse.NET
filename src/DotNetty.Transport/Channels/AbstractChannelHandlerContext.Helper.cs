@@ -1,5 +1,24 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Transport.Channels
 {
@@ -7,32 +26,14 @@ namespace DotNetty.Transport.Channels
 
     partial class AbstractChannelHandlerContext
     {
-        private static readonly Action<object> InvokeChannelReadCompleteAction = OnInvokeChannelReadComplete;
-        private static readonly Action<object> InvokeReadAction = OnInvokeRead;
-        private static readonly Action<object> InvokeChannelWritabilityChangedAction = OnInvokeChannelWritabilityChanged;
-        private static readonly Action<object> InvokeChannelRegisteredAction = OnInvokeChannelRegistered;
-        private static readonly Action<object> InvokeChannelUnregisteredAction = OnInvokeChannelUnregistered;
-        private static readonly Action<object> InvokeChannelActiveAction = OnInvokeChannelActive;
-        private static readonly Action<object> InvokeChannelInactiveAction = OnInvokeChannelInactive;
+        private static readonly Action<object> InvokeChannelRegisteredAction = ctx => OnInvokeChannelRegistered(ctx);
+        private static readonly Action<object> InvokeChannelUnregisteredAction = ctx => OnInvokeChannelUnregistered(ctx);
+        private static readonly Action<object> InvokeChannelActiveAction = ctx => OnInvokeChannelActive(ctx);
+        private static readonly Action<object> InvokeChannelInactiveAction = ctx => OnInvokeChannelInactive(ctx);
 
-        private static readonly Action<object, object> InvokeUserEventTriggeredAction = OnInvokeUserEventTriggered;
-        private static readonly Action<object, object> InvokeChannelReadAction = OnInvokeChannelRead;
-        private static readonly Action<object, object> InvokeExceptionCaughtAction = OnInvokeExceptionCaught;
-
-        private static void OnInvokeChannelReadComplete(object ctx)
-        {
-            ((AbstractChannelHandlerContext)ctx).InvokeChannelReadComplete();
-        }
-
-        private static void OnInvokeRead(object ctx)
-        {
-            ((AbstractChannelHandlerContext)ctx).InvokeRead();
-        }
-
-        private static void OnInvokeChannelWritabilityChanged(object ctx)
-        {
-            ((AbstractChannelHandlerContext)ctx).InvokeChannelWritabilityChanged();
-        }
+        private static readonly Action<object, object> InvokeUserEventTriggeredAction = (c, e) => OnInvokeUserEventTriggered(c, e);
+        private static readonly Action<object, object> InvokeChannelReadAction = (c, e) => OnInvokeChannelRead(c, e);
+        private static readonly Action<object, object> InvokeExceptionCaughtAction = (c, e) => OnInvokeExceptionCaught(c, e);
 
         private static void OnInvokeUserEventTriggered(object ctx, object evt)
         {

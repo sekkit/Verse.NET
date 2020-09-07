@@ -1,10 +1,31 @@
-﻿using System;
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
+
+using System;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using DotNetty.Buffers;
 using DotNetty.Common.Concurrency;
 using DotNetty.Common.Utilities;
 using DotNetty.Transport.Channels;
@@ -45,6 +66,7 @@ namespace DotNetty.Transport
         func,
         type,
         file,
+        task,
 
         bytes,
         types,
@@ -130,10 +152,12 @@ namespace DotNetty.Transport
         localAddress,
         instanceType,
 
-        remoteAddress,
-        healthChecker,
         attributeType,
+        healthChecker,
+        remoteAddress,
+        tailTaskQueue,
 
+        eventLoopCount,
         initialization,
         inboundHandler,
         parameterTypes,
@@ -143,6 +167,7 @@ namespace DotNetty.Transport
         estimatorHandle,
 
         aggregatePromise,
+        eventLoopFactory,
         networkInterface,
 
         qualifiedTypeName,
@@ -560,16 +585,6 @@ namespace DotNetty.Transport
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        internal static void ThrowInvalidOperationException(Exception e)
-        {
-            throw GetInvalidOperationException();
-            InvalidOperationException GetInvalidOperationException()
-            {
-                return new InvalidOperationException("failed to create a child event loop.", e);
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
         internal static void ThrowInvalidOperationException_Close0()
         {
             throw GetInvalidOperationException();
@@ -614,7 +629,7 @@ namespace DotNetty.Transport
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        internal static void ThrowInvalidOperationException_WritabilityMask(int index)
+        internal static int ThrowInvalidOperationException_WritabilityMask(int index)
         {
             throw GetInvalidOperationException();
             InvalidOperationException GetInvalidOperationException()
@@ -675,22 +690,33 @@ namespace DotNetty.Transport
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        internal static Task ThrowInvalidOperationException_CoalescingBufferQueuePending(Exception pending)
+        internal static void ThrowInvalidOperationException_CoalescingBufferQueuePending(Exception pending)
         {
-            return TaskUtil.FromException(GetInvalidOperationException());
+            throw GetInvalidOperationException();
             InvalidOperationException GetInvalidOperationException()
             {
-                throw new InvalidOperationException(pending.Message, pending);
+                return new InvalidOperationException(pending.Message, pending);
             }
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        internal static Task ThrowInvalidOperationException_BufferQueueLengthOverflow(int readableBytes, int increment)
+        internal static void ThrowInvalidOperationException_BufferQueueLengthOverflow(int readableBytes, int increment)
         {
-            return TaskUtil.FromException(GetInvalidOperationException());
+            throw GetInvalidOperationException();
             InvalidOperationException GetInvalidOperationException()
             {
-                throw new InvalidOperationException("buffer queue length overflow: " + readableBytes + " + " + increment);
+                return new InvalidOperationException("buffer queue length overflow: " + readableBytes + " + " + increment);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        internal static void ThrowInvalidOperationException_UnexpectedType_expecting_DatagramPacket_IAddressedEnvelope(object message)
+        {
+            throw GetInvalidOperationException();
+            InvalidOperationException GetInvalidOperationException()
+            {
+                return new InvalidOperationException(
+                    $"Unexpected type: {message.GetType().FullName}, expecting DatagramPacket or IAddressedEnvelope.");
             }
         }
 
@@ -812,20 +838,6 @@ namespace DotNetty.Transport
 
         #endregion
 
-        #region -- NotSupportedException --
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        internal static object ThrowNotSupportedException_UnsupportedMsgType(object msg)
-        {
-            throw GetArgumentException();
-            NotSupportedException GetArgumentException()
-            {
-                return new NotSupportedException($"unsupported message type: {msg.GetType().Name} (expected: {StringUtil.SimpleClassName<IByteBuffer>()})");
-            }
-        }
-
-        #endregion
-
         #region -- ClosedChannelException --
 
         [MethodImpl(MethodImplOptions.NoInlining)]
@@ -872,6 +884,22 @@ namespace DotNetty.Transport
         public static ChannelPipelineException GetChannelPipelineException_HandlerRemovedThrowExc(AbstractChannelHandlerContext ctx, Exception ex)
         {
             return new ChannelPipelineException($"{ctx.Handler.GetType().Name}.HandlerRemoved() has thrown an exception.", ex);
+        }
+
+        #endregion
+
+        #region -- NotSupportedException --
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static NotSupportedException GetNotSupportedException()
+        {
+            return new NotSupportedException();
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static NotSupportedException GetNotSupportedException_Socket_address_family(AddressFamily addressFamily)
+        {
+            return new NotSupportedException($"Socket address family {addressFamily} not supported, expecting InterNetwork or InterNetworkV6");
         }
 
         #endregion

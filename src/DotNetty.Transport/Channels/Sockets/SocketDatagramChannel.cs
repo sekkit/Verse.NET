@@ -1,5 +1,30 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) The DotNetty Project (Microsoft). All rights reserved.
+ *
+ *   https://github.com/azure/dotnetty
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Transport.Channels.Sockets
 {
@@ -8,6 +33,7 @@ namespace DotNetty.Transport.Channels.Sockets
     using System.Net;
     using System.Net.NetworkInformation;
     using System.Net.Sockets;
+    using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
     using DotNetty.Buffers;
     using DotNetty.Common;
@@ -29,8 +55,7 @@ namespace DotNetty.Transport.Channels.Sockets
     public partial class SocketDatagramChannel<TChannel> : AbstractSocketMessageChannel<TChannel, SocketDatagramChannel<TChannel>.DatagramChannelUnsafe>, IDatagramChannel
         where TChannel : SocketDatagramChannel<TChannel>
     {
-        //static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<SocketDatagramChannel>();
-        private static readonly Action<object, object> ReceiveFromCompletedSyncCallback = OnReceiveFromCompletedSync;
+        private static readonly Action<object, object> ReceiveFromCompletedSyncCallback = (u, p) => OnReceiveFromCompletedSync(u, p);
         private static readonly ChannelMetadata ChannelMetadata = new ChannelMetadata(true);
 
         private readonly DefaultDatagramChannelConfig _config;
@@ -71,7 +96,9 @@ namespace DotNetty.Transport.Channels.Sockets
             SetState(StateFlags.Active);
         }
 
-        public override bool Active => Open && Socket.IsBound;
+        public override bool IsActive => IsOpen && Socket.IsBound;
+
+        public override bool Active => IsActive;
 
         protected override bool DoConnect(EndPoint remoteAddress, EndPoint localAddress)
         {
@@ -98,7 +125,7 @@ namespace DotNetty.Transport.Channels.Sockets
 
         protected override void DoFinishConnect(SocketChannelAsyncOperation<TChannel, DatagramChannelUnsafe> operation)
         {
-            throw new NotSupportedException();
+            throw ThrowHelper.GetNotSupportedException();
         }
 
         protected override void DoDisconnect() => DoClose();
@@ -156,11 +183,12 @@ namespace DotNetty.Transport.Channels.Sockets
 
             var operation = ReadOperation;
             var data = (IByteBuffer)operation.UserToken;
-            bool free = true;
 
+            bool free = true;
             try
             {
-                IRecvByteBufAllocatorHandle handle = Unsafe.RecvBufAllocHandle;
+                IRecvByteBufAllocatorHandle allocHandle = Unsafe.RecvBufAllocHandle;
+                allocHandle.AttemptedBytesRead = data.WritableBytes;
 
                 int received = operation.BytesTransferred;
                 if ((uint)(received - 1) > SharedConstants.TooBigOrNegative) // <= 0
@@ -168,20 +196,16 @@ namespace DotNetty.Transport.Channels.Sockets
                     return 0;
                 }
 
-                handle.LastBytesRead = received;
-                _ = data.SetWriterIndex(data.WriterIndex + received);
+                allocHandle.LastBytesRead = received;
                 EndPoint remoteAddress = operation.RemoteEndPoint;
-                buf.Add(new DatagramPacket(data, remoteAddress, LocalAddress));
+                buf.Add(new DatagramPacket(data.SetWriterIndex(data.WriterIndex + received), remoteAddress, LocalAddress));
                 free = false;
 
                 return 1;
             }
             finally
             {
-                if (free)
-                {
-                    _ = data.Release();
-                }
+                if (free) { _ = data.Release(); }
 
                 operation.UserToken = null;
             }
@@ -194,16 +218,12 @@ namespace DotNetty.Transport.Channels.Sockets
             var envelope = message as IAddressedEnvelope<IByteBuffer>;
             if (envelope is null)
             {
-                throw new InvalidOperationException(
-                    $"Unexpected type: {message.GetType().FullName}, expecting DatagramPacket or IAddressedEnvelope.");
+                ThrowHelper.ThrowInvalidOperationException_UnexpectedType_expecting_DatagramPacket_IAddressedEnvelope(message);
             }
 
             IByteBuffer data = envelope.Content;
             int length = data.ReadableBytes;
-            if (0u >= (uint)length)
-            {
-                return;
-            }
+            if (0u >= (uint)length) { return; }
 
 #if NETCOREAPP || NETSTANDARD_2_0_GREATER
             var operation = PrepareWriteOperation(data.GetReadableMemory(data.ReaderIndex, length));
@@ -219,8 +239,6 @@ namespace DotNetty.Transport.Channels.Sockets
             }
         }
 
-        //protected override IChannelUnsafe NewUnsafe() => new DatagramChannelUnsafe(this); ## 苦竹 屏蔽 ##
-
         protected override bool DoWriteMessage(object msg, ChannelOutboundBuffer input)
         {
             EndPoint remoteAddress = null;
@@ -233,7 +251,7 @@ namespace DotNetty.Transport.Channels.Sockets
             }
             else if (msg is IByteBuffer buffer)
             {
-                data = buffer;//  (IByteBuffer)msg;
+                data = buffer;
                 remoteAddress = RemoteAddressInternal;
             }
 
@@ -256,32 +274,37 @@ namespace DotNetty.Transport.Channels.Sockets
 
         protected override object FilterOutboundMessage(object msg)
         {
-            if (msg is DatagramPacket packet)
+            switch (msg)
             {
-                return packet.Content.IsSingleIoBuffer
-                    ? packet
-                    : new DatagramPacket(CreateNewDirectBuffer(packet, packet.Content), packet.Recipient);
+                case DatagramPacket packet:
+                    return packet.Content.IsSingleIoBuffer
+                        ? packet
+                        : new DatagramPacket(CreateNewDirectBuffer(packet, packet.Content), packet.Recipient);
+
+                case IByteBuffer buffer:
+                    return buffer.IsSingleIoBuffer
+                        ? buffer
+                        : CreateNewDirectBuffer(buffer);
+
+                case IAddressedEnvelope<IByteBuffer> envolope:
+                    if (envolope.Content.IsSingleIoBuffer)
+                    {
+                        return envolope;
+                    }
+
+                    return new DefaultAddressedEnvelope<IByteBuffer>(
+                        CreateNewDirectBuffer(envolope, envolope.Content), envolope.Recipient);
+
+                default:
+                    throw GetUnsupportedMsgTypeException(msg);
             }
+        }
 
-            if (msg is IByteBuffer buffer)
-            {
-                return buffer.IsSingleIoBuffer
-                    ? buffer
-                    : CreateNewDirectBuffer(buffer);
-            }
 
-            if (msg is IAddressedEnvelope<IByteBuffer> envolope)
-            {
-                if (envolope.Content.IsSingleIoBuffer)
-                {
-                    return envolope;
-                }
-
-                return new DefaultAddressedEnvelope<IByteBuffer>(
-                    CreateNewDirectBuffer(envolope, envolope.Content), envolope.Recipient);
-            }
-
-            throw new NotSupportedException(
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        internal static NotSupportedException GetUnsupportedMsgTypeException(object msg)
+        {
+            return new NotSupportedException(
                 $"Unsupported message type: {msg.GetType()}, expecting instances of DatagramPacket, IByteBuffer or IAddressedEnvelope.");
         }
 
@@ -448,36 +471,39 @@ namespace DotNetty.Transport.Channels.Sockets
                 }
             }
 
-            if (Socket.AddressFamily == AddressFamily.InterNetwork)
+            var addressFamily = Socket.AddressFamily;
+            switch (addressFamily)
             {
-                var multicastOption = new MulticastOption(multicastAddress.Address);
-                if (interfaceIndex >= 0)
-                {
-                    multicastOption.InterfaceIndex = interfaceIndex;
-                }
-                if (source is object)
-                {
-                    multicastOption.LocalAddress = source.Address;
-                }
+                case AddressFamily.InterNetwork:
+                    {
+                        var multicastOption = new MulticastOption(multicastAddress.Address);
+                        if (interfaceIndex >= 0)
+                        {
+                            multicastOption.InterfaceIndex = interfaceIndex;
+                        }
+                        if (source is object)
+                        {
+                            multicastOption.LocalAddress = source.Address;
+                        }
 
-                return multicastOption;
+                        return multicastOption;
+                    }
+                case AddressFamily.InterNetworkV6:
+                    {
+                        var multicastOption = new IPv6MulticastOption(multicastAddress.Address);
+
+                        // Technically IPV6 multicast requires network interface index,
+                        // but if it is not specified, default 0 will be used.
+                        if (interfaceIndex >= 0)
+                        {
+                            multicastOption.InterfaceIndex = interfaceIndex;
+                        }
+
+                        return multicastOption;
+                    }
+                default:
+                    throw ThrowHelper.GetNotSupportedException_Socket_address_family(Socket.AddressFamily);
             }
-
-            if (Socket.AddressFamily == AddressFamily.InterNetworkV6)
-            {
-                var multicastOption = new IPv6MulticastOption(multicastAddress.Address);
-
-                // Technically IPV6 multicast requires network interface index,
-                // but if it is not specified, default 0 will be used.
-                if (interfaceIndex >= 0)
-                {
-                    multicastOption.InterfaceIndex = interfaceIndex;
-                }
-
-                return multicastOption;
-            }
-
-            throw new NotSupportedException($"Socket address family {Socket.AddressFamily} not supported, expecting InterNetwork or InterNetworkV6");
         }
     }
 }

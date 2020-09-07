@@ -1,5 +1,30 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) The DotNetty Project (Microsoft). All rights reserved.
+ *
+ *   https://github.com/azure/dotnetty
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Handlers.Streams
 {
@@ -17,9 +42,9 @@ namespace DotNetty.Handlers.Streams
     public class ChunkedWriteHandler<T> : ChannelDuplexHandler
     {
         private static readonly IInternalLogger Logger = InternalLoggerFactory.GetInstance<ChunkedWriteHandler<T>>();
-        private static readonly Action<Task, object> LinkOutcomeWhenIsEndOfChunkedInputAction = LinkOutcomeWhenIsEndOfChunkedInput;
-        private static readonly Action<Task, object> LinkOutcomeAction = LinkOutcome;
-        private static readonly Action<object> InvokeDoFlushAction = OnInvokeDoFlush;
+        private static readonly Action<Task, object> LinkOutcomeWhenIsEndOfChunkedInputAction = (t, s) => LinkOutcomeWhenIsEndOfChunkedInput(t, s);
+        private static readonly Action<Task, object> LinkOutcomeAction = (t, s) => LinkOutcome(t, s);
+        private static readonly Action<object> InvokeDoFlushAction = s => OnInvokeDoFlush(s);
 
         private readonly Deque<PendingWrite> _queue = new Deque<PendingWrite>();
         private IChannelHandlerContext _ctx;
@@ -37,13 +62,13 @@ namespace DotNetty.Handlers.Streams
             }
             else
             {
-                ctx.Executor.Execute(InvokeDoFlushAction, Tuple.Create(this, ctx));
+                ctx.Executor.Execute(InvokeDoFlushAction, (this, ctx));
             }
         }
 
         public override void Write(IChannelHandlerContext context, object message, IPromise promise)
         {
-            _queue.AddToBack(new PendingWrite(message, promise));
+            _queue.AddLast​(new PendingWrite(message, promise));
         }
 
         public override void Flush(IChannelHandlerContext context) => DoFlush(context);
@@ -69,7 +94,7 @@ namespace DotNetty.Handlers.Streams
         {
             while (true)
             {
-                if (!_queue.TryRemoveFromFront(out PendingWrite currentWrite))
+                if (!_queue.TryRemoveFirst(out PendingWrite currentWrite))
                 {
                     break;
                 }
@@ -133,7 +158,7 @@ namespace DotNetty.Handlers.Streams
         void DoFlush(IChannelHandlerContext context)
         {
             IChannel channel = context.Channel;
-            if (!channel.Active)
+            if (!channel.IsActive)
             {
                 Discard();
                 return;
@@ -157,7 +182,7 @@ namespace DotNetty.Handlers.Streams
                     // as this had to be done already by someone who resolved the
                     // promise (using ChunkedInput.close method).
                     // See https://github.com/netty/netty/issues/8700.
-                    _ = _queue.RemoveFromFront();
+                    _ = _queue.RemoveFirst();
                     continue;
                 }
 
@@ -185,7 +210,7 @@ namespace DotNetty.Handlers.Streams
                     }
                     catch (Exception exception)
                     {
-                        _ = _queue.RemoveFromFront();
+                        _ = _queue.RemoveFirst();
 
                         if (message is object)
                         {
@@ -217,7 +242,7 @@ namespace DotNetty.Handlers.Streams
                     Task future = context.WriteAndFlushAsync(message);
                     if (endOfInput)
                     {
-                        _ = _queue.RemoveFromFront();
+                        _ = _queue.RemoveFirst();
 
                         if (future.IsCompleted)
                         {
@@ -243,7 +268,7 @@ namespace DotNetty.Handlers.Streams
                         else
                         {
                             _ = future.ContinueWith(LinkOutcomeAction,
-                                Tuple.Create(this, channel, currentWrite, resume), TaskContinuationOptions.ExecuteSynchronously);
+                                (this, channel, currentWrite, resume), TaskContinuationOptions.ExecuteSynchronously);
                         }
                     }
 
@@ -251,12 +276,12 @@ namespace DotNetty.Handlers.Streams
                 }
                 else
                 {
-                    _ = _queue.RemoveFromFront();
+                    _ = _queue.RemoveFirst();
                     _ = context.WriteAsync(pendingMessage, currentWrite.Promise);
                     requiresFlush = true;
                 }
 
-                if (!channel.Active)
+                if (!channel.IsActive)
                 {
                     Discard(new ClosedChannelException());
                     break;
@@ -271,7 +296,7 @@ namespace DotNetty.Handlers.Streams
 
         private static void LinkOutcome(Task task, object state)
         {
-            var wrapped = (Tuple<ChunkedWriteHandler<T>, IChannel, PendingWrite, bool>)state;
+            var wrapped = ((ChunkedWriteHandler<T>, IChannel, PendingWrite, bool))state;
             HandleFuture(task, wrapped.Item1, wrapped.Item2, wrapped.Item3, wrapped.Item4);
         }
 
@@ -321,7 +346,7 @@ namespace DotNetty.Handlers.Streams
 
         private static void OnInvokeDoFlush(object state)
         {
-            var wrapped = (Tuple<ChunkedWriteHandler<T>, IChannelHandlerContext>)state;
+            var wrapped = ((ChunkedWriteHandler<T>, IChannelHandlerContext))state;
             wrapped.Item1.InvokeDoFlush(wrapped.Item2);
         }
 

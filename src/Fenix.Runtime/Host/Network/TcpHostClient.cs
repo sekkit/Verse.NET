@@ -27,8 +27,11 @@ namespace Fenix
         public static volatile TcpSocketClient client;
 
         protected IChannel clientChannel;
-
+#if !UNITY_5_3_OR_NEWER
+        public bool IsActive => clientChannel.IsActive;
+#else
         public bool IsActive => clientChannel.Active;
+#endif
 
         private bool IsAlive = true;
 

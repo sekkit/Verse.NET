@@ -1,5 +1,30 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) The DotNetty Project (Microsoft). All rights reserved.
+ *
+ *   https://github.com/azure/dotnetty
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Codecs.Http
 {
@@ -34,9 +59,9 @@ namespace DotNetty.Codecs.Http
         internal static readonly AsciiString Identity = HttpHeaderValues.Identity;
 
         protected IChannelHandlerContext HandlerContext;
-        EmbeddedChannel decoder;
-        bool continueResponse;
-        bool _needRead = true;
+        private EmbeddedChannel _decoder;
+        private bool _continueResponse;
+        private bool _needRead = true;
 
         protected override void Decode(IChannelHandlerContext context, IHttpObject message, List<object> output)
         {
@@ -46,18 +71,18 @@ namespace DotNetty.Codecs.Http
                 {
                     if (!(response is ILastHttpContent))
                     {
-                        this.continueResponse = true;
+                        _continueResponse = true;
                     }
                     // 100-continue response must be passed through.
                     output.Add(ReferenceCountUtil.Retain(message));
                     return;
                 }
 
-                if (this.continueResponse)
+                if (_continueResponse)
                 {
                     if (message is ILastHttpContent)
                     {
-                        this.continueResponse = false;
+                        _continueResponse = false;
                     }
                     // 100-continue response must be passed through.
                     output.Add(ReferenceCountUtil.Retain(message));
@@ -67,7 +92,7 @@ namespace DotNetty.Codecs.Http
                 var httpContent = message as IHttpContent;
                 if (message is IHttpMessage httpMessage)
                 {
-                    this.Cleanup();
+                    Cleanup();
                     HttpHeaders headers = httpMessage.Headers;
 
                     // Determine the content encoding.
@@ -77,11 +102,27 @@ namespace DotNetty.Codecs.Http
                     }
                     else
                     {
-                        contentEncoding = Identity;
+                        if (headers.TryGet(HttpHeaderNames.TransferEncoding, out var transferEncoding))
+                        {
+                            int idx = transferEncoding.IndexOf(HttpConstants.CommaChar);
+                            if (SharedConstants.TooBigOrNegative >= (uint)idx) // != -1
+                            {
+                                contentEncoding = AsciiString.Trim(transferEncoding.SubSequence(0, idx));
+                            }
+                            else
+                            {
+                                contentEncoding = AsciiString.Trim(transferEncoding);
+                            }
+                        }
+                        else
+                        {
+                            contentEncoding = Identity;
+                        }
+                        //contentEncoding = Identity;
                     }
-                    this.decoder = this.NewContentDecoder(contentEncoding);
+                    _decoder = NewContentDecoder(contentEncoding);
 
-                    if (this.decoder is null)
+                    if (_decoder is null)
                     {
                         if (httpContent is object)
                         {
@@ -104,7 +145,7 @@ namespace DotNetty.Codecs.Http
                     // See https://github.com/netty/netty/issues/5892
 
                     // set new content encoding,
-                    ICharSequence targetContentEncoding = this.GetTargetContentEncoding(contentEncoding);
+                    ICharSequence targetContentEncoding = GetTargetContentEncoding(contentEncoding);
                     if (HttpHeaderValues.Identity.ContentEquals(targetContentEncoding))
                     {
                         // Do NOT set the 'Content-Encoding' header if the target encoding is 'identity'
@@ -149,13 +190,13 @@ namespace DotNetty.Codecs.Http
 
                 if (httpContent is object)
                 {
-                    if (this.decoder is null)
+                    if (_decoder is null)
                     {
                         output.Add(httpContent.Retain());
                     }
                     else
                     {
-                        this.DecodeContent(httpContent, output);
+                        DecodeContent(httpContent, output);
                     }
                 }
             }
@@ -169,11 +210,11 @@ namespace DotNetty.Codecs.Http
         {
             IByteBuffer content = c.Content;
 
-            this.Decode(content, output);
+            Decode(content, output);
 
             if (c is ILastHttpContent last)
             {
-                this.FinishDecode(output);
+                FinishDecode(output);
 
                 // Generate an additional chunk if the decoder produced
                 // the last product on closure,
@@ -200,7 +241,7 @@ namespace DotNetty.Codecs.Http
             }
             finally
             {
-                if (needRead && !context.Channel.Configuration.AutoRead)
+                if (needRead && !context.Channel.Configuration.IsAutoRead)
                 {
                     _ = context.Read();
                 }
@@ -213,28 +254,28 @@ namespace DotNetty.Codecs.Http
 
         public override void HandlerRemoved(IChannelHandlerContext context)
         {
-            this.CleanupSafely(context);
+            CleanupSafely(context);
             base.HandlerRemoved(context);
         }
 
         public override void ChannelInactive(IChannelHandlerContext context)
         {
-            this.CleanupSafely(context);
+            CleanupSafely(context);
             base.ChannelInactive(context);
         }
 
         public override void HandlerAdded(IChannelHandlerContext context)
         {
-            this.HandlerContext = context;
+            HandlerContext = context;
             base.HandlerAdded(context);
         }
 
         void Cleanup()
         {
-            if (this.decoder is object)
+            if (_decoder is object)
             {
-                _ = this.decoder.FinishAndReleaseAll();
-                this.decoder = null;
+                _ = _decoder.FinishAndReleaseAll();
+                _decoder = null;
             }
         }
 
@@ -242,7 +283,7 @@ namespace DotNetty.Codecs.Http
         {
             try
             {
-                this.Cleanup();
+                Cleanup();
             }
             catch (Exception cause)
             {
@@ -255,24 +296,24 @@ namespace DotNetty.Codecs.Http
         void Decode(IByteBuffer buf, IList<object> output)
         {
             // call retain here as it will call release after its written to the channel
-            _ = this.decoder.WriteInbound(buf.Retain());
-            this.FetchDecoderOutput(output);
+            _ = _decoder.WriteInbound(buf.Retain());
+            FetchDecoderOutput(output);
         }
 
         void FinishDecode(ICollection<object> output)
         {
-            if (this.decoder.Finish())
+            if (_decoder.Finish())
             {
-                this.FetchDecoderOutput(output);
+                FetchDecoderOutput(output);
             }
-            this.decoder = null;
+            _decoder = null;
         }
 
         void FetchDecoderOutput(ICollection<object> output)
         {
             while (true)
             {
-                var buf = this.decoder.ReadInbound<IByteBuffer>();
+                var buf = _decoder.ReadInbound<IByteBuffer>();
                 if (buf is null)
                 {
                     break;

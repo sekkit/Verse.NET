@@ -1,5 +1,24 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Codecs.Http2
 {
@@ -50,7 +69,7 @@ namespace DotNetty.Codecs.Http2
 
         public IHttp2RemoteFlowController FlowController => _connection.Remote.FlowController;
 
-        public Http2Settings PollSentSettings => _outstandingLocalSettingsQueue.RemoveFromFront();
+        public Http2Settings PollSentSettings => _outstandingLocalSettingsQueue.RemoveFirst();
 
         public virtual void RemoteSettings(Http2Settings settings)
         {
@@ -299,7 +318,7 @@ namespace DotNetty.Codecs.Http2
 
         public virtual Task WriteSettingsAsync(IChannelHandlerContext ctx, Http2Settings settings, IPromise promise)
         {
-            _outstandingLocalSettingsQueue.AddToBack(settings);
+            _outstandingLocalSettingsQueue.AddLast​(settings);
             try
             {
                 var pushEnabled = settings.PushEnabled();
@@ -323,7 +342,7 @@ namespace DotNetty.Codecs.Http2
             {
                 return _frameWriter.WriteSettingsAckAsync(ctx, promise);
             }
-            Http2Settings settings = _outstandingRemoteSettingsQueue.RemoveFromFront();
+            Http2Settings settings = _outstandingRemoteSettingsQueue.RemoveFirst();
             if (settings is null)
             {
                 _ = promise.TrySetException(ThrowHelper.GetConnectionError_attempted_to_write_a_SETTINGS_ACK_with_no_pending_SETTINGS());
@@ -451,7 +470,7 @@ namespace DotNetty.Codecs.Http2
             {
                 _outstandingRemoteSettingsQueue = new Deque<Http2Settings>(2);
             }
-            _outstandingRemoteSettingsQueue.AddToBack(settings);
+            _outstandingRemoteSettingsQueue.AddLast​(settings);
         }
 
         /// <summary>
@@ -558,13 +577,13 @@ namespace DotNetty.Codecs.Http2
 
         private static void NotifyLifecycleManagerOnError(Task future, IHttp2LifecycleManager lm, IChannelHandlerContext ctx)
         {
-            _ = future.ContinueWith(NotifyLifecycleManagerOnErrorAction, Tuple.Create(lm, ctx), TaskContinuationOptions.ExecuteSynchronously);
+            _ = future.ContinueWith(NotifyLifecycleManagerOnErrorAction, (lm, ctx), TaskContinuationOptions.ExecuteSynchronously);
         }
 
-        private static readonly Action<Task, object> NotifyLifecycleManagerOnErrorAction = NotifyLifecycleManagerOnError0;
+        private static readonly Action<Task, object> NotifyLifecycleManagerOnErrorAction = (t, s) => NotifyLifecycleManagerOnError0(t, s);
         private static void NotifyLifecycleManagerOnError0(Task t, object s)
         {
-            var wrapped = (Tuple<IHttp2LifecycleManager, IChannelHandlerContext>)s;
+            var wrapped = ((IHttp2LifecycleManager, IChannelHandlerContext))s;
             var cause = t.Exception;
             if (cause is object)
             {
@@ -659,7 +678,7 @@ namespace DotNetty.Codecs.Http2
 
             }
 
-            private static readonly Action<Task, object> LinkOutcomeContinuationAction = LinkOutcomeContinuation;
+            private static readonly Action<Task, object> LinkOutcomeContinuationAction = (t, s) => LinkOutcomeContinuation(t, s);
             private static void LinkOutcomeContinuation(Task task, object state)
             {
                 if (!task.IsSuccess())

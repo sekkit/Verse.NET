@@ -1,11 +1,33 @@
-﻿using System;
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
+
+using System;
 using System.Net.Sockets;
 
 namespace DotNetty.Transport.Channels.Sockets
 {
     public static class SocketEx
     {
-        internal static Socket CreateSocket()
+        public static Socket CreateSocket()
         {
             // .Net45+，默认为AddressFamily.InterNetworkV6，并设置 DualMode 为 true，双线绑定
             var socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
@@ -13,14 +35,14 @@ namespace DotNetty.Transport.Channels.Sockets
             return socket;
         }
 
-        internal static Socket CreateSocket(AddressFamily addressFamily)
+        public static Socket CreateSocket(AddressFamily addressFamily)
         {
             var socket = new Socket(addressFamily, SocketType.Stream, ProtocolType.Tcp);
             socket.EnableFastpath();
             return socket;
         }
 
-        internal static void SafeClose(this Socket socket)
+        public static void SafeClose(this Socket socket)
         {
             if (socket is null)
             {
@@ -91,11 +113,11 @@ namespace DotNetty.Transport.Channels.Sockets
             switch (errorCode)
             {
                 case SocketError.OperationAborted:
-                case SocketError.InvalidArgument:
                 case SocketError.Interrupted:
-
-                case SocketError.Shutdown:
+                // Calling Dispose after ReceiveAsync can cause an "InvalidArgument" error on *nix.
+                case SocketError.InvalidArgument when !PlatformApis.IsWindows:
                     return true;
+
                 default:
                     return false;
             }
@@ -105,17 +127,14 @@ namespace DotNetty.Transport.Channels.Sockets
         {
             switch (errorCode)
             {
-                case SocketError.ConnectionAborted:
                 case SocketError.ConnectionReset:
-                case SocketError.ConnectionRefused:
-
-                case SocketError.OperationAborted:
-                case SocketError.InvalidArgument:
-                case SocketError.Interrupted:
-
                 case SocketError.Shutdown:
-                case SocketError.TimedOut:
+                // A connection reset can be reported as SocketError.ConnectionAborted on Windows.
+                case SocketError.ConnectionAborted when PlatformApis.IsWindows:
+                // ProtocolType can be removed once https://github.com/dotnet/corefx/issues/31927 is fixed.
+                case SocketError.ProtocolType when PlatformApis.IsDarwin:
                     return true;
+
                 default:
                     return false;
             }

@@ -1,5 +1,27 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) Microsoft. All rights reserved.
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com)
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Codecs.Http.WebSockets
 {
@@ -160,7 +182,7 @@ namespace DotNetty.Codecs.Http.WebSockets
 
             var completion = channel.NewPromise();
             _ = channel.WriteAndFlushAsync(request).ContinueWith(HandshakeOnCompleteAction,
-                new Tuple<IPromise, IChannelPipeline, WebSocketClientHandshaker>(completion, pipeline, this),
+                (completion, pipeline, this),
                 TaskContinuationOptions.ExecuteSynchronously);
 
             return completion.Task;
@@ -169,10 +191,10 @@ namespace DotNetty.Codecs.Http.WebSockets
         /// <summary>Returns a new <see cref="IFullHttpRequest"/> which will be used for the handshake.</summary>
         protected internal abstract IFullHttpRequest NewHandshakeRequest();
 
-        static readonly Action<Task, object> HandshakeOnCompleteAction = HandshakeOnComplete;
+        static readonly Action<Task, object> HandshakeOnCompleteAction = (t, s) => HandshakeOnComplete(t, s);
         static void HandshakeOnComplete(Task t, object state)
         {
-            var wrapped = (Tuple<IPromise, IChannelPipeline, WebSocketClientHandshaker>)state;
+            var wrapped = ((IPromise, IChannelPipeline, WebSocketClientHandshaker))state;
             if (t.IsCanceled)
             {
                 _ = wrapped.Item1.TrySetCanceled(); return;
@@ -303,7 +325,7 @@ namespace DotNetty.Codecs.Http.WebSockets
             }
         }
 
-        static readonly Action<object, object> RemoveHandlerAction = OnRemoveHandler;
+        static readonly Action<object, object> RemoveHandlerAction = (p, h) => OnRemoveHandler(p, h);
         static void OnRemoveHandler(object p, object h) => ((IChannelPipeline)p).Remove((IChannelHandler)h);
 
         /// <summary>
@@ -443,17 +465,17 @@ namespace DotNetty.Codecs.Http.WebSockets
 
         private void ApplyForceCloseTimeout(IChannel channel, IPromise flushFuture)
         {
-            if (ForceCloseTimeoutMillis <= 0 || !channel.Active || (uint)ForceCloseInit > 0u)
+            if (ForceCloseTimeoutMillis <= 0 || !channel.IsActive || (uint)ForceCloseInit > 0u)
             {
                 return;
             }
-            _ = flushFuture.Task.ContinueWith(CloseOnCompleteAction, Tuple.Create(channel, this), TaskContinuationOptions.ExecuteSynchronously);
+            _ = flushFuture.Task.ContinueWith(CloseOnCompleteAction, (channel, this), TaskContinuationOptions.ExecuteSynchronously);
         }
 
-        static readonly Action<Task, object> CloseOnCompleteAction = CloseOnComplete;
+        static readonly Action<Task, object> CloseOnCompleteAction = (t, s) => CloseOnComplete(t, s);
         static void CloseOnComplete(Task t, object state)
         {
-            var wrapped = (Tuple<IChannel, WebSocketClientHandshaker>)state;
+            var wrapped = ((IChannel, WebSocketClientHandshaker))state;
             var channel = wrapped.Item1;
             var self = wrapped.Item2;
 
@@ -461,7 +483,7 @@ namespace DotNetty.Codecs.Http.WebSockets
             // a server to receive CloseFrame. Thus this should be handled
             // by the application separately.
             // Also, close might be called twice from different threads.
-            if (t.IsSuccess() && channel.Active &&
+            if (t.IsSuccess() && channel.IsActive &&
                 0u >= (uint)Interlocked.CompareExchange(ref self._forceCloseInit, 1, 0))
             {
                 var timeoutTask = channel.EventLoop.Schedule(CloseChannelAction, channel, self, TimeSpan.FromMilliseconds(self.ForceCloseTimeoutMillis));
@@ -469,18 +491,18 @@ namespace DotNetty.Codecs.Http.WebSockets
             }
         }
 
-        private static readonly Action<object, object> CloseChannelAction = CloseChannel;
+        private static readonly Action<object, object> CloseChannelAction = (c, p) => CloseChannel(c, p);
         private static void CloseChannel(object c, object p)
         {
             var channel = (IChannel)c;
-            if (channel.Active)
+            if (channel.IsActive)
             {
                 _ = channel.CloseAsync();
                 _ = Interlocked.Exchange(ref ((WebSocketClientHandshaker)p)._forceCloseComplete, SharedConstants.True);
             }
         }
 
-        private static readonly Action<Task, object> AbortCloseChannelAfterChannelClosedAction = AbortCloseChannelAfterChannelClosed;
+        private static readonly Action<Task, object> AbortCloseChannelAfterChannelClosedAction = (t, s) => AbortCloseChannelAfterChannelClosed(t, s);
         private static void AbortCloseChannelAfterChannelClosed(Task t, object s)
         {
             _ = ((IScheduledTask)s).Cancel();

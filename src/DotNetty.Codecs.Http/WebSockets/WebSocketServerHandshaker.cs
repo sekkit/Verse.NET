@@ -1,5 +1,27 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) Microsoft. All rights reserved.
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com)
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Codecs.Http.WebSockets
 {
@@ -141,10 +163,12 @@ namespace DotNetty.Codecs.Http.WebSockets
         /// <param name="completion">the <see cref="IPromise"/> to be notified when the opening handshake is done</param>
         public void Handshake(IChannel channel, IFullHttpRequest req, HttpHeaders responseHeaders, IPromise completion)
         {
+#if DEBUG
             if (Logger.DebugEnabled)
             {
                 Logger.WebSocketVersionServerHandshake(channel, _version);
             }
+#endif
 
             IFullHttpResponse response = NewHandshakeResponse(req, responseHeaders);
             IChannelPipeline p = channel.Pipeline;
@@ -179,13 +203,13 @@ namespace DotNetty.Codecs.Http.WebSockets
                 _ = p.AddBefore(encoderName, "wsencoder", NewWebSocketEncoder());
             }
 
-            _ = channel.WriteAndFlushAsync(response).ContinueWith(RemoveHandlerAfterWriteAction, Tuple.Create(completion, p, encoderName), TaskContinuationOptions.ExecuteSynchronously);
+            _ = channel.WriteAndFlushAsync(response).ContinueWith(RemoveHandlerAfterWriteAction, (completion, p, encoderName), TaskContinuationOptions.ExecuteSynchronously);
         }
 
-        static readonly Action<Task, object> RemoveHandlerAfterWriteAction = RemoveHandlerAfterWrite;
+        static readonly Action<Task, object> RemoveHandlerAfterWriteAction = (t, s) => RemoveHandlerAfterWrite(t, s);
         static void RemoveHandlerAfterWrite(Task t, object state)
         {
-            var wrapped = (Tuple<IPromise, IChannelPipeline, string>)state;
+            var wrapped = ((IPromise, IChannelPipeline, string))state;
             if (t.IsSuccess())
             {
                 _ = wrapped.Item2.Remove(wrapped.Item3);
@@ -211,10 +235,12 @@ namespace DotNetty.Codecs.Http.WebSockets
             {
                 return HandshakeAsync(channel, request, responseHeaders);
             }
+#if DEBUG
             if (Logger.DebugEnabled)
             {
                 Logger.WebSocketVersionServerHandshake(channel, _version);
             }
+#endif
             IChannelPipeline p = channel.Pipeline;
             IChannelHandlerContext ctx = p.Context<HttpRequestDecoder>();
             if (ctx is null)
@@ -293,7 +319,7 @@ namespace DotNetty.Codecs.Http.WebSockets
         /// <param name="req"></param>
         /// <param name="responseHeaders"></param>
         /// <returns></returns>
-        protected abstract IFullHttpResponse NewHandshakeResponse(IFullHttpRequest req, HttpHeaders responseHeaders);
+        protected internal abstract IFullHttpResponse NewHandshakeResponse(IFullHttpRequest req, HttpHeaders responseHeaders);
 
         /// <summary>
         /// Performs the closing handshake

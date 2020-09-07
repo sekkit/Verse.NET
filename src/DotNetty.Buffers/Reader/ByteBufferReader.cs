@@ -1,4 +1,26 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
+
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 //
@@ -14,6 +36,7 @@ namespace DotNetty.Buffers
 
     public ref partial struct ByteBufferReader
     {
+        private readonly IByteBuffer _origin;
         private SequencePosition _currentPosition;
         private SequencePosition _nextPosition;
         private bool _moreData;
@@ -25,28 +48,51 @@ namespace DotNetty.Buffers
         private long _consumed;
 
         /// <summary>Create a <see cref="ByteBufferReader" /> over the given <see cref="IByteBuffer"/>.</summary>
-        public ByteBufferReader(IByteBuffer buffer) : this(buffer.UnreadSequence) { }
-
-        /// <summary>Create a <see cref="ByteBufferReader" /> over the given <see cref="ReadOnlySequence{T}"/>.</summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ByteBufferReader(ReadOnlySequence<byte> buffer)
+        public ByteBufferReader(IByteBuffer buffer)
         {
+            _origin = buffer;
+            var sequence = buffer.UnreadSequence;
+
             _currentSpanIndex = 0;
             _consumed = 0;
-            _sequence = buffer;
-            _currentPosition = buffer.Start;
+            _sequence = sequence;
+            _currentPosition = sequence.Start;
             _length = -1;
 
-            ByteBufferReaderHelper.GetFirstSpan(buffer, out ReadOnlySpan<byte> first, out _nextPosition);
+            ByteBufferReaderHelper.GetFirstSpan(sequence, out ReadOnlySpan<byte> first, out _nextPosition);
             _currentSpan = first;
             _moreData = (uint)first.Length > 0u;
 
-            if (!buffer.IsSingleSegment && !_moreData)
+            if (!sequence.IsSingleSegment && !_moreData)
             {
                 _moreData = true;
                 GetNextSpan();
             }
         }
+
+        /// <summary>Create a <see cref="ByteBufferReader" /> over the given <see cref="ReadOnlySequence{T}"/>.</summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ByteBufferReader(ReadOnlySequence<byte> sequence)
+        {
+            _origin = null;
+            _currentSpanIndex = 0;
+            _consumed = 0;
+            _sequence = sequence;
+            _currentPosition = sequence.Start;
+            _length = -1;
+
+            ByteBufferReaderHelper.GetFirstSpan(sequence, out ReadOnlySpan<byte> first, out _nextPosition);
+            _currentSpan = first;
+            _moreData = (uint)first.Length > 0u;
+
+            if (!sequence.IsSingleSegment && !_moreData)
+            {
+                _moreData = true;
+                GetNextSpan();
+            }
+        }
+
+        public IByteBuffer Origin => _origin;
 
         /// <summary>Return true if we're in the last segment.</summary>
         public readonly bool IsLastSegment => _nextPosition.GetObject() is null;

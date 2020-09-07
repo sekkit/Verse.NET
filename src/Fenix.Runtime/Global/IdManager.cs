@@ -232,6 +232,8 @@ namespace Fenix
         public bool IsClientHost(ulong hostId)
         {
             var hostName = GetName(hostId);
+            if (hostName == null || hostName == "")
+                return false;
             if (mCNAME2ADDR.ContainsKey(hostName))
                 return true;
 #if !CLIENT

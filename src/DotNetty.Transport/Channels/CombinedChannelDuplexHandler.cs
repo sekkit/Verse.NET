@@ -1,5 +1,31 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) The DotNetty Project (Microsoft). All rights reserved.
+ *
+ *   https://github.com/azure/dotnetty
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
+
 
 namespace DotNetty.Transport.Channels
 {
@@ -23,7 +49,7 @@ namespace DotNetty.Transport.Channels
         private DelegatingChannelHandlerContext _outboundCtx;
         private int _handlerAdded;
 
-        protected CombinedChannelDuplexHandler()
+        protected internal CombinedChannelDuplexHandler()
         {
             EnsureNotSharable();
         }
@@ -120,11 +146,14 @@ namespace DotNetty.Transport.Channels
             }
             catch (Exception error)
             {
+#if DEBUG
                 if (Logger.DebugEnabled)
                 {
                     Logger.FreedThreadLocalBufferFromThreadFull(error, cause);
                 }
-                else if (Logger.WarnEnabled)
+                else
+#endif
+                if (Logger.WarnEnabled)
                 {
                     Logger.FreedThreadLocalBufferFromThread(error, cause);
                 }
@@ -147,7 +176,7 @@ namespace DotNetty.Transport.Channels
         {
             Debug.Assert(context == _inboundCtx.InnerContext);
 
-            if (!_inboundCtx.Removed)
+            if (!_inboundCtx.IsRemoved)
             {
                 InboundHandler.ChannelRegistered(_inboundCtx);
             }
@@ -161,7 +190,7 @@ namespace DotNetty.Transport.Channels
         {
             Debug.Assert(context == _inboundCtx.InnerContext);
 
-            if (!_inboundCtx.Removed)
+            if (!_inboundCtx.IsRemoved)
             {
                 InboundHandler.ChannelUnregistered(_inboundCtx);
             }
@@ -175,7 +204,7 @@ namespace DotNetty.Transport.Channels
         {
             Debug.Assert(context == _inboundCtx.InnerContext);
 
-            if (!_inboundCtx.Removed)
+            if (!_inboundCtx.IsRemoved)
             {
                 InboundHandler.ChannelActive(_inboundCtx);
             }
@@ -189,7 +218,7 @@ namespace DotNetty.Transport.Channels
         {
             Debug.Assert(context == _inboundCtx.InnerContext);
 
-            if (!_inboundCtx.Removed)
+            if (!_inboundCtx.IsRemoved)
             {
                 InboundHandler.ChannelInactive(_inboundCtx);
             }
@@ -203,7 +232,7 @@ namespace DotNetty.Transport.Channels
         {
             Debug.Assert(context == _inboundCtx.InnerContext);
 
-            if (!_inboundCtx.Removed)
+            if (!_inboundCtx.IsRemoved)
             {
                 InboundHandler.ExceptionCaught(_inboundCtx, exception);
             }
@@ -217,7 +246,7 @@ namespace DotNetty.Transport.Channels
         {
             Debug.Assert(context == _inboundCtx.InnerContext);
 
-            if (!_inboundCtx.Removed)
+            if (!_inboundCtx.IsRemoved)
             {
                 InboundHandler.UserEventTriggered(_inboundCtx, evt);
             }
@@ -231,7 +260,7 @@ namespace DotNetty.Transport.Channels
         {
             Debug.Assert(context == _inboundCtx.InnerContext);
 
-            if (!_inboundCtx.Removed)
+            if (!_inboundCtx.IsRemoved)
             {
                 InboundHandler.ChannelRead(_inboundCtx, message);
             }
@@ -245,7 +274,7 @@ namespace DotNetty.Transport.Channels
         {
             Debug.Assert(context == _inboundCtx.InnerContext);
 
-            if (!_inboundCtx.Removed)
+            if (!_inboundCtx.IsRemoved)
             {
                 InboundHandler.ChannelReadComplete(_inboundCtx);
             }
@@ -259,7 +288,7 @@ namespace DotNetty.Transport.Channels
         {
             Debug.Assert(context == _inboundCtx.InnerContext);
 
-            if (!_inboundCtx.Removed)
+            if (!_inboundCtx.IsRemoved)
             {
                 InboundHandler.ChannelWritabilityChanged(_inboundCtx);
             }
@@ -273,7 +302,7 @@ namespace DotNetty.Transport.Channels
         {
             Debug.Assert(context == _outboundCtx.InnerContext);
 
-            if (!_outboundCtx.Removed)
+            if (!_outboundCtx.IsRemoved)
             {
                 return OutboundHandler.BindAsync(_outboundCtx, localAddress);
             }
@@ -287,7 +316,7 @@ namespace DotNetty.Transport.Channels
         {
             Debug.Assert(context == _outboundCtx.InnerContext);
 
-            if (!_outboundCtx.Removed)
+            if (!_outboundCtx.IsRemoved)
             {
                 return OutboundHandler.ConnectAsync(_outboundCtx, remoteAddress, localAddress);
             }
@@ -301,7 +330,7 @@ namespace DotNetty.Transport.Channels
         {
             Debug.Assert(context == _outboundCtx.InnerContext);
 
-            if (!_outboundCtx.Removed)
+            if (!_outboundCtx.IsRemoved)
             {
                 OutboundHandler.Disconnect(_outboundCtx, promise);
             }
@@ -315,7 +344,7 @@ namespace DotNetty.Transport.Channels
         {
             Debug.Assert(context == _outboundCtx.InnerContext);
 
-            if (!_outboundCtx.Removed)
+            if (!_outboundCtx.IsRemoved)
             {
                 OutboundHandler.Close(_outboundCtx, promise);
             }
@@ -329,7 +358,7 @@ namespace DotNetty.Transport.Channels
         {
             Debug.Assert(context == _outboundCtx.InnerContext);
 
-            if (!_outboundCtx.Removed)
+            if (!_outboundCtx.IsRemoved)
             {
                 OutboundHandler.Deregister(_outboundCtx, promise);
             }
@@ -343,7 +372,7 @@ namespace DotNetty.Transport.Channels
         {
             Debug.Assert(context == _outboundCtx.InnerContext);
 
-            if (!_outboundCtx.Removed)
+            if (!_outboundCtx.IsRemoved)
             {
                 OutboundHandler.Read(_outboundCtx);
             }
@@ -357,7 +386,7 @@ namespace DotNetty.Transport.Channels
         {
             Debug.Assert(context == _outboundCtx.InnerContext);
 
-            if (!_outboundCtx.Removed)
+            if (!_outboundCtx.IsRemoved)
             {
                 OutboundHandler.Write(_outboundCtx, message, promise);
             }
@@ -371,7 +400,7 @@ namespace DotNetty.Transport.Channels
         {
             Debug.Assert(context == _outboundCtx.InnerContext);
 
-            if (!_outboundCtx.Removed)
+            if (!_outboundCtx.IsRemoved)
             {
                 OutboundHandler.Flush(_outboundCtx);
             }

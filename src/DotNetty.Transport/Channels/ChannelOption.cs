@@ -1,5 +1,31 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) The DotNetty Project (Microsoft). All rights reserved.
+ *
+ *   https://github.com/azure/dotnetty
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
+
 
 namespace DotNetty.Transport.Channels
 {
@@ -53,7 +79,7 @@ namespace DotNetty.Transport.Channels
         /// <param name="name">The name to associate with the new option.</param>
         /// <exception cref="ArgumentException">Thrown if a <see cref="ChannelOption"/> for the given <paramref name="name"/> exists.</exception>
         /// <returns>The new <see cref="ChannelOption{T}"/> instance.</returns>
-        public static  ChannelOption<T> NewInstance<T>(string name) => (ChannelOption<T>)Pool.NewInstance<T>(name);
+        public static ChannelOption<T> NewInstance<T>(string name) => (ChannelOption<T>)Pool.NewInstance<T>(name);
 
         public static readonly ChannelOption<IByteBufferAllocator> Allocator = ValueOf<IByteBufferAllocator>("ALLOCATOR");
         public static readonly ChannelOption<IRecvByteBufAllocator> RcvbufAllocator = ValueOf<IRecvByteBufAllocator>("RCVBUF_ALLOCATOR");
@@ -86,6 +112,8 @@ namespace DotNetty.Transport.Channels
         public static readonly ChannelOption<bool> IpMulticastLoopDisabled = ValueOf<bool>("IP_MULTICAST_LOOP_DISABLED");
 
         public static readonly ChannelOption<bool> TcpNodelay = ValueOf<bool>("TCP_NODELAY");
+
+        public static readonly ChannelOption<bool> SingleEventexecutorPerGroup = ValueOf<bool>("SINGLE_EVENTEXECUTOR_PER_GROUP");
 
         internal ChannelOption(int id, string name)
             : base(id, name)

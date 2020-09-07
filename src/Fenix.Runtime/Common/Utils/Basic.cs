@@ -191,7 +191,7 @@ namespace Fenix.Common.Utils
         
         public static int GetAvailablePort(IPAddress ip) 
         {
-            TcpListener l = new TcpListener(ip, 0);
+            var l = new TcpListener(ip, 0);
             l.Start();
             int port = ((IPEndPoint)l.LocalEndpoint).Port;
             l.Stop();

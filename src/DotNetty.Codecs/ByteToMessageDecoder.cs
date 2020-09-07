@@ -1,5 +1,24 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com)
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Codecs
 {
@@ -164,7 +183,7 @@ namespace DotNetty.Codecs
 
         /// <summary>
         /// This flag is used to determine if we need to call <see cref="IChannelHandlerContext.Read"/> to consume more data
-        /// when <see cref="IChannelConfiguration.AutoRead"/> is <c>false</c>.
+        /// when <see cref="IChannelConfiguration.IsAutoRead"/> is <c>false</c>.
         /// </summary>
         private bool _firedChannelRead;
 
@@ -359,7 +378,7 @@ namespace DotNetty.Codecs
         {
             _numReads = 0;
             DiscardSomeReadBytes();
-            if (!_firedChannelRead && !context.Channel.Configuration.AutoRead)
+            if (!_firedChannelRead && !context.Channel.Configuration.IsAutoRead)
             {
                 _ = context.Read();
             }
@@ -492,7 +511,7 @@ namespace DotNetty.Codecs
                         //
                         // See:
                         // - https://github.com/netty/netty/issues/4635
-                        if (context.Removed)
+                        if (context.IsRemoved)
                         {
                             break;
                         }
@@ -506,7 +525,7 @@ namespace DotNetty.Codecs
                     // If it was removed, it is not safe to continue to operate on the buffer.
                     //
                     // See https://github.com/netty/netty/issues/1664
-                    if (context.Removed)
+                    if (context.IsRemoved)
                     {
                         break;
                     }

@@ -1,4 +1,26 @@
-﻿namespace DotNetty.Transport.Channels
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
+
+namespace DotNetty.Transport.Channels
 {
     using System.Net;
     using DotNetty.Common;
@@ -119,6 +141,54 @@
 
         #endregion
 
+        #region -- class ReadCompleteTask --
+
+        sealed class ReadCompleteTask : IRunnable
+        {
+            private readonly AbstractChannelHandlerContext _ctx;
+
+            public ReadCompleteTask(AbstractChannelHandlerContext ctx) => _ctx = ctx;
+
+            public void Run()
+            {
+                _ctx.InvokeChannelReadComplete();
+            }
+        }
+
+        #endregion
+
+        #region -- class ReadTask --
+
+        sealed class ReadTask : IRunnable
+        {
+            private readonly AbstractChannelHandlerContext _ctx;
+
+            public ReadTask(AbstractChannelHandlerContext ctx) => _ctx = ctx;
+
+            public void Run()
+            {
+                _ctx.InvokeRead();
+            }
+        }
+
+        #endregion
+
+        #region -- class WritableStateChangedTask --
+
+        sealed class WritableStateChangedTask : IRunnable
+        {
+            private readonly AbstractChannelHandlerContext _ctx;
+
+            public WritableStateChangedTask(AbstractChannelHandlerContext ctx) => _ctx = ctx;
+
+            public void Run()
+            {
+                _ctx.InvokeChannelWritabilityChanged();
+            }
+        }
+
+        #endregion
+
         #region -- class FlushTask --
 
         sealed class FlushTask : IRunnable
@@ -151,9 +221,9 @@
             private static readonly bool EstimateTaskSizeOnSubmit =
                 SystemPropertyUtil.GetBoolean("io.netty.transport.estimateSizeOnSubmit", true);
 
-            // Assuming a 64-bit .NET VM, 16 bytes object header, 4 reference fields and 2 int field
+            // Assuming compressed oops, 12 bytes obj header, 4 ref fields and one int field
             private static readonly int WriteTaskOverhead =
-                SystemPropertyUtil.GetInt("io.netty.transport.writeTaskSizeOverhead", 56);
+                SystemPropertyUtil.GetInt("io.netty.transport.writeTaskSizeOverhead", 32);
 
             private ThreadLocalPool.Handle _handle;
             private AbstractChannelHandlerContext _ctx;
@@ -192,13 +262,13 @@
                 try
                 {
                     DecrementPendingOutboundBytes();
-                    if ((uint)_size > SharedConstants.TooBigOrNegative)
+                    if (SharedConstants.TooBigOrNegative >= (uint)_size)
                     {
-                        _ctx.InvokeWriteAndFlush(_msg, _promise);
+                        _ctx.InvokeWrite(_msg, _promise);
                     }
                     else
                     {
-                        _ctx.InvokeWrite(_msg, _promise);
+                        _ctx.InvokeWriteAndFlush(_msg, _promise);
                     }
                 }
                 finally
@@ -235,6 +305,34 @@
                 _promise = null;
                 _handle.Release(this);
             }
+        }
+
+        #endregion
+
+        #region -- class ContextTasks --
+
+        sealed class ContextTasks
+        {
+            private readonly AbstractChannelHandlerContext _ctx;
+
+            public readonly IRunnable InvokeChannelReadCompleteTask;
+
+            public readonly IRunnable InvokeReadTask;
+
+            public readonly IRunnable InvokeChannelWritableStateChangedTask;
+
+            public readonly IRunnable InvokeFlushTask;
+
+            public ContextTasks(AbstractChannelHandlerContext ctx)
+            {
+                _ctx = ctx;
+
+                InvokeChannelReadCompleteTask = new ReadCompleteTask(ctx);
+                InvokeReadTask = new ReadTask(ctx);
+                InvokeChannelWritableStateChangedTask = new WritableStateChangedTask(ctx);
+                InvokeFlushTask = new FlushTask(ctx);
+            }
+
         }
 
         #endregion

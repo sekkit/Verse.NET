@@ -10,6 +10,7 @@ using System.Reflection;
 
 namespace Fenix
 {
+
     public static partial class Global
     {
         public static Host Host;

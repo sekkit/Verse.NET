@@ -1,11 +1,37 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) The DotNetty Project (Microsoft). All rights reserved.
+ *
+ *   https://github.com/azure/dotnetty
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Transport.Channels.Sockets
 {
     using System;
     using System.Net;
     using System.Net.Sockets;
+    using System.Runtime.CompilerServices;
 
     public sealed class TcpServerSocketChannel : TcpServerSocketChannel<TcpServerSocketChannel, TcpSocketChannelFactory>
     {
@@ -28,7 +54,7 @@ namespace DotNetty.Transport.Channels.Sockets
     {
         private static readonly ChannelMetadata METADATA = new ChannelMetadata(false);
 
-        private static readonly Action<object, object> ReadCompletedSyncCallback = OnReadCompletedSync;
+        private static readonly Action<object, object> ReadCompletedSyncCallback = (u, p) => OnReadCompletedSync(u, p);
 
         private readonly TChannelFactory _channelFactory;
 
@@ -58,18 +84,18 @@ namespace DotNetty.Transport.Channels.Sockets
         public TcpServerSocketChannel(Socket socket)
             : base(null, socket)
         {
-            this._config = new TcpServerSocketChannelConfig((TServerChannel)this, socket);
+            _config = new TcpServerSocketChannelConfig((TServerChannel)this, socket);
             _channelFactory = new TChannelFactory();
         }
 
+        IServerSocketChannelConfiguration IServerSocketChannel.Configuration => _config;
         public override IChannelConfiguration Configuration => _config;
 
-        public override bool Active
+        public override bool IsActive
         {
-            // 待测试
             // As IsBound will continue to return true even after the channel was closed
             // we will also need to check if it is open.
-            get => Open && Socket.IsBound;
+            get => IsOpen && Socket.IsBound;
         }
 
         public override ChannelMetadata Metadata => METADATA;
@@ -78,9 +104,24 @@ namespace DotNetty.Transport.Channels.Sockets
 
         protected override EndPoint LocalAddressInternal => Socket.LocalEndPoint;
 
-        SocketChannelAsyncOperation<TServerChannel, TcpServerSocketChannelUnsafe> AcceptOperation => _acceptOperation ??= new SocketChannelAsyncOperation<TServerChannel, TcpServerSocketChannelUnsafe>((TServerChannel)this, false);
+        private SocketChannelAsyncOperation<TServerChannel, TcpServerSocketChannelUnsafe> AcceptOperation
+        {
+            [MethodImpl(InlineMethod.AggressiveOptimization)]
+            get => _acceptOperation ?? EnsureAcceptOperationCreated();
+        }
 
-        //protected override IChannelUnsafe NewUnsafe() => new TcpServerSocketChannelUnsafe(this); ## 苦竹 屏蔽 ##
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private SocketChannelAsyncOperation<TServerChannel, TcpServerSocketChannelUnsafe> EnsureAcceptOperationCreated()
+        {
+            lock (this)
+            {
+                if (_acceptOperation is null)
+                {
+                    _acceptOperation = new SocketChannelAsyncOperation<TServerChannel, TcpServerSocketChannelUnsafe>((TServerChannel)this, false);
+                }
+            }
+            return _acceptOperation;
+        }
 
         protected override void DoBind(EndPoint localAddress)
         {
@@ -95,7 +136,7 @@ namespace DotNetty.Transport.Channels.Sockets
         {
             if (TryResetState(StateFlags.Open | StateFlags.Active))
             {
-                Socket.SafeClose(); // this.Socket.Dispose();
+                Socket.SafeClose();
             }
         }
 
@@ -137,7 +178,7 @@ namespace DotNetty.Transport.Channels.Sockets
                     closed = true;
                 }
             }
-            if (Open)
+            if (IsOpen)
             {
                 if (closed) { Unsafe.Close(Unsafe.VoidPromise()); }
                 else if (aborted) { this.CloseSafe(); }
@@ -148,27 +189,27 @@ namespace DotNetty.Transport.Channels.Sockets
 
         protected override bool DoConnect(EndPoint remoteAddress, EndPoint localAddress)
         {
-            throw new NotSupportedException();
+            throw ThrowHelper.GetNotSupportedException();
         }
 
         protected override void DoFinishConnect(SocketChannelAsyncOperation<TServerChannel, TcpServerSocketChannelUnsafe> operation)
         {
-            throw new NotSupportedException();
+            throw ThrowHelper.GetNotSupportedException();
         }
 
         protected override void DoDisconnect()
         {
-            throw new NotSupportedException();
+            throw ThrowHelper.GetNotSupportedException();
         }
 
         protected override void DoWrite(ChannelOutboundBuffer input)
         {
-            throw new NotSupportedException();
+            throw ThrowHelper.GetNotSupportedException();
         }
 
         protected sealed override object FilterOutboundMessage(object msg)
         {
-            throw new NotSupportedException();
+            throw ThrowHelper.GetNotSupportedException();
         }
     }
 }

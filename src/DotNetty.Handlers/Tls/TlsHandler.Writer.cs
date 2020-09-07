@@ -1,4 +1,25 @@
-﻿
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
+
 namespace DotNetty.Handlers.Tls
 {
     using System;
@@ -34,6 +55,7 @@ namespace DotNetty.Handlers.Tls
                 }
                 return;
             }
+            ReferenceCountUtil.SafeRelease(message);
             _ = promise.TrySetException(ThrowHelper.GetUnsupportedMessageTypeException(message));
         }
 
@@ -101,7 +123,7 @@ namespace DotNetty.Handlers.Tls
             {
                 // Only continue to loop if the handler was not removed in the meantime.
                 // See https://github.com/netty/netty/issues/5860
-                while (!context.Removed)
+                while (!context.IsRemoved)
                 {
                     List<object> messages = _pendingUnencryptedWrites.Current;
                     if (messages is null || 0u >= (uint)messages.Count)
@@ -125,6 +147,7 @@ namespace DotNetty.Handlers.Tls
                     }
                     _ = buf.ReadBytes(_sslStream, buf.ReadableBytes); // this leads to FinishWrap being called 0+ times
                     _ = buf.Release();
+                    buf = null;
 
                     var promise = _pendingUnencryptedWrites.Remove();
                     Task task = _lastContextWriteTask;
@@ -142,7 +165,7 @@ namespace DotNetty.Handlers.Tls
             finally
             {
                 // Ownership of buffer was not transferred, release it.
-                buf?.SafeRelease();
+                buf?.Release();
             }
         }
 

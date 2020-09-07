@@ -85,9 +85,16 @@ namespace Fenix
 
         protected virtual void InitWithName(string name)
         {
-            this.UniqueName = name;
-            this.Id = Basic.GenID64FromName(this.UniqueName);
-            Init();
+            try
+            {
+                this.UniqueName = name;
+                this.Id = Basic.GenID64FromName(this.UniqueName);
+                Init();
+            }
+            catch(Exception ex)
+            {
+                Log.Error(ex);
+            }
         }
 
         protected ulong GenDataKey(Type type)

@@ -1,5 +1,30 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) The DotNetty Project (Microsoft). All rights reserved.
+ *
+ *   https://github.com/azure/dotnetty
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Transport.Bootstrapping
 {
@@ -222,7 +247,7 @@ namespace DotNetty.Transport.Bootstrapping
         /// <summary>
         /// Creates a new <see cref="IChannel"/> and registers it with an <see cref="IEventLoop"/>.
         /// </summary>
-        public Task RegisterAsync()
+        public Task<IChannel> RegisterAsync()
         {
             Validate();
             return InitAndRegisterAsync();
@@ -312,7 +337,7 @@ namespace DotNetty.Transport.Bootstrapping
             }
             catch (Exception)
             {
-                if (channel.Registered)
+                if (channel.IsRegistered)
                 {
                     try
                     {
@@ -347,14 +372,14 @@ namespace DotNetty.Transport.Bootstrapping
             // This method is invoked before channelRegistered() is triggered.  Give user handlers a chance to set up
             // the pipeline in its channelRegistered() implementation.
             var promise = channel.NewPromise();
-            channel.EventLoop.Execute(BindlocalAddressAction, Tuple.Create(channel, localAddress, promise));
+            channel.EventLoop.Execute(BindlocalAddressAction, (channel, localAddress, promise));
             return promise.Task;
         }
 
-        static readonly Action<object> BindlocalAddressAction = OnBindlocalAddress;
+        static readonly Action<object> BindlocalAddressAction = s => OnBindlocalAddress(s);
         private static void OnBindlocalAddress(object state)
         {
-            var wrapped = (Tuple<IChannel, EndPoint, IPromise>)state;
+            var wrapped = ((IChannel, EndPoint, IPromise))state;
             try
             {
                 wrapped.Item1.BindAsync(wrapped.Item2).LinkOutcome(wrapped.Item3);

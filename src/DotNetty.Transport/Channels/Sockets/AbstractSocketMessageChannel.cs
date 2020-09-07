@@ -1,8 +1,28 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿/*
+ * Copyright 2012 The Netty Project
+ *
+ * The Netty Project licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * Copyright (c) 2020 The Dotnetty-Span-Fork Project (cuteant@outlook.com) All rights reserved.
+ *
+ *   https://github.com/cuteant/dotnetty-span-fork
+ *
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
 
 namespace DotNetty.Transport.Channels.Sockets
 {
+    using System;
     using System.Collections.Generic;
     using System.Net.Sockets;
 
@@ -13,6 +33,8 @@ namespace DotNetty.Transport.Channels.Sockets
         where TChannel : AbstractSocketMessageChannel<TChannel, TUnsafe>
         where TUnsafe : AbstractSocketMessageChannel<TChannel, TUnsafe>.SocketMessageUnsafe, new()
     {
+        private bool _inputShutdown;
+
         /// <summary>
         /// Creates a new <see cref="AbstractSocketMessageChannel{TChannel, TUnsafe}"/> instance.
         /// </summary>
@@ -23,7 +45,11 @@ namespace DotNetty.Transport.Channels.Sockets
         {
         }
 
-        //protected override IChannelUnsafe NewUnsafe() => new SocketMessageUnsafe(this); ## 苦竹 屏蔽 ##
+        protected override void DoBeginRead()
+        {
+            if (_inputShutdown) { return; }
+            base.DoBeginRead();
+        }
 
         protected override void DoWrite(ChannelOutboundBuffer input)
         {
@@ -77,6 +103,22 @@ namespace DotNetty.Transport.Channels.Sockets
         /// Returns <c>true</c> if we should continue the write loop on a write error.
         /// </summary>
         protected virtual bool ContinueOnWriteError => false;
+
+        protected virtual bool CloseOnReadError(Exception cause)
+        {
+            if (!IsActive)
+            {
+                // If the channel is not active anymore for whatever reason we should not try to continue reading.
+                return true;
+            }
+            if (cause is SocketException asSocketException && asSocketException.SocketErrorCode != SocketError.TryAgain) // todo: other conditions for not closing message-based socket?
+            {
+                // ServerChannel should not be closed even on IOException because it can often continue
+                // accepting incoming connections. (e.g. too many open files)
+                return !(this is IServerChannel);
+            }
+            return true;
+        }
 
         /// <summary>
         /// Reads messages into the given list and returns the amount which was read.
