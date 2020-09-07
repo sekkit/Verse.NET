@@ -226,10 +226,17 @@ namespace Fenix
                 channelPeers[newHostId] = peer;
                 //channelPeers.TryRemove(oldHostId, out var _);
 
+#if !CLIENT
+                if (Global.Config.DuplexMode)
+                {
+#endif
                 if (peer.netType == NetworkType.KCP)
                     kcpPeers[newHostId] = peer;
                 else
                     tcpPeers[newHostId] = peer;
+#if !CLIENT
+                }
+#endif
 
                 //Global.IdManager.RegisterHost(newHostId, hostName, address); 
             }
