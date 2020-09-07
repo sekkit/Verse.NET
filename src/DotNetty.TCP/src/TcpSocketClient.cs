@@ -51,7 +51,7 @@ namespace DotNetty.TCP
                 .Option(ChannelOption.SoReuseaddr, true)
                 .Option(ChannelOption.SoReuseport, false)
                 .Option(ChannelOption.SoSndbuf, 2048)
-                .Option(ChannelOption.SoRcvbuf, 8096)
+                .Option(ChannelOption.SoRcvbuf, 8196)
                 .Option(ChannelOption.SoKeepalive, true);
 //#if !CLIENT
 //                if (channelConfig.UseLibuv)

@@ -65,14 +65,14 @@ namespace DotNetty.TCP
                 bootstrap.Channel<TcpServerSocketChannel>();
 #endif
                 bootstrap
-                  .Option(ChannelOption.SoBacklog, 128)
+                  .Option(ChannelOption.SoBacklog, 8196)
                   .ChildOption(ChannelOption.SoReuseaddr, true)
                   .ChildOption(ChannelOption.SoReuseport, false)
                   .ChildOption(ChannelOption.SoBroadcast, true)
                   .ChildOption(ChannelOption.SoKeepalive, true)
                   .ChildOption(ChannelOption.TcpNodelay, true)
                   .ChildOption(ChannelOption.SoSndbuf, 2048)
-                  .ChildOption(ChannelOption.SoRcvbuf, 8096)
+                  .ChildOption(ChannelOption.SoRcvbuf, 8196)
                   .Handler(new LoggingHandler());
 //#if !CLIENT
 //                if (channelConfig.UseLibuv)
