@@ -105,16 +105,10 @@ namespace Fenix
             Snmp.snmp = new Snmp();
         }
 
-        //public void Send(byte[] bytes)
-        //{
-        //    IByteBuffer buf = Unpooled.WrappedBuffer(bytes);
-        //    //int dataLen = buf.ReadableBytes;
-        //    _ukcp.write(buf);
-        //}
-
         public void Send(IByteBuffer buffer)
         { 
             _ukcp.write(buffer);
+            buffer.SafeRelease();
         }
 
         public void onConnected(Ukcp ukcp)

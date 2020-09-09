@@ -251,7 +251,7 @@ namespace Fenix
         public void Send(IByteBuffer buffer)
         {
             if (kcpChannel != null) 
-            { kcpChannel.write(buffer); return; }
+            { kcpChannel.write(buffer); buffer.SafeRelease(); return; }
             if (kcpClient != null) 
             { kcpClient.Send(buffer); return; }
             if (tcpChannel != null) 

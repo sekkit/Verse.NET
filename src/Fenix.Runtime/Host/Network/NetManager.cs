@@ -230,10 +230,10 @@ namespace Fenix
                 if (Global.Config.DuplexMode)
                 {
 #endif
-                if (peer.netType == NetworkType.KCP)
-                    kcpPeers[newHostId] = peer;
-                else
-                    tcpPeers[newHostId] = peer;
+                    if (peer.netType == NetworkType.KCP)
+                        kcpPeers[newHostId] = peer;
+                    else
+                        tcpPeers[newHostId] = peer;
 #if !CLIENT
                 }
 #endif
@@ -402,7 +402,7 @@ namespace Fenix
             else
                 kcpPeers[peer.ConnId] = peer;
             peer.Register();
-            return peer; 
+            return peer;
         }
 
         //peer connects to hosts(interprocesses)
@@ -423,7 +423,7 @@ namespace Fenix
 
             peer.OnClose += OnClose;
             peer.OnReceive += OnReceive;
-            peer.OnException += OnException; 
+            peer.OnException += OnException;
 
             if (netType == NetworkType.TCP)
                 tcpPeers[peer.ConnId] = peer;
