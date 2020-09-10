@@ -27,12 +27,12 @@ namespace Fenix.Common.Utils
 
         public delegate IMessage MsgDeserialize(byte[] data);
 
-        //public delegate IMessage MsgJsonDeserialize(string data);
+        public delegate IMessage MsgJsonDeserialize(string data);
 
         //#if ENABLE_IL2CPP
         public volatile static ConcurrentDictionary<Type, MsgDeserialize> _msgCache = new ConcurrentDictionary<Type, MsgDeserialize>();
 
-        //public volatile static ConcurrentDictionary<Type, MsgJsonDeserialize> _msgJsonCache = new ConcurrentDictionary<Type, MsgJsonDeserialize>();
+        public volatile static ConcurrentDictionary<Type, MsgJsonDeserialize> _msgJsonCache = new ConcurrentDictionary<Type, MsgJsonDeserialize>();
 
         //#endif
 
@@ -50,7 +50,7 @@ namespace Fenix.Common.Utils
 
         public static IMessage Deserialize(Type type, byte[] bytes)
         {
-//#if ENABLE_IL2CPP
+#if ENABLE_IL2CPP
             if(_msgCache.ContainsKey(type))
             {
                 return _msgCache[type](bytes);
@@ -61,27 +61,31 @@ namespace Fenix.Common.Utils
                 _msgCache[type] = d;
                 return d(bytes);
             }
-//#else
+#else
 //            //Log.Info("D2", type.Name, MessagePackSerializer.ConvertToJson(bytes));
 //            //return (IMessage)type.GetMethod("Deserialize").Invoke(null, new object[] { bytes});
-//            return (IMessage)MessagePackSerializer.Deserialize(type, bytes);
-//#endif
+            return (IMessage)MessagePackSerializer.Deserialize(type, bytes);
+#endif
         }
 
-        //public static IMessage DeserializeJson(Type type, string json)
-        //{
-        //    //#if ENABLE_IL2CPP
-        //    if (_msgJsonCache.ContainsKey(type))
-        //    {
-        //        return _msgJsonCache[type](json);
-        //    }
-        //    else
-        //    {
-        //        var d = (MsgJsonDeserialize)Delegate.CreateDelegate(typeof(MsgJsonDeserialize), type.GetMethod("DeserializeJson"));
-        //        _msgJsonCache[type] = d;
-        //        return d(json);
-        //    } 
-        //}
+        public static IMessage DeserializeJson(Type type, string json)
+        {
+#if ENABLE_IL2CPP
+            if (_msgJsonCache.ContainsKey(type))
+            {
+                return _msgJsonCache[type](json);
+            }
+            else
+            {
+                var d = (MsgJsonDeserialize)Delegate.CreateDelegate(typeof(MsgJsonDeserialize), type.GetMethod("DeserializeJson"));
+                _msgJsonCache[type] = d;
+                return d(json);
+            }
+#else
+            var bytes = MessagePackSerializer.ConvertFromJson(json);
+            return Deserialize(type, bytes);
+#endif
+        }
 
         public static Type GetBaseType(Type type)
         {

@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- extend the default lib targets for the main lib; mostly because of "vectors" -->
+    <TargetFrameworks>net461;netstandard2.0;net472</TargetFrameworks>
+    <Description>High performance Redis client, incorporating both synchronous and asynchronous usage.</Description>
+    <AssemblyName>StackExchange.Redis</AssemblyName>
+    <AssemblyTitle>StackExchange.Redis</AssemblyTitle>
+    <PackageId>StackExchange.Redis</PackageId>
+    <PackageTags>Async;Redis;Cache;PubSub;Messaging</PackageTags>
+    <SignAssembly>true</SignAssembly>
+    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
+    <DefineConstants Condition="'$(TargetFramework)' != 'net461'">$(DefineConstants);VECTOR_SAFE</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" />
+    <PackageReference Include="Pipelines.Sockets.Unofficial" />
+    <PackageReference Include="System.Diagnostics.PerformanceCounter" />
+    <!-- net472/net461 needs this for ZipArchive; I have no idea why this changed, but... meh -->
+    <PackageReference Include="System.IO.Compression" Condition="'$(TargetFramework)' == 'net461' or '$(TargetFramework)' == 'net472'" />
+    <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Condition="'$(TargetFramework)' == 'net461'" />
+    <PackageReference Include="System.Threading.Channels" />
+  </ItemGroup>
+</Project>

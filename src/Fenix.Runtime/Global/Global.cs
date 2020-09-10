@@ -14,10 +14,10 @@ namespace Fenix
     public static partial class Global
     {
         public static Host Host;
-        
-        static RuntimeConfig _cfg { get; set; }
+
+        static RuntimeConfig _cfg;
 #if !CLIENT
-        public static RuntimeConfig Config => _cfg==null?_cfg = RuntimeConfig.MakeDefaultServerConfig(): _cfg;
+        public static RuntimeConfig Config => _cfg == null? _cfg = RuntimeConfig.MakeDefaultServerConfig() : _cfg;
 #else
         public static RuntimeConfig Config => _cfg == null ? _cfg = RuntimeConfig.MakeDefaultClientConfig() : _cfg;
 #endif

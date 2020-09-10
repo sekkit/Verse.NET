@@ -27,7 +27,6 @@ namespace DotNetty.KCP
         
         private IScheduleThread _scheduleThread; 
 
-
         public void init(int workSize, KcpListener kcpListener, ChannelConfig channelConfig, params int[] ports)
         {
             _executorPool = new ExecutorPool();
@@ -36,7 +35,6 @@ namespace DotNetty.KCP
 
             init(_executorPool, kcpListener, channelConfig, ports);
         }
-
 
         public void init(IExecutorPool executorPool, KcpListener kcpListener, ChannelConfig channelConfig, params int[] ports) {
             if(channelConfig.UseConvChannel){
@@ -73,10 +71,10 @@ namespace DotNetty.KCP
             foreach (var port in ports)
             {
                 //                for (int i = 0; i < bindTimes; i++) {
-                    var task = Task.Run(() => _bootstrap.BindAsync(port));
-                    task.Wait();
-                    var channel = task.Result;
-                    _localAddress.Add(channel);
+                var task = Task.Run(() => _bootstrap.BindAsync(port));
+                task.Wait();
+                var channel = task.Result;
+                _localAddress.Add(channel);
 //                }
             }
 
