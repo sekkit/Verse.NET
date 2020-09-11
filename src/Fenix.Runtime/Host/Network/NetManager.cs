@@ -402,7 +402,7 @@ namespace Fenix
             else
                 kcpPeers[peer.ConnId] = peer;
             peer.Register();
-            return peer;
+            return peer; 
         }
 
         //peer connects to hosts(interprocesses)

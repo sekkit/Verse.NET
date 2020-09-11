@@ -291,7 +291,7 @@ namespace Fenix.Redis
         public string Get(string key)
         {
             string redisKey = FormatKey(key);
-            return this.client.StringGet(redisKey);
+            return JsonConvert.DeserializeObject<string>(this.client.StringGet(redisKey));
         }
 
         public async Task<object> GetAsync(Type type, string key)
@@ -326,7 +326,7 @@ namespace Fenix.Redis
         public async Task<string> GetAsync(string key)
         {
             string redisKey = FormatKey(key);
-            return await this.client.StringGetAsync(redisKey);
+            return JsonConvert.DeserializeObject<string>(await this.client.StringGetAsync(redisKey));
         }
 
         public bool Delete(string key)
