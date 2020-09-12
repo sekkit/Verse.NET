@@ -285,13 +285,18 @@ namespace Fenix.Redis
             }
 
             string value = this.client.StringGet(redisKey);
+            if (value == null)
+                return default(T);
             return JsonConvert.DeserializeObject<T>(value);
         }
 
         public string Get(string key)
         {
             string redisKey = FormatKey(key);
-            return JsonConvert.DeserializeObject<string>(this.client.StringGet(redisKey));
+            string value = this.client.StringGet(redisKey);
+            if (value == null)
+                return null;
+            return JsonConvert.DeserializeObject<string>(value);
         }
 
         public async Task<object> GetAsync(Type type, string key)
@@ -299,13 +304,16 @@ namespace Fenix.Redis
             string redisKey = FormatKey(key);
             if (type == typeof(IMessage) || type.IsSubclassOf(typeof(IMessage)))
             {
-                var value = await this.client.StringGetAsync(redisKey);
-                if (value.IsNull || !value.HasValue)
+                var _value = await this.client.StringGetAsync(redisKey);
+                if (_value.IsNull || !_value.HasValue)
                     return null;
-                return RpcUtil.DeserializeJson(type, value);
+                return RpcUtil.DeserializeJson(type, _value);
             }
 
-            return JsonConvert.DeserializeObject(await this.client.StringGetAsync(redisKey), type);
+            var value = await this.client.StringGetAsync(redisKey);
+            if (value.IsNull || !value.HasValue)
+                return null;
+            return JsonConvert.DeserializeObject(value, type);
         }
 
         public async Task<T> GetAsync<T>(string key)
@@ -314,19 +322,25 @@ namespace Fenix.Redis
             var t = typeof(T);
             if (t == typeof(IMessage) || t.IsSubclassOf(typeof(IMessage)))
             {
-                var value = await this.client.StringGetAsync(redisKey);
-                if (value.IsNull || !value.HasValue)
+                var _value = await this.client.StringGetAsync(redisKey);
+                if (_value.IsNull || !_value.HasValue)
                     return default(T);
-                return (T)(object)RpcUtil.DeserializeJson(typeof(T), value);
+                return (T)(object)RpcUtil.DeserializeJson(typeof(T), _value);
             }
 
-            return JsonConvert.DeserializeObject<T>(await this.client.StringGetAsync(redisKey));
+            var value = await this.client.StringGetAsync(redisKey);
+            if (value.IsNull || !value.HasValue)
+                return default(T);
+            return JsonConvert.DeserializeObject<T>(value);
         }
 
         public async Task<string> GetAsync(string key)
         {
             string redisKey = FormatKey(key);
-            return JsonConvert.DeserializeObject<string>(await this.client.StringGetAsync(redisKey));
+            var value = await this.client.StringGetAsync(redisKey);
+            if (value.IsNull || !value.HasValue)
+                return null;
+            return JsonConvert.DeserializeObject<string>(value);
         }
 
         public bool Delete(string key)
