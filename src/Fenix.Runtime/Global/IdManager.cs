@@ -687,7 +687,9 @@ namespace Fenix
             foreach(var key in CacheANAME2CNAME.Keys())
             {
                 var aName = key;
-                var cName = CacheANAME2CNAME.Get(key); 
+                var cName = CacheANAME2CNAME.Get(key);
+                if (cName == null)
+                    continue;
                 this.mANAME2CNAME[aName] = cName;
                 this.mCNAME2ANAME[cName] = aName;
             }
@@ -777,6 +779,8 @@ namespace Fenix
             {
                 var aName = key;
                 var cName = await CacheANAME2CNAME.GetAsync(key);
+                if (cName == null)
+                    continue;
                 this.mANAME2CNAME[aName] = cName;
                 this.mCNAME2ANAME[cName] = aName;
             }
