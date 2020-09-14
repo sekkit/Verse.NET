@@ -68,7 +68,7 @@ namespace Fenix
                 try
                 { 
                     //Log.Info(string.Format("Heartbeat:{0}", IsAlive));
-                    PrintPeerInfo();
+                    //PrintPeerInfo();
                     Ping(true);
                     OnHeartBeat?.Invoke();
                 }
