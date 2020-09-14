@@ -76,7 +76,7 @@ namespace Fenix
                 bool registered = false;
                 var h2 = (Host)paramList[0];
                 var cfgList2 = (List<RuntimeConfig>)paramList[1];
-                while (!registered)
+                while (!registered && !Global.Config.DuplexMode)
                 {
                     if (cfgList2 != null && !registered)
                     {

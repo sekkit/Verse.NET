@@ -50,7 +50,7 @@ namespace Fenix.Common.Utils
 
         public static IMessage Deserialize(Type type, byte[] bytes)
         {
-#if ENABLE_IL2CPP
+//#if ENABLE_IL2CPP
             if(_msgCache.ContainsKey(type))
             {
                 return _msgCache[type](bytes);
@@ -61,11 +61,11 @@ namespace Fenix.Common.Utils
                 _msgCache[type] = d;
                 return d(bytes);
             }
-#else
+//#else
 //            //Log.Info("D2", type.Name, MessagePackSerializer.ConvertToJson(bytes));
 //            //return (IMessage)type.GetMethod("Deserialize").Invoke(null, new object[] { bytes});
-            return (IMessage)MessagePackSerializer.Deserialize(type, bytes);
-#endif
+//            return (IMessage)MessagePackSerializer.Deserialize(type, bytes);
+//#endif
         }
 
         public static IMessage DeserializeJson(Type type, string json)

@@ -225,7 +225,6 @@ namespace Fenix
                 peer.ConnId = newHostId;
                 channelPeers[newHostId] = peer;
                 //channelPeers.TryRemove(oldHostId, out var _);
-
 #if !CLIENT
                 if (Global.Config.DuplexMode)
                 {

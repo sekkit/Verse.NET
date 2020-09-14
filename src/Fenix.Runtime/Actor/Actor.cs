@@ -109,7 +109,7 @@ namespace Fenix
             InitModule();
         }
 #if !CLIENT
-        protected virtual async Task InitData()
+        protected virtual void InitData()
 #else
         protected virtual void InitData()
 #endif
@@ -121,7 +121,7 @@ namespace Fenix
                 foreach (RuntimeDataAttribute attr in attrs)
                 {
 #if !CLIENT
-                    mRuntimeDic[attr.DataType] = await LoadDataFromDb(DbConf.RUNTIME, attr.DataType);
+                    mRuntimeDic[attr.DataType] = LoadDataFromDb(DbConf.RUNTIME, attr.DataType);
 #endif
                     if (!mRuntimeDic.TryGetValue(attr.DataType, out var d) || (d == null))
                     {
@@ -142,7 +142,7 @@ namespace Fenix
                 foreach (PersistentDataAttribute attr in attrs)
                 {
 #if !CLIENT
-                    mPersistentDic[attr.DataType] = new Tuple<string, IMessage>(attr.dbName, await LoadDataFromDb(attr.dbName, attr.DataType));
+                    mPersistentDic[attr.DataType] = new Tuple<string, IMessage>(attr.dbName, LoadDataFromDb(attr.dbName, attr.DataType));
 #endif
 
                     if (!mPersistentDic.TryGetValue(attr.DataType, out var d) || (d == null || d.Item2 == null))
@@ -183,18 +183,34 @@ namespace Fenix
 
 #if !CLIENT
 
-        protected async Task<IMessage> LoadDataFromDb(string dbName, Type type) 
+        //protected async Task<IMessage> LoadDataFromDb(string dbName, Type type) 
+        //{
+        //    string dbKey = this.UniqueName;// + ":" + type.FullName;
+        //    var db = Global.DbManager.GetDb(dbName);
+        //    var value = await db.GetAsync(type, dbKey);
+        //    return (IMessage)(value);
+        //}
+
+        //protected async Task<bool> SaveDataToDb(string dbName, Type type, object data)
+        //{
+        //    string dbKey = this.UniqueName;// + ":" + type.FullName;
+        //    var db = Global.DbManager.GetDb(dbName);
+        //    return await db.SetAsync(dbKey, data);
+        //}
+
+        protected IMessage LoadDataFromDb(string dbName, Type type)
         {
             string dbKey = this.UniqueName;// + ":" + type.FullName;
             var db = Global.DbManager.GetDb(dbName);
-            return (IMessage)(await db.GetAsync(type, dbKey));
+            var value = db.Get(type, dbKey);
+            return (IMessage)(value);
         }
 
-        protected async Task<bool> SaveDataToDb(string dbName, Type type, object data)
+        protected bool SaveDataToDb(string dbName, Type type, object data)
         {
             string dbKey = this.UniqueName;// + ":" + type.FullName;
             var db = Global.DbManager.GetDb(dbName);
-            return await db.SetAsync(dbKey, data);
+            return db.Set(dbKey, data);
         }
 
         protected void SaveAll()
@@ -260,9 +276,9 @@ namespace Fenix
 
         //public virtual void Unpack()
         //{
-            
+        //
         //} 
- 
+
         public void Restore()
         {
             this.onRestore();

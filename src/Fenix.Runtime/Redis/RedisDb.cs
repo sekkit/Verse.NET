@@ -299,6 +299,32 @@ namespace Fenix.Redis
             return JsonConvert.DeserializeObject<string>(value);
         }
 
+        public object Get(Type type, string key)
+        {
+            try
+            {
+                string redisKey = FormatKey(key);
+                if (type == typeof(IMessage) || type.IsSubclassOf(typeof(IMessage)))
+                {
+                    var _value = this.client.StringGet(redisKey);
+                    if (_value.IsNull || !_value.HasValue)
+                        return null;
+                    return RpcUtil.Deserialize(type, _value);
+                }
+
+                var value = this.client.StringGet(redisKey);
+                if (value.IsNull || !value.HasValue)
+                    return null;
+                return JsonConvert.DeserializeObject(value, type);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+            }
+
+            return null;
+        }
+
         public async Task<object> GetAsync(Type type, string key)
         {
             string redisKey = FormatKey(key);
