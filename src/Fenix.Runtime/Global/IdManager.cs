@@ -89,7 +89,7 @@ namespace Fenix
             while (true)
             {
                 SyncWithCache();
-                Thread.Sleep(100);
+                Thread.Sleep(500);
             }
         }
 
@@ -122,9 +122,9 @@ namespace Fenix
                 AddNameId(hostName, hostId);
                 //Log.Error("RRRRRRRRRRRRR3", hostName, address);
 #if !CLIENT
-                CacheAddr2ExAddr.Set(address, extAddress);
+                CacheAddr2ExAddr.SetWithoutLock(address, extAddress);
 
-                return CacheHNAME2ADDR.Set(hostName, address);
+                return CacheHNAME2ADDR.SetWithoutLock(hostName, address);
 #else
                 return true;
 #endif
@@ -152,8 +152,8 @@ namespace Fenix
                 //Log.Error("RRRRRRRRRRRRR12", hostName, address);
 #if !CLIENT
                 //var extAddr = CacheAddr2ExAddr.Get(address);
-                //CacheAddr2ExAddr.Set(address, extAddr);
-                return CacheCNAME2ADDR.Set(hostName, address);
+                //CacheAddr2ExAddr.SetWithoutLock(address, extAddr);
+                return CacheCNAME2ADDR.SetWithoutLock(hostName, address);
 #else
                 return true;
 #endif
@@ -168,8 +168,8 @@ namespace Fenix
                 //Log.Error("RRRRRRRRRRRRR13", hostName, address);
 #if !CLIENT
                 var extAddr = CacheAddr2ExAddr.Get(address);
-                CacheAddr2ExAddr.Set(address, extAddr);
-                return CacheHNAME2ADDR.Set(hostName, address);
+                CacheAddr2ExAddr.SetWithoutLock(address, extAddr);
+                return CacheHNAME2ADDR.SetWithoutLock(hostName, address);
 #else
                 return true;
 #endif
@@ -204,7 +204,7 @@ namespace Fenix
 
 #if !CLIENT
             //Log.Error("RRRRRRRRRRRRR", cName, clientId, address);
-            return CacheHNAME2ADDR.Set(cName, address);
+            return CacheHNAME2ADDR.SetWithoutLock(cName, address);
 #else
             return true;
 #endif
@@ -222,8 +222,8 @@ namespace Fenix
                 mCNAME2ADDR[cName] = address;
             }
 #if !CLIENT
-            CacheANAME2CNAME.Set(actorName, cName);
-            return CacheHNAME2ADDR.Set(cName, address);
+            CacheANAME2CNAME.SetWithoutLock(actorName, cName);
+            return CacheHNAME2ADDR.SetWithoutLock(cName, address);
 #else
             return true;
 #endif
@@ -331,9 +331,9 @@ namespace Fenix
                 mId2Name[id.Value] = name;
 
 #if !CLIENT
-            CacheID2NAME.Set(newId.ToString(), name);
+            CacheID2NAME.SetWithoutLock(newId.ToString(), name);
             if(id!=null&&id.HasValue)
-                CacheID2NAME.Set(id.Value.ToString(), name);
+                CacheID2NAME.SetWithoutLock(id.Value.ToString(), name);
 #endif
         }
 
@@ -369,8 +369,8 @@ namespace Fenix
                 mANAME2TNAME[aName] = aTypeName;
 
 #if !CLIENT
-                var ret = CacheANAME2TNAME.Set(aName, aTypeName); 
-                return CacheANAME2HNAME.Set(aName, hName) && ret;
+                var ret = CacheANAME2TNAME.SetWithoutLock(aName, aTypeName); 
+                return CacheANAME2HNAME.SetWithoutLock(aName, hName) && ret;
 
 #else
                 return true;
@@ -583,7 +583,7 @@ namespace Fenix
 
 #if !CLIENT
             if(hostInfo.HostExtAddr != null && hostInfo.HostExtAddr != "")
-                this.CacheAddr2ExAddr.Set(this.mHNAME2ADDR[hostInfo.HostName], hostInfo.HostExtAddr);
+                this.CacheAddr2ExAddr.SetWithoutLock(this.mHNAME2ADDR[hostInfo.HostName], hostInfo.HostExtAddr);
 #endif
 
             foreach (var kv in hostInfo.ServiceId2Name)

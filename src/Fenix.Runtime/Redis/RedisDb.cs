@@ -184,119 +184,216 @@ namespace Fenix.Redis
             return string.Format("{0}_{1}", this.conf.Key, key);
         }
 
+        public bool SetWithoutLock(string key, object value, int? expireSec = null)
+        {
+            if (value == null)
+                return false;
+            bool result = false;
+            try
+            {
+                string redisKey = FormatKey(key); 
+                TimeSpan? expireSeconds = (expireSec == null || !expireSec.HasValue) ? DefaultExpiry() : TimeSpan.FromSeconds(expireSec.Value);
+                 
+                if (value == null)
+                    return result;
+                if (value is IMessage || value.GetType().IsSubclassOf(typeof(IMessage)))
+                    result = this.client.StringSet(redisKey, ((IMessage)value).Pack(), expireSeconds);
+                else
+                    result = this.client.StringSet(redisKey, JsonConvert.SerializeObject(value), expireSeconds); 
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+            }
+
+            return result;
+        }
+
+        public async Task<bool> SetWithoutLockAsync(string key, object value, int? expireSec = null)
+        {
+            bool result = false;
+            try
+            {
+                RedisValue token = Environment.MachineName;
+                string redisKey = FormatKey(key); 
+                TimeSpan? expireSeconds = (expireSec == null || !expireSec.HasValue) ? DefaultExpiry() : TimeSpan.FromSeconds(expireSec.Value);
+                
+                if (value == null)
+                    return result;
+                if (value is IMessage || value.GetType().IsSubclassOf(typeof(IMessage)))
+                    result = await this.client.StringSetAsync(redisKey, ((IMessage)value).Pack(), expireSeconds);
+                else
+                    result = await this.client.StringSetAsync(redisKey, JsonConvert.SerializeObject(value), expireSeconds);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+            }
+            return result;
+        }
+
         public bool Set(string key, object value, int? expireSec = null)
         {
             if (value == null)
                 return false;
-
-            string redisKey = FormatKey(key);
-
-            RedisValue token = Environment.MachineName;
-            RedisKey lockKey = redisKey + "_lock";
-            int lockCounter = 0;
-            TimeSpan? expireSeconds = (expireSec==null||!expireSec.HasValue)? DefaultExpiry(): TimeSpan.FromSeconds(expireSec.Value);
             bool result = false;
-            while (lockCounter < 3)
+            try
             {
-                if (!client.LockTake(lockKey, token, TimeSpan.FromSeconds(3)))
-                {
-                    lockCounter++;
-                    continue;
-                }
-                 
-                try
-                {
-                    if (value == null)
-                        return result;
-                    if (value is IMessage || value.GetType().IsSubclassOf(typeof(IMessage))) 
-                        result = this.client.StringSet(redisKey, ((IMessage)value).ToJson(), expireSeconds);  
-                    else 
-                        result = this.client.StringSet(redisKey, JsonConvert.SerializeObject(value), expireSeconds); 
-                }
-                finally
-                {
-                    client.LockRelease(lockKey, token); 
-                }
+                string redisKey = FormatKey(key);
 
-                break;
+                RedisValue token = Environment.MachineName;
+                RedisKey lockKey = redisKey + "_lock";
+                int lockCounter = 0;
+                TimeSpan? expireSeconds = (expireSec == null || !expireSec.HasValue) ? DefaultExpiry() : TimeSpan.FromSeconds(expireSec.Value);
+                
+                while (lockCounter < 3)
+                {
+                    if (!client.LockTake(lockKey, token, TimeSpan.FromSeconds(3)))
+                    {
+                        lockCounter++;
+                        continue;
+                    }
+
+                    try
+                    {
+                        if (value == null)
+                            return result;
+                        if (value is IMessage || value.GetType().IsSubclassOf(typeof(IMessage)))
+                            result = this.client.StringSet(redisKey, ((IMessage)value).Pack(), expireSeconds);
+                        else
+                            result = this.client.StringSet(redisKey, JsonConvert.SerializeObject(value), expireSeconds);
+                    }
+                    finally
+                    {
+                        client.LockRelease(lockKey, token);
+                    }
+
+                    break;
+                } 
             }
-
+            catch(Exception ex)
+            {
+                Log.Error(ex);
+            }
+            
             return result;
         }
 
         public async Task<bool> SetAsync(string key, object value, int? expireSec = null)
         {
-            RedisValue token = Environment.MachineName;
-            string redisKey = FormatKey(key);
-            RedisKey lockKey = redisKey + "_lock";
-            int lockCounter = 0;
-            TimeSpan? expireSeconds = (expireSec == null || !expireSec.HasValue) ? DefaultExpiry() : TimeSpan.FromSeconds(expireSec.Value);
             bool result = false;
-            while (lockCounter < 3)
+            try
             {
-                if (!await client.LockTakeAsync(lockKey, token, TimeSpan.FromSeconds(3)))
+                RedisValue token = Environment.MachineName;
+                string redisKey = FormatKey(key);
+                RedisKey lockKey = redisKey + "_lock";
+                int lockCounter = 0;
+                TimeSpan? expireSeconds = (expireSec == null || !expireSec.HasValue) ? DefaultExpiry() : TimeSpan.FromSeconds(expireSec.Value);
+                while (lockCounter < 3)
                 {
-                    lockCounter++;
-                    continue;
+                    if (!await client.LockTakeAsync(lockKey, token, TimeSpan.FromSeconds(3)))
+                    {
+                        lockCounter++;
+                        continue;
+                    }
+
+                    try
+                    {
+                        if (value == null)
+                            return result;
+                        if (value is IMessage || value.GetType().IsSubclassOf(typeof(IMessage)))
+                            result = await this.client.StringSetAsync(redisKey, ((IMessage)value).Pack(), expireSeconds);
+                        else
+                            result = await this.client.StringSetAsync(redisKey, JsonConvert.SerializeObject(value), expireSeconds);
+                    }
+                    finally
+                    {
+                        await client.LockReleaseAsync(lockKey, token);
+                    }
+
+                    break;
                 }
 
-                try
-                {
-                    if (value == null)
-                        return result;
-                    if (value is IMessage || value.GetType().IsSubclassOf(typeof(IMessage)))
-                        result = this.client.StringSet(redisKey, ((IMessage)value).ToJson(), expireSeconds);
-                    else
-                        result = this.client.StringSet(redisKey, JsonConvert.SerializeObject(value), expireSeconds);
-                }
-                finally
-                {
-                    await client.LockReleaseAsync(lockKey, token);
-                }
-
-                break;
+                return result;
             }
-
+            catch(Exception ex)
+            {
+                Log.Error(ex);
+            }
             return result;
         }
 
         public bool HasKey(string key)
         {
-            string redisKey = FormatKey(key);
-            return this.client.KeyExists(redisKey);
+            try
+            {
+                string redisKey = FormatKey(key);
+                return this.client.KeyExists(redisKey);
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
         }
 
         public async Task<bool> HasKeyAsync(string key)
         {
-            string redisKey = FormatKey(key);
-            return await this.client.KeyExistsAsync(redisKey);
+            try
+            {
+                string redisKey = FormatKey(key);
+                return await this.client.KeyExistsAsync(redisKey);
+            }
+            catch(Exception ex)
+            {
+                return false;
+            }
         }
 
         public T Get<T>(string key)
         {
-            string redisKey = FormatKey(key);
-            var t = typeof(T);
-            if (t == typeof(IMessage) || t.IsSubclassOf(typeof(IMessage)))
+            try
             {
-                var str = this.client.StringGet(redisKey);
-                if (str.IsNull || !str.HasValue)
+                string redisKey = FormatKey(key);
+                var t = typeof(T);
+                if (t == typeof(IMessage) || t.IsSubclassOf(typeof(IMessage)))
+                {
+                    var str = this.client.StringGet(redisKey);
+                    if (str.IsNull || !str.HasValue)
+                        return default(T);
+                    return (T)(object)RpcUtil.Deserialize(typeof(T), str);
+                }
+
+                string value = this.client.StringGet(redisKey);
+                if (value == null)
                     return default(T);
-                return (T)(object)RpcUtil.DeserializeJson(typeof(T), str);
+                return JsonConvert.DeserializeObject<T>(value);
+            }
+            catch(Exception ex)
+            {
+                Log.Error(ex);
             }
 
-            string value = this.client.StringGet(redisKey);
-            if (value == null)
-                return default(T);
-            return JsonConvert.DeserializeObject<T>(value);
+            return default(T);
         }
 
         public string Get(string key)
         {
-            string redisKey = FormatKey(key);
-            string value = this.client.StringGet(redisKey);
-            if (value == null)
-                return null;
-            return JsonConvert.DeserializeObject<string>(value);
+            try
+            {
+                string redisKey = FormatKey(key);
+                string value = this.client.StringGet(redisKey);
+                if (value == null)
+                    return null;
+                return JsonConvert.DeserializeObject<string>(value);
+            }
+            catch(Exception ex)
+            {
+                Log.Error(ex);
+            }
+
+            return null;
         }
 
         public object Get(Type type, string key)
@@ -327,84 +424,149 @@ namespace Fenix.Redis
 
         public async Task<object> GetAsync(Type type, string key)
         {
-            string redisKey = FormatKey(key);
-            if (type == typeof(IMessage) || type.IsSubclassOf(typeof(IMessage)))
+            try
             {
-                var _value = await this.client.StringGetAsync(redisKey);
-                if (_value.IsNull || !_value.HasValue)
+                string redisKey = FormatKey(key);
+                if (type == typeof(IMessage) || type.IsSubclassOf(typeof(IMessage)))
+                {
+                    var _value = await this.client.StringGetAsync(redisKey);
+                    if (_value.IsNull || !_value.HasValue)
+                        return null;
+                    return RpcUtil.Deserialize(type, _value);
+                }
+
+                var value = await this.client.StringGetAsync(redisKey);
+                if (value.IsNull || !value.HasValue)
                     return null;
-                return RpcUtil.DeserializeJson(type, _value);
+                return JsonConvert.DeserializeObject(value, type);
+            }
+            catch(Exception ex)
+            {
+                Log.Error(ex);
             }
 
-            var value = await this.client.StringGetAsync(redisKey);
-            if (value.IsNull || !value.HasValue)
-                return null;
-            return JsonConvert.DeserializeObject(value, type);
+            return null;
         }
 
         public async Task<T> GetAsync<T>(string key)
         {
-            string redisKey = FormatKey(key);
-            var t = typeof(T);
-            if (t == typeof(IMessage) || t.IsSubclassOf(typeof(IMessage)))
+            try
             {
-                var _value = await this.client.StringGetAsync(redisKey);
-                if (_value.IsNull || !_value.HasValue)
-                    return default(T);
-                return (T)(object)RpcUtil.DeserializeJson(typeof(T), _value);
-            }
+                string redisKey = FormatKey(key);
+                var t = typeof(T);
+                if (t == typeof(IMessage) || t.IsSubclassOf(typeof(IMessage)))
+                {
+                    var _value = await this.client.StringGetAsync(redisKey);
+                    if (_value.IsNull || !_value.HasValue)
+                        return default(T);
+                    return (T)(object)RpcUtil.Deserialize(typeof(T), _value);
+                }
 
-            var value = await this.client.StringGetAsync(redisKey);
-            if (value.IsNull || !value.HasValue)
-                return default(T);
-            return JsonConvert.DeserializeObject<T>(value);
+                var value = await this.client.StringGetAsync(redisKey);
+                if (value.IsNull || !value.HasValue)
+                    return default(T);
+                return JsonConvert.DeserializeObject<T>(value);
+            }
+            catch(Exception ex)
+            {
+                Log.Error(ex);
+            }
+            return default(T);
         }
 
         public async Task<string> GetAsync(string key)
         {
-            string redisKey = FormatKey(key);
-            var value = await this.client.StringGetAsync(redisKey);
-            if (value.IsNull || !value.HasValue)
-                return null;
-            return JsonConvert.DeserializeObject<string>(value);
+            try
+            {
+                string redisKey = FormatKey(key);
+                var value = await this.client.StringGetAsync(redisKey);
+                if (value.IsNull || !value.HasValue)
+                    return null;
+                return JsonConvert.DeserializeObject<string>(value);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+            }
+            return null;
         }
 
         public bool Delete(string key)
         {
-            string redisKey = FormatKey(key);
-            return this.client.KeyDelete(redisKey);
+            try 
+            { 
+                string redisKey = FormatKey(key);
+                return this.client.KeyDelete(redisKey);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+            }
+            return false;
         }
 
         public async Task<bool> DeleteAsync(string key)
         {
-            string redisKey = FormatKey(key);
-            return await this.client.KeyDeleteAsync(redisKey);
+            try
+            {
+                string redisKey = FormatKey(key);
+                return await this.client.KeyDeleteAsync(redisKey);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+            }
+            return false;
         }
 
         public long NewSeqId(string key)
         {
-            string redisKey = FormatKey(key);
-            return this.client.StringIncrement(redisKey);
+            try
+            {
+                string redisKey = FormatKey(key);
+                return this.client.StringIncrement(redisKey);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+            }
+            return 0;
         }
 
         public async Task<string[]> KeysAsync()
-        { 
-            var s = this.clientMultiplexer.GetServer(this.conf.Host, this.conf.Port);
-            List<string> keys = new List<string>();
-            await foreach (var r in s.KeysAsync(pattern: string.Format("{0}*", conf.Key)))
-                keys.Add(r);
-            //var keys = await this.client..scan.KeysAsync(string.Format("{0}*", conf.Key));
-            return keys.Where(m => m != null && !m.EndsWith("_lock")).Select(m => m.Substring(conf.Key.Length + 1)).ToArray();
+        {
+            try
+            {
+                var s = this.clientMultiplexer.GetServer(this.conf.Host, this.conf.Port);
+                List<string> keys = new List<string>();
+                await foreach (var r in s.KeysAsync(pattern: string.Format("{0}*", conf.Key)))
+                    keys.Add(r);
+                //var keys = await this.client..scan.KeysAsync(string.Format("{0}*", conf.Key));
+                return keys.Where(m => m != null && !m.EndsWith("_lock")).Select(m => m.Substring(conf.Key.Length + 1)).ToArray();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+            }
+            return new string[] { };
         }
 
         public string[] Keys()
         {
-            var s = this.clientMultiplexer.GetServer(this.conf.Host, this.conf.Port);
-            List<string> keys = new List<string>();
-            foreach (var r in s.Keys(pattern: string.Format("{0}*", conf.Key)))
-                keys.Add(r);
-            //var keys = await this.client..scan.KeysAsync(string.Format("{0}*", conf.Key));
-            return keys.Where(m => m != null && !m.EndsWith("_lock")).Select(m => m.Substring(conf.Key.Length + 1)).ToArray();
+            try {
+                var s = this.clientMultiplexer.GetServer(this.conf.Host, this.conf.Port);
+                List<string> keys = new List<string>();
+                foreach (var r in s.Keys(pattern: string.Format("{0}*", conf.Key)))
+                    keys.Add(r);
+                //var keys = await this.client..scan.KeysAsync(string.Format("{0}*", conf.Key));
+                return keys.Where(m => m != null && !m.EndsWith("_lock")).Select(m => m.Substring(conf.Key.Length + 1)).ToArray();
+
+            }
+            catch(Exception ex)
+            {
+                Log.Error(ex);
+            }
+            return new string[] { };
         }
 
         public void Dispose()
