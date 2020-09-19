@@ -924,13 +924,9 @@ namespace Shared
                             builder.AppendLine($"        public void {api_name}(IMessage msg)");
                     }
 
-
-                    builder.AppendLine($"        {{")
-                        .AppendLine($"            var _msg = ({message_type})msg;");
-
                     var fileterArgs = api_rpc_args != "" ? api_rpc_args + "," : "";
 
-                    string selfName = isModule ? string.Format("GetModule<{0}>()", type.Name) : "this";
+                    string selfName = isModule ? string.Format("this.GetModule<{0}>()", type.Name) : "this";
 
                     if (hasCallback)
                     {
@@ -941,27 +937,59 @@ namespace Shared
                                                         "                ",
                                                         "cbMsg.");
 
-                        builder.AppendLine($"            {selfName}.{method.Name}({fileterArgs} ({api_cb_args}) =>")
-                            .AppendLine($"            {{")
-                            .AppendLine($"                var cbMsg = new {message_type}.Callback();")
-                            .AppendLine($"{api_cb_assign}")
-                            .AppendLine($"                cb.Invoke(cbMsg);");
-
-                        if (isHost)
-                            builder.AppendLine($"            }}, context);");
-                        else
-                            builder.AppendLine($"            }});"); 
-
-                        if (hasEvent)
+                        builder.AppendLine($"        {{");
+                        builder.AppendLine("#if ENABLE_IL2CPP\n");
                         {
-                            builder.AppendLine($"            {NameToApi(method.Name)}?.Invoke({fileterArgs} ({api_cb_args}) =>")
-                            .AppendLine($"            {{")
-                            .AppendLine($"                var cbMsg = new {message_type}.Callback();")
-                            .AppendLine($"{api_cb_assign}")
-                            .AppendLine($"                cb.Invoke(cbMsg);")
-                            .AppendLine($"            }});");
-                        }
+                            builder.AppendLine($"            var _msg = ({message_type})msg;");
+                            
 
+                            builder.AppendLine($"            {selfName}.{method.Name}({fileterArgs} ({api_cb_args}) =>")
+                                .AppendLine($"            {{")
+                                .AppendLine($"                var cbMsg = new {message_type}.Callback();")
+                                .AppendLine($"{api_cb_assign}")
+                                .AppendLine($"                cb.Invoke(cbMsg);");
+
+                            if (isHost)
+                                builder.AppendLine($"            }}, context);");
+                            else
+                                builder.AppendLine($"            }});");
+
+                            if (hasEvent)
+                            {
+                                builder.AppendLine($"            {NameToApi(method.Name)}?.Invoke({fileterArgs} ({api_cb_args}) =>")
+                                .AppendLine($"            {{")
+                                .AppendLine($"                var cbMsg = new {message_type}.Callback();")
+                                .AppendLine($"{api_cb_assign}")
+                                .AppendLine($"                cb.Invoke(cbMsg);")
+                                .AppendLine($"            }});");
+                            }
+                        }
+                        builder.AppendLine("#else\n");
+                        {
+                            builder.AppendLine($"            dynamic _msg = msg;");
+
+                            builder.AppendLine($"            {selfName.Replace("this", "self")}.{method.Name}({fileterArgs} ({api_cb_args}) =>")
+                                .AppendLine($"            {{")
+                                .AppendLine($"                var cbMsg = new {message_type}.Callback();")
+                                .AppendLine($"{api_cb_assign}")
+                                .AppendLine($"                cb.Invoke(cbMsg);");
+
+                            if (isHost)
+                                builder.AppendLine($"            }}, context);");
+                            else
+                                builder.AppendLine($"            }});");
+
+                            if (hasEvent)
+                            {
+                                builder.AppendLine($"            {NameToApi(method.Name)}?.Invoke({fileterArgs} ({api_cb_args}) =>")
+                                .AppendLine($"            {{")
+                                .AppendLine($"                var cbMsg = new {message_type}.Callback();")
+                                .AppendLine($"{api_cb_assign}")
+                                .AppendLine($"                cb.Invoke(cbMsg);")
+                                .AppendLine($"            }});");
+                            }
+                        }
+                        builder.AppendLine("#endif\n");
                     }
                     else
                     {
@@ -1013,8 +1041,8 @@ namespace Shared
                         //}
                     }
 
-                    builder.AppendLine($"        [RpcMethod({pc_cls}.{proto_code}, Api.{api_type})]")
-                        .AppendLine($"        [EditorBrowsable(EditorBrowsableState.Never)]");
+                    builder.AppendLine($"        [RpcMethod({pc_cls}.{proto_code}, Api.{api_type})]");
+                        //.AppendLine($"        [EditorBrowsable(EditorBrowsableState.Never)]");
 
                     if (isHost)
                     {

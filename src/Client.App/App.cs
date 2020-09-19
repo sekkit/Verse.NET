@@ -119,18 +119,29 @@ namespace Client
 
                         Log.Info(string.Format("ServerAvatar host: {0}@{1} {2} {3}", uid, hostId, hostName, hostAddress));
 
-                        var parts = hostAddress.Split(':');
-                        var ip = parts[0];
-                        var port = int.Parse(parts[1]);
-                        var avatarHost = host.GetHost(hostName, ip, port);
-                        Global.NetManager.PrintPeerInfo("# Master.App: hostref created");
+                        ActorRef masterapp;
+
+                        bool isSameHost = hostName == "Login.App";
+
+                        if(isSameHost)
+                        {
+                            masterapp = loginapp;
+                        }
+                        else
+                        {
+                            var parts = hostAddress.Split(':');
+                            var ip = parts[0];
+                            var port = int.Parse(parts[1]);
+                            masterapp = host.GetHost(hostName, ip, port);
+                            Global.NetManager.PrintPeerInfo("# Master.App: hostref created");
+                        } 
 
                         var avatar = host.CreateActorLocally<Client.Avatar>(uid);
 
                         Global.IdManager.RegisterHost(hostId, hostName, hostAddress, hostAddress, false);
                         Global.IdManager.RegisterActor(avatar, hostId, false);
 
-                        avatarHost.BindClientActor(uid, (code3) =>
+                        masterapp.BindClientActor(uid, (code3) =>
                         {
                             if (code3 != DefaultErrCode.OK)
                             {
@@ -141,17 +152,18 @@ namespace Client
                                 //Global.IdManager.RemoveHostId(hostId);
                                 
                                 callback?.Invoke((ErrCode)code3, null);
-
+                                 
                                 loginapp.Disconnect();
-                                avatarHost.Disconnect();
+                                if(!isSameHost)
+                                    masterapp.Disconnect();
 
                                 return;
                             }
 
                             Global.NetManager.PrintPeerInfo("# Master.App: BindClientActor called");
                             Log.Info("Avatar已经和服务端绑定");
-
-                            loginapp.Disconnect();
+                            if (!isSameHost)
+                                loginapp.Disconnect();
                             callback?.Invoke((ErrCode)code3, avatar);
                         });
                     });

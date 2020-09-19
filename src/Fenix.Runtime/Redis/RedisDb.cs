@@ -39,8 +39,8 @@ namespace Fenix.Redis
             if(value is IMessage || value.GetType().IsSubclassOf(typeof(IMessage)))
             { 
                 if(expireSec == null || !expireSec.HasValue)
-                    return this.client.Set(key, ((IMessage)value).Pack(), expireSeconds: this.conf.ValidTime);
-                return this.client.Set(key, ((IMessage)value).Pack(), expireSeconds: expireSec.Value);
+                    return this.client.Set(key, ((IMessage)value).PackRaw(), expireSeconds: this.conf.ValidTime);
+                return this.client.Set(key, ((IMessage)value).PackRaw(), expireSeconds: expireSec.Value);
             }
 
             if (expireSec == null || !expireSec.HasValue)
@@ -55,8 +55,8 @@ namespace Fenix.Redis
             if (value is IMessage || value.GetType().IsSubclassOf(typeof(IMessage)))
             {
                 if (expireSec == null || !expireSec.HasValue)
-                    return await this.client.SetAsync(key, ((IMessage)value).Pack(), expireSeconds: this.conf.ValidTime);
-                return await this.client.SetAsync(key, ((IMessage)value).Pack(), expireSeconds: expireSec.Value);
+                    return await this.client.SetAsync(key, ((IMessage)value).PackRaw(), expireSeconds: this.conf.ValidTime);
+                return await this.client.SetAsync(key, ((IMessage)value).PackRaw(), expireSeconds: expireSec.Value);
             }
 
             if (expireSec == null || !expireSec.HasValue)
@@ -197,7 +197,7 @@ namespace Fenix.Redis
                 if (value == null)
                     return result;
                 if (value is IMessage || value.GetType().IsSubclassOf(typeof(IMessage)))
-                    result = this.client.StringSet(redisKey, ((IMessage)value).Pack(), expireSeconds);
+                    result = this.client.StringSet(redisKey, ((IMessage)value).PackRaw(), expireSeconds);
                 else
                     result = this.client.StringSet(redisKey, JsonConvert.SerializeObject(value), expireSeconds); 
             }
@@ -221,7 +221,7 @@ namespace Fenix.Redis
                 if (value == null)
                     return result;
                 if (value is IMessage || value.GetType().IsSubclassOf(typeof(IMessage)))
-                    result = await this.client.StringSetAsync(redisKey, ((IMessage)value).Pack(), expireSeconds);
+                    result = await this.client.StringSetAsync(redisKey, ((IMessage)value).PackRaw(), expireSeconds);
                 else
                     result = await this.client.StringSetAsync(redisKey, JsonConvert.SerializeObject(value), expireSeconds);
 
@@ -261,7 +261,7 @@ namespace Fenix.Redis
                         if (value == null)
                             return result;
                         if (value is IMessage || value.GetType().IsSubclassOf(typeof(IMessage)))
-                            result = this.client.StringSet(redisKey, ((IMessage)value).Pack(), expireSeconds);
+                            result = this.client.StringSet(redisKey, ((IMessage)value).PackRaw(), expireSeconds);
                         else
                             result = this.client.StringSet(redisKey, JsonConvert.SerializeObject(value), expireSeconds);
                     }
@@ -304,7 +304,7 @@ namespace Fenix.Redis
                         if (value == null)
                             return result;
                         if (value is IMessage || value.GetType().IsSubclassOf(typeof(IMessage)))
-                            result = await this.client.StringSetAsync(redisKey, ((IMessage)value).Pack(), expireSeconds);
+                            result = await this.client.StringSetAsync(redisKey, ((IMessage)value).PackRaw(), expireSeconds);
                         else
                             result = await this.client.StringSetAsync(redisKey, JsonConvert.SerializeObject(value), expireSeconds);
                     }

@@ -973,8 +973,8 @@ namespace Shared
                     bool hasEvent = api_type == "ClientApi" && method.Name.ToLower().StartsWith("on") && method.Name.Length > 2 && method.Name[3] >= 'A';
 
                     builder = new StringBuilder()
-                        .AppendLine($"        [RpcMethod({pc_cls}.{proto_code}, Api.{api_type})]")
-                        .AppendLine($"        [EditorBrowsable(EditorBrowsableState.Never)]");
+                        .AppendLine($"        [RpcMethod({pc_cls}.{proto_code}, Api.{api_type})]");
+                        //.AppendLine($"        [EditorBrowsable(EditorBrowsableState.Never)]");
                     if (isHost)
                     {
                         if (hasCallback)

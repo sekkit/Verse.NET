@@ -63,6 +63,11 @@ namespace Fenix.Common.Rpc
             return MessagePackSerializer.Serialize(this);//, Utils.RpcUtil.lz4Options);
         }
 
+        public virtual byte[] PackRaw()
+        { 
+            return MessagePackSerializer.Serialize(this, MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.None));
+        }
+
         public virtual void UnPack(byte[] data)
         {
             var obj = Deserialize(data);
