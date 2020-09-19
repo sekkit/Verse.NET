@@ -38,7 +38,7 @@ namespace Server
         static void Main(string[] args)
         {
             ResourceLeakDetector.Level = DetectionLevel.Disabled;
-
+#if ENABLE_IL2CPP
             StaticCompositeResolver.Instance.Register( 
                  MessagePack.Resolvers.ClientAppResolver.Instance,
                  MessagePack.Resolvers.FenixRuntimeResolver.Instance,
@@ -50,7 +50,7 @@ namespace Server
                  MessagePack.Resolvers.BuiltinResolver.Instance,
                  MessagePack.Resolvers.StandardResolver.Instance
             );
-
+#endif
             if (args.Length == 0)
             {
                 var cfgList = new List<RuntimeConfig>();

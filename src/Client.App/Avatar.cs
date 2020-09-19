@@ -14,8 +14,11 @@ namespace Client
     public partial class Avatar : ClientAvatar
     {
         public new Server.AvatarRef Server => (Server.AvatarRef)this.serverActor;
-
+#if ENABLE_IL2CPP || !DEBUG
         protected Avatar self => this;
+#else
+        protected dynamic self => this;
+#endif
 
         public User User => GetPersist<User>();
 

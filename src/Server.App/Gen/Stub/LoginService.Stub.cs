@@ -24,15 +24,16 @@ namespace Server.GModule
 {
     public partial class LoginService
     {
+#if !FENIX_CODEGEN
 #if CLIENT
 
 
 #endif
 #if !CLIENT
         [RpcMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__CREATE_ACCOUNT_REQ, Api.ServerApi)]
-        [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API__ServerGModule__LoginService__create_account(IMessage msg, Action<IMessage> cb)
         {
+#if ENABLE_IL2CPP || !DEBUG || RUNTIME
             var _msg = (__ServerGModule__LoginService__CreateAccountReq)msg;
             this.CreateAccount(_msg.username, _msg.password, (code) =>
             {
@@ -40,12 +41,23 @@ namespace Server.GModule
                 cbMsg.code=code;
                 cb.Invoke(cbMsg);
             });
+#else
+
+            dynamic _msg = msg;
+            self.CreateAccount(_msg.username, _msg.password, new Action<dynamic>((code) =>
+            {
+                dynamic cbMsg = new __ServerGModule__LoginService__CreateAccountReq.Callback();
+                cbMsg.code=code;
+                cb.Invoke(cbMsg);
+            }));
+#endif
+
         }
 
         [RpcMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__DELETE_ACCOUNT_REQ, Api.ServerApi)]
-        [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API__ServerGModule__LoginService__delete_account(IMessage msg, Action<IMessage> cb)
         {
+#if ENABLE_IL2CPP || !DEBUG || RUNTIME
             var _msg = (__ServerGModule__LoginService__DeleteAccountReq)msg;
             this.DeleteAccount(_msg.username, _msg.password, (code) =>
             {
@@ -53,12 +65,23 @@ namespace Server.GModule
                 cbMsg.code=code;
                 cb.Invoke(cbMsg);
             });
+#else
+
+            dynamic _msg = msg;
+            self.DeleteAccount(_msg.username, _msg.password, new Action<dynamic>((code) =>
+            {
+                dynamic cbMsg = new __ServerGModule__LoginService__DeleteAccountReq.Callback();
+                cbMsg.code=code;
+                cb.Invoke(cbMsg);
+            }));
+#endif
+
         }
 
         [RpcMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__LOGIN_REQ, Api.ServerApi)]
-        [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API__ServerGModule__LoginService__login(IMessage msg, Action<IMessage> cb)
         {
+#if ENABLE_IL2CPP || !DEBUG || RUNTIME
             var _msg = (__ServerGModule__LoginService__LoginReq)msg;
             this.Login(_msg.username, _msg.password, _msg.extraData, (code, arg1, arg2, arg3, arg4) =>
             {
@@ -70,44 +93,76 @@ namespace Server.GModule
                 cbMsg.arg4=arg4;
                 cb.Invoke(cbMsg);
             });
+#else
+
+            dynamic _msg = msg;
+            self.Login(_msg.username, _msg.password, _msg.extraData, new Action<ErrCode, string, ulong, string, string>((code, arg1, arg2, arg3, arg4) =>
+            {
+                dynamic cbMsg = new __ServerGModule__LoginService__LoginReq.Callback();
+                cbMsg.code=code;
+                cbMsg.arg1=arg1;
+                cbMsg.arg2=arg2;
+                cbMsg.arg3=arg3;
+                cbMsg.arg4=arg4;
+                cb.Invoke(cbMsg);
+            }));
+#endif
+
         }
 
         [RpcMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__RESET_PASSWORD_REQ, Api.ServerApi)]
-        [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API__ServerGModule__LoginService__reset_password(IMessage msg)
         {
+#if ENABLE_IL2CPP || !DEBUG || RUNTIME
             var _msg = (__ServerGModule__LoginService__ResetPasswordReq)msg;
             this.ResetPassword(_msg.username, _msg.email);
+#else
+            dynamic _msg = msg;
+            self.ResetPassword(_msg.username, _msg.email);
+#endif
         }
 
         [RpcMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__CREATE_ACCOUNT_REQ, Api.ServerApi)]
-        [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API_NATIVE__ServerGModule__LoginService__create_account(global::System.String username, global::System.String password, global::System.Action<global::Shared.Protocol.ErrCode> callback)
         {
+#if ENABLE_IL2CPP || !DEBUG || RUNTIME
             this.CreateAccount(username, password, callback);
+#else
+            self.CreateAccount(username, password, callback);
+#endif
         }
 
         [RpcMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__DELETE_ACCOUNT_REQ, Api.ServerApi)]
-        [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API_NATIVE__ServerGModule__LoginService__delete_account(global::System.String username, global::System.String password, global::System.Action<global::Shared.Protocol.ErrCode> callback)
         {
+#if ENABLE_IL2CPP || !DEBUG || RUNTIME
             this.DeleteAccount(username, password, callback);
+#else
+            self.DeleteAccount(username, password, callback);
+#endif
         }
 
         [RpcMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__LOGIN_REQ, Api.ServerApi)]
-        [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API_NATIVE__ServerGModule__LoginService__login(global::System.String username, global::System.String password, global::System.String extraData, global::System.Action<global::Shared.Protocol.ErrCode, global::System.String, global::System.UInt64, global::System.String, global::System.String> callback)
         {
+#if ENABLE_IL2CPP || !DEBUG || RUNTIME
             this.Login(username, password, extraData, callback);
+#else
+            self.Login(username, password, extraData, callback);
+#endif
         }
 
         [RpcMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__RESET_PASSWORD_REQ, Api.ServerApi)]
-        [EditorBrowsable(EditorBrowsableState.Never)]
         public void SERVER_API_NATIVE__ServerGModule__LoginService__reset_password(global::System.String username, global::System.String email)
         {
+#if ENABLE_IL2CPP || !DEBUG || RUNTIME
             this.ResetPassword(username, email);
+#else
+            self.ResetPassword(username, email);
+#endif
         }
 
+#endif
 #endif
     }
 }

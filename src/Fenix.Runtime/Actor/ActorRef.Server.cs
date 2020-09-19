@@ -18,8 +18,19 @@ namespace Fenix
 
     public partial class ActorRef
     {
+#if FENIX_CODEGEN && !RUNTIME
+        public async Task<dynamic> BindClientActorAsync(dynamic actorName, dynamic callback=null)
+#else
         public async Task<BindClientActorReq.Callback> BindClientActorAsync(global::System.String actorName, global::System.Action<global::Fenix.Common.DefaultErrCode> callback=null)
+#endif
         {
+#if FENIX_CODEGEN
+#if !RUNTIME
+            var t = new TaskCompletionSource<dynamic>();
+#else
+            var t = new TaskCompletionSource<BindClientActorReq.Callback>();
+#endif
+#else
             var t = new TaskCompletionSource<BindClientActorReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -60,11 +71,17 @@ namespace Fenix
                     this.CallRemoteMethod(OpCode.BIND_CLIENT_ACTOR_REQ, msg, cb);
                  });
              }
+#endif
              return await t.Task;
         }
 
+#if FENIX_CODEGEN && !RUNTIME
+        public void BindClientActor(dynamic actorName, dynamic callback)
+#else
         public void BindClientActor(global::System.String actorName, global::System.Action<global::Fenix.Common.DefaultErrCode> callback)
+#endif
         {
+#if !FENIX_CODEGEN
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
@@ -90,10 +107,22 @@ namespace Fenix
                 });
                 this.CallRemoteMethod(OpCode.BIND_CLIENT_ACTOR_REQ, msg, cb);
             });
+#endif
         }
 
+#if FENIX_CODEGEN && !RUNTIME
+        public async Task<dynamic> CreateActorAsync(dynamic typename, dynamic name, dynamic callback=null)
+#else
         public async Task<CreateActorReq.Callback> CreateActorAsync(global::System.String typename, global::System.String name, global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.String, global::System.UInt64> callback=null)
+#endif
         {
+#if FENIX_CODEGEN
+#if !RUNTIME
+            var t = new TaskCompletionSource<dynamic>();
+#else
+            var t = new TaskCompletionSource<CreateActorReq.Callback>();
+#endif
+#else
             var t = new TaskCompletionSource<CreateActorReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -137,11 +166,17 @@ namespace Fenix
                     this.CallRemoteMethod(OpCode.CREATE_ACTOR_REQ, msg, cb);
                  });
              }
+#endif
              return await t.Task;
         }
 
+#if FENIX_CODEGEN && !RUNTIME
+        public void CreateActor(dynamic typename, dynamic name, dynamic callback)
+#else
         public void CreateActor(global::System.String typename, global::System.String name, global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.String, global::System.UInt64> callback)
+#endif
         {
+#if !FENIX_CODEGEN
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
@@ -168,10 +203,22 @@ namespace Fenix
                 });
                 this.CallRemoteMethod(OpCode.CREATE_ACTOR_REQ, msg, cb);
             });
+#endif
         }
 
+#if FENIX_CODEGEN && !RUNTIME
+        public async Task<dynamic> MigrateActorAsync(dynamic actorId, dynamic callback=null)
+#else
         public async Task<MigrateActorReq.Callback> MigrateActorAsync(global::System.UInt64 actorId, global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.Byte[]> callback=null)
+#endif
         {
+#if FENIX_CODEGEN
+#if !RUNTIME
+            var t = new TaskCompletionSource<dynamic>();
+#else
+            var t = new TaskCompletionSource<MigrateActorReq.Callback>();
+#endif
+#else
             var t = new TaskCompletionSource<MigrateActorReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -213,11 +260,17 @@ namespace Fenix
                     this.CallRemoteMethod(OpCode.MIGRATE_ACTOR_REQ, msg, cb);
                  });
              }
+#endif
              return await t.Task;
         }
 
+#if FENIX_CODEGEN && !RUNTIME
+        public void MigrateActor(dynamic actorId, dynamic callback)
+#else
         public void MigrateActor(global::System.UInt64 actorId, global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.Byte[]> callback)
+#endif
         {
+#if !FENIX_CODEGEN
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
@@ -243,10 +296,22 @@ namespace Fenix
                 });
                 this.CallRemoteMethod(OpCode.MIGRATE_ACTOR_REQ, msg, cb);
             });
+#endif
         }
 
+#if FENIX_CODEGEN && !RUNTIME
+        public async Task<dynamic> OnBeforeDisconnectAsync(dynamic reason, dynamic callback=null)
+#else
         public async Task<OnBeforeDisconnectNtf.Callback> OnBeforeDisconnectAsync(global::Fenix.Common.DisconnectReason reason, global::System.Action callback=null)
+#endif
         {
+#if FENIX_CODEGEN
+#if !RUNTIME
+            var t = new TaskCompletionSource<dynamic>();
+#else
+            var t = new TaskCompletionSource<OnBeforeDisconnectNtf.Callback>();
+#endif
+#else
             var t = new TaskCompletionSource<OnBeforeDisconnectNtf.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -287,11 +352,17 @@ namespace Fenix
                     this.CallRemoteMethod(OpCode.ON_BEFORE_DISCONNECT_NTF, msg, cb);
                  });
              }
+#endif
              return await t.Task;
         }
 
+#if FENIX_CODEGEN && !RUNTIME
+        public void OnBeforeDisconnect(dynamic reason, dynamic callback)
+#else
         public void OnBeforeDisconnect(global::Fenix.Common.DisconnectReason reason, global::System.Action callback)
+#endif
         {
+#if !FENIX_CODEGEN
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
@@ -317,11 +388,17 @@ namespace Fenix
                 });
                 this.CallRemoteMethod(OpCode.ON_BEFORE_DISCONNECT_NTF, msg, cb);
             });
+#endif
         }
 
 
+#if FENIX_CODEGEN && !RUNTIME
+        public void OnServerActorEnable(dynamic actorName)
+#else
         public void OnServerActorEnable(global::System.String actorName)
+#endif
         {
+#if !FENIX_CODEGEN
            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
            if (this.FromHostId == toHostId)
            {
@@ -343,10 +420,22 @@ namespace Fenix
                };
                this.CallRemoteMethod(OpCode.ON_SERVER_ACTOR_ENABLE_NTF, msg, null);
             });
+#endif
         }
 
+#if FENIX_CODEGEN && !RUNTIME
+        public async Task<dynamic> ReconnectServerActorAsync(dynamic hostId, dynamic hostName, dynamic hostIP, dynamic hostPort, dynamic actorId, dynamic actorName, dynamic aTypeName, dynamic callback=null)
+#else
         public async Task<ReconnectServerActorNtf.Callback> ReconnectServerActorAsync(global::System.UInt64 hostId, global::System.String hostName, global::System.String hostIP, global::System.Int32 hostPort, global::System.UInt64 actorId, global::System.String actorName, global::System.String aTypeName, global::System.Action<global::Fenix.Common.DefaultErrCode> callback=null)
+#endif
         {
+#if FENIX_CODEGEN
+#if !RUNTIME
+            var t = new TaskCompletionSource<dynamic>();
+#else
+            var t = new TaskCompletionSource<ReconnectServerActorNtf.Callback>();
+#endif
+#else
             var t = new TaskCompletionSource<ReconnectServerActorNtf.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -393,11 +482,17 @@ namespace Fenix
                     this.CallRemoteMethod(OpCode.RECONNECT_SERVER_ACTOR_NTF, msg, cb);
                  });
              }
+#endif
              return await t.Task;
         }
 
+#if FENIX_CODEGEN && !RUNTIME
+        public void ReconnectServerActor(dynamic hostId, dynamic hostName, dynamic hostIP, dynamic hostPort, dynamic actorId, dynamic actorName, dynamic aTypeName, dynamic callback)
+#else
         public void ReconnectServerActor(global::System.UInt64 hostId, global::System.String hostName, global::System.String hostIP, global::System.Int32 hostPort, global::System.UInt64 actorId, global::System.String actorName, global::System.String aTypeName, global::System.Action<global::Fenix.Common.DefaultErrCode> callback)
+#endif
         {
+#if !FENIX_CODEGEN
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
@@ -429,10 +524,22 @@ namespace Fenix
                 });
                 this.CallRemoteMethod(OpCode.RECONNECT_SERVER_ACTOR_NTF, msg, cb);
             });
+#endif
         }
 
+#if FENIX_CODEGEN && !RUNTIME
+        public async Task<dynamic> RegisterAsync(dynamic hostId, dynamic hostName, dynamic callback=null)
+#else
         public async Task<RegisterReq.Callback> RegisterAsync(global::System.UInt64 hostId, global::System.String hostName, global::System.Action<global::Fenix.Common.DefaultErrCode, global::Fenix.HostInfo> callback=null)
+#endif
         {
+#if FENIX_CODEGEN
+#if !RUNTIME
+            var t = new TaskCompletionSource<dynamic>();
+#else
+            var t = new TaskCompletionSource<RegisterReq.Callback>();
+#endif
+#else
             var t = new TaskCompletionSource<RegisterReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -475,11 +582,17 @@ namespace Fenix
                     this.CallRemoteMethod(OpCode.REGISTER_REQ, msg, cb);
                  });
              }
+#endif
              return await t.Task;
         }
 
+#if FENIX_CODEGEN && !RUNTIME
+        public void Register(dynamic hostId, dynamic hostName, dynamic callback)
+#else
         public void Register(global::System.UInt64 hostId, global::System.String hostName, global::System.Action<global::Fenix.Common.DefaultErrCode, global::Fenix.HostInfo> callback)
+#endif
         {
+#if !FENIX_CODEGEN
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
@@ -506,10 +619,22 @@ namespace Fenix
                 });
                 this.CallRemoteMethod(OpCode.REGISTER_REQ, msg, cb);
             });
+#endif
         }
 
+#if FENIX_CODEGEN && !RUNTIME
+        public async Task<dynamic> RegisterClientAsync(dynamic hostId, dynamic hostName, dynamic callback=null)
+#else
         public async Task<RegisterClientReq.Callback> RegisterClientAsync(global::System.UInt64 hostId, global::System.String hostName, global::System.Action<global::Fenix.Common.DefaultErrCode, global::Fenix.HostInfo> callback=null)
+#endif
         {
+#if FENIX_CODEGEN
+#if !RUNTIME
+            var t = new TaskCompletionSource<dynamic>();
+#else
+            var t = new TaskCompletionSource<RegisterClientReq.Callback>();
+#endif
+#else
             var t = new TaskCompletionSource<RegisterClientReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -552,11 +677,17 @@ namespace Fenix
                     this.CallRemoteMethod(OpCode.REGISTER_CLIENT_REQ, msg, cb);
                  });
              }
+#endif
              return await t.Task;
         }
 
+#if FENIX_CODEGEN && !RUNTIME
+        public void RegisterClient(dynamic hostId, dynamic hostName, dynamic callback)
+#else
         public void RegisterClient(global::System.UInt64 hostId, global::System.String hostName, global::System.Action<global::Fenix.Common.DefaultErrCode, global::Fenix.HostInfo> callback)
+#endif
         {
+#if !FENIX_CODEGEN
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
@@ -583,10 +714,22 @@ namespace Fenix
                 });
                 this.CallRemoteMethod(OpCode.REGISTER_CLIENT_REQ, msg, cb);
             });
+#endif
         }
 
+#if FENIX_CODEGEN && !RUNTIME
+        public async Task<dynamic> RemoveActorAsync(dynamic actorId, dynamic callback=null)
+#else
         public async Task<RemoveActorReq.Callback> RemoveActorAsync(global::System.UInt64 actorId, global::System.Action<global::Fenix.Common.DefaultErrCode> callback=null)
+#endif
         {
+#if FENIX_CODEGEN
+#if !RUNTIME
+            var t = new TaskCompletionSource<dynamic>();
+#else
+            var t = new TaskCompletionSource<RemoveActorReq.Callback>();
+#endif
+#else
             var t = new TaskCompletionSource<RemoveActorReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -627,11 +770,17 @@ namespace Fenix
                     this.CallRemoteMethod(OpCode.REMOVE_ACTOR_REQ, msg, cb);
                  });
              }
+#endif
              return await t.Task;
         }
 
+#if FENIX_CODEGEN && !RUNTIME
+        public void RemoveActor(dynamic actorId, dynamic callback)
+#else
         public void RemoveActor(global::System.UInt64 actorId, global::System.Action<global::Fenix.Common.DefaultErrCode> callback)
+#endif
         {
+#if !FENIX_CODEGEN
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
@@ -657,10 +806,22 @@ namespace Fenix
                 });
                 this.CallRemoteMethod(OpCode.REMOVE_ACTOR_REQ, msg, cb);
             });
+#endif
         }
 
+#if FENIX_CODEGEN && !RUNTIME
+        public async Task<dynamic> RemoveClientActorAsync(dynamic actorId, dynamic reason, dynamic callback=null)
+#else
         public async Task<RemoveClientActorReq.Callback> RemoveClientActorAsync(global::System.UInt64 actorId, global::Fenix.Common.DisconnectReason reason, global::System.Action<global::Fenix.Common.DefaultErrCode> callback=null)
+#endif
         {
+#if FENIX_CODEGEN
+#if !RUNTIME
+            var t = new TaskCompletionSource<dynamic>();
+#else
+            var t = new TaskCompletionSource<RemoveClientActorReq.Callback>();
+#endif
+#else
             var t = new TaskCompletionSource<RemoveClientActorReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -702,11 +863,17 @@ namespace Fenix
                     this.CallRemoteMethod(OpCode.REMOVE_CLIENT_ACTOR_REQ, msg, cb);
                  });
              }
+#endif
              return await t.Task;
         }
 
+#if FENIX_CODEGEN && !RUNTIME
+        public void RemoveClientActor(dynamic actorId, dynamic reason, dynamic callback)
+#else
         public void RemoveClientActor(global::System.UInt64 actorId, global::Fenix.Common.DisconnectReason reason, global::System.Action<global::Fenix.Common.DefaultErrCode> callback)
+#endif
         {
+#if !FENIX_CODEGEN
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
@@ -733,10 +900,22 @@ namespace Fenix
                 });
                 this.CallRemoteMethod(OpCode.REMOVE_CLIENT_ACTOR_REQ, msg, cb);
             });
+#endif
         }
 
+#if FENIX_CODEGEN && !RUNTIME
+        public async Task<dynamic> SayHelloAsync(dynamic callback=null)
+#else
         public async Task<SayHelloReq.Callback> SayHelloAsync(global::System.Action<global::Fenix.Common.DefaultErrCode, global::Fenix.HostInfo> callback=null)
+#endif
         {
+#if FENIX_CODEGEN
+#if !RUNTIME
+            var t = new TaskCompletionSource<dynamic>();
+#else
+            var t = new TaskCompletionSource<SayHelloReq.Callback>();
+#endif
+#else
             var t = new TaskCompletionSource<SayHelloReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -778,11 +957,17 @@ namespace Fenix
                     this.CallRemoteMethod(OpCode.SAY_HELLO_REQ, msg, cb);
                  });
              }
+#endif
              return await t.Task;
         }
 
+#if FENIX_CODEGEN && !RUNTIME
+        public void SayHello(dynamic callback)
+#else
         public void SayHello(global::System.Action<global::Fenix.Common.DefaultErrCode, global::Fenix.HostInfo> callback)
+#endif
         {
+#if !FENIX_CODEGEN
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
@@ -808,6 +993,7 @@ namespace Fenix
                 });
                 this.CallRemoteMethod(OpCode.SAY_HELLO_REQ, msg, cb);
             });
+#endif
         }
     }
 }

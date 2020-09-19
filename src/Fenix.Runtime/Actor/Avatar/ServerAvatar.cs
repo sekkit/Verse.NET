@@ -10,6 +10,6 @@ namespace Fenix
     [AccessLevel(ALevel.CLIENT_AND_SERVER)]
     public class ServerAvatar: Actor
     {
-        public string Uid => this.UniqueName;
+        public string Uid => this.UniqueName; 
     }
 }

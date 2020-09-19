@@ -24,6 +24,7 @@ namespace Server.GModule
 {
     public partial class MasterService
     {
+#if !FENIX_CODEGEN
 #if CLIENT
 
 
@@ -31,6 +32,7 @@ namespace Server.GModule
 #if !CLIENT
 
 
+#endif
 #endif
     }
 }

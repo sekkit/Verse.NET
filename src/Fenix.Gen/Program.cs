@@ -15,7 +15,7 @@ namespace Fenix
 
             var rootFolder = Directory.GetCurrentDirectory();
 
-            string rootPath = Path.Combine(Path.Combine(rootFolder, "../../../../../"));
+            string rootPath = Path.Combine(Path.Combine(rootFolder, "../../"));
 
             if (args.Length == 2)
                 rootPath = args[1];
@@ -58,7 +58,7 @@ namespace Fenix
 
             //if (args.Length != 2)
             //   return; 
-            string rootPath = Path.Combine(Path.Combine(rootFolder, "../../../../../"));
+            string rootPath = Path.Combine(Path.Combine(rootFolder, "../../"));
             if(args.Length >= 2)
                 rootPath = args[1]; 
             string unityPath = Path.Combine(rootPath, "Unity");

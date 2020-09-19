@@ -16,5 +16,10 @@ namespace Shared.DataModel
         {
             return MessagePackSerializer.Serialize<MatchData>(this);
         }
+
+        public new static MatchData Deserialize(byte[] data)
+        {
+            return MessagePackSerializer.Deserialize<MatchData>(data);
+        }
     }
 }

@@ -16,7 +16,7 @@ namespace Fenix.Common.Utils
 
         public static void Init()
         {
-#if !CLIENT
+#if !CLIENT || !ENABLE_IL2CPP
             var option = MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4BlockArray); 
             MessagePackSerializer.DefaultOptions = option;
 #else

@@ -8,7 +8,7 @@ set APP_CONF=%curpath%/conf/app.json
 
 set SERVER_CONF=%curpath%/conf/server.json
 
-set BIN_PATH=%cwdpath%/netcoreapp3.1
+set BIN_PATH=%cwdpath%/Server.App/net5.0
 
 echo %BIN_PATH%/Server.App.dll
 

@@ -43,7 +43,8 @@ namespace Client
         { 
 			if (!inited)
             {
-			    StaticCompositeResolver.Instance.Register(
+#if ENABLE_IL2CPP
+                StaticCompositeResolver.Instance.Register(
 	                 MessagePack.Resolvers.ClientAppResolver.Instance,
 	                 MessagePack.Resolvers.FenixRuntimeResolver.Instance,
 	                 MessagePack.Resolvers.SharedResolver.Instance,
@@ -52,6 +53,7 @@ namespace Client
 	                 MessagePack.Unity.Extension.UnityBlitWithPrimitiveArrayResolver.Instance,
 	                 MessagePack.Resolvers.StandardResolver.Instance
 	            );
+#endif
 				inited = true;
 			}
 

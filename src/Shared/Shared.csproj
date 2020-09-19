@@ -12,11 +12,6 @@
 
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 
-  <ItemGroup>
-    <Compile Remove="obj\\**\*" />
-    <Compile Include="obj\$(MSBuildProjectName)\**\$(MSBuildProjectName).AssemblyInfo.cs" />
-  </ItemGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'"> 
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <DefineConstants>TRACE;SIGNED;NETSTANDARD;NET_4_0_GREATER;NET_4_5_GREATER;NET_4_6_GREATER</DefineConstants>
@@ -28,10 +23,13 @@
 
   <ItemGroup>
     <Compile Remove="Gen\**" />
+    <Compile Remove="obj\**" />
     <Compile Remove="Shared\**" />
     <EmbeddedResource Remove="Gen\**" />
+    <EmbeddedResource Remove="obj\**" />
     <EmbeddedResource Remove="Shared\**" />
     <None Remove="Gen\**" />
+    <None Remove="obj\**" />
     <None Remove="Shared\**" />
   </ItemGroup>
 

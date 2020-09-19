@@ -32,6 +32,8 @@ namespace Fenix
         
         public bool IsClientMode { get; set; }
 
+        public dynamic self => this;
+
         protected ConcurrentDictionary<ulong, Actor> actorDic = new ConcurrentDictionary<ulong, Actor>();
 
         Thread internalThread;
@@ -649,7 +651,7 @@ namespace Fenix
             if(hostId != this.Id && hostId != 0)
             {
                 //call remote host
-                this.GetHost(hostId)?.RemoveClientActor(actorId, reason, callback);
+                GetHost(hostId)?.RemoveClientActor(actorId, reason, callback);
                 return;
             }
 

@@ -24,8 +24,19 @@ namespace Server
     public partial class LoginServiceRef : ActorRef
     {
         public new bool isClient => false;
+#if FENIX_CODEGEN && !RUNTIME
+        public async Task<dynamic> rpc_create_account_async(dynamic username, dynamic password, dynamic callback=null)
+#else
         public async Task<__ServerGModule__LoginService__CreateAccountReq.Callback> rpc_create_account_async(global::System.String username, global::System.String password, global::System.Action<global::Shared.Protocol.ErrCode> callback=null)
+#endif
         {
+#if FENIX_CODEGEN
+#if !RUNTIME
+            var t = new TaskCompletionSource<dynamic>();
+#else
+            var t = new TaskCompletionSource<__ServerGModule__LoginService__CreateAccountReq.Callback>();
+#endif
+#else
             var t = new TaskCompletionSource<__ServerGModule__LoginService__CreateAccountReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -67,11 +78,17 @@ namespace Server
                     this.CallRemoteMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__CREATE_ACCOUNT_REQ, msg, cb);
                  });
              }
+#endif
              return await t.Task;
         }
 
+#if FENIX_CODEGEN && !RUNTIME
+        public void rpc_create_account(dynamic username, dynamic password, dynamic callback)
+#else
         public void rpc_create_account(global::System.String username, global::System.String password, global::System.Action<global::Shared.Protocol.ErrCode> callback)
+#endif
         {
+#if !FENIX_CODEGEN
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
@@ -98,10 +115,22 @@ namespace Server
                 });
                 this.CallRemoteMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__CREATE_ACCOUNT_REQ, msg, cb);
             });
+#endif
         }
 
+#if FENIX_CODEGEN && !RUNTIME
+        public async Task<dynamic> rpc_delete_account_async(dynamic username, dynamic password, dynamic callback=null)
+#else
         public async Task<__ServerGModule__LoginService__DeleteAccountReq.Callback> rpc_delete_account_async(global::System.String username, global::System.String password, global::System.Action<global::Shared.Protocol.ErrCode> callback=null)
+#endif
         {
+#if FENIX_CODEGEN
+#if !RUNTIME
+            var t = new TaskCompletionSource<dynamic>();
+#else
+            var t = new TaskCompletionSource<__ServerGModule__LoginService__DeleteAccountReq.Callback>();
+#endif
+#else
             var t = new TaskCompletionSource<__ServerGModule__LoginService__DeleteAccountReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -143,11 +172,17 @@ namespace Server
                     this.CallRemoteMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__DELETE_ACCOUNT_REQ, msg, cb);
                  });
              }
+#endif
              return await t.Task;
         }
 
+#if FENIX_CODEGEN && !RUNTIME
+        public void rpc_delete_account(dynamic username, dynamic password, dynamic callback)
+#else
         public void rpc_delete_account(global::System.String username, global::System.String password, global::System.Action<global::Shared.Protocol.ErrCode> callback)
+#endif
         {
+#if !FENIX_CODEGEN
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
@@ -174,10 +209,22 @@ namespace Server
                 });
                 this.CallRemoteMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__DELETE_ACCOUNT_REQ, msg, cb);
             });
+#endif
         }
 
+#if FENIX_CODEGEN && !RUNTIME
+        public async Task<dynamic> rpc_login_async(dynamic username, dynamic password, dynamic extraData, dynamic callback=null)
+#else
         public async Task<__ServerGModule__LoginService__LoginReq.Callback> rpc_login_async(global::System.String username, global::System.String password, global::System.String extraData, global::System.Action<global::Shared.Protocol.ErrCode, global::System.String, global::System.UInt64, global::System.String, global::System.String> callback=null)
+#endif
         {
+#if FENIX_CODEGEN
+#if !RUNTIME
+            var t = new TaskCompletionSource<dynamic>();
+#else
+            var t = new TaskCompletionSource<__ServerGModule__LoginService__LoginReq.Callback>();
+#endif
+#else
             var t = new TaskCompletionSource<__ServerGModule__LoginService__LoginReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
@@ -224,11 +271,17 @@ namespace Server
                     this.CallRemoteMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__LOGIN_REQ, msg, cb);
                  });
              }
+#endif
              return await t.Task;
         }
 
+#if FENIX_CODEGEN && !RUNTIME
+        public void rpc_login(dynamic username, dynamic password, dynamic extraData, dynamic callback)
+#else
         public void rpc_login(global::System.String username, global::System.String password, global::System.String extraData, global::System.Action<global::Shared.Protocol.ErrCode, global::System.String, global::System.UInt64, global::System.String, global::System.String> callback)
+#endif
         {
+#if !FENIX_CODEGEN
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
@@ -256,11 +309,17 @@ namespace Server
                 });
                 this.CallRemoteMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__LOGIN_REQ, msg, cb);
             });
+#endif
         }
 
 
+#if FENIX_CODEGEN && !RUNTIME
+        public void rpc_reset_password(dynamic username, dynamic email)
+#else
         public void rpc_reset_password(global::System.String username, global::System.String email)
+#endif
         {
+#if !FENIX_CODEGEN
            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
            if (this.FromHostId == toHostId)
            {
@@ -283,6 +342,7 @@ namespace Server
                };
                this.CallRemoteMethod(ProtocolCode.__SERVERGMODULE__LOGINSERVICE__RESET_PASSWORD_REQ, msg, null);
             });
+#endif
         }
     }
 }

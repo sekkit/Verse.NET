@@ -7,7 +7,7 @@ export APP_CONF=${curpath}/conf/app.json
 
 export SERVER_CONF=${curpath}/conf/server.json
 
-export BIN_PATH=${cwdpath}/netcoreapp3.1
+export BIN_PATH=${cwdpath}/Server.App/net5.0
 
 echo ${BIN_PATH}/Server.App.dll
 

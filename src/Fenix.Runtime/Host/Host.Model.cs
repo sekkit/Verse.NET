@@ -86,13 +86,21 @@ namespace Fenix
             return (T)Global.GetActorRef(typeof(T), name, null, Global.Host);
         }
 
+#if FENIX_CODEGEN
+        public dynamic GetService<T>() where T : ActorRef
+        {
+            var refTypeName = typeof(T).Name;
+            string name = refTypeName.Substring(0, refTypeName.Length - 3);
+            return (T)Global.GetActorRef(typeof(T), name, null, Global.Host);
+        }
+#else
         public T GetService<T>() where T : ActorRef
         {
             var refTypeName = typeof(T).Name;
             string name = refTypeName.Substring(0, refTypeName.Length - 3);
             return (T)Global.GetActorRef(typeof(T), name, null, Global.Host);
         }
-
+#endif
         //public T GetService<T>(string hostName, string ip, int port) where T : ActorRef
         //{
         //    var refTypeName = typeof(T).Name;

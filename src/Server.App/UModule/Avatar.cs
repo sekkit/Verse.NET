@@ -13,8 +13,8 @@ namespace Server.UModule
     [RequireModule(typeof(ItemModule))]
     [PersistentData(typeof(User), DbConfig.USER)]
     public partial class Avatar : ServerAvatar
-    {
-        protected Avatar self => this;
+    { 
+        public dynamic self => this;
 
         public User User => GetPersist<User>();
 

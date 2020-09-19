@@ -47,7 +47,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetty.TCP", "src\DotNett
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client.App", "src\Client.App\Client.App.csproj", "{016C7F6E-9DE7-4E54-B8C0-888C52B0160D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fenix.Gen", "src\Fenix.Gen\Fenix.Gen.csproj", "{7759A129-2626-43C5-B407-819071DA61F8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fenix.CodeGen", "src\Fenix.Gen\Fenix.CodeGen.csproj", "{7759A129-2626-43C5-B407-819071DA61F8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fenix.Runtime", "src\Fenix.Runtime\Fenix.Runtime.csproj", "{5851B854-DB95-4D96-8698-11665D4BF6D8}"
 EndProject
