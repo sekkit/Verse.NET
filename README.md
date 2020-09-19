@@ -30,6 +30,8 @@ Fenix is in a early stage of development, but is also being used in reallife Gam
 
 ## Get Started
 
+****Requires .NET5.0 to run in default (Visual 2019 16.8) 
+
 1. Run Unity3D and open Unity project at root path
 
 2. Open Fenix.sln with Visual Studio 2019(.NetCore 3.1+ SDK installed)
