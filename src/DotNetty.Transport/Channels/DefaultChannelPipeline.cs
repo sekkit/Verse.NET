@@ -42,6 +42,8 @@ namespace DotNetty.Transport.Channels
     using DotNetty.Common.Internal;
     using DotNetty.Common.Internal.Logging;
     using DotNetty.Common.Utilities;
+    using ReferenceEqualityComparer = Common.Utilities.ReferenceEqualityComparer;
+    using TaskCompletionSource = Common.Concurrency.TaskCompletionSource;
     using Thread = DotNetty.Common.Concurrency.XThread;
 
     /// <summary>

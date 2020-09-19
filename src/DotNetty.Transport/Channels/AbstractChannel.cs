@@ -37,6 +37,7 @@ namespace DotNetty.Transport.Channels
     using DotNetty.Common.Internal;
     using DotNetty.Common.Internal.Logging;
     using DotNetty.Common.Utilities;
+    using TaskCompletionSource = Common.Concurrency.TaskCompletionSource;
 
     public abstract partial class AbstractChannel<TChannel, TUnsafe> : DefaultAttributeMap, IChannel
         where TChannel : AbstractChannel<TChannel, TUnsafe>

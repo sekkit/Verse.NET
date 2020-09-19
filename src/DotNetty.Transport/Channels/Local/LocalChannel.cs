@@ -37,6 +37,7 @@ namespace DotNetty.Transport.Channels.Local
     using DotNetty.Common.Concurrency;
     using DotNetty.Common.Internal;
     using DotNetty.Common.Utilities;
+    using TaskCompletionSource = Common.Concurrency.TaskCompletionSource;
 
     /// <summary>
     /// A <see cref="IChannel"/> for the local transport.

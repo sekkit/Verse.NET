@@ -36,6 +36,7 @@ namespace DotNetty.Common.Utilities
     using DotNetty.Common.Concurrency;
     using DotNetty.Common.Internal;
     using DotNetty.Common.Internal.Logging;
+    using TaskCompletionSource = Concurrency.TaskCompletionSource;
 
     public sealed class HashedWheelTimer : ITimer
     {

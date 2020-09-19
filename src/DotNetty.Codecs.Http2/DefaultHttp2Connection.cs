@@ -33,6 +33,7 @@ namespace DotNetty.Codecs.Http2
     using DotNetty.Common.Internal;
     using DotNetty.Common.Internal.Logging;
     using DotNetty.Common.Utilities;
+    using TaskCompletionSource = Common.Concurrency.TaskCompletionSource;
 
     /// <summary>
     /// Simple implementation of <see cref="IHttp2Connection"/>.

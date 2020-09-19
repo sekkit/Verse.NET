@@ -39,6 +39,7 @@ namespace DotNetty.Handlers.Tls
     using DotNetty.Common.Concurrency;
     using DotNetty.Common.Utilities;
     using DotNetty.Transport.Channels;
+    using TaskCompletionSource = Common.Concurrency.TaskCompletionSource;
 
     public sealed partial class TlsHandler : ByteToMessageDecoder
     {

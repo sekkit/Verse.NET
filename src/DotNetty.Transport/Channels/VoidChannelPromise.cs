@@ -27,6 +27,7 @@ namespace DotNetty.Transport.Channels
     using System.Threading.Tasks;
     using DotNetty.Common.Utilities;
     using DotNetty.Common.Concurrency;
+    using TaskCompletionSource = Common.Concurrency.TaskCompletionSource;
 
     public sealed class VoidChannelPromise : IPromise
     {

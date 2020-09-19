@@ -33,6 +33,7 @@ namespace DotNetty.Transport.Channels
     using DotNetty.Common.Concurrency;
     using DotNetty.Common.Internal;
     using DotNetty.Common.Utilities;
+    using TaskCompletionSource = Common.Concurrency.TaskCompletionSource;
 
     abstract partial class AbstractChannelHandlerContext : IChannelHandlerContext, IResourceLeakHint
     {
