@@ -586,24 +586,26 @@ namespace Fenix
                 Log.Info(header);
 
             Log.Info("#################################");
-             
-            foreach (var key in tcpPeers.Keys.Distinct().ToList())//var p in tcpPeers.Values)
-            {
-                var p = tcpPeers[key];
-                Log.Info(string.Format("========PeerTCP({0}): {1} {2} {3} active:{4}", p.netType, p.ConnId, p.RemoteAddress.ToIPv4String(), p.LocalAddress.ToIPv4String(), p.IsActive)); 
-            }
 
-            foreach (var key in kcpPeers.Keys.Distinct().ToList())//var p in tcpPeers.Values)
-            {
-                var p = kcpPeers[key];
-                Log.Info(string.Format("========PeerKCP({0}): {1} {2} {3} active:{4}", p.netType, p.ConnId, p.RemoteAddress.ToIPv4String(), p.LocalAddress.ToIPv4String(), p.IsActive));
-            } 
+            var peerIds = tcpPeers.Values.Select(m => m.ConnId).Concat(tcpPeers.Values.Select(m => m.ConnId)).Concat(channelPeers.Values.Select(m => m.ConnId)).Distinct();
+            Log.Info("TOTAL Peers:", peerIds.Count());
+            //foreach (var key in tcpPeers.Keys.Distinct().ToList())//var p in tcpPeers.Values)
+            //{
+            //    var p = tcpPeers[key];
+            //    Log.Info(string.Format("========PeerTCP({0}): {1} {2} {3} active:{4}", p.netType, p.ConnId, p.RemoteAddress.ToIPv4String(), p.LocalAddress.ToIPv4String(), p.IsActive)); 
+            //}
 
-            foreach (var key in channelPeers.Keys.Distinct().ToList())//var p in tcpPeers.Values)
-            {
-                var p = channelPeers[key];
-                Log.Info(string.Format("========PeerCH({0}): {1} {2} {3} active:{4}", p.netType, p.ConnId, p.RemoteAddress.ToIPv4String(), p.LocalAddress.ToIPv4String(), p.IsActive));
-            }
+            //foreach (var key in kcpPeers.Keys.Distinct().ToList())//var p in tcpPeers.Values)
+            //{
+            //    var p = kcpPeers[key];
+            //    Log.Info(string.Format("========PeerKCP({0}): {1} {2} {3} active:{4}", p.netType, p.ConnId, p.RemoteAddress.ToIPv4String(), p.LocalAddress.ToIPv4String(), p.IsActive));
+            //} 
+
+            //foreach (var key in channelPeers.Keys.Distinct().ToList())//var p in tcpPeers.Values)
+            //{
+            //    var p = channelPeers[key];
+            //    Log.Info(string.Format("========PeerCH({0}): {1} {2} {3} active:{4}", p.netType, p.ConnId, p.RemoteAddress.ToIPv4String(), p.LocalAddress.ToIPv4String(), p.IsActive));
+            //}
 
             Log.Info("#################################");
         }
