@@ -969,7 +969,9 @@ namespace Shared
                     {
                         var cbType2 = methodParameterList.Where(m => m.Name == "callback").First().ParameterType;
                         string api_cb_args = GenCbArgs(cbType2.GetGenericArguments(), GetCallbackArgs(method), "");
-                        string dynamic_cb_args = String.Concat(Enumerable.Repeat("dynamic, ", cbType2.GetGenericArguments().Count()));
+                        string cb_types = ParseTypeName(cbType2);
+                        string dynamic_cb_args = cb_types;// String.Concat(Enumerable.Repeat("dynamic, ", cbType2.GetGenericArguments().Count()));
+                        
                         if (dynamic_cb_args.EndsWith(", "))
                             dynamic_cb_args = dynamic_cb_args.Substring(0, dynamic_cb_args.Length - ", ".Length);
                         string api_cb_assign = ParseArgsMsgAssign(cbType2.GetGenericArguments(),
@@ -1007,7 +1009,7 @@ namespace Shared
                         {
                             builder.AppendLine($"            dynamic _msg = msg;");
 
-                            builder.AppendLine($"            {selfName.Replace("this", "self")}.{method.Name}({fileterArgs} new Action<{dynamic_cb_args}>(({api_cb_args}) =>")
+                            builder.AppendLine($"            {selfName.Replace("this", "self")}.{method.Name}({fileterArgs} ({dynamic_cb_args})(({api_cb_args}) =>")
                                 .AppendLine($"            {{")
                                 .AppendLine($"                dynamic cbMsg = new {message_type}.Callback();")
                                 .AppendLine($"{api_cb_assign}")
@@ -1020,7 +1022,7 @@ namespace Shared
 
                             if (hasEvent)
                             {
-                                builder.AppendLine($"            {GenUtil.NameToApi(method.Name)}?.Invoke({fileterArgs} new Action<{dynamic_cb_args}>(({api_cb_args}) =>")
+                                builder.AppendLine($"            {GenUtil.NameToApi(method.Name)}?.Invoke({fileterArgs} ({dynamic_cb_args})(({api_cb_args}) =>")
                                 .AppendLine($"            {{")
                                 .AppendLine($"                var cbMsg = new {message_type}.Callback();")
                                 .AppendLine($"{api_cb_assign}")

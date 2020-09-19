@@ -39,13 +39,13 @@ namespace Fenix
 #else
 
             dynamic _msg = msg;
-            self.OnBeforeDisconnect(_msg.reason, new Action(() =>
+            self.OnBeforeDisconnect(_msg.reason, (global::System.Action)(() =>
             {
                 dynamic cbMsg = new OnBeforeDisconnectNtf.Callback();
 
                 cb.Invoke(cbMsg);
             }), context);
-            on_before_disconnect?.Invoke(_msg.reason, new Action(() =>
+            on_before_disconnect?.Invoke(_msg.reason, (global::System.Action)(() =>
             {
                 var cbMsg = new OnBeforeDisconnectNtf.Callback();
 
@@ -83,7 +83,7 @@ namespace Fenix
 #else
 
             dynamic _msg = msg;
-            self.ReconnectServerActor(_msg.hostId, _msg.hostName, _msg.hostIP, _msg.hostPort, _msg.actorId, _msg.actorName, _msg.aTypeName, new Action<dynamic>((code) =>
+            self.ReconnectServerActor(_msg.hostId, _msg.hostName, _msg.hostIP, _msg.hostPort, _msg.actorId, _msg.actorName, _msg.aTypeName, (global::System.Action<global::Fenix.Common.DefaultErrCode>)((code) =>
             {
                 dynamic cbMsg = new ReconnectServerActorNtf.Callback();
                 cbMsg.code=code;
@@ -145,7 +145,7 @@ namespace Fenix
 #else
 
             dynamic _msg = msg;
-            self.BindClientActor(_msg.actorName, new Action<dynamic>((code) =>
+            self.BindClientActor(_msg.actorName, (global::System.Action<global::Fenix.Common.DefaultErrCode>)((code) =>
             {
                 dynamic cbMsg = new BindClientActorReq.Callback();
                 cbMsg.code=code;
@@ -170,7 +170,7 @@ namespace Fenix
 #else
 
             dynamic _msg = msg;
-            self.RegisterClient(_msg.hostId, _msg.hostName, new Action<dynamic, dynamic>((code, arg1) =>
+            self.RegisterClient(_msg.hostId, _msg.hostName, (global::System.Action<global::Fenix.Common.DefaultErrCode, global::Fenix.HostInfo>)((code, arg1) =>
             {
                 dynamic cbMsg = new RegisterClientReq.Callback();
                 cbMsg.code=code;
@@ -195,7 +195,7 @@ namespace Fenix
 #else
 
             dynamic _msg = msg;
-            self.RemoveClientActor(_msg.actorId, _msg.reason, new Action<dynamic>((code) =>
+            self.RemoveClientActor(_msg.actorId, _msg.reason, (global::System.Action<global::Fenix.Common.DefaultErrCode>)((code) =>
             {
                 dynamic cbMsg = new RemoveClientActorReq.Callback();
                 cbMsg.code=code;
@@ -220,7 +220,7 @@ namespace Fenix
 #else
 
             dynamic _msg = msg;
-            self.SayHello( new Action<dynamic, dynamic>((code, arg1) =>
+            self.SayHello( (global::System.Action<global::Fenix.Common.DefaultErrCode, global::Fenix.HostInfo>)((code, arg1) =>
             {
                 dynamic cbMsg = new SayHelloReq.Callback();
                 cbMsg.code=code;
@@ -247,7 +247,7 @@ namespace Fenix
 #else
 
             dynamic _msg = msg;
-            self.CreateActor(_msg.typename, _msg.name, new Action<dynamic, dynamic, dynamic>((code, arg1, arg2) =>
+            self.CreateActor(_msg.typename, _msg.name, (global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.String, global::System.UInt64>)((code, arg1, arg2) =>
             {
                 dynamic cbMsg = new CreateActorReq.Callback();
                 cbMsg.code=code;
@@ -274,7 +274,7 @@ namespace Fenix
 #else
 
             dynamic _msg = msg;
-            self.MigrateActor(_msg.actorId, new Action<dynamic, dynamic>((code, arg1) =>
+            self.MigrateActor(_msg.actorId, (global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.Byte[]>)((code, arg1) =>
             {
                 dynamic cbMsg = new MigrateActorReq.Callback();
                 cbMsg.code=code;
@@ -300,7 +300,7 @@ namespace Fenix
 #else
 
             dynamic _msg = msg;
-            self.Register(_msg.hostId, _msg.hostName, new Action<dynamic, dynamic>((code, arg1) =>
+            self.Register(_msg.hostId, _msg.hostName, (global::System.Action<global::Fenix.Common.DefaultErrCode, global::Fenix.HostInfo>)((code, arg1) =>
             {
                 dynamic cbMsg = new RegisterReq.Callback();
                 cbMsg.code=code;
@@ -325,7 +325,7 @@ namespace Fenix
 #else
 
             dynamic _msg = msg;
-            self.RemoveActor(_msg.actorId, new Action<dynamic>((code) =>
+            self.RemoveActor(_msg.actorId, (global::System.Action<global::Fenix.Common.DefaultErrCode>)((code) =>
             {
                 dynamic cbMsg = new RemoveActorReq.Callback();
                 cbMsg.code=code;

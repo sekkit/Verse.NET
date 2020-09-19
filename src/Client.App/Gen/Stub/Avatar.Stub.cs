@@ -38,7 +38,7 @@ namespace Client
 #else
 
             dynamic _msg = msg;
-            self.ApiTest(_msg.uid, new Action<dynamic>((code) =>
+            self.ApiTest(_msg.uid, (global::System.Action<Shared.Protocol.ErrCode>)((code) =>
             {
                 var cbMsg = new __Client__Avatar__ApiTestNtf.Callback();
                 cbMsg.code=code;

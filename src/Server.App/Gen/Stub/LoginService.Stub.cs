@@ -44,7 +44,7 @@ namespace Server.GModule
 #else
 
             dynamic _msg = msg;
-            self.CreateAccount(_msg.username, _msg.password, new Action<dynamic>((code) =>
+            self.CreateAccount(_msg.username, _msg.password, (global::System.Action<global::Shared.Protocol.ErrCode>)((code) =>
             {
                 dynamic cbMsg = new __ServerGModule__LoginService__CreateAccountReq.Callback();
                 cbMsg.code=code;
@@ -68,7 +68,7 @@ namespace Server.GModule
 #else
 
             dynamic _msg = msg;
-            self.DeleteAccount(_msg.username, _msg.password, new Action<dynamic>((code) =>
+            self.DeleteAccount(_msg.username, _msg.password, (global::System.Action<global::Shared.Protocol.ErrCode>)((code) =>
             {
                 dynamic cbMsg = new __ServerGModule__LoginService__DeleteAccountReq.Callback();
                 cbMsg.code=code;
@@ -96,7 +96,7 @@ namespace Server.GModule
 #else
 
             dynamic _msg = msg;
-            self.Login(_msg.username, _msg.password, _msg.extraData, new Action<ErrCode, string, ulong, string, string>((code, arg1, arg2, arg3, arg4) =>
+            self.Login(_msg.username, _msg.password, _msg.extraData, (global::System.Action<global::Shared.Protocol.ErrCode, global::System.String, global::System.UInt64, global::System.String, global::System.String>)((code, arg1, arg2, arg3, arg4) =>
             {
                 dynamic cbMsg = new __ServerGModule__LoginService__LoginReq.Callback();
                 cbMsg.code=code;

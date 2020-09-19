@@ -44,7 +44,7 @@ namespace Server.GModule
 #else
 
             dynamic _msg = msg;
-            self.JoinMatch(_msg.uid, _msg.match_type, new Action<dynamic>((code) =>
+            self.JoinMatch(_msg.uid, _msg.match_type, (global::System.Action<global::Shared.Protocol.ErrCode>)((code) =>
             {
                 dynamic cbMsg = new __ServerGModule__MatchService__JoinMatchReq.Callback();
                 cbMsg.code=code;
@@ -69,7 +69,7 @@ namespace Server.GModule
 #else
 
             dynamic _msg = msg;
-            self.FindMatch(_msg.uid, new Action<dynamic, dynamic>((code, user) =>
+            self.FindMatch(_msg.uid, (global::System.Action<global::Shared.Protocol.ErrCode, global::Server.DataModel.Account>)((code, user) =>
             {
                 dynamic cbMsg = new __ServerGModule__MatchService__FindMatchReq.Callback();
                 cbMsg.code=code;

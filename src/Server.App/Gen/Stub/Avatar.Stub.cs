@@ -44,7 +44,7 @@ namespace Server.UModule
 #else
 
             dynamic _msg = msg;
-            self.ChangeName(_msg.name, new Action<dynamic>((code) =>
+            self.ChangeName(_msg.name, (global::System.Action<global::Shared.Protocol.ErrCode>)((code) =>
             {
                 dynamic cbMsg = new __ServerUModule__Avatar__ChangeNameReq.Callback();
                 cbMsg.code=code;
@@ -68,7 +68,7 @@ namespace Server.UModule
 #else
 
             dynamic _msg = msg;
-            self.GetModule<ItemModule>().TestItemApi( new Action(() =>
+            self.GetModule<ItemModule>().TestItemApi( (global::System.Action)(() =>
             {
                 dynamic cbMsg = new __ServerUModule__Avatar__M__ServerUModule__ItemModule__TestItemApiReq.Callback();
 
