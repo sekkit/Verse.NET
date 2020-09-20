@@ -633,8 +633,15 @@ namespace Fenix
             this.OnReceive = null;
             //this.OnSend = null;
             //this.OnPeerLost = null;
-            heartbeatTh?.Abort();
-            heartbeatTh = null;
+            try
+            {
+                heartbeatTh?.Abort();
+                heartbeatTh = null;
+            }
+            catch(Exception ex)
+            {
+
+            }
             Global.NetManager = null; 
         }
     }

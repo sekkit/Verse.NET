@@ -152,6 +152,7 @@ namespace Fenix
 
         void StartHost()
         {
+#if USE_REDIS_IDMANGER
             while(true)
             {
                 Thread.Sleep(500);
@@ -165,6 +166,21 @@ namespace Fenix
                 foreach (var aId in actorRemoveList)
                     actorDic.TryRemove(aId, out var _);
             }
+#else
+            while (true)
+            {
+                Thread.Sleep(500);
+                this.RegisterGlobalManager(this);
+                var actorRemoveList = new List<ulong>();
+                foreach (var kv in this.actorDic)
+                    if (!kv.Value.IsAlive)
+                        this.RegisterGlobalManagerAsync(kv.Value);
+                    else
+                        actorRemoveList.Add(kv.Key);
+                foreach (var aId in actorRemoveList)
+                    actorDic.TryRemove(aId, out var _);
+            }
+#endif
         }
 
         public sealed override void Update()
@@ -184,8 +200,15 @@ namespace Fenix
         {
             //先销毁所有的actor, netpeer
             //再销毁自己 
-            internalThread?.Abort();
-            internalThread = null; 
+            try
+            {
+                internalThread?.Abort();
+                internalThread = null;
+            }
+            catch(Exception ex)
+            { 
+            }
+
             foreach (var a in this.actorDic.Values)
                 a.Destroy(); 
             this.actorDic.Clear();
@@ -376,7 +399,8 @@ namespace Fenix
                 toActorId,
                 peer.netType,
                 Global.TypeManager.GetMessageType(protoCode),
-                bytes);
+                bytes
+            );
 
             Log.Info(string.Format("RECV2({0}): {1} {2} => {3} {4} >= {5} {6} => {7}",
                 peer.netType,
@@ -424,7 +448,7 @@ namespace Fenix
             RemoveActorById(aId);
         }
 
-        public void RemoveActorById(ulong aId)
+        public void RemoveActorById(UInt64 aId)
         { 
             Global.IdManager.RemoveActorId(aId);
             this.actorDic.TryRemove(aId, out var _);
@@ -718,7 +742,7 @@ namespace Fenix
             a.OnServerEnable();
 #endif
         }
-        
+
         //[ClientApi]
         //public void Sync(ulong actorId, ulong dataKey, DataType dataType, byte[] data, RpcContext __context)
         //{
@@ -727,5 +751,61 @@ namespace Fenix
         //        //a.SyncData(dataType, data);
         //    }
         //}
+
+#if !CLIENT
+        /*ID Route Info*/
+        [ServerOnly]
+        public void RegisterHost(ulong hostId, string hostName, string intAddr, string extAddr, Action<bool> callback, RpcContext __context)
+        {
+            var result = Global.IdManager.RegisterHost(hostId, hostName, intAddr, extAddr, false);
+            callback(result);
+        }
+
+        /* 
+         * When host disconnected, automatic deregisteration will happen, however this method is for
+         * deregistering manually.
+         */
+        [ServerOnly]
+        public void RemoveHost(ulong hostId, string hostName, Action<bool> callback, RpcContext __context)
+        {
+            var result = Global.IdManager.RemoveHostId(hostId);
+            callback(result);
+        }
+
+        [ServerOnly]
+        public void RegisterActor(ulong hostId, ulong actorId, string actorName, string aTypeName, Action<bool> callback, RpcContext __context)
+        {
+            var result = Global.IdManager.RegisterActor(actorId, actorName, aTypeName, hostId, false);
+            callback(result);
+        }
+
+        [ServerOnly]
+        public void RemoveActor(ulong actorId, Action<bool> callback, RpcContext __context)
+        {
+            var result = Global.IdManager.RemoveActorId(actorId);
+            callback(result);
+        }
+
+        [ServerOnly]
+        public void FindHost(ulong hostId, Action<bool, HostInfo> callback, RpcContext __context)
+        {
+            var hostInfo = Global.IdManager.GetHostInfo(hostId);
+            if (hostInfo.HostId != 0)
+                callback(true, hostInfo);
+            else
+                callback(false, hostInfo);
+        }
+
+        [ServerOnly]
+        public void FindActor(ulong actorId, Action<bool, ActorInfo> callback, RpcContext __context)
+        {
+            var actorInfo = Global.IdManager.GetActorInfo(actorId);
+            if (actorInfo.ActorId != 0)
+                callback(true, actorInfo);
+            else
+                callback(false, actorInfo);
+        }
+        /*End of ID Route Info*/
+#endif
     }
 }

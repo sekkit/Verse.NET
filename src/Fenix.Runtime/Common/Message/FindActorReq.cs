@@ -10,9 +10,9 @@ using System;
 
 namespace Fenix.Common.Message
 {
-    [MessageType(OpCode.REMOVE_ACTOR_REQ)]
+    [MessageType(OpCode.FIND_ACTOR_REQ)]
     [MessagePackObject]
-    public class RemoveActorReq : IMessageWithCallback
+    public class FindActorReq : IMessageWithCallback
     {
         [Key(0)]
         public global::System.UInt64 actorId { get; set; }
@@ -30,6 +30,9 @@ namespace Fenix.Common.Message
         {
             [Key(0)]
             public global::System.Boolean arg0 { get; set; }
+
+            [Key(1)]
+            public global::Fenix.ActorInfo arg1 { get; set; }
 
             public override byte[] Pack()
             {
@@ -50,18 +53,18 @@ namespace Fenix.Common.Message
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<RemoveActorReq>(this);
+            return MessagePackSerializer.Serialize<FindActorReq>(this);
         }
 
-        public new static RemoveActorReq Deserialize(byte[] data)
+        public new static FindActorReq Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<RemoveActorReq>(data);
+            return MessagePackSerializer.Deserialize<FindActorReq>(data);
         }
 
         public override void UnPack(byte[] data)
         {
             var obj = Deserialize(data);
-            Copier<RemoveActorReq>.CopyTo(obj, this);
+            Copier<FindActorReq>.CopyTo(obj, this);
         }
     }
 }

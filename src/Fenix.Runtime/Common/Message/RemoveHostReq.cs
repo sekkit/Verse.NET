@@ -10,14 +10,17 @@ using System;
 
 namespace Fenix.Common.Message
 {
-    [MessageType(OpCode.REMOVE_ACTOR_REQ)]
+    [MessageType(OpCode.REMOVE_HOST_REQ)]
     [MessagePackObject]
-    public class RemoveActorReq : IMessageWithCallback
+    public class RemoveHostReq : IMessageWithCallback
     {
         [Key(0)]
-        public global::System.UInt64 actorId { get; set; }
+        public global::System.UInt64 hostId { get; set; }
 
         [Key(1)]
+        public global::System.String hostName { get; set; }
+
+        [Key(2)]
 
         public Callback callback
         {
@@ -50,18 +53,18 @@ namespace Fenix.Common.Message
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<RemoveActorReq>(this);
+            return MessagePackSerializer.Serialize<RemoveHostReq>(this);
         }
 
-        public new static RemoveActorReq Deserialize(byte[] data)
+        public new static RemoveHostReq Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<RemoveActorReq>(data);
+            return MessagePackSerializer.Deserialize<RemoveHostReq>(data);
         }
 
         public override void UnPack(byte[] data)
         {
             var obj = Deserialize(data);
-            Copier<RemoveActorReq>.CopyTo(obj, this);
+            Copier<RemoveHostReq>.CopyTo(obj, this);
         }
     }
 }
