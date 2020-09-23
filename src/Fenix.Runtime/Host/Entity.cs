@@ -205,13 +205,24 @@ namespace Fenix
             //如果是同进程，则本地调用
             if (fromHostId == toHostId)
             {
-                var toActor = Global.Host.GetActor(toActorId);
+                if(protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    if (msg.HasCallback())
+                        AddCallbackRpc(cmd);
 
-                if (msg.HasCallback()) 
-                    AddCallbackRpc(cmd);
+                    Global.Host.CallMethod(packet);
+                    return;
+                }
+                else
+                {
+                    var toActor = Global.Host.GetActor(toActorId);
 
-                toActor.CallMethod(packet);
-                return;
+                    if (msg.HasCallback())
+                        AddCallbackRpc(cmd);
+
+                    toActor.CallMethod(packet);
+                    return;
+                }
             }
 
             bool isClient = Global.IdManager.IsClientHost(toHostId);
@@ -254,9 +265,17 @@ namespace Fenix
             //如果是同进程，则本地调用
             if (fromHostId == toHostId)
             {
-                var toActor = Global.Host.GetActor(toActorId);
-                toActor.CallMethod(packet);
-                return;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    Global.Host.CallMethod(packet);
+                    return;
+                }
+                else
+                {
+                    var toActor = Global.Host.GetActor(toActorId);
+                    toActor.CallMethod(packet);
+                    return;
+                }
             }
 
             //如果是客户端，则直接用remote netpeer返回包

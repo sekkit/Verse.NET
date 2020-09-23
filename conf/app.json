@@ -1,8 +1,21 @@
 ﻿[
   {
+    "AppName": "Id.App",
+    "ExternalIp": "auto",
+    "InternalIp": "0.0.0.0",
+    "IdHostAddr": "127.0.0.1:17776",
+    "Port": 17776,
+    "DefaultActorNames": [ 
+    ],
+    "HeartbeatIntervalMS": 5000,
+    "ClientNetwork": 2,
+    "DuplexMode": true
+  },
+  {
     "AppName": "Login.App",
     "ExternalIp": "auto",
     "InternalIp": "0.0.0.0",
+    "IdHostAddr": "127.0.0.1:17776",
     "Port": 17777,
     "DefaultActorNames": [
       "LoginService"
@@ -15,6 +28,7 @@
     "AppName": "Match.App",
     "ExternalIp": "auto",
     "InternalIp": "0.0.0.0",
+    "IdHostAddr": "127.0.0.1:17776",
     "Port": 17778,
     "DefaultActorNames": [
       "MatchService"
@@ -27,6 +41,7 @@
     "AppName": "Master.App",
     "ExternalIp": "auto",
     "InternalIp": "0.0.0.0",
+    "IdHostAddr": "127.0.0.1:17776",
     "Port": 17779,
     "DefaultActorNames": [
       "MasterService"
@@ -39,6 +54,7 @@
     "AppName": "Zone.App",
     "ExternalIp": "auto",
     "InternalIp": "0.0.0.0",
+    "IdHostAddr": "127.0.0.1:17776",
     "Port": 17780,
     "DefaultActorNames": [
       "ZoneService"

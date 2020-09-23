@@ -19,6 +19,202 @@ namespace Fenix
     public partial class ActorRef
     {
 #if FENIX_CODEGEN && !RUNTIME
+        public async Task<dynamic> AddActorIdAsync(dynamic hostId, dynamic actorId, dynamic actorName, dynamic aTypeName, dynamic callback=null)
+#else
+        public async Task<AddActorIdReq.Callback> AddActorIdAsync(global::System.UInt64 hostId, global::System.UInt64 actorId, global::System.String actorName, global::System.String aTypeName, global::System.Action<global::System.Boolean> callback=null)
+#endif
+        {
+#if FENIX_CODEGEN
+#if !RUNTIME
+            var t = new TaskCompletionSource<dynamic>();
+#else
+            var t = new TaskCompletionSource<AddActorIdReq.Callback>();
+#endif
+#else
+            var t = new TaskCompletionSource<AddActorIdReq.Callback>();
+            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
+            if (this.FromHostId == toHostId)
+            {
+                global::System.Action<global::System.Boolean> _cb = (arg0) =>
+                {
+                     var cbMsg = new AddActorIdReq.Callback();
+                     cbMsg.arg0=arg0;
+                     callback?.Invoke(cbMsg.arg0);
+                     t.TrySetResult(cbMsg);
+                }; 
+                var protoCode = OpCode.ADD_ACTOR_ID_REQ;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { hostId, actorId, actorName, aTypeName, _cb, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { hostId, actorId, actorName, aTypeName, _cb });
+            }
+            else
+            {
+                Action<AddActorIdReq.Callback> _cb = (cbMsg) =>
+                {
+                    callback?.Invoke(cbMsg.arg0);
+                    t.TrySetResult(cbMsg);
+                };
+                await Task.Run(() => {
+                    var msg = new AddActorIdReq()
+                    {
+                         hostId=hostId,
+                         actorId=actorId,
+                         actorName=actorName,
+                         aTypeName=aTypeName
+                    };
+                    var cb = new Action<byte[]>((cbData) => {
+                        var cbMsg = cbData==null ? new AddActorIdReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<AddActorIdReq.Callback>(cbData);
+                        _cb?.Invoke(cbMsg);
+                    });
+                    this.CallRemoteMethod(OpCode.ADD_ACTOR_ID_REQ, msg, cb);
+                 });
+             }
+#endif
+             return await t.Task;
+        }
+
+#if FENIX_CODEGEN && !RUNTIME
+        public void AddActorId(dynamic hostId, dynamic actorId, dynamic actorName, dynamic aTypeName, dynamic callback)
+#else
+        public void AddActorId(global::System.UInt64 hostId, global::System.UInt64 actorId, global::System.String actorName, global::System.String aTypeName, global::System.Action<global::System.Boolean> callback)
+#endif
+        {
+#if !FENIX_CODEGEN
+            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
+            if (this.FromHostId == toHostId)
+            {
+                var protoCode = OpCode.ADD_ACTOR_ID_REQ;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { hostId, actorId, actorName, aTypeName, callback, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { hostId, actorId, actorName, aTypeName, callback });
+                return;
+            }
+            Task.Run(() => {
+                var msg = new AddActorIdReq()
+                {
+                    hostId=hostId,
+                    actorId=actorId,
+                    actorName=actorName,
+                    aTypeName=aTypeName
+                };
+                var cb = new Action<byte[]>((cbData) => {
+                    var cbMsg = cbData==null?new AddActorIdReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<AddActorIdReq.Callback>(cbData);
+                    callback?.Invoke(cbMsg.arg0);
+                });
+                this.CallRemoteMethod(OpCode.ADD_ACTOR_ID_REQ, msg, cb);
+            });
+#endif
+        }
+
+#if FENIX_CODEGEN && !RUNTIME
+        public async Task<dynamic> AddHostIdAsync(dynamic hostId, dynamic hostName, dynamic intAddr, dynamic extAddr, dynamic callback=null)
+#else
+        public async Task<AddHostIdReq.Callback> AddHostIdAsync(global::System.UInt64 hostId, global::System.String hostName, global::System.String intAddr, global::System.String extAddr, global::System.Action<global::System.Boolean> callback=null)
+#endif
+        {
+#if FENIX_CODEGEN
+#if !RUNTIME
+            var t = new TaskCompletionSource<dynamic>();
+#else
+            var t = new TaskCompletionSource<AddHostIdReq.Callback>();
+#endif
+#else
+            var t = new TaskCompletionSource<AddHostIdReq.Callback>();
+            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
+            if (this.FromHostId == toHostId)
+            {
+                global::System.Action<global::System.Boolean> _cb = (arg0) =>
+                {
+                     var cbMsg = new AddHostIdReq.Callback();
+                     cbMsg.arg0=arg0;
+                     callback?.Invoke(cbMsg.arg0);
+                     t.TrySetResult(cbMsg);
+                }; 
+                var protoCode = OpCode.ADD_HOST_ID_REQ;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { hostId, hostName, intAddr, extAddr, _cb, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { hostId, hostName, intAddr, extAddr, _cb });
+            }
+            else
+            {
+                Action<AddHostIdReq.Callback> _cb = (cbMsg) =>
+                {
+                    callback?.Invoke(cbMsg.arg0);
+                    t.TrySetResult(cbMsg);
+                };
+                await Task.Run(() => {
+                    var msg = new AddHostIdReq()
+                    {
+                         hostId=hostId,
+                         hostName=hostName,
+                         intAddr=intAddr,
+                         extAddr=extAddr
+                    };
+                    var cb = new Action<byte[]>((cbData) => {
+                        var cbMsg = cbData==null ? new AddHostIdReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<AddHostIdReq.Callback>(cbData);
+                        _cb?.Invoke(cbMsg);
+                    });
+                    this.CallRemoteMethod(OpCode.ADD_HOST_ID_REQ, msg, cb);
+                 });
+             }
+#endif
+             return await t.Task;
+        }
+
+#if FENIX_CODEGEN && !RUNTIME
+        public void AddHostId(dynamic hostId, dynamic hostName, dynamic intAddr, dynamic extAddr, dynamic callback)
+#else
+        public void AddHostId(global::System.UInt64 hostId, global::System.String hostName, global::System.String intAddr, global::System.String extAddr, global::System.Action<global::System.Boolean> callback)
+#endif
+        {
+#if !FENIX_CODEGEN
+            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
+            if (this.FromHostId == toHostId)
+            {
+                var protoCode = OpCode.ADD_HOST_ID_REQ;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { hostId, hostName, intAddr, extAddr, callback, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { hostId, hostName, intAddr, extAddr, callback });
+                return;
+            }
+            Task.Run(() => {
+                var msg = new AddHostIdReq()
+                {
+                    hostId=hostId,
+                    hostName=hostName,
+                    intAddr=intAddr,
+                    extAddr=extAddr
+                };
+                var cb = new Action<byte[]>((cbData) => {
+                    var cbMsg = cbData==null?new AddHostIdReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<AddHostIdReq.Callback>(cbData);
+                    callback?.Invoke(cbMsg.arg0);
+                });
+                this.CallRemoteMethod(OpCode.ADD_HOST_ID_REQ, msg, cb);
+            });
+#endif
+        }
+
+#if FENIX_CODEGEN && !RUNTIME
         public async Task<dynamic> BindClientActorAsync(dynamic actorName, dynamic callback=null)
 #else
         public async Task<BindClientActorReq.Callback> BindClientActorAsync(global::System.String actorName, global::System.Action<global::Fenix.Common.DefaultErrCode> callback=null)
@@ -207,124 +403,31 @@ namespace Fenix
         }
 
 #if FENIX_CODEGEN && !RUNTIME
-        public async Task<dynamic> FindActorAsync(dynamic actorId, dynamic callback=null)
+        public async Task<dynamic> GetIdAllAsync(dynamic hostId, dynamic callback=null)
 #else
-        public async Task<FindActorReq.Callback> FindActorAsync(global::System.UInt64 actorId, global::System.Action<global::System.Boolean, global::Fenix.ActorInfo> callback=null)
+        public async Task<GetIdAllReq.Callback> GetIdAllAsync(global::System.UInt64 hostId, global::System.Action<global::System.Boolean, global::System.Collections.Generic.List<global::Fenix.HostInfo>> callback=null)
 #endif
         {
 #if FENIX_CODEGEN
 #if !RUNTIME
             var t = new TaskCompletionSource<dynamic>();
 #else
-            var t = new TaskCompletionSource<FindActorReq.Callback>();
+            var t = new TaskCompletionSource<GetIdAllReq.Callback>();
 #endif
 #else
-            var t = new TaskCompletionSource<FindActorReq.Callback>();
+            var t = new TaskCompletionSource<GetIdAllReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                global::System.Action<global::System.Boolean, global::Fenix.ActorInfo> _cb = (arg0, arg1) =>
+                global::System.Action<global::System.Boolean, global::System.Collections.Generic.List<global::Fenix.HostInfo>> _cb = (arg0, arg1) =>
                 {
-                     var cbMsg = new FindActorReq.Callback();
+                     var cbMsg = new GetIdAllReq.Callback();
                      cbMsg.arg0=arg0;
                      cbMsg.arg1=arg1;
                      callback?.Invoke(cbMsg.arg0, cbMsg.arg1);
                      t.TrySetResult(cbMsg);
                 }; 
-                var protoCode = OpCode.FIND_ACTOR_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
-                {
-                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
-                    var context = new RpcContext(null, peer);
-                    Global.Host.CallMethodWithParams(protoCode, new object[] { actorId, _cb, context });
-                }
-                else
-                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { actorId, _cb });
-            }
-            else
-            {
-                Action<FindActorReq.Callback> _cb = (cbMsg) =>
-                {
-                    callback?.Invoke(cbMsg.arg0, cbMsg.arg1);
-                    t.TrySetResult(cbMsg);
-                };
-                await Task.Run(() => {
-                    var msg = new FindActorReq()
-                    {
-                         actorId=actorId
-                    };
-                    var cb = new Action<byte[]>((cbData) => {
-                        var cbMsg = cbData==null ? new FindActorReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<FindActorReq.Callback>(cbData);
-                        _cb?.Invoke(cbMsg);
-                    });
-                    this.CallRemoteMethod(OpCode.FIND_ACTOR_REQ, msg, cb);
-                 });
-             }
-#endif
-             return await t.Task;
-        }
-
-#if FENIX_CODEGEN && !RUNTIME
-        public void FindActor(dynamic actorId, dynamic callback)
-#else
-        public void FindActor(global::System.UInt64 actorId, global::System.Action<global::System.Boolean, global::Fenix.ActorInfo> callback)
-#endif
-        {
-#if !FENIX_CODEGEN
-            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
-            if (this.FromHostId == toHostId)
-            {
-                var protoCode = OpCode.FIND_ACTOR_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
-                {
-                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
-                    var context = new RpcContext(null, peer);
-                    Global.Host.CallMethodWithParams(protoCode, new object[] { actorId, callback, context });
-                }
-                else
-                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { actorId, callback });
-                return;
-            }
-            Task.Run(() => {
-                var msg = new FindActorReq()
-                {
-                    actorId=actorId
-                };
-                var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null?new FindActorReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<FindActorReq.Callback>(cbData);
-                    callback?.Invoke(cbMsg.arg0, cbMsg.arg1);
-                });
-                this.CallRemoteMethod(OpCode.FIND_ACTOR_REQ, msg, cb);
-            });
-#endif
-        }
-
-#if FENIX_CODEGEN && !RUNTIME
-        public async Task<dynamic> FindHostAsync(dynamic hostId, dynamic callback=null)
-#else
-        public async Task<FindHostReq.Callback> FindHostAsync(global::System.UInt64 hostId, global::System.Action<global::System.Boolean, global::Fenix.HostInfo> callback=null)
-#endif
-        {
-#if FENIX_CODEGEN
-#if !RUNTIME
-            var t = new TaskCompletionSource<dynamic>();
-#else
-            var t = new TaskCompletionSource<FindHostReq.Callback>();
-#endif
-#else
-            var t = new TaskCompletionSource<FindHostReq.Callback>();
-            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
-            if (this.FromHostId == toHostId)
-            {
-                global::System.Action<global::System.Boolean, global::Fenix.HostInfo> _cb = (arg0, arg1) =>
-                {
-                     var cbMsg = new FindHostReq.Callback();
-                     cbMsg.arg0=arg0;
-                     cbMsg.arg1=arg1;
-                     callback?.Invoke(cbMsg.arg0, cbMsg.arg1);
-                     t.TrySetResult(cbMsg);
-                }; 
-                var protoCode = OpCode.FIND_HOST_REQ;
+                var protoCode = OpCode.GET_ID_ALL_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
@@ -336,21 +439,21 @@ namespace Fenix
             }
             else
             {
-                Action<FindHostReq.Callback> _cb = (cbMsg) =>
+                Action<GetIdAllReq.Callback> _cb = (cbMsg) =>
                 {
                     callback?.Invoke(cbMsg.arg0, cbMsg.arg1);
                     t.TrySetResult(cbMsg);
                 };
                 await Task.Run(() => {
-                    var msg = new FindHostReq()
+                    var msg = new GetIdAllReq()
                     {
                          hostId=hostId
                     };
                     var cb = new Action<byte[]>((cbData) => {
-                        var cbMsg = cbData==null ? new FindHostReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<FindHostReq.Callback>(cbData);
+                        var cbMsg = cbData==null ? new GetIdAllReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<GetIdAllReq.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
-                    this.CallRemoteMethod(OpCode.FIND_HOST_REQ, msg, cb);
+                    this.CallRemoteMethod(OpCode.GET_ID_ALL_REQ, msg, cb);
                  });
              }
 #endif
@@ -358,16 +461,16 @@ namespace Fenix
         }
 
 #if FENIX_CODEGEN && !RUNTIME
-        public void FindHost(dynamic hostId, dynamic callback)
+        public void GetIdAll(dynamic hostId, dynamic callback)
 #else
-        public void FindHost(global::System.UInt64 hostId, global::System.Action<global::System.Boolean, global::Fenix.HostInfo> callback)
+        public void GetIdAll(global::System.UInt64 hostId, global::System.Action<global::System.Boolean, global::System.Collections.Generic.List<global::Fenix.HostInfo>> callback)
 #endif
         {
 #if !FENIX_CODEGEN
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                var protoCode = OpCode.FIND_HOST_REQ;
+                var protoCode = OpCode.GET_ID_ALL_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
@@ -379,15 +482,15 @@ namespace Fenix
                 return;
             }
             Task.Run(() => {
-                var msg = new FindHostReq()
+                var msg = new GetIdAllReq()
                 {
                     hostId=hostId
                 };
                 var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null?new FindHostReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<FindHostReq.Callback>(cbData);
+                    var cbMsg = cbData==null?new GetIdAllReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<GetIdAllReq.Callback>(cbData);
                     callback?.Invoke(cbMsg.arg0, cbMsg.arg1);
                 });
-                this.CallRemoteMethod(OpCode.FIND_HOST_REQ, msg, cb);
+                this.CallRemoteMethod(OpCode.GET_ID_ALL_REQ, msg, cb);
             });
 #endif
         }
@@ -486,6 +589,190 @@ namespace Fenix
         }
 
 #if FENIX_CODEGEN && !RUNTIME
+        public async Task<dynamic> OnAddActorIdAsync(dynamic actorInfo, dynamic callback=null)
+#else
+        public async Task<OnAddActorIdReq.Callback> OnAddActorIdAsync(global::Fenix.ActorInfo actorInfo, global::System.Action<global::System.Boolean> callback=null)
+#endif
+        {
+#if FENIX_CODEGEN
+#if !RUNTIME
+            var t = new TaskCompletionSource<dynamic>();
+#else
+            var t = new TaskCompletionSource<OnAddActorIdReq.Callback>();
+#endif
+#else
+            var t = new TaskCompletionSource<OnAddActorIdReq.Callback>();
+            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
+            if (this.FromHostId == toHostId)
+            {
+                global::System.Action<global::System.Boolean> _cb = (arg0) =>
+                {
+                     var cbMsg = new OnAddActorIdReq.Callback();
+                     cbMsg.arg0=arg0;
+                     callback?.Invoke(cbMsg.arg0);
+                     t.TrySetResult(cbMsg);
+                }; 
+                var protoCode = OpCode.ON_ADD_ACTOR_ID_REQ;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { actorInfo, _cb, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { actorInfo, _cb });
+            }
+            else
+            {
+                Action<OnAddActorIdReq.Callback> _cb = (cbMsg) =>
+                {
+                    callback?.Invoke(cbMsg.arg0);
+                    t.TrySetResult(cbMsg);
+                };
+                await Task.Run(() => {
+                    var msg = new OnAddActorIdReq()
+                    {
+                         actorInfo=actorInfo
+                    };
+                    var cb = new Action<byte[]>((cbData) => {
+                        var cbMsg = cbData==null ? new OnAddActorIdReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<OnAddActorIdReq.Callback>(cbData);
+                        _cb?.Invoke(cbMsg);
+                    });
+                    this.CallRemoteMethod(OpCode.ON_ADD_ACTOR_ID_REQ, msg, cb);
+                 });
+             }
+#endif
+             return await t.Task;
+        }
+
+#if FENIX_CODEGEN && !RUNTIME
+        public void OnAddActorId(dynamic actorInfo, dynamic callback)
+#else
+        public void OnAddActorId(global::Fenix.ActorInfo actorInfo, global::System.Action<global::System.Boolean> callback)
+#endif
+        {
+#if !FENIX_CODEGEN
+            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
+            if (this.FromHostId == toHostId)
+            {
+                var protoCode = OpCode.ON_ADD_ACTOR_ID_REQ;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { actorInfo, callback, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { actorInfo, callback });
+                return;
+            }
+            Task.Run(() => {
+                var msg = new OnAddActorIdReq()
+                {
+                    actorInfo=actorInfo
+                };
+                var cb = new Action<byte[]>((cbData) => {
+                    var cbMsg = cbData==null?new OnAddActorIdReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<OnAddActorIdReq.Callback>(cbData);
+                    callback?.Invoke(cbMsg.arg0);
+                });
+                this.CallRemoteMethod(OpCode.ON_ADD_ACTOR_ID_REQ, msg, cb);
+            });
+#endif
+        }
+
+#if FENIX_CODEGEN && !RUNTIME
+        public async Task<dynamic> OnAddHostIdAsync(dynamic hostInfo, dynamic callback=null)
+#else
+        public async Task<OnAddHostIdReq.Callback> OnAddHostIdAsync(global::Fenix.HostInfo hostInfo, global::System.Action<global::System.Boolean> callback=null)
+#endif
+        {
+#if FENIX_CODEGEN
+#if !RUNTIME
+            var t = new TaskCompletionSource<dynamic>();
+#else
+            var t = new TaskCompletionSource<OnAddHostIdReq.Callback>();
+#endif
+#else
+            var t = new TaskCompletionSource<OnAddHostIdReq.Callback>();
+            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
+            if (this.FromHostId == toHostId)
+            {
+                global::System.Action<global::System.Boolean> _cb = (arg0) =>
+                {
+                     var cbMsg = new OnAddHostIdReq.Callback();
+                     cbMsg.arg0=arg0;
+                     callback?.Invoke(cbMsg.arg0);
+                     t.TrySetResult(cbMsg);
+                }; 
+                var protoCode = OpCode.ON_ADD_HOST_ID_REQ;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { hostInfo, _cb, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { hostInfo, _cb });
+            }
+            else
+            {
+                Action<OnAddHostIdReq.Callback> _cb = (cbMsg) =>
+                {
+                    callback?.Invoke(cbMsg.arg0);
+                    t.TrySetResult(cbMsg);
+                };
+                await Task.Run(() => {
+                    var msg = new OnAddHostIdReq()
+                    {
+                         hostInfo=hostInfo
+                    };
+                    var cb = new Action<byte[]>((cbData) => {
+                        var cbMsg = cbData==null ? new OnAddHostIdReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<OnAddHostIdReq.Callback>(cbData);
+                        _cb?.Invoke(cbMsg);
+                    });
+                    this.CallRemoteMethod(OpCode.ON_ADD_HOST_ID_REQ, msg, cb);
+                 });
+             }
+#endif
+             return await t.Task;
+        }
+
+#if FENIX_CODEGEN && !RUNTIME
+        public void OnAddHostId(dynamic hostInfo, dynamic callback)
+#else
+        public void OnAddHostId(global::Fenix.HostInfo hostInfo, global::System.Action<global::System.Boolean> callback)
+#endif
+        {
+#if !FENIX_CODEGEN
+            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
+            if (this.FromHostId == toHostId)
+            {
+                var protoCode = OpCode.ON_ADD_HOST_ID_REQ;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { hostInfo, callback, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { hostInfo, callback });
+                return;
+            }
+            Task.Run(() => {
+                var msg = new OnAddHostIdReq()
+                {
+                    hostInfo=hostInfo
+                };
+                var cb = new Action<byte[]>((cbData) => {
+                    var cbMsg = cbData==null?new OnAddHostIdReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<OnAddHostIdReq.Callback>(cbData);
+                    callback?.Invoke(cbMsg.arg0);
+                });
+                this.CallRemoteMethod(OpCode.ON_ADD_HOST_ID_REQ, msg, cb);
+            });
+#endif
+        }
+
+#if FENIX_CODEGEN && !RUNTIME
         public async Task<dynamic> OnBeforeDisconnectAsync(dynamic reason, dynamic callback=null)
 #else
         public async Task<OnBeforeDisconnectNtf.Callback> OnBeforeDisconnectAsync(global::Fenix.Common.DisconnectReason reason, global::System.Action callback=null)
@@ -573,6 +860,190 @@ namespace Fenix
                     callback?.Invoke();
                 });
                 this.CallRemoteMethod(OpCode.ON_BEFORE_DISCONNECT_NTF, msg, cb);
+            });
+#endif
+        }
+
+#if FENIX_CODEGEN && !RUNTIME
+        public async Task<dynamic> OnRemoveActorIdAsync(dynamic actorId, dynamic callback=null)
+#else
+        public async Task<OnRemoveActorIdReq.Callback> OnRemoveActorIdAsync(global::System.UInt64 actorId, global::System.Action<global::System.Boolean> callback=null)
+#endif
+        {
+#if FENIX_CODEGEN
+#if !RUNTIME
+            var t = new TaskCompletionSource<dynamic>();
+#else
+            var t = new TaskCompletionSource<OnRemoveActorIdReq.Callback>();
+#endif
+#else
+            var t = new TaskCompletionSource<OnRemoveActorIdReq.Callback>();
+            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
+            if (this.FromHostId == toHostId)
+            {
+                global::System.Action<global::System.Boolean> _cb = (arg0) =>
+                {
+                     var cbMsg = new OnRemoveActorIdReq.Callback();
+                     cbMsg.arg0=arg0;
+                     callback?.Invoke(cbMsg.arg0);
+                     t.TrySetResult(cbMsg);
+                }; 
+                var protoCode = OpCode.ON_REMOVE_ACTOR_ID_REQ;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { actorId, _cb, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { actorId, _cb });
+            }
+            else
+            {
+                Action<OnRemoveActorIdReq.Callback> _cb = (cbMsg) =>
+                {
+                    callback?.Invoke(cbMsg.arg0);
+                    t.TrySetResult(cbMsg);
+                };
+                await Task.Run(() => {
+                    var msg = new OnRemoveActorIdReq()
+                    {
+                         actorId=actorId
+                    };
+                    var cb = new Action<byte[]>((cbData) => {
+                        var cbMsg = cbData==null ? new OnRemoveActorIdReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<OnRemoveActorIdReq.Callback>(cbData);
+                        _cb?.Invoke(cbMsg);
+                    });
+                    this.CallRemoteMethod(OpCode.ON_REMOVE_ACTOR_ID_REQ, msg, cb);
+                 });
+             }
+#endif
+             return await t.Task;
+        }
+
+#if FENIX_CODEGEN && !RUNTIME
+        public void OnRemoveActorId(dynamic actorId, dynamic callback)
+#else
+        public void OnRemoveActorId(global::System.UInt64 actorId, global::System.Action<global::System.Boolean> callback)
+#endif
+        {
+#if !FENIX_CODEGEN
+            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
+            if (this.FromHostId == toHostId)
+            {
+                var protoCode = OpCode.ON_REMOVE_ACTOR_ID_REQ;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { actorId, callback, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { actorId, callback });
+                return;
+            }
+            Task.Run(() => {
+                var msg = new OnRemoveActorIdReq()
+                {
+                    actorId=actorId
+                };
+                var cb = new Action<byte[]>((cbData) => {
+                    var cbMsg = cbData==null?new OnRemoveActorIdReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<OnRemoveActorIdReq.Callback>(cbData);
+                    callback?.Invoke(cbMsg.arg0);
+                });
+                this.CallRemoteMethod(OpCode.ON_REMOVE_ACTOR_ID_REQ, msg, cb);
+            });
+#endif
+        }
+
+#if FENIX_CODEGEN && !RUNTIME
+        public async Task<dynamic> OnRemoveHostIdAsync(dynamic hostId, dynamic callback=null)
+#else
+        public async Task<OnRemoveHostIdReq.Callback> OnRemoveHostIdAsync(global::System.UInt64 hostId, global::System.Action<global::System.Boolean> callback=null)
+#endif
+        {
+#if FENIX_CODEGEN
+#if !RUNTIME
+            var t = new TaskCompletionSource<dynamic>();
+#else
+            var t = new TaskCompletionSource<OnRemoveHostIdReq.Callback>();
+#endif
+#else
+            var t = new TaskCompletionSource<OnRemoveHostIdReq.Callback>();
+            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
+            if (this.FromHostId == toHostId)
+            {
+                global::System.Action<global::System.Boolean> _cb = (arg0) =>
+                {
+                     var cbMsg = new OnRemoveHostIdReq.Callback();
+                     cbMsg.arg0=arg0;
+                     callback?.Invoke(cbMsg.arg0);
+                     t.TrySetResult(cbMsg);
+                }; 
+                var protoCode = OpCode.ON_REMOVE_HOST_ID_REQ;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { hostId, _cb, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { hostId, _cb });
+            }
+            else
+            {
+                Action<OnRemoveHostIdReq.Callback> _cb = (cbMsg) =>
+                {
+                    callback?.Invoke(cbMsg.arg0);
+                    t.TrySetResult(cbMsg);
+                };
+                await Task.Run(() => {
+                    var msg = new OnRemoveHostIdReq()
+                    {
+                         hostId=hostId
+                    };
+                    var cb = new Action<byte[]>((cbData) => {
+                        var cbMsg = cbData==null ? new OnRemoveHostIdReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<OnRemoveHostIdReq.Callback>(cbData);
+                        _cb?.Invoke(cbMsg);
+                    });
+                    this.CallRemoteMethod(OpCode.ON_REMOVE_HOST_ID_REQ, msg, cb);
+                 });
+             }
+#endif
+             return await t.Task;
+        }
+
+#if FENIX_CODEGEN && !RUNTIME
+        public void OnRemoveHostId(dynamic hostId, dynamic callback)
+#else
+        public void OnRemoveHostId(global::System.UInt64 hostId, global::System.Action<global::System.Boolean> callback)
+#endif
+        {
+#if !FENIX_CODEGEN
+            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
+            if (this.FromHostId == toHostId)
+            {
+                var protoCode = OpCode.ON_REMOVE_HOST_ID_REQ;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { hostId, callback, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { hostId, callback });
+                return;
+            }
+            Task.Run(() => {
+                var msg = new OnRemoveHostIdReq()
+                {
+                    hostId=hostId
+                };
+                var cb = new Action<byte[]>((cbData) => {
+                    var cbMsg = cbData==null?new OnRemoveHostIdReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<OnRemoveHostIdReq.Callback>(cbData);
+                    callback?.Invoke(cbMsg.arg0);
+                });
+                this.CallRemoteMethod(OpCode.ON_REMOVE_HOST_ID_REQ, msg, cb);
             });
 #endif
         }
@@ -809,104 +1280,6 @@ namespace Fenix
         }
 
 #if FENIX_CODEGEN && !RUNTIME
-        public async Task<dynamic> RegisterActorAsync(dynamic hostId, dynamic actorId, dynamic actorName, dynamic aTypeName, dynamic callback=null)
-#else
-        public async Task<RegisterActorReq.Callback> RegisterActorAsync(global::System.UInt64 hostId, global::System.UInt64 actorId, global::System.String actorName, global::System.String aTypeName, global::System.Action<global::System.Boolean> callback=null)
-#endif
-        {
-#if FENIX_CODEGEN
-#if !RUNTIME
-            var t = new TaskCompletionSource<dynamic>();
-#else
-            var t = new TaskCompletionSource<RegisterActorReq.Callback>();
-#endif
-#else
-            var t = new TaskCompletionSource<RegisterActorReq.Callback>();
-            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
-            if (this.FromHostId == toHostId)
-            {
-                global::System.Action<global::System.Boolean> _cb = (arg0) =>
-                {
-                     var cbMsg = new RegisterActorReq.Callback();
-                     cbMsg.arg0=arg0;
-                     callback?.Invoke(cbMsg.arg0);
-                     t.TrySetResult(cbMsg);
-                }; 
-                var protoCode = OpCode.REGISTER_ACTOR_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
-                {
-                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
-                    var context = new RpcContext(null, peer);
-                    Global.Host.CallMethodWithParams(protoCode, new object[] { hostId, actorId, actorName, aTypeName, _cb, context });
-                }
-                else
-                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { hostId, actorId, actorName, aTypeName, _cb });
-            }
-            else
-            {
-                Action<RegisterActorReq.Callback> _cb = (cbMsg) =>
-                {
-                    callback?.Invoke(cbMsg.arg0);
-                    t.TrySetResult(cbMsg);
-                };
-                await Task.Run(() => {
-                    var msg = new RegisterActorReq()
-                    {
-                         hostId=hostId,
-                         actorId=actorId,
-                         actorName=actorName,
-                         aTypeName=aTypeName
-                    };
-                    var cb = new Action<byte[]>((cbData) => {
-                        var cbMsg = cbData==null ? new RegisterActorReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<RegisterActorReq.Callback>(cbData);
-                        _cb?.Invoke(cbMsg);
-                    });
-                    this.CallRemoteMethod(OpCode.REGISTER_ACTOR_REQ, msg, cb);
-                 });
-             }
-#endif
-             return await t.Task;
-        }
-
-#if FENIX_CODEGEN && !RUNTIME
-        public void RegisterActor(dynamic hostId, dynamic actorId, dynamic actorName, dynamic aTypeName, dynamic callback)
-#else
-        public void RegisterActor(global::System.UInt64 hostId, global::System.UInt64 actorId, global::System.String actorName, global::System.String aTypeName, global::System.Action<global::System.Boolean> callback)
-#endif
-        {
-#if !FENIX_CODEGEN
-            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
-            if (this.FromHostId == toHostId)
-            {
-                var protoCode = OpCode.REGISTER_ACTOR_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
-                {
-                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
-                    var context = new RpcContext(null, peer);
-                    Global.Host.CallMethodWithParams(protoCode, new object[] { hostId, actorId, actorName, aTypeName, callback, context });
-                }
-                else
-                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { hostId, actorId, actorName, aTypeName, callback });
-                return;
-            }
-            Task.Run(() => {
-                var msg = new RegisterActorReq()
-                {
-                    hostId=hostId,
-                    actorId=actorId,
-                    actorName=actorName,
-                    aTypeName=aTypeName
-                };
-                var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null?new RegisterActorReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<RegisterActorReq.Callback>(cbData);
-                    callback?.Invoke(cbMsg.arg0);
-                });
-                this.CallRemoteMethod(OpCode.REGISTER_ACTOR_REQ, msg, cb);
-            });
-#endif
-        }
-
-#if FENIX_CODEGEN && !RUNTIME
         public async Task<dynamic> RegisterClientAsync(dynamic hostId, dynamic hostName, dynamic callback=null)
 #else
         public async Task<RegisterClientReq.Callback> RegisterClientAsync(global::System.UInt64 hostId, global::System.String hostName, global::System.Action<global::Fenix.Common.DefaultErrCode, global::Fenix.HostInfo> callback=null)
@@ -1002,107 +1375,9 @@ namespace Fenix
         }
 
 #if FENIX_CODEGEN && !RUNTIME
-        public async Task<dynamic> RegisterHostAsync(dynamic hostId, dynamic hostName, dynamic intAddr, dynamic extAddr, dynamic callback=null)
-#else
-        public async Task<RegisterHostReq.Callback> RegisterHostAsync(global::System.UInt64 hostId, global::System.String hostName, global::System.String intAddr, global::System.String extAddr, global::System.Action<global::System.Boolean> callback=null)
-#endif
-        {
-#if FENIX_CODEGEN
-#if !RUNTIME
-            var t = new TaskCompletionSource<dynamic>();
-#else
-            var t = new TaskCompletionSource<RegisterHostReq.Callback>();
-#endif
-#else
-            var t = new TaskCompletionSource<RegisterHostReq.Callback>();
-            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
-            if (this.FromHostId == toHostId)
-            {
-                global::System.Action<global::System.Boolean> _cb = (arg0) =>
-                {
-                     var cbMsg = new RegisterHostReq.Callback();
-                     cbMsg.arg0=arg0;
-                     callback?.Invoke(cbMsg.arg0);
-                     t.TrySetResult(cbMsg);
-                }; 
-                var protoCode = OpCode.REGISTER_HOST_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
-                {
-                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
-                    var context = new RpcContext(null, peer);
-                    Global.Host.CallMethodWithParams(protoCode, new object[] { hostId, hostName, intAddr, extAddr, _cb, context });
-                }
-                else
-                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { hostId, hostName, intAddr, extAddr, _cb });
-            }
-            else
-            {
-                Action<RegisterHostReq.Callback> _cb = (cbMsg) =>
-                {
-                    callback?.Invoke(cbMsg.arg0);
-                    t.TrySetResult(cbMsg);
-                };
-                await Task.Run(() => {
-                    var msg = new RegisterHostReq()
-                    {
-                         hostId=hostId,
-                         hostName=hostName,
-                         intAddr=intAddr,
-                         extAddr=extAddr
-                    };
-                    var cb = new Action<byte[]>((cbData) => {
-                        var cbMsg = cbData==null ? new RegisterHostReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<RegisterHostReq.Callback>(cbData);
-                        _cb?.Invoke(cbMsg);
-                    });
-                    this.CallRemoteMethod(OpCode.REGISTER_HOST_REQ, msg, cb);
-                 });
-             }
-#endif
-             return await t.Task;
-        }
-
-#if FENIX_CODEGEN && !RUNTIME
-        public void RegisterHost(dynamic hostId, dynamic hostName, dynamic intAddr, dynamic extAddr, dynamic callback)
-#else
-        public void RegisterHost(global::System.UInt64 hostId, global::System.String hostName, global::System.String intAddr, global::System.String extAddr, global::System.Action<global::System.Boolean> callback)
-#endif
-        {
-#if !FENIX_CODEGEN
-            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
-            if (this.FromHostId == toHostId)
-            {
-                var protoCode = OpCode.REGISTER_HOST_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
-                {
-                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
-                    var context = new RpcContext(null, peer);
-                    Global.Host.CallMethodWithParams(protoCode, new object[] { hostId, hostName, intAddr, extAddr, callback, context });
-                }
-                else
-                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { hostId, hostName, intAddr, extAddr, callback });
-                return;
-            }
-            Task.Run(() => {
-                var msg = new RegisterHostReq()
-                {
-                    hostId=hostId,
-                    hostName=hostName,
-                    intAddr=intAddr,
-                    extAddr=extAddr
-                };
-                var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null?new RegisterHostReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<RegisterHostReq.Callback>(cbData);
-                    callback?.Invoke(cbMsg.arg0);
-                });
-                this.CallRemoteMethod(OpCode.REGISTER_HOST_REQ, msg, cb);
-            });
-#endif
-        }
-
-#if FENIX_CODEGEN && !RUNTIME
         public async Task<dynamic> RemoveActorAsync(dynamic actorId, dynamic callback=null)
 #else
-        public async Task<RemoveActorReq.Callback> RemoveActorAsync(global::System.UInt64 actorId, global::System.Action<global::System.Boolean> callback=null)
+        public async Task<RemoveActorReq.Callback> RemoveActorAsync(global::System.UInt64 actorId, global::System.Action<global::Fenix.Common.DefaultErrCode> callback=null)
 #endif
         {
 #if FENIX_CODEGEN
@@ -1116,11 +1391,11 @@ namespace Fenix
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                global::System.Action<global::System.Boolean> _cb = (arg0) =>
+                global::System.Action<global::Fenix.Common.DefaultErrCode> _cb = (code) =>
                 {
                      var cbMsg = new RemoveActorReq.Callback();
-                     cbMsg.arg0=arg0;
-                     callback?.Invoke(cbMsg.arg0);
+                     cbMsg.code=code;
+                     callback?.Invoke(cbMsg.code);
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = OpCode.REMOVE_ACTOR_REQ;
@@ -1137,7 +1412,7 @@ namespace Fenix
             {
                 Action<RemoveActorReq.Callback> _cb = (cbMsg) =>
                 {
-                    callback?.Invoke(cbMsg.arg0);
+                    callback?.Invoke(cbMsg.code);
                     t.TrySetResult(cbMsg);
                 };
                 await Task.Run(() => {
@@ -1159,7 +1434,7 @@ namespace Fenix
 #if FENIX_CODEGEN && !RUNTIME
         public void RemoveActor(dynamic actorId, dynamic callback)
 #else
-        public void RemoveActor(global::System.UInt64 actorId, global::System.Action<global::System.Boolean> callback)
+        public void RemoveActor(global::System.UInt64 actorId, global::System.Action<global::Fenix.Common.DefaultErrCode> callback)
 #endif
         {
 #if !FENIX_CODEGEN
@@ -1184,9 +1459,101 @@ namespace Fenix
                 };
                 var cb = new Action<byte[]>((cbData) => {
                     var cbMsg = cbData==null?new RemoveActorReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<RemoveActorReq.Callback>(cbData);
-                    callback?.Invoke(cbMsg.arg0);
+                    callback?.Invoke(cbMsg.code);
                 });
                 this.CallRemoteMethod(OpCode.REMOVE_ACTOR_REQ, msg, cb);
+            });
+#endif
+        }
+
+#if FENIX_CODEGEN && !RUNTIME
+        public async Task<dynamic> RemoveActorIdAsync(dynamic actorId, dynamic callback=null)
+#else
+        public async Task<RemoveActorIdReq.Callback> RemoveActorIdAsync(global::System.UInt64 actorId, global::System.Action<global::System.Boolean> callback=null)
+#endif
+        {
+#if FENIX_CODEGEN
+#if !RUNTIME
+            var t = new TaskCompletionSource<dynamic>();
+#else
+            var t = new TaskCompletionSource<RemoveActorIdReq.Callback>();
+#endif
+#else
+            var t = new TaskCompletionSource<RemoveActorIdReq.Callback>();
+            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
+            if (this.FromHostId == toHostId)
+            {
+                global::System.Action<global::System.Boolean> _cb = (arg0) =>
+                {
+                     var cbMsg = new RemoveActorIdReq.Callback();
+                     cbMsg.arg0=arg0;
+                     callback?.Invoke(cbMsg.arg0);
+                     t.TrySetResult(cbMsg);
+                }; 
+                var protoCode = OpCode.REMOVE_ACTOR_ID_REQ;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { actorId, _cb, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { actorId, _cb });
+            }
+            else
+            {
+                Action<RemoveActorIdReq.Callback> _cb = (cbMsg) =>
+                {
+                    callback?.Invoke(cbMsg.arg0);
+                    t.TrySetResult(cbMsg);
+                };
+                await Task.Run(() => {
+                    var msg = new RemoveActorIdReq()
+                    {
+                         actorId=actorId
+                    };
+                    var cb = new Action<byte[]>((cbData) => {
+                        var cbMsg = cbData==null ? new RemoveActorIdReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<RemoveActorIdReq.Callback>(cbData);
+                        _cb?.Invoke(cbMsg);
+                    });
+                    this.CallRemoteMethod(OpCode.REMOVE_ACTOR_ID_REQ, msg, cb);
+                 });
+             }
+#endif
+             return await t.Task;
+        }
+
+#if FENIX_CODEGEN && !RUNTIME
+        public void RemoveActorId(dynamic actorId, dynamic callback)
+#else
+        public void RemoveActorId(global::System.UInt64 actorId, global::System.Action<global::System.Boolean> callback)
+#endif
+        {
+#if !FENIX_CODEGEN
+            var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
+            if (this.FromHostId == toHostId)
+            {
+                var protoCode = OpCode.REMOVE_ACTOR_ID_REQ;
+                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                {
+                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
+                    var context = new RpcContext(null, peer);
+                    Global.Host.CallMethodWithParams(protoCode, new object[] { actorId, callback, context });
+                }
+                else
+                    Global.Host.GetActor(this.toActorId).CallMethodWithParams(protoCode, new object[] { actorId, callback });
+                return;
+            }
+            Task.Run(() => {
+                var msg = new RemoveActorIdReq()
+                {
+                    actorId=actorId
+                };
+                var cb = new Action<byte[]>((cbData) => {
+                    var cbMsg = cbData==null?new RemoveActorIdReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<RemoveActorIdReq.Callback>(cbData);
+                    callback?.Invoke(cbMsg.arg0);
+                });
+                this.CallRemoteMethod(OpCode.REMOVE_ACTOR_ID_REQ, msg, cb);
             });
 #endif
         }
@@ -1286,30 +1653,30 @@ namespace Fenix
         }
 
 #if FENIX_CODEGEN && !RUNTIME
-        public async Task<dynamic> RemoveHostAsync(dynamic hostId, dynamic hostName, dynamic callback=null)
+        public async Task<dynamic> RemoveHostIdAsync(dynamic hostId, dynamic hostName, dynamic callback=null)
 #else
-        public async Task<RemoveHostReq.Callback> RemoveHostAsync(global::System.UInt64 hostId, global::System.String hostName, global::System.Action<global::System.Boolean> callback=null)
+        public async Task<RemoveHostIdReq.Callback> RemoveHostIdAsync(global::System.UInt64 hostId, global::System.String hostName, global::System.Action<global::System.Boolean> callback=null)
 #endif
         {
 #if FENIX_CODEGEN
 #if !RUNTIME
             var t = new TaskCompletionSource<dynamic>();
 #else
-            var t = new TaskCompletionSource<RemoveHostReq.Callback>();
+            var t = new TaskCompletionSource<RemoveHostIdReq.Callback>();
 #endif
 #else
-            var t = new TaskCompletionSource<RemoveHostReq.Callback>();
+            var t = new TaskCompletionSource<RemoveHostIdReq.Callback>();
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
                 global::System.Action<global::System.Boolean> _cb = (arg0) =>
                 {
-                     var cbMsg = new RemoveHostReq.Callback();
+                     var cbMsg = new RemoveHostIdReq.Callback();
                      cbMsg.arg0=arg0;
                      callback?.Invoke(cbMsg.arg0);
                      t.TrySetResult(cbMsg);
                 }; 
-                var protoCode = OpCode.REMOVE_HOST_REQ;
+                var protoCode = OpCode.REMOVE_HOST_ID_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
@@ -1321,22 +1688,22 @@ namespace Fenix
             }
             else
             {
-                Action<RemoveHostReq.Callback> _cb = (cbMsg) =>
+                Action<RemoveHostIdReq.Callback> _cb = (cbMsg) =>
                 {
                     callback?.Invoke(cbMsg.arg0);
                     t.TrySetResult(cbMsg);
                 };
                 await Task.Run(() => {
-                    var msg = new RemoveHostReq()
+                    var msg = new RemoveHostIdReq()
                     {
                          hostId=hostId,
                          hostName=hostName
                     };
                     var cb = new Action<byte[]>((cbData) => {
-                        var cbMsg = cbData==null ? new RemoveHostReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<RemoveHostReq.Callback>(cbData);
+                        var cbMsg = cbData==null ? new RemoveHostIdReq.Callback() : global::Fenix.Common.Utils.RpcUtil.Deserialize<RemoveHostIdReq.Callback>(cbData);
                         _cb?.Invoke(cbMsg);
                     });
-                    this.CallRemoteMethod(OpCode.REMOVE_HOST_REQ, msg, cb);
+                    this.CallRemoteMethod(OpCode.REMOVE_HOST_ID_REQ, msg, cb);
                  });
              }
 #endif
@@ -1344,16 +1711,16 @@ namespace Fenix
         }
 
 #if FENIX_CODEGEN && !RUNTIME
-        public void RemoveHost(dynamic hostId, dynamic hostName, dynamic callback)
+        public void RemoveHostId(dynamic hostId, dynamic hostName, dynamic callback)
 #else
-        public void RemoveHost(global::System.UInt64 hostId, global::System.String hostName, global::System.Action<global::System.Boolean> callback)
+        public void RemoveHostId(global::System.UInt64 hostId, global::System.String hostName, global::System.Action<global::System.Boolean> callback)
 #endif
         {
 #if !FENIX_CODEGEN
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                var protoCode = OpCode.REMOVE_HOST_REQ;
+                var protoCode = OpCode.REMOVE_HOST_ID_REQ;
                 if (protoCode < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
@@ -1365,16 +1732,16 @@ namespace Fenix
                 return;
             }
             Task.Run(() => {
-                var msg = new RemoveHostReq()
+                var msg = new RemoveHostIdReq()
                 {
                     hostId=hostId,
                     hostName=hostName
                 };
                 var cb = new Action<byte[]>((cbData) => {
-                    var cbMsg = cbData==null?new RemoveHostReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<RemoveHostReq.Callback>(cbData);
+                    var cbMsg = cbData==null?new RemoveHostIdReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<RemoveHostIdReq.Callback>(cbData);
                     callback?.Invoke(cbMsg.arg0);
                 });
-                this.CallRemoteMethod(OpCode.REMOVE_HOST_REQ, msg, cb);
+                this.CallRemoteMethod(OpCode.REMOVE_HOST_ID_REQ, msg, cb);
             });
 #endif
         }

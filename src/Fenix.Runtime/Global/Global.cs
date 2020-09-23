@@ -15,6 +15,10 @@ namespace Fenix
     {
         public static Host Host;
 
+#if !CLIENT
+        //ActorRef cache :TODO
+        public static ActorRef IdHostRef => Host.GetHost("Id.App", Basic.ToIP(Global.Config.IdHostAddr), Basic.ToPort(Global.Config.IdHostAddr));
+#endif
         private static RuntimeConfig _cfg;
 
 #if !CLIENT
@@ -121,15 +125,15 @@ namespace Fenix
 
         public static void Init(RuntimeConfig cfg, Assembly[] asmList)
         {
-            RpcUtil.Init(); 
+            RpcUtil.Init();
 
-#if !CLIENT
+#if !CLIENT && USE_REDIS_IDMANGER
             CacheConfig.Init();
 #endif
             _cfg = cfg;
 
             Global.TypeManager.ScanAssemblies(asmList);
-            Global.TypeManager.ScanAssemblies(new Assembly[] { typeof(Global).Assembly });
+            Global.TypeManager.ScanAssemblies(new Assembly[] { typeof(Global).Assembly }); 
         }
 
         public static void DeInit()

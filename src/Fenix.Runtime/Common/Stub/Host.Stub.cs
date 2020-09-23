@@ -231,6 +231,54 @@ namespace Fenix
 
         }
 
+        [RpcMethod(OpCode.ADD_ACTOR_ID_REQ, Api.ServerOnly)]
+        public void SERVER_ONLY__Fenix__Host__add_actor_id(IMessage msg, Action<IMessage> cb, RpcContext context)
+        {
+#if ENABLE_IL2CPP || !DEBUG || RUNTIME
+            var _msg = (AddActorIdReq)msg;
+            this.AddActorId(_msg.hostId, _msg.actorId, _msg.actorName, _msg.aTypeName, (arg0) =>
+            {
+                var cbMsg = new AddActorIdReq.Callback();
+                cbMsg.arg0=arg0;
+                cb.Invoke(cbMsg);
+            }, context);
+#else
+
+            dynamic _msg = msg;
+            self.AddActorId(_msg.hostId, _msg.actorId, _msg.actorName, _msg.aTypeName, (global::System.Action<global::System.Boolean>)((arg0) =>
+            {
+                dynamic cbMsg = new AddActorIdReq.Callback();
+                cbMsg.arg0=arg0;
+                cb.Invoke(cbMsg);
+            }), context);
+#endif
+
+        }
+
+        [RpcMethod(OpCode.ADD_HOST_ID_REQ, Api.ServerOnly)]
+        public void SERVER_ONLY__Fenix__Host__add_host_id(IMessage msg, Action<IMessage> cb, RpcContext context)
+        {
+#if ENABLE_IL2CPP || !DEBUG || RUNTIME
+            var _msg = (AddHostIdReq)msg;
+            this.AddHostId(_msg.hostId, _msg.hostName, _msg.intAddr, _msg.extAddr, (arg0) =>
+            {
+                var cbMsg = new AddHostIdReq.Callback();
+                cbMsg.arg0=arg0;
+                cb.Invoke(cbMsg);
+            }, context);
+#else
+
+            dynamic _msg = msg;
+            self.AddHostId(_msg.hostId, _msg.hostName, _msg.intAddr, _msg.extAddr, (global::System.Action<global::System.Boolean>)((arg0) =>
+            {
+                dynamic cbMsg = new AddHostIdReq.Callback();
+                cbMsg.arg0=arg0;
+                cb.Invoke(cbMsg);
+            }), context);
+#endif
+
+        }
+
         [RpcMethod(OpCode.CREATE_ACTOR_REQ, Api.ServerOnly)]
         public void SERVER_ONLY__Fenix__Host__create_actor(IMessage msg, Action<IMessage> cb, RpcContext context)
         {
@@ -259,14 +307,14 @@ namespace Fenix
 
         }
 
-        [RpcMethod(OpCode.FIND_ACTOR_REQ, Api.ServerOnly)]
-        public void SERVER_ONLY__Fenix__Host__find_actor(IMessage msg, Action<IMessage> cb, RpcContext context)
+        [RpcMethod(OpCode.GET_ID_ALL_REQ, Api.ServerOnly)]
+        public void SERVER_ONLY__Fenix__Host__get_id_all(IMessage msg, Action<IMessage> cb, RpcContext context)
         {
 #if ENABLE_IL2CPP || !DEBUG || RUNTIME
-            var _msg = (FindActorReq)msg;
-            this.FindActor(_msg.actorId, (arg0, arg1) =>
+            var _msg = (GetIdAllReq)msg;
+            this.GetIdAll(_msg.hostId, (arg0, arg1) =>
             {
-                var cbMsg = new FindActorReq.Callback();
+                var cbMsg = new GetIdAllReq.Callback();
                 cbMsg.arg0=arg0;
                 cbMsg.arg1=arg1;
                 cb.Invoke(cbMsg);
@@ -274,35 +322,9 @@ namespace Fenix
 #else
 
             dynamic _msg = msg;
-            self.FindActor(_msg.actorId, (global::System.Action<global::System.Boolean, global::Fenix.ActorInfo>)((arg0, arg1) =>
+            self.GetIdAll(_msg.hostId, (global::System.Action<global::System.Boolean, global::System.Collections.Generic.List<global::Fenix.HostInfo>>)((arg0, arg1) =>
             {
-                dynamic cbMsg = new FindActorReq.Callback();
-                cbMsg.arg0=arg0;
-                cbMsg.arg1=arg1;
-                cb.Invoke(cbMsg);
-            }), context);
-#endif
-
-        }
-
-        [RpcMethod(OpCode.FIND_HOST_REQ, Api.ServerOnly)]
-        public void SERVER_ONLY__Fenix__Host__find_host(IMessage msg, Action<IMessage> cb, RpcContext context)
-        {
-#if ENABLE_IL2CPP || !DEBUG || RUNTIME
-            var _msg = (FindHostReq)msg;
-            this.FindHost(_msg.hostId, (arg0, arg1) =>
-            {
-                var cbMsg = new FindHostReq.Callback();
-                cbMsg.arg0=arg0;
-                cbMsg.arg1=arg1;
-                cb.Invoke(cbMsg);
-            }, context);
-#else
-
-            dynamic _msg = msg;
-            self.FindHost(_msg.hostId, (global::System.Action<global::System.Boolean, global::Fenix.HostInfo>)((arg0, arg1) =>
-            {
-                dynamic cbMsg = new FindHostReq.Callback();
+                dynamic cbMsg = new GetIdAllReq.Callback();
                 cbMsg.arg0=arg0;
                 cbMsg.arg1=arg1;
                 cb.Invoke(cbMsg);
@@ -337,6 +359,102 @@ namespace Fenix
 
         }
 
+        [RpcMethod(OpCode.ON_ADD_ACTOR_ID_REQ, Api.ServerOnly)]
+        public void SERVER_ONLY__Fenix__Host__on_add_actor_id(IMessage msg, Action<IMessage> cb, RpcContext context)
+        {
+#if ENABLE_IL2CPP || !DEBUG || RUNTIME
+            var _msg = (OnAddActorIdReq)msg;
+            this.OnAddActorId(_msg.actorInfo, (arg0) =>
+            {
+                var cbMsg = new OnAddActorIdReq.Callback();
+                cbMsg.arg0=arg0;
+                cb.Invoke(cbMsg);
+            }, context);
+#else
+
+            dynamic _msg = msg;
+            self.OnAddActorId(_msg.actorInfo, (global::System.Action<global::System.Boolean>)((arg0) =>
+            {
+                dynamic cbMsg = new OnAddActorIdReq.Callback();
+                cbMsg.arg0=arg0;
+                cb.Invoke(cbMsg);
+            }), context);
+#endif
+
+        }
+
+        [RpcMethod(OpCode.ON_ADD_HOST_ID_REQ, Api.ServerOnly)]
+        public void SERVER_ONLY__Fenix__Host__on_add_host_id(IMessage msg, Action<IMessage> cb, RpcContext context)
+        {
+#if ENABLE_IL2CPP || !DEBUG || RUNTIME
+            var _msg = (OnAddHostIdReq)msg;
+            this.OnAddHostId(_msg.hostInfo, (arg0) =>
+            {
+                var cbMsg = new OnAddHostIdReq.Callback();
+                cbMsg.arg0=arg0;
+                cb.Invoke(cbMsg);
+            }, context);
+#else
+
+            dynamic _msg = msg;
+            self.OnAddHostId(_msg.hostInfo, (global::System.Action<global::System.Boolean>)((arg0) =>
+            {
+                dynamic cbMsg = new OnAddHostIdReq.Callback();
+                cbMsg.arg0=arg0;
+                cb.Invoke(cbMsg);
+            }), context);
+#endif
+
+        }
+
+        [RpcMethod(OpCode.ON_REMOVE_ACTOR_ID_REQ, Api.ServerOnly)]
+        public void SERVER_ONLY__Fenix__Host__on_remove_actor_id(IMessage msg, Action<IMessage> cb, RpcContext context)
+        {
+#if ENABLE_IL2CPP || !DEBUG || RUNTIME
+            var _msg = (OnRemoveActorIdReq)msg;
+            this.OnRemoveActorId(_msg.actorId, (arg0) =>
+            {
+                var cbMsg = new OnRemoveActorIdReq.Callback();
+                cbMsg.arg0=arg0;
+                cb.Invoke(cbMsg);
+            }, context);
+#else
+
+            dynamic _msg = msg;
+            self.OnRemoveActorId(_msg.actorId, (global::System.Action<global::System.Boolean>)((arg0) =>
+            {
+                dynamic cbMsg = new OnRemoveActorIdReq.Callback();
+                cbMsg.arg0=arg0;
+                cb.Invoke(cbMsg);
+            }), context);
+#endif
+
+        }
+
+        [RpcMethod(OpCode.ON_REMOVE_HOST_ID_REQ, Api.ServerOnly)]
+        public void SERVER_ONLY__Fenix__Host__on_remove_host_id(IMessage msg, Action<IMessage> cb, RpcContext context)
+        {
+#if ENABLE_IL2CPP || !DEBUG || RUNTIME
+            var _msg = (OnRemoveHostIdReq)msg;
+            this.OnRemoveHostId(_msg.hostId, (arg0) =>
+            {
+                var cbMsg = new OnRemoveHostIdReq.Callback();
+                cbMsg.arg0=arg0;
+                cb.Invoke(cbMsg);
+            }, context);
+#else
+
+            dynamic _msg = msg;
+            self.OnRemoveHostId(_msg.hostId, (global::System.Action<global::System.Boolean>)((arg0) =>
+            {
+                dynamic cbMsg = new OnRemoveHostIdReq.Callback();
+                cbMsg.arg0=arg0;
+                cb.Invoke(cbMsg);
+            }), context);
+#endif
+
+        }
+
         [RpcMethod(OpCode.REGISTER_REQ, Api.ServerOnly)]
         public void SERVER_ONLY__Fenix__Host__register(IMessage msg, Action<IMessage> cb, RpcContext context)
         {
@@ -363,71 +481,47 @@ namespace Fenix
 
         }
 
-        [RpcMethod(OpCode.REGISTER_ACTOR_REQ, Api.ServerOnly)]
-        public void SERVER_ONLY__Fenix__Host__register_actor(IMessage msg, Action<IMessage> cb, RpcContext context)
-        {
-#if ENABLE_IL2CPP || !DEBUG || RUNTIME
-            var _msg = (RegisterActorReq)msg;
-            this.RegisterActor(_msg.hostId, _msg.actorId, _msg.actorName, _msg.aTypeName, (arg0) =>
-            {
-                var cbMsg = new RegisterActorReq.Callback();
-                cbMsg.arg0=arg0;
-                cb.Invoke(cbMsg);
-            }, context);
-#else
-
-            dynamic _msg = msg;
-            self.RegisterActor(_msg.hostId, _msg.actorId, _msg.actorName, _msg.aTypeName, (global::System.Action<global::System.Boolean>)((arg0) =>
-            {
-                dynamic cbMsg = new RegisterActorReq.Callback();
-                cbMsg.arg0=arg0;
-                cb.Invoke(cbMsg);
-            }), context);
-#endif
-
-        }
-
-        [RpcMethod(OpCode.REGISTER_HOST_REQ, Api.ServerOnly)]
-        public void SERVER_ONLY__Fenix__Host__register_host(IMessage msg, Action<IMessage> cb, RpcContext context)
-        {
-#if ENABLE_IL2CPP || !DEBUG || RUNTIME
-            var _msg = (RegisterHostReq)msg;
-            this.RegisterHost(_msg.hostId, _msg.hostName, _msg.intAddr, _msg.extAddr, (arg0) =>
-            {
-                var cbMsg = new RegisterHostReq.Callback();
-                cbMsg.arg0=arg0;
-                cb.Invoke(cbMsg);
-            }, context);
-#else
-
-            dynamic _msg = msg;
-            self.RegisterHost(_msg.hostId, _msg.hostName, _msg.intAddr, _msg.extAddr, (global::System.Action<global::System.Boolean>)((arg0) =>
-            {
-                dynamic cbMsg = new RegisterHostReq.Callback();
-                cbMsg.arg0=arg0;
-                cb.Invoke(cbMsg);
-            }), context);
-#endif
-
-        }
-
         [RpcMethod(OpCode.REMOVE_ACTOR_REQ, Api.ServerOnly)]
         public void SERVER_ONLY__Fenix__Host__remove_actor(IMessage msg, Action<IMessage> cb, RpcContext context)
         {
 #if ENABLE_IL2CPP || !DEBUG || RUNTIME
             var _msg = (RemoveActorReq)msg;
-            this.RemoveActor(_msg.actorId, (arg0) =>
+            this.RemoveActor(_msg.actorId, (code) =>
             {
                 var cbMsg = new RemoveActorReq.Callback();
+                cbMsg.code=code;
+                cb.Invoke(cbMsg);
+            }, context);
+#else
+
+            dynamic _msg = msg;
+            self.RemoveActor(_msg.actorId, (global::System.Action<global::Fenix.Common.DefaultErrCode>)((code) =>
+            {
+                dynamic cbMsg = new RemoveActorReq.Callback();
+                cbMsg.code=code;
+                cb.Invoke(cbMsg);
+            }), context);
+#endif
+
+        }
+
+        [RpcMethod(OpCode.REMOVE_ACTOR_ID_REQ, Api.ServerOnly)]
+        public void SERVER_ONLY__Fenix__Host__remove_actor_id(IMessage msg, Action<IMessage> cb, RpcContext context)
+        {
+#if ENABLE_IL2CPP || !DEBUG || RUNTIME
+            var _msg = (RemoveActorIdReq)msg;
+            this.RemoveActorId(_msg.actorId, (arg0) =>
+            {
+                var cbMsg = new RemoveActorIdReq.Callback();
                 cbMsg.arg0=arg0;
                 cb.Invoke(cbMsg);
             }, context);
 #else
 
             dynamic _msg = msg;
-            self.RemoveActor(_msg.actorId, (global::System.Action<global::System.Boolean>)((arg0) =>
+            self.RemoveActorId(_msg.actorId, (global::System.Action<global::System.Boolean>)((arg0) =>
             {
-                dynamic cbMsg = new RemoveActorReq.Callback();
+                dynamic cbMsg = new RemoveActorIdReq.Callback();
                 cbMsg.arg0=arg0;
                 cb.Invoke(cbMsg);
             }), context);
@@ -435,23 +529,23 @@ namespace Fenix
 
         }
 
-        [RpcMethod(OpCode.REMOVE_HOST_REQ, Api.ServerOnly)]
-        public void SERVER_ONLY__Fenix__Host__remove_host(IMessage msg, Action<IMessage> cb, RpcContext context)
+        [RpcMethod(OpCode.REMOVE_HOST_ID_REQ, Api.ServerOnly)]
+        public void SERVER_ONLY__Fenix__Host__remove_host_id(IMessage msg, Action<IMessage> cb, RpcContext context)
         {
 #if ENABLE_IL2CPP || !DEBUG || RUNTIME
-            var _msg = (RemoveHostReq)msg;
-            this.RemoveHost(_msg.hostId, _msg.hostName, (arg0) =>
+            var _msg = (RemoveHostIdReq)msg;
+            this.RemoveHostId(_msg.hostId, _msg.hostName, (arg0) =>
             {
-                var cbMsg = new RemoveHostReq.Callback();
+                var cbMsg = new RemoveHostIdReq.Callback();
                 cbMsg.arg0=arg0;
                 cb.Invoke(cbMsg);
             }, context);
 #else
 
             dynamic _msg = msg;
-            self.RemoveHost(_msg.hostId, _msg.hostName, (global::System.Action<global::System.Boolean>)((arg0) =>
+            self.RemoveHostId(_msg.hostId, _msg.hostName, (global::System.Action<global::System.Boolean>)((arg0) =>
             {
-                dynamic cbMsg = new RemoveHostReq.Callback();
+                dynamic cbMsg = new RemoveHostIdReq.Callback();
                 cbMsg.arg0=arg0;
                 cb.Invoke(cbMsg);
             }), context);
@@ -499,6 +593,26 @@ namespace Fenix
 #endif
         }
 
+        [RpcMethod(OpCode.ADD_ACTOR_ID_REQ, Api.ServerOnly)]
+        public void SERVER_ONLY_NATIVE__Fenix__Host__add_actor_id(global::System.UInt64 hostId, global::System.UInt64 actorId, global::System.String actorName, global::System.String aTypeName, global::System.Action<global::System.Boolean> callback, RpcContext context)
+        {
+#if ENABLE_IL2CPP || !DEBUG || RUNTIME
+            this.AddActorId(hostId, actorId, actorName, aTypeName, callback, context);
+#else
+            self.AddActorId(hostId, actorId, actorName, aTypeName, callback, context);
+#endif
+        }
+
+        [RpcMethod(OpCode.ADD_HOST_ID_REQ, Api.ServerOnly)]
+        public void SERVER_ONLY_NATIVE__Fenix__Host__add_host_id(global::System.UInt64 hostId, global::System.String hostName, global::System.String intAddr, global::System.String extAddr, global::System.Action<global::System.Boolean> callback, RpcContext context)
+        {
+#if ENABLE_IL2CPP || !DEBUG || RUNTIME
+            this.AddHostId(hostId, hostName, intAddr, extAddr, callback, context);
+#else
+            self.AddHostId(hostId, hostName, intAddr, extAddr, callback, context);
+#endif
+        }
+
         [RpcMethod(OpCode.CREATE_ACTOR_REQ, Api.ServerOnly)]
         public void SERVER_ONLY_NATIVE__Fenix__Host__create_actor(global::System.String typename, global::System.String name, global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.String, global::System.UInt64> callback, RpcContext context)
         {
@@ -509,23 +623,13 @@ namespace Fenix
 #endif
         }
 
-        [RpcMethod(OpCode.FIND_ACTOR_REQ, Api.ServerOnly)]
-        public void SERVER_ONLY_NATIVE__Fenix__Host__find_actor(global::System.UInt64 actorId, global::System.Action<global::System.Boolean, global::Fenix.ActorInfo> callback, RpcContext context)
+        [RpcMethod(OpCode.GET_ID_ALL_REQ, Api.ServerOnly)]
+        public void SERVER_ONLY_NATIVE__Fenix__Host__get_id_all(global::System.UInt64 hostId, global::System.Action<global::System.Boolean, global::System.Collections.Generic.List<global::Fenix.HostInfo>> callback, RpcContext context)
         {
 #if ENABLE_IL2CPP || !DEBUG || RUNTIME
-            this.FindActor(actorId, callback, context);
+            this.GetIdAll(hostId, callback, context);
 #else
-            self.FindActor(actorId, callback, context);
-#endif
-        }
-
-        [RpcMethod(OpCode.FIND_HOST_REQ, Api.ServerOnly)]
-        public void SERVER_ONLY_NATIVE__Fenix__Host__find_host(global::System.UInt64 hostId, global::System.Action<global::System.Boolean, global::Fenix.HostInfo> callback, RpcContext context)
-        {
-#if ENABLE_IL2CPP || !DEBUG || RUNTIME
-            this.FindHost(hostId, callback, context);
-#else
-            self.FindHost(hostId, callback, context);
+            self.GetIdAll(hostId, callback, context);
 #endif
         }
 
@@ -539,6 +643,46 @@ namespace Fenix
 #endif
         }
 
+        [RpcMethod(OpCode.ON_ADD_ACTOR_ID_REQ, Api.ServerOnly)]
+        public void SERVER_ONLY_NATIVE__Fenix__Host__on_add_actor_id(global::Fenix.ActorInfo actorInfo, global::System.Action<global::System.Boolean> callback, RpcContext context)
+        {
+#if ENABLE_IL2CPP || !DEBUG || RUNTIME
+            this.OnAddActorId(actorInfo, callback, context);
+#else
+            self.OnAddActorId(actorInfo, callback, context);
+#endif
+        }
+
+        [RpcMethod(OpCode.ON_ADD_HOST_ID_REQ, Api.ServerOnly)]
+        public void SERVER_ONLY_NATIVE__Fenix__Host__on_add_host_id(global::Fenix.HostInfo hostInfo, global::System.Action<global::System.Boolean> callback, RpcContext context)
+        {
+#if ENABLE_IL2CPP || !DEBUG || RUNTIME
+            this.OnAddHostId(hostInfo, callback, context);
+#else
+            self.OnAddHostId(hostInfo, callback, context);
+#endif
+        }
+
+        [RpcMethod(OpCode.ON_REMOVE_ACTOR_ID_REQ, Api.ServerOnly)]
+        public void SERVER_ONLY_NATIVE__Fenix__Host__on_remove_actor_id(global::System.UInt64 actorId, global::System.Action<global::System.Boolean> callback, RpcContext context)
+        {
+#if ENABLE_IL2CPP || !DEBUG || RUNTIME
+            this.OnRemoveActorId(actorId, callback, context);
+#else
+            self.OnRemoveActorId(actorId, callback, context);
+#endif
+        }
+
+        [RpcMethod(OpCode.ON_REMOVE_HOST_ID_REQ, Api.ServerOnly)]
+        public void SERVER_ONLY_NATIVE__Fenix__Host__on_remove_host_id(global::System.UInt64 hostId, global::System.Action<global::System.Boolean> callback, RpcContext context)
+        {
+#if ENABLE_IL2CPP || !DEBUG || RUNTIME
+            this.OnRemoveHostId(hostId, callback, context);
+#else
+            self.OnRemoveHostId(hostId, callback, context);
+#endif
+        }
+
         [RpcMethod(OpCode.REGISTER_REQ, Api.ServerOnly)]
         public void SERVER_ONLY_NATIVE__Fenix__Host__register(global::System.UInt64 hostId, global::System.String hostName, global::System.Action<global::Fenix.Common.DefaultErrCode, global::Fenix.HostInfo> callback, RpcContext context)
         {
@@ -549,28 +693,8 @@ namespace Fenix
 #endif
         }
 
-        [RpcMethod(OpCode.REGISTER_ACTOR_REQ, Api.ServerOnly)]
-        public void SERVER_ONLY_NATIVE__Fenix__Host__register_actor(global::System.UInt64 hostId, global::System.UInt64 actorId, global::System.String actorName, global::System.String aTypeName, global::System.Action<global::System.Boolean> callback, RpcContext context)
-        {
-#if ENABLE_IL2CPP || !DEBUG || RUNTIME
-            this.RegisterActor(hostId, actorId, actorName, aTypeName, callback, context);
-#else
-            self.RegisterActor(hostId, actorId, actorName, aTypeName, callback, context);
-#endif
-        }
-
-        [RpcMethod(OpCode.REGISTER_HOST_REQ, Api.ServerOnly)]
-        public void SERVER_ONLY_NATIVE__Fenix__Host__register_host(global::System.UInt64 hostId, global::System.String hostName, global::System.String intAddr, global::System.String extAddr, global::System.Action<global::System.Boolean> callback, RpcContext context)
-        {
-#if ENABLE_IL2CPP || !DEBUG || RUNTIME
-            this.RegisterHost(hostId, hostName, intAddr, extAddr, callback, context);
-#else
-            self.RegisterHost(hostId, hostName, intAddr, extAddr, callback, context);
-#endif
-        }
-
         [RpcMethod(OpCode.REMOVE_ACTOR_REQ, Api.ServerOnly)]
-        public void SERVER_ONLY_NATIVE__Fenix__Host__remove_actor(global::System.UInt64 actorId, global::System.Action<global::System.Boolean> callback, RpcContext context)
+        public void SERVER_ONLY_NATIVE__Fenix__Host__remove_actor(global::System.UInt64 actorId, global::System.Action<global::Fenix.Common.DefaultErrCode> callback, RpcContext context)
         {
 #if ENABLE_IL2CPP || !DEBUG || RUNTIME
             this.RemoveActor(actorId, callback, context);
@@ -579,13 +703,23 @@ namespace Fenix
 #endif
         }
 
-        [RpcMethod(OpCode.REMOVE_HOST_REQ, Api.ServerOnly)]
-        public void SERVER_ONLY_NATIVE__Fenix__Host__remove_host(global::System.UInt64 hostId, global::System.String hostName, global::System.Action<global::System.Boolean> callback, RpcContext context)
+        [RpcMethod(OpCode.REMOVE_ACTOR_ID_REQ, Api.ServerOnly)]
+        public void SERVER_ONLY_NATIVE__Fenix__Host__remove_actor_id(global::System.UInt64 actorId, global::System.Action<global::System.Boolean> callback, RpcContext context)
         {
 #if ENABLE_IL2CPP || !DEBUG || RUNTIME
-            this.RemoveHost(hostId, hostName, callback, context);
+            this.RemoveActorId(actorId, callback, context);
 #else
-            self.RemoveHost(hostId, hostName, callback, context);
+            self.RemoveActorId(actorId, callback, context);
+#endif
+        }
+
+        [RpcMethod(OpCode.REMOVE_HOST_ID_REQ, Api.ServerOnly)]
+        public void SERVER_ONLY_NATIVE__Fenix__Host__remove_host_id(global::System.UInt64 hostId, global::System.String hostName, global::System.Action<global::System.Boolean> callback, RpcContext context)
+        {
+#if ENABLE_IL2CPP || !DEBUG || RUNTIME
+            this.RemoveHostId(hostId, hostName, callback, context);
+#else
+            self.RemoveHostId(hostId, hostName, callback, context);
 #endif
         }
 

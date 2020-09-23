@@ -34,19 +34,23 @@ namespace Fenix
 
             Global.Init(cfg, asmList);
 
-            init();
+            init(); 
 
-            Host host = null;
-
-
-            string appName = Environment.GetEnvironmentVariable("AppName");
-
-            if (host == null)
+            string appName = Environment.GetEnvironmentVariable("AppName"); 
+          
+            Host host = Host.Create(cfg.AppName, cfg.InternalIP, cfg.ExternalIP, cfg.Port, false);
+            if(appName != "Id.App")
             {
-                //if(cfg.InternalIp == "auto")
-                //var localAddrV4 = Basic.GetLocalIPv4(NetworkInterfaceType.Ethernet);
-                host = Host.Create(cfg.AppName, cfg.InternalIP, cfg.ExternalIP, cfg.Port, false);
-            }
+                bool foundIdHost = false;
+                while (!foundIdHost)
+                {
+                    var task = Global.IdHostRef.SayHelloAsync();
+                    task.Wait();
+                    if (task.Result.code == DefaultErrCode.OK)
+                        foundIdHost = true;
+                    Thread.Sleep(10);
+                }
+            } 
 
             foreach (var aName in cfg.DefaultActorNames)
                 host.CreateActorLocally(aName, aName);

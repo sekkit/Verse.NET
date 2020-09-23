@@ -10,23 +10,14 @@ using System;
 
 namespace Fenix.Common.Message
 {
-    [MessageType(OpCode.REGISTER_ACTOR_REQ)]
+    [MessageType(OpCode.ON_ADD_HOST_ID_REQ)]
     [MessagePackObject]
-    public class RegisterActorReq : IMessageWithCallback
+    public class OnAddHostIdReq : IMessageWithCallback
     {
         [Key(0)]
-        public global::System.UInt64 hostId { get; set; }
+        public global::Fenix.HostInfo hostInfo { get; set; }
 
         [Key(1)]
-        public global::System.UInt64 actorId { get; set; }
-
-        [Key(2)]
-        public global::System.String actorName { get; set; }
-
-        [Key(3)]
-        public global::System.String aTypeName { get; set; }
-
-        [Key(4)]
 
         public Callback callback
         {
@@ -59,18 +50,18 @@ namespace Fenix.Common.Message
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<RegisterActorReq>(this);
+            return MessagePackSerializer.Serialize<OnAddHostIdReq>(this);
         }
 
-        public new static RegisterActorReq Deserialize(byte[] data)
+        public new static OnAddHostIdReq Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<RegisterActorReq>(data);
+            return MessagePackSerializer.Deserialize<OnAddHostIdReq>(data);
         }
 
         public override void UnPack(byte[] data)
         {
             var obj = Deserialize(data);
-            Copier<RegisterActorReq>.CopyTo(obj, this);
+            Copier<OnAddHostIdReq>.CopyTo(obj, this);
         }
     }
 }

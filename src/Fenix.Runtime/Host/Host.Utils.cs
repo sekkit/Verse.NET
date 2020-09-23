@@ -118,6 +118,16 @@ namespace Fenix
             return Global.GetActorRefByAddr(typeof(ActorRef), ep, hostName, "", null, Global.Host);
         }
 
+        public ActorRef GetHost(string hostName, string addr)
+        {
+            string _ip = Basic.ToIP(addr);
+            int _port = Basic.ToPort(addr);
+            if (_ip == "0.0.0.0" || _ip == "127.0.0.1")
+                _ip = Basic.GetLocalIPv4(System.Net.NetworkInformation.NetworkInterfaceType.Ethernet);
+            IPEndPoint ep = new IPEndPoint(IPAddress.Parse(_ip), _port);
+            return Global.GetActorRefByAddr(typeof(ActorRef), ep, hostName, "", null, Global.Host);
+        }
+
         public ActorRef GetHost(ulong hostId)
         {
             var addr = Global.IdManager.GetHostAddr(hostId);

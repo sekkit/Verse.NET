@@ -58,6 +58,22 @@ namespace Server
                 var obj = new RuntimeConfig();
                 obj.ExternalIP = "auto";
                 obj.InternalIP = "0.0.0.0";
+                obj.IdHostAddr = "127.0.0.1:17776";
+                obj.Port = 17776; //auto
+                obj.AppName = "Id.App";
+                obj.HeartbeatIntervalMS = 5000;
+                obj.ClientNetwork = NetworkType.TCP;
+                obj.DefaultActorNames = new List<string>()
+                {
+                     
+                };
+
+                cfgList.Add(obj);
+
+                obj = new RuntimeConfig();
+                obj.ExternalIP = "auto";
+                obj.InternalIP = "0.0.0.0";
+                obj.IdHostAddr = "127.0.0.1:17776";
                 obj.Port = 17777; //auto
                 obj.AppName = "Login.App";
                 obj.HeartbeatIntervalMS = 5000;
@@ -72,6 +88,7 @@ namespace Server
                 obj = new RuntimeConfig();
                 obj.ExternalIP = "auto";
                 obj.InternalIP = "0.0.0.0";
+                obj.IdHostAddr = "127.0.0.1:17776";
                 obj.Port = 17778; //auto
                 obj.AppName = "Match.App";
                 obj.HeartbeatIntervalMS = 5000;
@@ -86,6 +103,7 @@ namespace Server
                 obj = new RuntimeConfig();
                 obj.ExternalIP = "auto";
                 obj.InternalIP = "0.0.0.0";
+                obj.IdHostAddr = "127.0.0.1:17776";
                 obj.Port = 17779; //auto
                 obj.AppName = "Master.App";
                 obj.HeartbeatIntervalMS = 5000;
@@ -100,6 +118,7 @@ namespace Server
                 obj = new RuntimeConfig();
                 obj.ExternalIP = "auto";
                 obj.InternalIP = "0.0.0.0";
+                obj.IdHostAddr = "127.0.0.1:17776";
                 obj.Port = 17780; //auto
                 obj.AppName = "Zone.App";
                 obj.HeartbeatIntervalMS = 5000;
@@ -119,11 +138,12 @@ namespace Server
 
                 //for Debug purpose
                 Environment.SetEnvironmentVariable("AppPath", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../"));
-                Bootstrap.StartSingleProcess(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfgList, OnInit); //单进程模式
-                
-            //    foreach (var cfg in cfgList)
-            //       if (cfg.AppName == "Login.App")
-            //           Bootstrap.StartMultiProcess(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfg, OnInit); //分布式
+                //Bootstrap.StartSingleProcess(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfgList, OnInit); //单进程模式
+
+                foreach (var cfg in cfgList)
+                    if (cfg.AppName == "Id.App")
+                        Bootstrap.StartMultiProcess(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfg, OnInit, 
+                            cfgList.Where(m => m.AppName != "Id.App").ToList()); //分布式
             }
             else
             {

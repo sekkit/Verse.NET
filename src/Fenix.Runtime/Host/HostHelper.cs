@@ -78,7 +78,7 @@ namespace Fenix
                 var cfgList2 = (List<RuntimeConfig>)paramList[1];
                 while (!registered && !Global.Config.DuplexMode)
                 {
-                    if (cfgList2 != null && !registered)
+                    if (cfgList2 != null && !registered && !h.IsIdHost())
                     {
                         registered = RegisterHosts(h2, cfgList2);
                         if (registered)
@@ -136,10 +136,17 @@ namespace Fenix
                 //host = null;
                 Global.Host = null;
             }
-            hostThread?.Abort();
-            hostThread = null;
-            singleThread?.Abort();
-            singleThread = null;
+
+            try
+            {
+                hostThread?.Abort();
+                hostThread = null;
+                singleThread?.Abort();
+                singleThread = null;
+            }
+            catch(Exception ex)
+            { 
+            }
         }
     }
 }

@@ -206,5 +206,22 @@ namespace Fenix.Common.Utils
             var parts = addr.Split(':');
             return new IPEndPoint(IPAddress.Parse(parts[0]), int.Parse(parts[1]));
         }
+
+        public static string ToIP(string addr)
+        {
+
+            if (addr == null || addr == "")
+                return null;
+            var parts = addr.Split(':');
+            return parts[0].Trim();
+        }
+
+        public static int ToPort(string addr)
+        {
+            if (addr == null || addr == "")
+                return 0;
+            var parts = addr.Split(':');
+            return int.Parse(parts[1].Trim());
+        } 
     }
 }

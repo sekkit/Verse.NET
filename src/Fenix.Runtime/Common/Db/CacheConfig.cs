@@ -1,4 +1,4 @@
-﻿
+﻿#if USE_REDIS_IDMANGER
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -29,3 +29,4 @@ namespace Server.Config
         }
     }
 }
+#endif

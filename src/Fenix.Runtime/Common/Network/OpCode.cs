@@ -25,6 +25,18 @@ namespace Fenix.Common
         public const uint SYNC_NTF = 0x20;
         public const uint SYNC_FIELD_NTF = 0x21;
         public const uint SAY_HELLO_REQ = 0x30;
+        //public const uint FIND_ACTOR_ID_REQ = 0x40;
+        //public const uint FIND_HOST_ID_REQ = 0x41;
+        public const uint ADD_HOST_ID_REQ = 0x41;
+        public const uint ADD_ACTOR_ID_REQ = 0x42;
+        public const uint REMOVE_HOST_ID_REQ = 0x43;
+        public const uint REMOVE_ACTOR_ID_REQ = 0x44;
+        public const uint ON_ADD_HOST_ID_REQ = 0x46;
+        public const uint ON_ADD_ACTOR_ID_REQ = 0x47;
+        public const uint ON_REMOVE_HOST_ID_REQ = 0x48;
+        public const uint ON_REMOVE_ACTOR_ID_REQ = 0x49;
+        public const uint GET_ID_ALL_REQ = 0x50;
+
         public const uint CALL_ACTOR_METHOD = 0xff;
     }
 

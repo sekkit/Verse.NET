@@ -17,27 +17,31 @@ namespace Fenix.Config
 
         [Key(2)]
         public string InternalIP { get; set; }
-#else
+
         [Key(3)]
+        public string IdHostAddr { get; set; }
+
+#else
+        [Key(4)]
         public string HostIP { get; set; }
 #endif
 
-        [Key(4)]
+        [Key(5)]
         public int Port { get; set; }
 
-        [Key(5)]
+        [Key(6)]
         public List<string> DefaultActorNames { get; set; }
 
-        [Key(6)]
+        [Key(7)]
         public long HeartbeatIntervalMS { get; set; }
 #if !CLIENT
-        [Key(7)]
+        [Key(8)]
         public bool DuplexMode { get; set; } = false;
 #endif
-        [Key(8)]
+        [Key(9)]
         public NetworkType ClientNetwork { get; set; } = NetworkType.TCP;
 
-        [Key(9)]
+        [Key(10)]
         public NetworkType ServerNetwork { get; set; } = NetworkType.TCP;
 
         [IgnoreMember]
@@ -54,6 +58,7 @@ namespace Fenix.Config
             obj.HeartbeatIntervalMS = 5000;
             obj.ClientNetwork = NetworkType.TCP;
             obj.DuplexMode = false;
+            obj.IdHostAddr = "127.0.0.1:17776";
 
             obj.DefaultActorNames = new List<string>()
             {

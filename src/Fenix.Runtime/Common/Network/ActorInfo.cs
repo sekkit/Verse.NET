@@ -11,11 +11,14 @@ namespace Fenix
     [MessagePackObject]
     public class ActorInfo : IMessage
     {
-        [Key(1)]
+        [Key(0)]
         public ulong ActorId { get; set; }
 
-        [Key(2)]
+        [Key(1)]
         public string ActorName { get; set; }
+
+        [Key(2)]
+        public string ActorTypeName { get; set; }
 
         [Key(3)]
         public HostInfo HostInfo { get; set; }
