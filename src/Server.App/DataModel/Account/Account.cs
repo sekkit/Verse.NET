@@ -35,5 +35,10 @@ namespace Server.DataModel
         {
             return MessagePackSerializer.Deserialize<Account>(data);
         }
+         
+        public override byte[] PackRaw()
+        {
+            return MessagePackSerializer.Serialize<Account>(this, MessagePackSerializerOptions.Standard);
+        }
     }
 }
