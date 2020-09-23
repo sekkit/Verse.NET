@@ -630,7 +630,7 @@ namespace Fenix
 
             Global.NetManager.RegisterClient(hostId, hostName, __context.Peer);
             var hostInfo = Global.IdManager.GetHostInfo(this.Id);
-            hostInfo.HostAddr = "";
+            hostInfo.HostAddr = hostInfo.HostExtAddr;
             callback(DefaultErrCode.OK, hostInfo);
         }
 

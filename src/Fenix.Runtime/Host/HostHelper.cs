@@ -36,6 +36,21 @@ namespace Fenix
         static bool RegisterHosts(Host host, List<RuntimeConfig> cfgList)
         {
             bool result = true;
+
+            string appName = Environment.GetEnvironmentVariable("AppName");
+            if (appName != "Id.App")
+            {
+                bool foundIdHost = false;
+                while (!foundIdHost)
+                {
+                    var task = Global.IdHostRef.SayHelloAsync();
+                    task.Wait();
+                    if (task.Result.code == DefaultErrCode.OK)
+                        foundIdHost = true;
+                    Thread.Sleep(10);
+                }
+            }
+
             foreach (var otherCfg in cfgList)
             {    
                 try

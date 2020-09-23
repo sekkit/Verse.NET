@@ -16,6 +16,9 @@ namespace Fenix
         public static Host Host;
 
 #if !CLIENT
+
+        public static bool SingleProcessMode = false;
+
         //ActorRef cache :TODO
         public static ActorRef IdHostRef => Host.GetHost("Id.App", Basic.ToIP(Global.Config.IdHostAddr), Basic.ToPort(Global.Config.IdHostAddr));
 #endif

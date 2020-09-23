@@ -100,9 +100,8 @@ namespace Server.GModule
                 if(clientId != 0)
                 {
                     //踢掉之前的客户端
-                    Log.Info("kick_begin");
-                    var self = ActorRef(); 
-                    var result = await self.RemoveClientActorAsync(actorId, DisconnectReason.KICKED);
+                    Log.Info("kick_begin"); 
+                    var result = await ActorRef().RemoveClientActorAsync(actorId, DisconnectReason.KICKED);
                     Log.Info("kick_end", result.code);
                     if (result.code != DefaultErrCode.OK)
                     {

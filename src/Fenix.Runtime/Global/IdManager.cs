@@ -173,16 +173,37 @@ namespace Fenix
 
                 mIP2EXTIP[Basic.ToIP(address)] = Basic.ToIP(extAddress);
 
-                if (!Global.Host.IsIdHost() && !noReg)
+                if (!Global.Host.IsIdHost() && !noReg
+#if CLIENT
+                )
+#else
+                    && !Global.SingleProcessMode)
+#endif
                 {
 #if !CLIENT
                     Global.IdHostRef.AddHostId(hostId, hostName, address, extAddress, (ok)=> {
                         Log.Info("AddHost to Id.App", ok, hostId, hostName, address, extAddress);
                         Global.IdHostRef.GetIdAll(hostId, (ok2, hostInfoList) =>
                         {
-                            foreach(var hInfo in hostInfoList)
+                            if (ok2)
                             {
-                                RegisterHostInfo(hInfo);
+                                foreach (var hInfo in hostInfoList)
+                                {
+                                    RegisterHostInfo(hInfo);
+                                }
+                            }
+                            else
+                            {
+                                bool done = false;
+                                while(!done)
+                                {
+                                    var task = Global.IdHostRef.AddHostIdAsync(hostId, hostName, address, extAddress);
+                                    task.Wait();
+                                    if (task.Result.arg0)
+                                        done = true;
+                                    else
+                                        Thread.Sleep(100);
+                                }
                             }
                         });
                     });
@@ -484,8 +505,14 @@ namespace Fenix
 #endif
 #else
 
-                if (!Global.Host.IsIdHost() && !noReg)
-                {
+                if (!Global.Host.IsIdHost() && !noReg
+#if CLIENT
+                )
+#else
+                    && !Global.SingleProcessMode)
+#endif
+                { 
+
 #if !CLIENT
                     Global.IdHostRef.AddActorId(hostId, actorId, actorName, aTypeName, (ok) =>
                     {
@@ -526,7 +553,12 @@ namespace Fenix
 
 #endif
 #else
-            if (!Global.Host.IsIdHost() && !noReg)
+            if (!Global.Host.IsIdHost() && !noReg
+#if CLIENT
+                )
+#else
+                    && !Global.SingleProcessMode)
+#endif
             {
 #if !CLIENT
                 Global.IdHostRef.RemoveActorId(actorId, (ok) =>
@@ -580,7 +612,12 @@ namespace Fenix
 
 #endif
 #else
-            if (!Global.Host.IsIdHost() && !noReg)
+            if (!Global.Host.IsIdHost() && !noReg
+#if CLIENT
+                )
+#else
+                    && !Global.SingleProcessMode)
+#endif
             {
 #if !CLIENT
                 Global.IdHostRef.RemoveHostId(hostId, hName, (ok) =>
@@ -820,7 +857,8 @@ namespace Fenix
 #endif
 #else
             if (hostInfo.HostExtAddr != null && hostInfo.HostExtAddr != "")
-                this.mIP2EXTIP[Basic.ToIP(hostInfo.HostAddr)] = Basic.ToIP(hostInfo.HostExtAddr);
+                this.mIP2EXTIP[Basic.ToIP(hostInfo.HostAddr)] = Basic.ToIP(hostInfo.HostExtAddr); 
+
 #endif
             foreach (var kv in hostInfo.ServiceId2Name)
             {

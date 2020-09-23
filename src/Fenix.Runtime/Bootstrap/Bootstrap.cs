@@ -31,26 +31,14 @@ namespace Fenix
             Environment.SetEnvironmentVariable("AppName", cfg.AppName);
 
 #if !CLIENT
-
+            Global.SingleProcessMode = false;
             Global.Init(cfg, asmList);
 
             init(); 
 
             string appName = Environment.GetEnvironmentVariable("AppName"); 
           
-            Host host = Host.Create(cfg.AppName, cfg.InternalIP, cfg.ExternalIP, cfg.Port, false);
-            if(appName != "Id.App")
-            {
-                bool foundIdHost = false;
-                while (!foundIdHost)
-                {
-                    var task = Global.IdHostRef.SayHelloAsync();
-                    task.Wait();
-                    if (task.Result.code == DefaultErrCode.OK)
-                        foundIdHost = true;
-                    Thread.Sleep(10);
-                }
-            } 
+            Host host = Host.Create(cfg.AppName, cfg.InternalIP, cfg.ExternalIP, cfg.Port, false); 
 
             foreach (var aName in cfg.DefaultActorNames)
                 host.CreateActorLocally(aName, aName);
@@ -65,6 +53,7 @@ namespace Fenix
             Environment.SetEnvironmentVariable("AppName", "Login.App");
 
 #if !CLIENT
+            Global.SingleProcessMode = true;
             Global.Init(null, asmList);
 
             init();
