@@ -32,7 +32,7 @@ namespace Fenix.Common.Message
             public global::System.Boolean arg0 { get; set; }
 
             [Key(1)]
-            public global::System.Collections.Generic.List<global::Fenix.HostInfo> arg1 { get; set; }
+            public global::Fenix.IdDataSet arg1 { get; set; }
 
             public override byte[] Pack()
             {

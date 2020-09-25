@@ -142,7 +142,7 @@ namespace Server
 
                 foreach (var cfg in cfgList)
                     if (cfg.AppName == "Master.App")
-                        Bootstrap.StartMultiProcess(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfg, OnInit, 
+                        Bootstrap.StartMultiProcess(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfg, OnInit,
                             cfgList.Where(m => m.AppName != "Master.App").ToList()); //分布式
             }
             else

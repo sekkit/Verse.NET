@@ -284,7 +284,6 @@ namespace Fenix
 
             //否则通过网络调用
             var peer = isClient ? Global.NetManager.GetRemotePeerById(toHostId, netType) : Global.NetManager.GetLocalPeerById(toHostId, netType);
-
             if (peer == null)
             {
                 Log.Warn(string.Format("RpcCallback:cannot_find_peer_and_create {0} => {1} ({2}", fromHostId, toHostId, netType));

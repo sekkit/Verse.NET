@@ -130,7 +130,7 @@ namespace Fenix
         {
             RpcUtil.Init();
 
-#if !CLIENT && USE_REDIS_IDMANGER
+#if !CLIENT && USE_REDIS_IDMANAGER
             CacheConfig.Init();
 #endif
             _cfg = cfg;

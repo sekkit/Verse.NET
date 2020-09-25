@@ -1,4 +1,4 @@
-﻿#if USE_REDIS_IDMANGER
+﻿#if USE_REDIS_IDMANAGER
 using System;
 using System.Collections.Generic;
 using System.Text;

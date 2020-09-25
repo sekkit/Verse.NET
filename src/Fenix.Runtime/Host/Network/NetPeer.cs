@@ -116,7 +116,7 @@ namespace Fenix
             {
                 var addr = Global.IdManager.GetHostAddr(connId);//, false);
                 if (addr == null) 
-                    return false; 
+                    return false;
 
                 var parts = addr.Split(':');
                 return InitTcpClient(new IPEndPoint(IPAddress.Parse(parts[0]), int.Parse(parts[1])));

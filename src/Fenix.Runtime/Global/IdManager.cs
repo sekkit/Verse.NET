@@ -1,14 +1,18 @@
 ﻿//
+//#define USE_REDIS_IDMANAGER
 
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Fenix.Common;
-using Fenix.Common.Utils;
+using Fenix.Common.Rpc;
+using Fenix.Common.Utils; 
+using MessagePack;
 
 #if !CLIENT
 using Fenix.Redis;
@@ -26,37 +30,103 @@ namespace Fenix
      * 其它如Host的ID，一般是固定的，但是也可以变化
      * GlobalManager里面的Redis全局缓存，只存固定的ID
      */
+ 
+    [MessagePackObject]
+    public class IdDataSet : IMessage
+    {
+        [Key(0)]
+        public ConcurrentDictionary<string, string> mHNAME2ADDR = new ConcurrentDictionary<string, string>();
+        [IgnoreMember]
+        //[IgnoreDataMember]
+        public ConcurrentDictionary<string, string> mADDR2HNAME = new ConcurrentDictionary<string, string>();
+        
+        [Key(1)]
+        public ConcurrentDictionary<string, HashSet<string>> mHNAME2ANAME = new ConcurrentDictionary<string, HashSet<string>>();
+        [IgnoreMember]
+        public ConcurrentDictionary<string, string> mANAME2HNAME = new ConcurrentDictionary<string, string>();
+
+        [Key(2)]
+        public ConcurrentDictionary<string, string> mANAME2TNAME = new ConcurrentDictionary<string, string>();
+
+        [Key(3)]
+        public ConcurrentDictionary<ulong, string> mID2NAME = new ConcurrentDictionary<ulong, string>();
+        [IgnoreMember]
+        public ConcurrentDictionary<string, ulong> mNAME2ID = new ConcurrentDictionary<string, ulong>();
+
+        [Key(4)]
+        public ConcurrentDictionary<string, string> mCNAME2ADDR = new ConcurrentDictionary<string, string>();
+        [IgnoreMember]
+        public ConcurrentDictionary<string, string> mADDR2CNAME = new ConcurrentDictionary<string, string>();
+ 
+        [Key(5)]
+        public ConcurrentDictionary<string, string> mIP2EXTIP = new ConcurrentDictionary<string, string>();
+        [IgnoreMember]
+        public ConcurrentDictionary<string, string> mEXTIP2IP = new ConcurrentDictionary<string, string>();
+
+        [Key(7)]
+        public ConcurrentDictionary<string, string> mANAME2CNAME = new ConcurrentDictionary<string, string>();
+        //客户端一个Host只有一个actor，所以...
+        [Key(8)]
+        public ConcurrentDictionary<string, string> mCNAME2ANAME = new ConcurrentDictionary<string, string>();
+
+        [IgnoreMember]
+        public ConcurrentDictionary<ulong, ulong> mRPCID2EID = new ConcurrentDictionary<ulong, ulong>();
+
+        public void ReInit()
+        {
+            foreach (var kv in mHNAME2ADDR)
+                mADDR2HNAME[kv.Value] = kv.Key;
+
+            foreach (var kv in mHNAME2ANAME)
+                foreach(var aName in kv.Value)
+                    mANAME2HNAME[aName] = kv.Key;
+
+            foreach (var kv in mID2NAME)
+                mNAME2ID[kv.Value] = kv.Key;
+
+            foreach (var kv in mCNAME2ADDR)
+                mADDR2CNAME[kv.Value] = kv.Key;
+
+            foreach (var kv in mIP2EXTIP)
+                mEXTIP2IP[kv.Value] = kv.Key;
+        }
+
+        public void UpdateFrom(IdDataSet from)
+        {
+            foreach (var kv in mHNAME2ADDR)
+                mHNAME2ADDR[kv.Key] = kv.Value;
+            foreach (var kv in mHNAME2ANAME)
+                foreach (var aName in kv.Value)
+                    mHNAME2ANAME[kv.Key].Add(aName);
+            foreach (var kv in mANAME2TNAME)
+                mANAME2TNAME[kv.Key] = kv.Value;
+            foreach (var kv in mID2NAME)
+                mID2NAME[kv.Key] = kv.Value;
+            foreach (var kv in mCNAME2ADDR)
+                mCNAME2ADDR[kv.Key] = kv.Value;
+            foreach (var kv in mIP2EXTIP)
+                mIP2EXTIP[kv.Key] = kv.Value;
+            foreach (var kv in mANAME2CNAME)
+                mANAME2CNAME[kv.Key] = kv.Value;
+            foreach (var kv in mCNAME2ANAME)
+                mCNAME2ANAME[kv.Key] = kv.Value;
+
+            ReInit();
+        }
+    }
+
     public class IdManager
     {
-        protected ConcurrentDictionary<string, string> mHNAME2ADDR  = new ConcurrentDictionary<string, string>();
-        protected ConcurrentDictionary<string, string> mADDR2HNAME  = new ConcurrentDictionary<string, string>();
+        protected volatile IdDataSet IdData = new IdDataSet();
 
-        protected ConcurrentDictionary<string, string> mANAME2HNAME = new ConcurrentDictionary<string, string>();
-        protected ConcurrentDictionary<string, List<string>> mHNAME2ANAME = new ConcurrentDictionary<string, List<string>>();
-
-        protected ConcurrentDictionary<string, string> mANAME2TNAME = new ConcurrentDictionary<string, string>();
-
-        protected ConcurrentDictionary<ulong, string>  mID2NAME     = new ConcurrentDictionary<ulong, string>();
-        protected ConcurrentDictionary<string, ulong>  mNAME2ID     = new ConcurrentDictionary<string, ulong>();
-
-        protected ConcurrentDictionary<string, string> mCNAME2ADDR  = new ConcurrentDictionary<string, string>();
-        
-        protected ConcurrentDictionary<string, string> mADDR2CNAME  = new ConcurrentDictionary<string, string>();
-#if USE_REDIS_IDMANGER
-        //
-#else
-        protected ConcurrentDictionary<string, string> mIP2EXTIP = new ConcurrentDictionary<string, string>();
-#endif
-
-        protected ConcurrentDictionary<string, string> mANAME2CNAME = new ConcurrentDictionary<string, string>();
-        //客户端一个Host只有一个actor，所以...
-        protected ConcurrentDictionary<string, string> mCNAME2ANAME = new ConcurrentDictionary<string, string>();
-
-        protected ConcurrentDictionary<ulong, ulong>   mRPCID2EID   = new ConcurrentDictionary<ulong, ulong>();
+        public IdDataSet GetIdAll()
+        {
+            return IdData;
+        }
 
 #if !CLIENT
 
-#if USE_REDIS_IDMANGER
+#if USE_REDIS_IDMANAGER
         protected RedisDb CacheHNAME2ADDR => Global.DbManager.GetDb(CacheConfig.HNAME2ADDR);
         protected RedisDb CacheCNAME2ADDR => Global.DbManager.GetDb(CacheConfig.CNAME2ADDR);
         protected RedisDb CacheANAME2HNAME => Global.DbManager.GetDb(CacheConfig.ANAME2HNAME);
@@ -65,31 +135,23 @@ namespace Fenix
         protected RedisDb CacheID2NAME => Global.DbManager.GetDb(CacheConfig.ID2NAME);
         protected RedisDb CacheAddr2ExAddr => Global.DbManager.GetDb(CacheConfig.ADDR2EXTADDR);
   
-
+        [IgnoreMember]
         private Thread th; 
 
 #endif
 
         public IdManager()
         {
-#if USE_REDIS_IDMANGER
+#if USE_REDIS_IDMANAGER
             foreach (var cfg in CacheConfig.Instance.CfgDic)
             {
                 Global.DbManager.LoadDb(cfg.Value);
             }
 #endif
-            /*
-            Global.DbManager.LoadDb(CacheConfig.Instance.Get(CacheConfig.HNAME2ADDR));
-            Global.DbManager.LoadDb(CacheConfig.Instance.Get(CacheConfig.ANAME2CNAME));
-            Global.DbManager.LoadDb(CacheConfig.Instance.Get(CacheConfig.ANAME2HNAME));
-            Global.DbManager.LoadDb(CacheConfig.Instance.Get(CacheConfig.ANAME2TNAME));
-            Global.DbManager.LoadDb(CacheConfig.Instance.Get(CacheConfig.ID2NAME));
-            Global.DbManager.LoadDb(CacheConfig.Instance.Get(CacheConfig.ADDR2EXTADDR));
-            */
 
             var assembly = typeof(Global).Assembly;
             Log.Info(assembly.FullName.Replace("Server.App", "Fenix.Runtime").Replace("Client.App", "Fenix.Runtime"));
-#if USE_REDIS_IDMANGER
+#if USE_REDIS_IDMANAGER
             th = new Thread(new ThreadStart(AutoSync));
             th.Start();
 #endif
@@ -97,7 +159,7 @@ namespace Fenix
 
         ~IdManager()
         {
-#if USE_REDIS_IDMANGER
+#if USE_REDIS_IDMANAGER
             try
             {
                 th?.Abort();
@@ -110,7 +172,7 @@ namespace Fenix
 #endif
         }
 
-#if USE_REDIS_IDMANGER
+#if USE_REDIS_IDMANAGER
         void AutoSync()
         {
             while (true)
@@ -137,7 +199,7 @@ namespace Fenix
         public List<ulong> GetHostIdList()
         {
             var result = new List<ulong>();
-            foreach(var hName in this.mHNAME2ADDR.Keys) 
+            foreach(var hName in IdData.mHNAME2ADDR.Keys) 
                 result.Add(GetId(hName)); 
             return result;
         }
@@ -156,12 +218,12 @@ namespace Fenix
         {
             if (!isClient)
             {
-                mHNAME2ADDR[hostName] = address;
-                mADDR2HNAME[address] = hostName;
+                IdData.mHNAME2ADDR[hostName] = address;
+                IdData.mADDR2HNAME[address] = hostName;
 
                 AddNameId(hostName, hostId);
 
-#if USE_REDIS_IDMANGER
+#if USE_REDIS_IDMANAGER
 #if !CLIENT
                 CacheAddr2ExAddr.SetWithoutLock(address, extAddress);
 
@@ -171,7 +233,8 @@ namespace Fenix
 #endif
 #else
 
-                mIP2EXTIP[Basic.ToIP(address)] = Basic.ToIP(extAddress);
+                IdData.mIP2EXTIP[Basic.ToIP(address)] = Basic.ToIP(extAddress);
+                IdData.mEXTIP2IP[Basic.ToIP(extAddress)] = Basic.ToIP(address);
 
                 if (!Global.Host.IsIdHost() && !noReg
 #if CLIENT
@@ -183,14 +246,11 @@ namespace Fenix
 #if !CLIENT
                     Global.IdHostRef.AddHostId(hostId, hostName, address, extAddress, (ok)=> {
                         Log.Info("AddHost to Id.App", ok, hostId, hostName, address, extAddress);
-                        Global.IdHostRef.GetIdAll(hostId, (ok2, hostInfoList) =>
+                        Global.IdHostRef.GetIdAll(hostId, (ok2, idAll) =>
                         {
                             if (ok2)
                             {
-                                foreach (var hInfo in hostInfoList)
-                                {
-                                    RegisterHostInfo(hInfo);
-                                }
+                                IdData.UpdateFrom(idAll);
                             }
                             else
                             {
@@ -221,12 +281,7 @@ namespace Fenix
             }
         }
 
-        //public async Task<bool> ReregisterHostAsync(ulong hostId, string address)
-        //{ 
-        //    return await Task.Run(() => ReregisterHost(hostId, address));
-        //}
-
-#if USE_REDIS_IDMANGER
+#if USE_REDIS_IDMANAGER
         public bool ReregisterHost(ulong hostId, string address)
         {
             if (IsClientHost(hostId))
@@ -234,8 +289,8 @@ namespace Fenix
                 var hostName = GetName(hostId);
                 if (hostName == "" || hostName == null)
                     return false;
-                mCNAME2ADDR[hostName] = address;
-                mADDR2CNAME[address] = hostName;
+                IdData.mCNAME2ADDR[hostName] = address;
+                IdData.mADDR2CNAME[address] = hostName;
 
 
 #if !CLIENT
@@ -253,8 +308,8 @@ namespace Fenix
                 var hostName = GetName(hostId);
                 if (hostName == "" || hostName == null)
                     return false;
-                mHNAME2ADDR[hostName] = address;
-                mADDR2HNAME[address] = hostName;
+                IdData.mHNAME2ADDR[hostName] = address;
+                IdData.mADDR2HNAME[address] = hostName;
                 //Log.Error("RRRRRRRRRRRRR13", hostName, address);
  
 #if !CLIENT
@@ -268,57 +323,93 @@ namespace Fenix
             }
         }
 #endif
-         
 
-        public void RemoveClientHost(ulong clientId)
+
+        public bool RemoveClientHost(ulong clientId, bool noReg=false)
         {
-            if (mID2NAME.TryRemove(clientId, out var cName))
-                mNAME2ID.TryRemove(cName, out var _);
+            if (IdData.mID2NAME.TryRemove(clientId, out var cName))
+                IdData.mNAME2ID.TryRemove(cName, out var _);
 
-            if (mCNAME2ANAME.TryRemove(cName, out var aName))
-                mANAME2CNAME.TryRemove(aName, out var _);
+            if (IdData.mCNAME2ANAME.TryRemove(cName, out var aName))
+                IdData.mANAME2CNAME.TryRemove(aName, out var _);
 
-            mCNAME2ADDR.TryRemove(cName, out var addr);
-            mANAME2TNAME.TryRemove(aName, out var _);
+            IdData.mCNAME2ADDR.TryRemove(cName, out var addr);
+            IdData.mANAME2TNAME.TryRemove(aName, out var _);
 
-#if USE_REDIS_IDMANGER
+#if USE_REDIS_IDMANAGER
 #if !CLIENT
             CacheANAME2CNAME.Delete(aName);
             CacheCNAME2ADDR.Delete(cName);
             CacheID2NAME.Delete(clientId.ToString());
-            CacheANAME2TNAME.Delete(aName);
+            return CacheANAME2TNAME.Delete(aName);
 #endif
+#else
+            if (!Global.Host.IsIdHost() && !noReg
+#if CLIENT
+                )
+#else
+                    && !Global.SingleProcessMode)
+#endif
+            {
+#if !CLIENT
+                Global.IdHostRef.RemoveClientHostId(Global.Host.Id, clientId, (ok) =>
+                {
+                    Log.Info("RemoveClientHost to Id.App", ok, Global.Host.Id, clientId);
+                });
+                return true;
+#else
+                return true;
+#endif
+            }
+            return true;
 #endif
         }
 
-        public bool RegisterClientHost(ulong clientId, string cName, string address)
+        public bool RegisterClientHost(ulong clientId, string cName, string address, bool noReg=false)
         { 
             AddNameId(cName, clientId);
-            
-            mCNAME2ADDR[cName] = address;
-            mADDR2CNAME[address] = cName;
 
-#if USE_REDIS_IDMANGER
+            IdData.mCNAME2ADDR[cName] = address;
+            IdData.mADDR2CNAME[address] = cName;
+
+#if USE_REDIS_IDMANAGER
 #if !CLIENT
             return CacheHNAME2ADDR.SetWithoutLock(cName, address);
 #else
             return true;
 #endif
 #else
-            return true;
+            if (!Global.Host.IsIdHost() && !noReg
+#if CLIENT
+                )
+#else
+                    && !Global.SingleProcessMode)
 #endif
+            {
+#if !CLIENT
+                Global.IdHostRef.AddClientHostId(Global.Host.Id, clientId, cName, address, (ok) =>
+                {
+                    Log.Info("AddClientHost to Id.App", ok, Global.Host.Id, clientId, cName, address);
+                });
+                return true;
+#else
+                return true;
+#endif
+            }
+#endif
+            return true;
         } 
 
-        public bool RegisterClientActor(ulong actorId, string actorName, ulong clientId, string address=null)
+        public bool RegisterClientActor(ulong actorId, string actorName, ulong clientId, string address=null, bool noReg=false)
         { 
             AddNameId(actorName, actorId);
             var cName = GetHostName(clientId);
-            mANAME2CNAME[actorName] = cName;
-            mCNAME2ANAME[cName] = actorName;
-            if (address != null) 
-                mCNAME2ADDR[cName] = address;
+            IdData.mANAME2CNAME[actorName] = cName;
+            IdData.mCNAME2ANAME[cName] = actorName;
+            if (address != null)
+                IdData.mCNAME2ADDR[cName] = address;
 
-#if USE_REDIS_IDMANGER
+#if USE_REDIS_IDMANAGER
 #if !CLIENT
             CacheANAME2CNAME.SetWithoutLock(actorName, cName);
             return CacheHNAME2ADDR.SetWithoutLock(cName, address);
@@ -326,6 +417,25 @@ namespace Fenix
             return true;
 #endif
 #else
+
+            if (!Global.Host.IsIdHost() && !noReg
+#if CLIENT
+                )
+#else
+                    && !Global.SingleProcessMode)
+#endif
+            {
+#if !CLIENT
+                Global.IdHostRef.AddClientActorId(Global.Host.Id, clientId, actorId, actorName, address, (ok) =>
+                {
+                    Log.Info("AddClientActor to Id.App", ok, Global.Host.Id, clientId, actorId, actorName, address);
+                });
+                return true;
+#else
+                return true;
+#endif
+            }
+
             return true;
 #endif
         }
@@ -335,9 +445,10 @@ namespace Fenix
             var hostName = GetName(hostId);
             if (hostName == null || hostName == "")
                 return false;
-            if (mCNAME2ADDR.ContainsKey(hostName))
+            if (IdData.mCNAME2ADDR.ContainsKey(hostName))
                 return true;
-#if USE_REDIS_IDMANGER
+
+#if USE_REDIS_IDMANAGER
 #if !CLIENT
             return CacheCNAME2ADDR.HasKey(hostName);
 #else
@@ -358,9 +469,9 @@ namespace Fenix
                 return "";
             if (!isClient)
             {
-                if (mHNAME2ADDR.ContainsKey(hostName))
-                    return mHNAME2ADDR[hostName];
-#if USE_REDIS_IDMANGER
+                if (IdData.mHNAME2ADDR.ContainsKey(hostName))
+                    return IdData.mHNAME2ADDR[hostName];
+#if USE_REDIS_IDMANAGER
 #if !CLIENT
                 return CacheHNAME2ADDR.Get(hostName);
 #else
@@ -372,9 +483,10 @@ namespace Fenix
             }
             else
             {
-                if (mCNAME2ADDR.ContainsKey(hostName))
-                    return mCNAME2ADDR[hostName];
-#if USE_REDIS_IDMANGER
+                if (IdData.mCNAME2ADDR.ContainsKey(hostName))
+                    return IdData.mCNAME2ADDR[hostName];
+
+#if USE_REDIS_IDMANAGER
 #if !CLIENT
                 return CacheCNAME2ADDR.Get(hostName);
 #else
@@ -393,7 +505,7 @@ namespace Fenix
 
         public ulong GetHostId(string addr)
         {
-            mADDR2HNAME.TryGetValue(addr, out var result);
+            IdData.mADDR2HNAME.TryGetValue(addr, out var result);
             return GetId(result);
         }
 
@@ -402,9 +514,10 @@ namespace Fenix
             if (name == null)
                 return 0;
 
-            if(mNAME2ID.TryGetValue(name, out var result))
+            if(IdData.mNAME2ID.TryGetValue(name, out var result))
                 return result;
-#if USE_REDIS_IDMANGER
+
+#if USE_REDIS_IDMANAGER
 #if !CLIENT
             var tempId = Basic.GenID64FromName(name);
             if (CacheID2NAME.HasKey(tempId.ToString()))
@@ -423,9 +536,9 @@ namespace Fenix
 
         string GetName(ulong id)
         {
-            if(mID2NAME.TryGetValue(id, out var result))
+            if(IdData.mID2NAME.TryGetValue(id, out var result))
                 return result;
-#if USE_REDIS_IDMANGER
+#if USE_REDIS_IDMANAGER
 #if !CLIENT
             return CacheID2NAME.Get(id.ToString());
 #else
@@ -446,11 +559,11 @@ namespace Fenix
             //}
             //Log.Error("ADDNAMEID", name, newId, id);
             if(newId != id)
-                mID2NAME[newId] = name;
-            mNAME2ID[name] = newId;
+                IdData.mID2NAME[newId] = name;
+            IdData.mNAME2ID[name] = newId;
             if(id!=null && id.HasValue)
-                mID2NAME[id.Value] = name;
-#if USE_REDIS_IDMANGER
+                IdData.mID2NAME[id.Value] = name;
+#if USE_REDIS_IDMANAGER
 #if !CLIENT
             CacheID2NAME.SetWithoutLock(newId.ToString(), name);
             if(id!=null&&id.HasValue)
@@ -463,9 +576,9 @@ namespace Fenix
 
         void RemoveNameId(string name)
         {
-            mNAME2ID.TryRemove(name, out var id);
-            mID2NAME.TryRemove(id, out var _);
-#if USE_REDIS_IDMANGER
+            IdData.mNAME2ID.TryRemove(name, out var id);
+            IdData.mID2NAME.TryRemove(id, out var _);
+#if USE_REDIS_IDMANAGER
 #if !CLIENT
             CacheID2NAME.Delete(id.ToString());
 #endif
@@ -487,15 +600,15 @@ namespace Fenix
                 var hName = GetName(hostId);
                 AddNameId(aName, actorId);
 
-                mANAME2HNAME[aName] = hName;
-                if (!mHNAME2ANAME.ContainsKey(hName))
-                    mHNAME2ANAME[hName] = new List<string>();
-                if (!mHNAME2ANAME[hName].Any(m => m == aName))
-                    mHNAME2ANAME[hName].Add(aName);
+                IdData.mANAME2HNAME[aName] = hName;
+                if (!IdData.mHNAME2ANAME.ContainsKey(hName))
+                    IdData.mHNAME2ANAME[hName] = new HashSet<string>();
+                if (!IdData.mHNAME2ANAME[hName].Contains(aName))
+                    IdData.mHNAME2ANAME[hName].Add(aName);
 
-                mANAME2TNAME[aName] = aTypeName;
+                IdData.mANAME2TNAME[aName] = aTypeName;
 
-#if USE_REDIS_IDMANGER
+#if USE_REDIS_IDMANAGER
 #if !CLIENT
                 var ret = CacheANAME2TNAME.SetWithoutLock(aName, aTypeName); 
                 return CacheANAME2HNAME.SetWithoutLock(aName, hName) && ret;
@@ -539,13 +652,13 @@ namespace Fenix
             var aName = GetName(actorId);
             if (aName == null)
                 return false;
-            this.mANAME2HNAME.TryRemove(aName, out var hName); 
+            IdData.mANAME2HNAME.TryRemove(aName, out var hName); 
             if(hName != null)
-                this.mHNAME2ANAME[hName].Remove(aName);
-            this.mANAME2TNAME.TryRemove(aName, out var _);
+                IdData.mHNAME2ANAME[hName].Remove(aName);
+            IdData.mANAME2TNAME.TryRemove(aName, out var _);
 
             RemoveNameId(aName);
-#if USE_REDIS_IDMANGER
+#if USE_REDIS_IDMANAGER
 #if !CLIENT
             var result = CacheANAME2HNAME.Delete(aName);
             return result && CacheANAME2TNAME.Delete(aName);
@@ -579,21 +692,21 @@ namespace Fenix
             var hName = GetName(hostId);
             if (hName == null)
                 return false;
-            if (this.mHNAME2ADDR.TryRemove(hName, out var addr))
-                this.mADDR2HNAME.TryRemove(addr, out var _);
+            if (this.IdData.mHNAME2ADDR.TryRemove(hName, out var addr))
+                IdData.mADDR2HNAME.TryRemove(addr, out var _);
              
-            if(this.mHNAME2ANAME.TryRemove(hName, out var aNames))
+            if(IdData.mHNAME2ANAME.TryRemove(hName, out var aNames))
             { 
                 foreach (var aName in aNames)
-                { 
-                    mANAME2HNAME.TryRemove(aName, out var _);
-                    mANAME2TNAME.TryRemove(aName, out string tname);
+                {
+                    IdData.mANAME2HNAME.TryRemove(aName, out var _);
+                    IdData.mANAME2TNAME.TryRemove(aName, out string tname);
                     RemoveNameId(aName);
                 }
             }
 
             RemoveNameId(hName);
-#if USE_REDIS_IDMANGER
+#if USE_REDIS_IDMANAGER
 #if !CLIENT
             if(CacheHNAME2ADDR.HasKey(hName))
                 CacheHNAME2ADDR.Delete(hName);
@@ -646,9 +759,9 @@ namespace Fenix
         public string GetActorTypename(ulong actorId)
         {
             var aName = GetName(actorId);
-            if (mANAME2TNAME.ContainsKey(aName))
-                return mANAME2TNAME[aName];
-#if USE_REDIS_IDMANGER
+            if (IdData.mANAME2TNAME.ContainsKey(aName))
+                return IdData.mANAME2TNAME[aName];
+#if USE_REDIS_IDMANAGER
 #if !CLIENT
             return CacheANAME2TNAME.Get(aName);
 #else
@@ -667,9 +780,9 @@ namespace Fenix
 
             if (isClient)
             {
-                if (mANAME2CNAME.ContainsKey(aName))
-                    return GetId(mANAME2CNAME[aName]);
-#if USE_REDIS_IDMANGER
+                if (IdData.mANAME2CNAME.ContainsKey(aName))
+                    return GetId(IdData.mANAME2CNAME[aName]);
+#if USE_REDIS_IDMANAGER
 #if !CLIENT
                 return GetId(CacheANAME2CNAME.Get(aName));
 #else
@@ -681,9 +794,9 @@ namespace Fenix
             }
             else
             {
-                if (mANAME2HNAME.ContainsKey(aName))
-                    return GetId(mANAME2HNAME[aName]);
-#if USE_REDIS_IDMANGER
+                if (IdData.mANAME2HNAME.ContainsKey(aName))
+                    return GetId(IdData.mANAME2HNAME[aName]);
+#if USE_REDIS_IDMANAGER
 #if !CLIENT
                 return GetId(CacheANAME2HNAME.Get(aName));
 #else
@@ -700,7 +813,7 @@ namespace Fenix
             var cName = GetName(clientHostId);
             if (cName == null)
                 return 0;
-            if (mCNAME2ANAME.TryGetValue(cName, out var aName))
+            if (IdData.mCNAME2ANAME.TryGetValue(cName, out var aName))
                 return GetId(aName);
             return 0;
         }
@@ -710,8 +823,8 @@ namespace Fenix
             var hostId = GetHostIdByActorId(actorId, isClient);
             return GetHostAddr(hostId); 
         }
-#if USE_REDIS_IDMANGER
-#if !CLIENT
+#if USE_REDIS_IDMANAGER
+    #if !CLIENT
         public string GetExtAddress(string addr)
         {
             Log.Warn("ExtAddr0", addr);
@@ -721,16 +834,30 @@ namespace Fenix
                 return addr;
             return extAddr;
         }
+
+        public string GetIntAddress(string addr)
+        {
+            string ip = Basic.ToIP(addr);
+
+            var result = IdData.mIP2EXTIP.Where(m => m.Value == ip).Select(m => m.Key).FirstOrDefault();
+            if (result != null)
+                return string.Format("{0}:{1}", result, Basic.ToPort(addr)); ;
+
+            if (IdData.mIP2EXTIP.ContainsKey(ip))
+                return addr;
+
+            return addr;
+        }
 #endif
 #else
 #if !CLIENT
         public string GetExtAddress(string addr)
         { 
             string ip = Basic.ToIP(addr);
-            this.mIP2EXTIP.TryGetValue(ip, out var extIP); 
+            IdData.mIP2EXTIP.TryGetValue(ip, out var extIP); 
             if (extIP == null || extIP == "")
             {
-                if (this.mIP2EXTIP.Any(m => m.Value == ip))
+                if (IdData.mIP2EXTIP.Any(m => m.Value == ip))
                     return addr;
                 return addr;
             }
@@ -742,18 +869,18 @@ namespace Fenix
         {
             string ip = Basic.ToIP(addr);
 
-            var result = this.mIP2EXTIP.Where(m => m.Value == ip).Select(m=>m.Key).FirstOrDefault();
+            var result = IdData.mEXTIP2IP.Where(m => m.Key == ip).Select(m=>m.Key).FirstOrDefault();
             if (result != null)
                 return string.Format("{0}:{1}", result, Basic.ToPort(addr)); ;
 
-            if (mIP2EXTIP.ContainsKey(ip))
+            if (IdData.mIP2EXTIP.ContainsKey(ip))
                 return addr;
 
             return addr;
         }
 
         public bool IsSameLocalhost(string addr0, string addr1)
-        { 
+        {
             string ip0 = Basic.ToIP(addr0);
             string ip1 = Basic.ToIP(addr1);
 
@@ -765,23 +892,24 @@ namespace Fenix
 
             return false;
         }
+
 #endif
 #endif
 
         public void RegisterRpcId(ulong rpcId, ulong actorId)
         {
-            this.mRPCID2EID[rpcId] = actorId;
+            IdData.mRPCID2EID[rpcId] = actorId;
         }
 
         public ulong RemoveRpcId(ulong rpcId)
         {
-            this.mRPCID2EID.TryRemove(rpcId, out var result);
+            IdData.mRPCID2EID.TryRemove(rpcId, out var result);
             return result;
         }
 
         public ulong GetRpcId(ulong rpcId)
         {
-            this.mRPCID2EID.TryGetValue(rpcId, out var result);
+            IdData.mRPCID2EID.TryGetValue(rpcId, out var result);
             return result;
         }
 
@@ -796,22 +924,23 @@ namespace Fenix
             if (aName == null || aName == "")
                 return hostInfo;
 
-            List<string> aList = null;
-            if(this.mHNAME2ANAME.ContainsKey(aName))
+            HashSet<string> aList = null;
+            if(IdData.mHNAME2ANAME.ContainsKey(aName))
             {
-                this.mHNAME2ANAME.TryGetValue(aName, out aList); 
+                IdData.mHNAME2ANAME.TryGetValue(aName, out aList); 
                 hostInfo.IsClient = false;
             }
-            else if(this.mCNAME2ANAME.ContainsKey(aName))
+            else if(IdData.mCNAME2ANAME.ContainsKey(aName))
             {
-                this.mCNAME2ANAME.TryGetValue(aName, out var name);
-                aList = new List<string>(){name};
+                IdData.mCNAME2ANAME.TryGetValue(aName, out var name);
+                aList = new HashSet<string>();
+                aList.Add(name);
                 hostInfo.IsClient = true;
             }
 
             List<string> svcNameList = new List<string>();
             if (aList != null)
-                svcNameList = aList.Distinct().Where(m => m.EndsWith("Service")).ToList(); 
+                svcNameList = aList.Where(m => m.EndsWith("Service")).ToList(); 
 
             hostInfo.HostId = hostId;
             hostInfo.HostName = Global.IdManager.GetHostName(hostId);
@@ -841,46 +970,51 @@ namespace Fenix
             return actorInfo;
         } 
 #endif
-        public void RegisterHostInfo(HostInfo hostInfo)
+        public bool RegisterHostInfo(HostInfo hostInfo)
         {
             AddNameId(hostInfo.HostName, hostInfo.HostId);
- 
-            this.mADDR2HNAME[hostInfo.HostAddr] = hostInfo.HostName;
+
+            IdData.mADDR2HNAME[hostInfo.HostAddr] = hostInfo.HostName;
             if (hostInfo.HostAddr != null && hostInfo.HostAddr != "")
-                this.mHNAME2ADDR[hostInfo.HostName] = hostInfo.HostAddr;
+                IdData.mHNAME2ADDR[hostInfo.HostName] = hostInfo.HostAddr;
             else if (hostInfo.HostExtAddr != null && hostInfo.HostExtAddr != "")
-                this.mHNAME2ADDR[hostInfo.HostName] = hostInfo.HostExtAddr;
-#if USE_REDIS_IDMANGER
+                IdData.mHNAME2ADDR[hostInfo.HostName] = hostInfo.HostExtAddr;
+#if USE_REDIS_IDMANAGER
 #if !CLIENT
             if(hostInfo.HostExtAddr != null && hostInfo.HostExtAddr != "")
-                this.CacheAddr2ExAddr.SetWithoutLock(this.mHNAME2ADDR[hostInfo.HostName], hostInfo.HostExtAddr);
+                this.CacheAddr2ExAddr.SetWithoutLock(IdData.mHNAME2ADDR[hostInfo.HostName], hostInfo.HostExtAddr);
 #endif
 #else
             if (hostInfo.HostExtAddr != null && hostInfo.HostExtAddr != "")
-                this.mIP2EXTIP[Basic.ToIP(hostInfo.HostAddr)] = Basic.ToIP(hostInfo.HostExtAddr); 
+            {
+                IdData.mIP2EXTIP[Basic.ToIP(hostInfo.HostAddr)] = Basic.ToIP(hostInfo.HostExtAddr);
+                IdData.mEXTIP2IP[Basic.ToIP(hostInfo.HostExtAddr)] = Basic.ToIP(hostInfo.HostAddr);
+            }
 
 #endif
             foreach (var kv in hostInfo.ServiceId2Name)
             {
                 AddNameId(kv.Value, kv.Key);
-                this.mANAME2HNAME[kv.Value] = hostInfo.HostName;
-                if (!mHNAME2ANAME.ContainsKey(hostInfo.HostName))
-                    mHNAME2ANAME[hostInfo.HostName] = new List<string>();
-                if (!this.mHNAME2ANAME[hostInfo.HostName].Contains(kv.Value))
-                    this.mHNAME2ANAME[hostInfo.HostName].Add(kv.Value);
+                IdData.mANAME2HNAME[kv.Value] = hostInfo.HostName;
+                if (!IdData.mHNAME2ANAME.ContainsKey(hostInfo.HostName))
+                    IdData.mHNAME2ANAME[hostInfo.HostName] = new HashSet<string>();
+                if (!IdData.mHNAME2ANAME[hostInfo.HostName].Contains(kv.Value))
+                    IdData.mHNAME2ANAME[hostInfo.HostName].Add(kv.Value);
             }
 
             foreach (var kv in hostInfo.ServiceId2TName)
             {
-                this.mANAME2TNAME[GetName(kv.Key)] = kv.Value;
-            } 
+                IdData.mANAME2TNAME[GetName(kv.Key)] = kv.Value;
+            }
+
+            return true;
         }
 
-        public void RegisterActorInfo(ActorInfo actorInfo)
+        public bool RegisterActorInfo(ActorInfo actorInfo)
         {
             AddNameId(actorInfo.ActorName, actorInfo.ActorId);
 
-            this.RegisterActor(actorInfo.ActorId, actorInfo.ActorName, actorInfo.ActorTypeName, actorInfo.HostInfo.HostId, actorInfo.HostInfo.IsClient, noReg: true); 
+            return this.RegisterActor(actorInfo.ActorId, actorInfo.ActorName, actorInfo.ActorTypeName, actorInfo.HostInfo.HostId, actorInfo.HostInfo.IsClient, noReg: true); 
         }
 
 #if !CLIENT
@@ -892,15 +1026,15 @@ namespace Fenix
             var aname2hname = new Dictionary<string, string>();
             var hname2aname = new Dictionary<string, List<string>>();
             var aname2cname = new Dictionary<string, string>();
-#if USE_REDIS_IDMANGER
+#if USE_REDIS_IDMANAGER
             foreach (var key in CacheHNAME2ADDR.Keys())
             {
                 var hName = key;
                 var addr = CacheHNAME2ADDR.Get(key);
                 if (addr == null) 
                     continue; 
-                this.mHNAME2ADDR[hName] = addr;
-                this.mADDR2HNAME[addr] = hName;
+                IdData.mHNAME2ADDR[hName] = addr;
+                IdData.mADDR2HNAME[addr] = hName;
                 AddNameId(hName);
             }
 
@@ -910,8 +1044,8 @@ namespace Fenix
                 var addr = CacheCNAME2ADDR.Get(key);
                 if (addr == null)
                     continue;
-                this.mCNAME2ADDR[cName] = addr;
-                this.mADDR2CNAME[addr] = cName;
+                IdData.mCNAME2ADDR[cName] = addr;
+                IdData.mADDR2CNAME[addr] = cName;
                 AddNameId(cName);
             }
 
@@ -928,23 +1062,23 @@ namespace Fenix
                 if (!hname2aname[hName].Contains(aName))
                     hname2aname[hName].Add(aName);
 
-                //this.mANAME2HNAME[aName] = hName;
-                //this.mANAME2HNAME[aName] = hName;
+                //IdData.mANAME2HNAME[aName] = hName;
+                //IdData.mANAME2HNAME[aName] = hName;
                 //if (!mHNAME2ANAME.ContainsKey(hName))
                 //    mHNAME2ANAME[hName] = new List<string>();
-                //if (!this.mHNAME2ANAME[hName].Contains(aName))
-                //    this.mHNAME2ANAME[hName].Add(aName);
+                //if (!IdData.mHNAME2ANAME[hName].Contains(aName))
+                //    IdData.mHNAME2ANAME[hName].Add(aName);
             } 
 
             foreach (var kv in aname2hname)
-                this.mANAME2HNAME[kv.Key] = kv.Value;
+                IdData.mANAME2HNAME[kv.Key] = kv.Value;
 
-            foreach (var k in this.mANAME2HNAME.Keys.ToArray())
+            foreach (var k in IdData.mANAME2HNAME.Keys.ToArray())
                 if (!aname2hname.ContainsKey(k))
-                    this.mANAME2HNAME.TryRemove(k, out var _);
+                    IdData.mANAME2HNAME.TryRemove(k, out var _);
 
             foreach (var kv in hname2aname)
-                this.mHNAME2ANAME[kv.Key] = kv.Value;
+                IdData.mHNAME2ANAME[kv.Key] = kv.Value;
 
             foreach (var key in CacheANAME2TNAME.Keys())
             {
@@ -952,7 +1086,7 @@ namespace Fenix
                 var tName = CacheANAME2TNAME.Get(key);
                 if (tName == null)
                     continue;
-                this.mANAME2TNAME[aName] = tName;
+                IdData.mANAME2TNAME[aName] = tName;
             }
 
             foreach(var key in CacheID2NAME.Keys())
@@ -961,8 +1095,8 @@ namespace Fenix
                 var name = CacheID2NAME.Get(key);
                 if (name == null)
                     continue;
-                this.mID2NAME[id] = name;
-                this.mNAME2ID[name] = id;
+                IdData.mID2NAME[id] = name;
+                IdData.mNAME2ID[name] = id;
             }
 
             foreach(var key in CacheANAME2CNAME.Keys())
@@ -971,15 +1105,15 @@ namespace Fenix
                 var cName = CacheANAME2CNAME.Get(key);
                 if (cName == null)
                     continue;
-                this.mANAME2CNAME[aName] = cName;
-                this.mCNAME2ANAME[cName] = aName;
+                IdData.mANAME2CNAME[aName] = cName;
+                IdData.mCNAME2ANAME[cName] = aName;
             }
 #endif
         }
 
         public async Task SyncWithCacheAsync()
         {
-#if USE_REDIS_IDMANGER
+#if USE_REDIS_IDMANAGER
             var hname2addr = new Dictionary<string, string>();
             var addr2hname = new Dictionary<string, string>();
             var aname2hname = new Dictionary<string, string>();
@@ -992,8 +1126,8 @@ namespace Fenix
                 var addr = await CacheHNAME2ADDR.GetAsync(key);
                 if (addr == null)
                     continue;
-                this.mHNAME2ADDR[hName] = addr;
-                this.mADDR2HNAME[addr] = hName;
+                IdData.mHNAME2ADDR[hName] = addr;
+                IdData.mADDR2HNAME[addr] = hName;
                 AddNameId(hName);
             }
 
@@ -1003,8 +1137,8 @@ namespace Fenix
                 var addr = await CacheCNAME2ADDR.GetAsync(key);
                 if (addr == null)
                     continue;
-                this.mCNAME2ADDR[cName] = addr;
-                this.mADDR2CNAME[addr] = cName;
+                IdData.mCNAME2ADDR[cName] = addr;
+                IdData.mADDR2CNAME[addr] = cName;
                 AddNameId(cName);
             }
 
@@ -1021,23 +1155,23 @@ namespace Fenix
                 if (!hname2aname[hName].Contains(aName))
                     hname2aname[hName].Add(aName);
 
-                //this.mANAME2HNAME[aName] = hName;
-                //this.mANAME2HNAME[aName] = hName;
+                //IdData.mANAME2HNAME[aName] = hName;
+                //IdData.mANAME2HNAME[aName] = hName;
                 //if (!mHNAME2ANAME.ContainsKey(hName))
                 //    mHNAME2ANAME[hName] = new List<string>();
-                //if (!this.mHNAME2ANAME[hName].Contains(aName))
-                //    this.mHNAME2ANAME[hName].Add(aName);
+                //if (!IdData.mHNAME2ANAME[hName].Contains(aName))
+                //    IdData.mHNAME2ANAME[hName].Add(aName);
             }
 
             foreach(var kv in aname2hname) 
-                this.mANAME2HNAME[kv.Key] = kv.Value; 
+                IdData.mANAME2HNAME[kv.Key] = kv.Value; 
 
-            foreach(var k in this.mANAME2HNAME.Keys.ToArray()) 
+            foreach(var k in IdData.mANAME2HNAME.Keys.ToArray()) 
                 if (!aname2hname.ContainsKey(k))
-                    this.mANAME2HNAME.TryRemove(k, out var _); 
+                    IdData.mANAME2HNAME.TryRemove(k, out var _); 
 
             foreach(var kv in hname2aname) 
-                this.mHNAME2ANAME[kv.Key] = kv.Value;
+                IdData.mHNAME2ANAME[kv.Key] = kv.Value;
 
             foreach (var key in await CacheANAME2TNAME.KeysAsync())
             {
@@ -1045,7 +1179,7 @@ namespace Fenix
                 var tName = await CacheANAME2TNAME.GetAsync(key);
                 if (tName == null)
                     continue;
-                this.mANAME2TNAME[aName] = tName;
+                IdData.mANAME2TNAME[aName] = tName;
             }
 
             foreach (var key in await CacheID2NAME.KeysAsync())
@@ -1054,8 +1188,8 @@ namespace Fenix
                 var name = await CacheID2NAME.GetAsync(key);
                 if (name == null)
                     continue;
-                this.mID2NAME[id] = name;
-                this.mNAME2ID[name] = id;
+                IdData.mID2NAME[id] = name;
+                IdData.mNAME2ID[name] = id;
             }
 
             foreach (var key in await CacheANAME2CNAME.KeysAsync())
@@ -1064,8 +1198,8 @@ namespace Fenix
                 var cName = await CacheANAME2CNAME.GetAsync(key);
                 if (cName == null)
                     continue;
-                this.mANAME2CNAME[aName] = cName;
-                this.mCNAME2ANAME[cName] = aName;
+                IdData.mANAME2CNAME[aName] = cName;
+                IdData.mCNAME2ANAME[cName] = aName;
             }
 #endif
         }

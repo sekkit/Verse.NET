@@ -28,14 +28,22 @@ namespace Fenix.Common
         //public const uint FIND_ACTOR_ID_REQ = 0x40;
         //public const uint FIND_HOST_ID_REQ = 0x41;
         public const uint ADD_HOST_ID_REQ = 0x41;
-        public const uint ADD_ACTOR_ID_REQ = 0x42;
-        public const uint REMOVE_HOST_ID_REQ = 0x43;
-        public const uint REMOVE_ACTOR_ID_REQ = 0x44;
-        public const uint ON_ADD_HOST_ID_REQ = 0x46;
-        public const uint ON_ADD_ACTOR_ID_REQ = 0x47;
-        public const uint ON_REMOVE_HOST_ID_REQ = 0x48;
-        public const uint ON_REMOVE_ACTOR_ID_REQ = 0x49;
-        public const uint GET_ID_ALL_REQ = 0x50;
+        public const uint ADD_CLIENT_HOST_ID_REQ = 0x42;
+        public const uint ADD_ACTOR_ID_REQ = 0x43;
+        public const uint ADD_CLIENT_ACTOR_ID_REQ = 0x44;
+        public const uint REMOVE_HOST_ID_REQ = 0x45;
+        public const uint REMOVE_CLIENT_HOST_ID_REQ = 0x46;
+        public const uint REMOVE_ACTOR_ID_REQ = 0x47;
+        public const uint ON_ADD_HOST_ID_REQ = 0x48;
+        public const uint ON_ADD_CLIENT_HOST_ID_REQ = 0x49;
+        public const uint ON_ADD_ACTOR_ID_REQ = 0x50;
+        public const uint ON_ADD_CLIENT_ACTOR_ID_REQ = 0x51;
+        public const uint ON_REMOVE_HOST_ID_REQ = 0x52;
+        public const uint ON_REMOVE_CLIENT_HOST_ID_REQ = 0x53;
+        public const uint ON_REMOVE_ACTOR_ID_REQ = 0x54;
+        public const uint GET_ID_ALL_REQ = 0x55;
+
+
 
         public const uint CALL_ACTOR_METHOD = 0xff;
     }
