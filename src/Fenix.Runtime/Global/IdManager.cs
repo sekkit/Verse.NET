@@ -319,7 +319,7 @@ namespace Fenix
             }
             else
             {
-                return RegisterClientHost(hostId, hostName, address);
+                return RegisterClientHost(hostId, hostName, address, noReg);
             }
         }
 
@@ -378,7 +378,7 @@ namespace Fenix
             if(IdData.mCNAME2ADDR.TryRemove(cName, out var addr))
                 IdData.mADDR2CNAME.TryRemove(addr, out var _);
 
-            if (IdData.mANAME2TNAME.TryRemove(aName, out var _));
+            //if (IdData.mANAME2TNAME.TryRemove(aName, out var _));
 
 
 #if USE_REDIS_IDMANAGER
