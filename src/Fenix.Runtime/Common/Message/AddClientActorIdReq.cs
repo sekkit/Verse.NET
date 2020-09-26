@@ -10,23 +10,26 @@ using System;
 
 namespace Fenix.Common.Message
 {
-    [MessageType(OpCode.ADD_HOST_ID_REQ)]
+    [MessageType(OpCode.ADD_CLIENT_ACTOR_ID_REQ)]
     [MessagePackObject]
-    public class AddHostIdReq : IMessageWithCallback
+    public class AddClientActorIdReq : IMessageWithCallback
     {
         [Key(0)]
-        public global::System.UInt64 hostId { get; set; }
+        public global::System.UInt64 fromHostId { get; set; }
 
         [Key(1)]
-        public global::System.String hostName { get; set; }
+        public global::System.UInt64 clientId { get; set; }
 
         [Key(2)]
-        public global::System.String intAddr { get; set; }
+        public global::System.UInt64 actorId { get; set; }
 
         [Key(3)]
-        public global::System.String extAddr { get; set; }
+        public global::System.String actorName { get; set; }
 
         [Key(4)]
+        public global::System.String address { get; set; }
+
+        [Key(5)]
 
         public Callback callback
         {
@@ -39,9 +42,6 @@ namespace Fenix.Common.Message
         {
             [Key(0)]
             public global::System.Boolean arg0 { get; set; }
-
-            [Key(1)]
-            public global::Fenix.IdDataSet arg1 { get; set; }
 
             public override byte[] Pack()
             {
@@ -62,18 +62,18 @@ namespace Fenix.Common.Message
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<AddHostIdReq>(this);
+            return MessagePackSerializer.Serialize<AddClientActorIdReq>(this);
         }
 
-        public new static AddHostIdReq Deserialize(byte[] data)
+        public new static AddClientActorIdReq Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<AddHostIdReq>(data);
+            return MessagePackSerializer.Deserialize<AddClientActorIdReq>(data);
         }
 
         public override void UnPack(byte[] data)
         {
             var obj = Deserialize(data);
-            Copier<AddHostIdReq>.CopyTo(obj, this);
+            Copier<AddClientActorIdReq>.CopyTo(obj, this);
         }
     }
 }

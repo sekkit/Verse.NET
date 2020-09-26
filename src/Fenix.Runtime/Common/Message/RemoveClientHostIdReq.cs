@@ -10,23 +10,17 @@ using System;
 
 namespace Fenix.Common.Message
 {
-    [MessageType(OpCode.ADD_HOST_ID_REQ)]
+    [MessageType(OpCode.REMOVE_CLIENT_HOST_ID_REQ)]
     [MessagePackObject]
-    public class AddHostIdReq : IMessageWithCallback
+    public class RemoveClientHostIdReq : IMessageWithCallback
     {
         [Key(0)]
-        public global::System.UInt64 hostId { get; set; }
+        public global::System.UInt64 fromHostId { get; set; }
 
         [Key(1)]
-        public global::System.String hostName { get; set; }
+        public global::System.UInt64 clientId { get; set; }
 
         [Key(2)]
-        public global::System.String intAddr { get; set; }
-
-        [Key(3)]
-        public global::System.String extAddr { get; set; }
-
-        [Key(4)]
 
         public Callback callback
         {
@@ -39,9 +33,6 @@ namespace Fenix.Common.Message
         {
             [Key(0)]
             public global::System.Boolean arg0 { get; set; }
-
-            [Key(1)]
-            public global::Fenix.IdDataSet arg1 { get; set; }
 
             public override byte[] Pack()
             {
@@ -62,18 +53,18 @@ namespace Fenix.Common.Message
 
         public override byte[] Pack()
         {
-            return MessagePackSerializer.Serialize<AddHostIdReq>(this);
+            return MessagePackSerializer.Serialize<RemoveClientHostIdReq>(this);
         }
 
-        public new static AddHostIdReq Deserialize(byte[] data)
+        public new static RemoveClientHostIdReq Deserialize(byte[] data)
         {
-            return MessagePackSerializer.Deserialize<AddHostIdReq>(data);
+            return MessagePackSerializer.Deserialize<RemoveClientHostIdReq>(data);
         }
 
         public override void UnPack(byte[] data)
         {
             var obj = Deserialize(data);
-            Copier<AddHostIdReq>.CopyTo(obj, this);
+            Copier<RemoveClientHostIdReq>.CopyTo(obj, this);
         }
     }
 }

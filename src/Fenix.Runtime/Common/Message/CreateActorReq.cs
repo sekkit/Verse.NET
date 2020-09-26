@@ -35,10 +35,7 @@ namespace Fenix.Common.Message
             public global::Fenix.Common.DefaultErrCode code { get; set; } = DefaultErrCode.ERROR;
 
             [Key(1)]
-            public global::System.String arg1 { get; set; }
-
-            [Key(2)]
-            public global::System.UInt64 arg2 { get; set; }
+            public global::Fenix.ActorInfo arg1 { get; set; }
 
             public override byte[] Pack()
             {

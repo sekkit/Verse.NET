@@ -308,19 +308,21 @@ namespace Fenix
         {
 #if ENABLE_IL2CPP || !DEBUG || RUNTIME
             var _msg = (AddHostIdReq)msg;
-            this.AddHostId(_msg.hostId, _msg.hostName, _msg.intAddr, _msg.extAddr, (arg0) =>
+            this.AddHostId(_msg.hostId, _msg.hostName, _msg.intAddr, _msg.extAddr, (arg0, arg1) =>
             {
                 var cbMsg = new AddHostIdReq.Callback();
                 cbMsg.arg0=arg0;
+                cbMsg.arg1=arg1;
                 cb.Invoke(cbMsg);
             }, context);
 #else
 
             dynamic _msg = msg;
-            self.AddHostId(_msg.hostId, _msg.hostName, _msg.intAddr, _msg.extAddr, (global::System.Action<global::System.Boolean>)((arg0) =>
+            self.AddHostId(_msg.hostId, _msg.hostName, _msg.intAddr, _msg.extAddr, (global::System.Action<global::System.Boolean, global::Fenix.IdDataSet>)((arg0, arg1) =>
             {
                 dynamic cbMsg = new AddHostIdReq.Callback();
                 cbMsg.arg0=arg0;
+                cbMsg.arg1=arg1;
                 cb.Invoke(cbMsg);
             }), context);
 #endif
@@ -332,23 +334,21 @@ namespace Fenix
         {
 #if ENABLE_IL2CPP || !DEBUG || RUNTIME
             var _msg = (CreateActorReq)msg;
-            this.CreateActor(_msg.typename, _msg.name, (code, arg1, arg2) =>
+            this.CreateActor(_msg.typename, _msg.name, (code, arg1) =>
             {
                 var cbMsg = new CreateActorReq.Callback();
                 cbMsg.code=code;
                 cbMsg.arg1=arg1;
-                cbMsg.arg2=arg2;
                 cb.Invoke(cbMsg);
             }, context);
 #else
 
             dynamic _msg = msg;
-            self.CreateActor(_msg.typename, _msg.name, (global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.String, global::System.UInt64>)((code, arg1, arg2) =>
+            self.CreateActor(_msg.typename, _msg.name, (global::System.Action<global::Fenix.Common.DefaultErrCode, global::Fenix.ActorInfo>)((code, arg1) =>
             {
                 dynamic cbMsg = new CreateActorReq.Callback();
                 cbMsg.code=code;
                 cbMsg.arg1=arg1;
-                cbMsg.arg2=arg2;
                 cb.Invoke(cbMsg);
             }), context);
 #endif
@@ -386,21 +386,23 @@ namespace Fenix
         {
 #if ENABLE_IL2CPP || !DEBUG || RUNTIME
             var _msg = (MigrateActorReq)msg;
-            this.MigrateActor(_msg.actorId, (code, arg1) =>
+            this.MigrateActor(_msg.actorId, (code, arg1, arg2) =>
             {
                 var cbMsg = new MigrateActorReq.Callback();
                 cbMsg.code=code;
                 cbMsg.arg1=arg1;
+                cbMsg.arg2=arg2;
                 cb.Invoke(cbMsg);
             }, context);
 #else
 
             dynamic _msg = msg;
-            self.MigrateActor(_msg.actorId, (global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.Byte[]>)((code, arg1) =>
+            self.MigrateActor(_msg.actorId, (global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.Byte[], global::Fenix.ActorInfo>)((code, arg1, arg2) =>
             {
                 dynamic cbMsg = new MigrateActorReq.Callback();
                 cbMsg.code=code;
                 cbMsg.arg1=arg1;
+                cbMsg.arg2=arg2;
                 cb.Invoke(cbMsg);
             }), context);
 #endif
@@ -768,7 +770,7 @@ namespace Fenix
         }
 
         [RpcMethod(OpCode.ADD_HOST_ID_REQ, Api.ServerOnly)]
-        public void SERVER_ONLY_NATIVE__Fenix__Host__add_host_id(global::System.UInt64 hostId, global::System.String hostName, global::System.String intAddr, global::System.String extAddr, global::System.Action<global::System.Boolean> callback, RpcContext context)
+        public void SERVER_ONLY_NATIVE__Fenix__Host__add_host_id(global::System.UInt64 hostId, global::System.String hostName, global::System.String intAddr, global::System.String extAddr, global::System.Action<global::System.Boolean, global::Fenix.IdDataSet> callback, RpcContext context)
         {
 #if ENABLE_IL2CPP || !DEBUG || RUNTIME
             this.AddHostId(hostId, hostName, intAddr, extAddr, callback, context);
@@ -778,7 +780,7 @@ namespace Fenix
         }
 
         [RpcMethod(OpCode.CREATE_ACTOR_REQ, Api.ServerOnly)]
-        public void SERVER_ONLY_NATIVE__Fenix__Host__create_actor(global::System.String typename, global::System.String name, global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.String, global::System.UInt64> callback, RpcContext context)
+        public void SERVER_ONLY_NATIVE__Fenix__Host__create_actor(global::System.String typename, global::System.String name, global::System.Action<global::Fenix.Common.DefaultErrCode, global::Fenix.ActorInfo> callback, RpcContext context)
         {
 #if ENABLE_IL2CPP || !DEBUG || RUNTIME
             this.CreateActor(typename, name, callback, context);
@@ -798,7 +800,7 @@ namespace Fenix
         }
 
         [RpcMethod(OpCode.MIGRATE_ACTOR_REQ, Api.ServerOnly)]
-        public void SERVER_ONLY_NATIVE__Fenix__Host__migrate_actor(global::System.UInt64 actorId, global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.Byte[]> callback, RpcContext context)
+        public void SERVER_ONLY_NATIVE__Fenix__Host__migrate_actor(global::System.UInt64 actorId, global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.Byte[], global::Fenix.ActorInfo> callback, RpcContext context)
         {
 #if ENABLE_IL2CPP || !DEBUG || RUNTIME
             this.MigrateActor(actorId, callback, context);

@@ -23,7 +23,7 @@ namespace Fenix.Common.Message
         {
             get => _callback as Callback;
             set => _callback = value;
-        } 
+        }
 
         [MessagePackObject]
         public class Callback : IMessage
@@ -33,6 +33,9 @@ namespace Fenix.Common.Message
 
             [Key(1)]
             public global::System.Byte[] arg1 { get; set; }
+
+            [Key(2)]
+            public global::Fenix.ActorInfo arg2 { get; set; }
 
             public override byte[] Pack()
             {

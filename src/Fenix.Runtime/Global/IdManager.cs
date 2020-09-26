@@ -13,6 +13,7 @@ using Fenix.Common;
 using Fenix.Common.Rpc;
 using Fenix.Common.Utils; 
 using MessagePack;
+using Newtonsoft.Json;
 
 #if !CLIENT
 using Fenix.Redis;
@@ -31,7 +32,7 @@ namespace Fenix
      * GlobalManager里面的Redis全局缓存，只存固定的ID
      */
  
-    [MessagePackObject]
+    [MessagePackObject(keyAsPropertyName:true)]
     public class IdDataSet : IMessage
     {
         [Key(0)]
@@ -93,25 +94,58 @@ namespace Fenix
 
         public void UpdateFrom(IdDataSet from)
         {
-            foreach (var kv in mHNAME2ADDR)
+            Log.Info("Before0", from.ToString());
+            Log.Info("Before1", this.ToString());
+            foreach (var kv in from.mHNAME2ADDR)
                 mHNAME2ADDR[kv.Key] = kv.Value;
-            foreach (var kv in mHNAME2ANAME)
+            foreach (var kv in from.mHNAME2ANAME)
                 foreach (var aName in kv.Value)
+                {
+                    if (!mHNAME2ANAME.ContainsKey(kv.Key))
+                        mHNAME2ANAME[kv.Key] = new HashSet<string>();
                     mHNAME2ANAME[kv.Key].Add(aName);
-            foreach (var kv in mANAME2TNAME)
+                }
+            foreach (var kv in from.mANAME2TNAME)
                 mANAME2TNAME[kv.Key] = kv.Value;
-            foreach (var kv in mID2NAME)
+            foreach (var kv in from.mID2NAME)
                 mID2NAME[kv.Key] = kv.Value;
-            foreach (var kv in mCNAME2ADDR)
+            foreach (var kv in from.mCNAME2ADDR)
                 mCNAME2ADDR[kv.Key] = kv.Value;
-            foreach (var kv in mIP2EXTIP)
+            foreach (var kv in from.mIP2EXTIP)
                 mIP2EXTIP[kv.Key] = kv.Value;
-            foreach (var kv in mANAME2CNAME)
+            foreach (var kv in from.mANAME2CNAME)
                 mANAME2CNAME[kv.Key] = kv.Value;
-            foreach (var kv in mCNAME2ANAME)
+            foreach (var kv in from.mCNAME2ANAME)
                 mCNAME2ANAME[kv.Key] = kv.Value;
-
+            Log.Info("After0", this.ToString());
             ReInit();
+            Log.Info("After1", this.ToString());
+        }
+
+        public override byte[] Pack()
+        {
+            return MessagePackSerializer.Serialize<IdDataSet>(this);
+        }
+
+        public new static IdDataSet Deserialize(byte[] data)
+        {
+            return MessagePackSerializer.Deserialize<IdDataSet>(data);
+        }
+
+        public override void UnPack(byte[] data)
+        {
+            var obj = Deserialize(data);
+            Copier<IdDataSet>.CopyTo(obj, this);
+        }
+
+        public override string ToString()
+        {
+            return ToJson();
+        }
+
+        public override string ToJson()
+        {
+            return JsonConvert.SerializeObject(this);
         }
     }
 
@@ -244,28 +278,36 @@ namespace Fenix
 #endif
                 {
 #if !CLIENT
-                    Global.IdHostRef.AddHostId(hostId, hostName, address, extAddress, (ok)=> {
+                    Global.IdHostRef.AddHostId(hostId, hostName, address, extAddress, (ok, idAll) =>
+                    {
                         Log.Info("AddHost to Id.App", ok, hostId, hostName, address, extAddress);
-                        Global.IdHostRef.GetIdAll(hostId, (ok2, idAll) =>
+                        //Global.IdHostRef.GetIdAll(hostId, (ok2, idAll) =>
+                        //{
+                        if (ok)
                         {
-                            if (ok2)
+                            Log.Error(idAll.ToString());
+                            IdData.UpdateFrom(idAll);
+                        }
+                        else
+                        {
+                            bool done = false;
+                            while (!done)
                             {
-                                IdData.UpdateFrom(idAll);
-                            }
-                            else
-                            {
-                                bool done = false;
-                                while(!done)
+                                var task = Global.IdHostRef.AddHostIdAsync(hostId, hostName, address, extAddress);
+                                task.Wait();
+                                if (task.Result.arg0)
                                 {
-                                    var task = Global.IdHostRef.AddHostIdAsync(hostId, hostName, address, extAddress);
-                                    task.Wait();
-                                    if (task.Result.arg0)
-                                        done = true;
-                                    else
-                                        Thread.Sleep(100);
+                                    done = true;
+                                    Log.Error(task.Result.arg1.ToString());
+                                    IdData.UpdateFrom(task.Result.arg1);
+                                }
+                                else
+                                {
+                                    Thread.Sleep(100);
                                 }
                             }
-                        });
+                        }
+                        //});
                     });
 #else
                     return true;
@@ -333,8 +375,11 @@ namespace Fenix
             if (IdData.mCNAME2ANAME.TryRemove(cName, out var aName))
                 IdData.mANAME2CNAME.TryRemove(aName, out var _);
 
-            IdData.mCNAME2ADDR.TryRemove(cName, out var addr);
-            IdData.mANAME2TNAME.TryRemove(aName, out var _);
+            if(IdData.mCNAME2ADDR.TryRemove(cName, out var addr))
+                IdData.mADDR2CNAME.TryRemove(addr, out var _);
+
+            if (IdData.mANAME2TNAME.TryRemove(aName, out var _));
+
 
 #if USE_REDIS_IDMANAGER
 #if !CLIENT
@@ -631,6 +676,8 @@ namespace Fenix
                     {
                         Log.Info("AddActor to Id.App", ok, hostId, actorId, actorName, aTypeName);
                     });
+
+                    return true;
 #else
                     return true;
 #endif
@@ -678,6 +725,7 @@ namespace Fenix
                 {
                     Log.Info("RemoveActorId to Id.App", ok, actorId);
                 });
+                return true;
 #else
                 return true;
 #endif
@@ -1013,7 +1061,7 @@ namespace Fenix
         public bool RegisterActorInfo(ActorInfo actorInfo)
         {
             AddNameId(actorInfo.ActorName, actorInfo.ActorId);
-
+            RegisterHostInfo(actorInfo.HostInfo);
             return this.RegisterActor(actorInfo.ActorId, actorInfo.ActorName, actorInfo.ActorTypeName, actorInfo.HostInfo.HostId, actorInfo.HostInfo.IsClient, noReg: true); 
         }
 
@@ -1208,7 +1256,12 @@ namespace Fenix
 
 #region Utils
 
-
+        public void PrintInfo()
+        {
+            Log.Info("~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+            Log.Info(this.IdData.ToString());
+            Log.Info("~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        }
 
 #endregion
     }

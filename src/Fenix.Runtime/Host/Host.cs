@@ -364,6 +364,8 @@ namespace Fenix
             if (!IsAlive)
                 return;
 
+            Global.IdManager.PrintInfo();
+
             if (IsClientMode) //客户端无法访问全局缓存
             {
                 lastTs = TimeUtil.GetTimeStampMS2();
@@ -511,11 +513,11 @@ namespace Fenix
 #if !CLIENT
 
         [ServerOnly]
-        public void CreateActor(string typename, string name, Action<DefaultErrCode, string, ulong> callback, RpcContext __context)
+        public void CreateActor(string typename, string name, Action<DefaultErrCode, ActorInfo> callback, RpcContext __context)
         {
             if (name == "" || name == null)
             {
-                callback(DefaultErrCode.ERROR, "", 0);
+                callback(DefaultErrCode.ERROR, null);
                 return;
             }
 
@@ -524,7 +526,7 @@ namespace Fenix
             {
                 Log.Info("create_actor_exists", actorId, a);
                 a.Activate();
-                callback(DefaultErrCode.create_actor_already_exists, a.UniqueName, a.Id);
+                callback(DefaultErrCode.create_actor_already_exists, Global.IdManager.GetActorInfo(a.Id));
                 return;
             }
 #if !CLIENT
@@ -536,13 +538,14 @@ namespace Fenix
                 //迁移actor到本地
                 Log.Info("create_actor_exists2", actorId, hostId);
                 var remoteHost = this.GetHost(hostId);
-                remoteHost.MigrateActor(actorId, (code, actorData) =>
+                remoteHost.MigrateActor(actorId, (code, actorData, actorInfo) =>
                 {
+                    Global.IdManager.RegisterActorInfo(actorInfo);
                     var actor = CreateActorLocally(typename, actorData);
                     if (actor != null)
-                        callback(DefaultErrCode.OK, actor.UniqueName, actor.Id);
+                        callback(DefaultErrCode.OK, Global.IdManager.GetActorInfo(actor.Id));
                     else
-                        callback(DefaultErrCode.ERROR, "", 0);
+                        callback(DefaultErrCode.ERROR, null);
                 });
                 return;
             }
@@ -551,19 +554,19 @@ namespace Fenix
             Log.Info("actor_create_result", a != null); 
           
             if (a != null)
-                callback(DefaultErrCode.OK, a.UniqueName, a.Id);
+                callback(DefaultErrCode.OK, Global.IdManager.GetActorInfo(a.Id));
             else
-                callback(DefaultErrCode.ERROR, "", 0);
+                callback(DefaultErrCode.ERROR, null);
             Log.Info("actor_create_cb");
         }
 
         //迁移actor
         [ServerOnly]
-        public void MigrateActor(ulong actorId, Action<DefaultErrCode, byte[]> callback, RpcContext __context)
+        public void MigrateActor(ulong actorId, Action<DefaultErrCode, byte[], ActorInfo> callback, RpcContext __context)
         {
             if(!this.actorDic.ContainsKey(actorId))
             {
-                callback(DefaultErrCode.migrate_actor_not_exists, null);
+                callback(DefaultErrCode.migrate_actor_not_exists, null, null);
                 return;
             }
 
@@ -586,7 +589,7 @@ namespace Fenix
             }
 
             a.Destroy();
-            callback(DefaultErrCode.OK, actorData);
+            callback(DefaultErrCode.OK, actorData, Global.IdManager.GetActorInfo(a.Id));
         }
 
         [ServerOnly] //移除actor
@@ -768,11 +771,10 @@ namespace Fenix
 
         /*ID Route Info*/
         [ServerOnly]
-        public void AddHostId(ulong hostId, string hostName, string intAddr, string extAddr, Action<bool> callback, RpcContext __context)
+        public async Task AddHostId(ulong hostId, string hostName, string intAddr, string extAddr, Action<bool, IdDataSet> callback, RpcContext __context)
         {
             var result = Global.IdManager.RegisterHost(hostId, hostName, intAddr, extAddr, false, noReg:true);
-            callback(result);
-
+             
             //add hostref
             if (Global.IdManager.IsSameLocalhost(intAddr, this.LocalAddress.ToIPv4String()))
                 HostRefDic[hostId] = this.GetHost(hostName, intAddr);
@@ -784,9 +786,11 @@ namespace Fenix
             //notify all hosts
             foreach (var h in HostRefDic.Values)
                 if(h.toHostId != hostId)
-                    h.OnAddHostId(hostInfo, (code)=> {
+                    await h.OnAddHostIdAsync(hostInfo, (code)=> {
                         Log.Info("Notify(AddHostId):", h.toHostId);
                     });
+
+            callback(result, Global.IdManager.GetIdAll());
         }
 
         /* 
@@ -794,80 +798,82 @@ namespace Fenix
          * deregistering manually.
          */
         [ServerOnly]
-        public void RemoveHostId(ulong hostId, string hostName, Action<bool> callback, RpcContext __context)
+        public async Task RemoveHostId(ulong hostId, string hostName, Action<bool> callback, RpcContext __context)
         {
             var result = Global.IdManager.RemoveHostId(hostId, noReg:true);
-            callback(result);
-
+           
             HostRefDic.Remove(hostId);
 
             //notify all hosts
             foreach (var h in HostRefDic.Values)
                 if (h.toHostId != hostId)
-                    h.OnRemoveHostId(hostId, (code) => {
+                    await h.OnRemoveHostIdAsync(hostId, (code) => {
                         Log.Info("Notify(RemoveHostId):", h.toHostId);
-                    });
+                    }); 
+
+            callback(result); 
         }
 
         [ServerOnly]
-        public void AddClientHostId(ulong fromHostId, ulong clientId, string clientName, string extAddr, Action<bool> callback, RpcContext __context)
+        public async Task AddClientHostId(ulong fromHostId, ulong clientId, string clientName, string extAddr, Action<bool> callback, RpcContext __context)
         {
-            var result = Global.IdManager.RegisterClientHost(clientId, clientName, extAddr, noReg:true);
-            callback(result);
+            var result = Global.IdManager.RegisterClientHost(clientId, clientName, extAddr, noReg:true); 
 
             //notify all hosts
             foreach (var h in HostRefDic.Values)
                 if (h.toHostId != fromHostId)
-                    h.OnAddClientHostId(clientId, clientName, extAddr, (code) =>
+                    await h.OnAddClientHostIdAsync(clientId, clientName, extAddr, (code) =>
                     {
                         Log.Info("Notify(AddClientHostId):", h.toHostId);
                     });
+            callback(result);
         }
 
         [ServerOnly]
-        public void RemoveClientHostId(ulong fromHostId, ulong clientId, Action<bool> callback, RpcContext __context)
+        public async Task RemoveClientHostId(ulong fromHostId, ulong clientId, Action<bool> callback, RpcContext __context)
         {
             var result = Global.IdManager.RemoveClientHost(clientId, noReg: true);
-            callback(result);
 
             //notify all hosts
             foreach (var h in HostRefDic.Values)
                 if (h.toHostId != fromHostId)
-                    h.OnRemoveClientHostId(clientId, (code) =>
+                    await h.OnRemoveClientHostIdAsync(clientId, (code) =>
                     {
                         Log.Info("Notify(RemoveClientHostId):", h.toHostId);
                     });
+            callback(result);
         }
 
         [ServerOnly]
-        public void AddClientActorId(ulong fromHostId, ulong clientId, ulong actorId, string actorName, string address, Action<bool> callback, RpcContext __context)
+        public async Task AddClientActorId(ulong fromHostId, ulong clientId, ulong actorId, string actorName, string address, Action<bool> callback, RpcContext __context)
         {
-            var result = Global.IdManager.RegisterClientActor(actorId, actorName, clientId, address, noReg: true);
-            callback(result);
+            var result = Global.IdManager.RegisterClientActor(actorId, actorName, clientId, address, noReg: true); 
 
             //notify all hosts
             foreach (var h in HostRefDic.Values)
                 if (h.toHostId != fromHostId)
-                    h.OnAddClientActorId(clientId, actorId, actorName, address, (code) =>
+                    await h.OnAddClientActorIdAsync(clientId, actorId, actorName, address, (code) =>
                     {
                         Log.Info("Notify(AddClientActorId):", h.toHostId);
                     });
+
+            callback(result);
         }
 
         [ServerOnly]
-        public void AddActorId(ulong hostId, ulong actorId, string actorName, string aTypeName, Action<bool> callback, RpcContext __context)
+        public async Task AddActorId(ulong hostId, ulong actorId, string actorName, string aTypeName, Action<bool> callback, RpcContext __context)
         {
-            var result = Global.IdManager.RegisterActor(actorId, actorName, aTypeName, hostId, false, noReg: true);
-            callback(result);
+            var result = Global.IdManager.RegisterActor(actorId, actorName, aTypeName, hostId, false, noReg: true); 
 
             var actorInfo = Global.IdManager.GetActorInfo(actorId);
 
             //notify all hosts
             foreach (var h in HostRefDic.Values)
                 if (h.toHostId != hostId)
-                    h.OnAddActorId(actorInfo, (code) => {
+                    await h.OnAddActorIdAsync(actorInfo, (code) => {
                         Log.Info("Notify(AddActorId):", h.toHostId);
                     });
+            callback(result);
         }
 
         [ServerOnly]

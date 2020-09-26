@@ -317,7 +317,7 @@ namespace Fenix
 #if FENIX_CODEGEN && !RUNTIME
         public async Task<dynamic> AddHostIdAsync(dynamic hostId, dynamic hostName, dynamic intAddr, dynamic extAddr, dynamic callback=null)
 #else
-        public async Task<AddHostIdReq.Callback> AddHostIdAsync(global::System.UInt64 hostId, global::System.String hostName, global::System.String intAddr, global::System.String extAddr, global::System.Action<global::System.Boolean> callback=null)
+        public async Task<AddHostIdReq.Callback> AddHostIdAsync(global::System.UInt64 hostId, global::System.String hostName, global::System.String intAddr, global::System.String extAddr, global::System.Action<global::System.Boolean, global::Fenix.IdDataSet> callback=null)
 #endif
         {
 #if FENIX_CODEGEN
@@ -331,11 +331,12 @@ namespace Fenix
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                global::System.Action<global::System.Boolean> _cb = (arg0) =>
+                global::System.Action<global::System.Boolean, global::Fenix.IdDataSet> _cb = (arg0, arg1) =>
                 {
                      var cbMsg = new AddHostIdReq.Callback();
                      cbMsg.arg0=arg0;
-                     callback?.Invoke(cbMsg.arg0);
+                     cbMsg.arg1=arg1;
+                     callback?.Invoke(cbMsg.arg0, cbMsg.arg1);
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = OpCode.ADD_HOST_ID_REQ;
@@ -352,7 +353,7 @@ namespace Fenix
             {
                 Action<AddHostIdReq.Callback> _cb = (cbMsg) =>
                 {
-                    callback?.Invoke(cbMsg.arg0);
+                    callback?.Invoke(cbMsg.arg0, cbMsg.arg1);
                     t.TrySetResult(cbMsg);
                 };
                 await Task.Run(() => {
@@ -377,7 +378,7 @@ namespace Fenix
 #if FENIX_CODEGEN && !RUNTIME
         public void AddHostId(dynamic hostId, dynamic hostName, dynamic intAddr, dynamic extAddr, dynamic callback)
 #else
-        public void AddHostId(global::System.UInt64 hostId, global::System.String hostName, global::System.String intAddr, global::System.String extAddr, global::System.Action<global::System.Boolean> callback)
+        public void AddHostId(global::System.UInt64 hostId, global::System.String hostName, global::System.String intAddr, global::System.String extAddr, global::System.Action<global::System.Boolean, global::Fenix.IdDataSet> callback)
 #endif
         {
 #if !FENIX_CODEGEN
@@ -405,7 +406,7 @@ namespace Fenix
                 };
                 var cb = new Action<byte[]>((cbData) => {
                     var cbMsg = cbData==null?new AddHostIdReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<AddHostIdReq.Callback>(cbData);
-                    callback?.Invoke(cbMsg.arg0);
+                    callback?.Invoke(cbMsg.arg0, cbMsg.arg1);
                 });
                 this.CallRemoteMethod(OpCode.ADD_HOST_ID_REQ, msg, cb);
             });
@@ -507,7 +508,7 @@ namespace Fenix
 #if FENIX_CODEGEN && !RUNTIME
         public async Task<dynamic> CreateActorAsync(dynamic typename, dynamic name, dynamic callback=null)
 #else
-        public async Task<CreateActorReq.Callback> CreateActorAsync(global::System.String typename, global::System.String name, global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.String, global::System.UInt64> callback=null)
+        public async Task<CreateActorReq.Callback> CreateActorAsync(global::System.String typename, global::System.String name, global::System.Action<global::Fenix.Common.DefaultErrCode, global::Fenix.ActorInfo> callback=null)
 #endif
         {
 #if FENIX_CODEGEN
@@ -521,13 +522,12 @@ namespace Fenix
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.String, global::System.UInt64> _cb = (code, arg1, arg2) =>
+                global::System.Action<global::Fenix.Common.DefaultErrCode, global::Fenix.ActorInfo> _cb = (code, arg1) =>
                 {
                      var cbMsg = new CreateActorReq.Callback();
                      cbMsg.code=code;
                      cbMsg.arg1=arg1;
-                     cbMsg.arg2=arg2;
-                     callback?.Invoke(cbMsg.code, cbMsg.arg1, cbMsg.arg2);
+                     callback?.Invoke(cbMsg.code, cbMsg.arg1);
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = OpCode.CREATE_ACTOR_REQ;
@@ -544,7 +544,7 @@ namespace Fenix
             {
                 Action<CreateActorReq.Callback> _cb = (cbMsg) =>
                 {
-                    callback?.Invoke(cbMsg.code, cbMsg.arg1, cbMsg.arg2);
+                    callback?.Invoke(cbMsg.code, cbMsg.arg1);
                     t.TrySetResult(cbMsg);
                 };
                 await Task.Run(() => {
@@ -567,7 +567,7 @@ namespace Fenix
 #if FENIX_CODEGEN && !RUNTIME
         public void CreateActor(dynamic typename, dynamic name, dynamic callback)
 #else
-        public void CreateActor(global::System.String typename, global::System.String name, global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.String, global::System.UInt64> callback)
+        public void CreateActor(global::System.String typename, global::System.String name, global::System.Action<global::Fenix.Common.DefaultErrCode, global::Fenix.ActorInfo> callback)
 #endif
         {
 #if !FENIX_CODEGEN
@@ -593,7 +593,7 @@ namespace Fenix
                 };
                 var cb = new Action<byte[]>((cbData) => {
                     var cbMsg = cbData==null?new CreateActorReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<CreateActorReq.Callback>(cbData);
-                    callback?.Invoke(cbMsg.code, cbMsg.arg1, cbMsg.arg2);
+                    callback?.Invoke(cbMsg.code, cbMsg.arg1);
                 });
                 this.CallRemoteMethod(OpCode.CREATE_ACTOR_REQ, msg, cb);
             });
@@ -696,7 +696,7 @@ namespace Fenix
 #if FENIX_CODEGEN && !RUNTIME
         public async Task<dynamic> MigrateActorAsync(dynamic actorId, dynamic callback=null)
 #else
-        public async Task<MigrateActorReq.Callback> MigrateActorAsync(global::System.UInt64 actorId, global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.Byte[]> callback=null)
+        public async Task<MigrateActorReq.Callback> MigrateActorAsync(global::System.UInt64 actorId, global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.Byte[], global::Fenix.ActorInfo> callback=null)
 #endif
         {
 #if FENIX_CODEGEN
@@ -710,12 +710,13 @@ namespace Fenix
             var toHostId = Global.IdManager.GetHostIdByActorId(this.toActorId, this.isClient);
             if (this.FromHostId == toHostId)
             {
-                global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.Byte[]> _cb = (code, arg1) =>
+                global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.Byte[], global::Fenix.ActorInfo> _cb = (code, arg1, arg2) =>
                 {
                      var cbMsg = new MigrateActorReq.Callback();
                      cbMsg.code=code;
                      cbMsg.arg1=arg1;
-                     callback?.Invoke(cbMsg.code, cbMsg.arg1);
+                     cbMsg.arg2=arg2;
+                     callback?.Invoke(cbMsg.code, cbMsg.arg1, cbMsg.arg2);
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = OpCode.MIGRATE_ACTOR_REQ;
@@ -732,7 +733,7 @@ namespace Fenix
             {
                 Action<MigrateActorReq.Callback> _cb = (cbMsg) =>
                 {
-                    callback?.Invoke(cbMsg.code, cbMsg.arg1);
+                    callback?.Invoke(cbMsg.code, cbMsg.arg1, cbMsg.arg2);
                     t.TrySetResult(cbMsg);
                 };
                 await Task.Run(() => {
@@ -754,7 +755,7 @@ namespace Fenix
 #if FENIX_CODEGEN && !RUNTIME
         public void MigrateActor(dynamic actorId, dynamic callback)
 #else
-        public void MigrateActor(global::System.UInt64 actorId, global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.Byte[]> callback)
+        public void MigrateActor(global::System.UInt64 actorId, global::System.Action<global::Fenix.Common.DefaultErrCode, global::System.Byte[], global::Fenix.ActorInfo> callback)
 #endif
         {
 #if !FENIX_CODEGEN
@@ -779,7 +780,7 @@ namespace Fenix
                 };
                 var cb = new Action<byte[]>((cbData) => {
                     var cbMsg = cbData==null?new MigrateActorReq.Callback():global::Fenix.Common.Utils.RpcUtil.Deserialize<MigrateActorReq.Callback>(cbData);
-                    callback?.Invoke(cbMsg.code, cbMsg.arg1);
+                    callback?.Invoke(cbMsg.code, cbMsg.arg1, cbMsg.arg2);
                 });
                 this.CallRemoteMethod(OpCode.MIGRATE_ACTOR_REQ, msg, cb);
             });

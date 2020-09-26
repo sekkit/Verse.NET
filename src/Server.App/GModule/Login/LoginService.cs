@@ -133,27 +133,29 @@ namespace Server.GModule
 
             //如果不存在，则申请创建一个
             var svc = GetService<MasterServiceRef>();
-            svc.CreateActor(nameof(Avatar), account.uid, (code, actorName, actorId) =>
+            svc.CreateActor(nameof(Avatar), account.uid, (code, actorInfo) =>
             {
-                Log.Info("create_actor:", code, actorName, actorId);
+                Global.IdManager.RegisterActorInfo(actorInfo);
+                actorId = actorInfo.ActorId;
+                Log.Info("create_actor:", code, actorInfo.ActorName, actorInfo.ActorId);
                 if (code != DefaultErrCode.OK && code != DefaultErrCode.create_actor_already_exists)
                 {
                     Log.Error("create_actor_fail", code);
-                    callback(ErrCode.ERROR, actorName, 0, null, null);
+                    callback(ErrCode.ERROR, actorInfo.ActorName, 0, null, null);
                     LoginDb.Delete(username);
                     return;
                 }
 
-                var hostId = Global.IdManager.GetHostIdByActorId(actorId); //, false);
+                var hostId = Global.IdManager.GetHostIdByActorId(actorInfo.ActorId); //, false);
                 //创建成功后，把客户端的avatar注册到服务端
-                var hostAddr = Global.IdManager.GetHostAddrByActorId(actorId);
-                Log.Info(string.Format("login.create_actor@Master.App {0} {1} {2} {3} {4}", code, actorName, actorId,
+                var hostAddr = Global.IdManager.GetHostAddrByActorId(actorInfo.ActorId);
+                Log.Info(string.Format("login.create_actor@Master.App {0} {1} {2} {3} {4}", code, actorInfo.ActorName, actorInfo.ActorId,
                     Global.IdManager.GetHostName(hostId), hostAddr));
                 
                 ErrCode retCode = (code == DefaultErrCode.OK ? ErrCode.OK : ErrCode.ERROR);
                 callback(
                     retCode,
-                    actorName,
+                    actorInfo.ActorName,
                     hostId,
                     Global.IdManager.GetHostName(hostId),
                     Global.IdManager.GetExtAddress(hostAddr)

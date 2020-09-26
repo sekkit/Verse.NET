@@ -141,9 +141,9 @@ namespace Server
                 //Bootstrap.StartSingleProcess(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfgList, OnInit); //单进程模式
 
                 foreach (var cfg in cfgList)
-                    if (cfg.AppName == "Master.App")
+                    if (cfg.AppName == "Login.App")
                         Bootstrap.StartMultiProcess(new Assembly[] { typeof(UModule.Avatar).Assembly }, cfg, OnInit,
-                            cfgList.Where(m => m.AppName != "Master.App").ToList()); //分布式
+                            cfgList.Where(m => m.AppName != "Login.App").ToList()); //分布式
             }
             else
             {
