@@ -18,7 +18,7 @@ namespace Fenix
         public ulong Id { get; set; }
 
         [Key(1)]
-        public uint ProtoCode { get; set; }
+        public int ProtoCode { get; set; }
 
         [Key(2)]
         public ulong FromHostId { get; set; }
@@ -70,7 +70,7 @@ namespace Fenix
         { 
         }
 
-        public static Packet Create(ulong id, uint protoCode, ulong fromHostId, ulong toHostId, ulong fromActorId, ulong toActorId, NetworkType netType, Type msgType, byte[] data)
+        public static Packet Create(ulong id, int protoCode, ulong fromHostId, ulong toHostId, ulong fromActorId, ulong toActorId, NetworkType netType, Type msgType, byte[] data)
         {
             var obj = new Packet();
             obj.Id = id;

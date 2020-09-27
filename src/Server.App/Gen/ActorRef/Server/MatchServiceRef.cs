@@ -50,7 +50,7 @@ namespace Server
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = ProtocolCode.__SERVERGMODULE__MATCHSERVICE__FIND_MATCH_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -93,7 +93,7 @@ namespace Server
             if (this.FromHostId == toHostId)
             {
                 var protoCode = ProtocolCode.__SERVERGMODULE__MATCHSERVICE__FIND_MATCH_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -142,7 +142,7 @@ namespace Server
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = ProtocolCode.__SERVERGMODULE__MATCHSERVICE__JOIN_MATCH_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -186,7 +186,7 @@ namespace Server
             if (this.FromHostId == toHostId)
             {
                 var protoCode = ProtocolCode.__SERVERGMODULE__MATCHSERVICE__JOIN_MATCH_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);

@@ -49,7 +49,7 @@ namespace Server
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = ProtocolCode.__SERVERUMODULE__AVATAR__CHANGE_NAME_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -92,7 +92,7 @@ namespace Server
             if (this.FromHostId == toHostId)
             {
                 var protoCode = ProtocolCode.__SERVERUMODULE__AVATAR__CHANGE_NAME_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -128,7 +128,7 @@ namespace Server
            if (this.FromHostId == toHostId)
            {
                 var protoCode = ProtocolCode.__SERVERUMODULE__AVATAR__ON_MATCH_OK_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -173,7 +173,7 @@ namespace Server
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = ProtocolCode.__SERVERUMODULE__AVATAR__M__SERVERUMODULE__ITEMMODULE__TEST_ITEM_API_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -216,7 +216,7 @@ namespace Server
             if (this.FromHostId == toHostId)
             {
                 var protoCode = ProtocolCode.__SERVERUMODULE__AVATAR__M__SERVERUMODULE__ITEMMODULE__TEST_ITEM_API_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);

@@ -49,7 +49,7 @@ namespace Server
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = ProtocolCode.__SERVERGMODULE__LOGINSERVICE__CREATE_ACCOUNT_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -93,7 +93,7 @@ namespace Server
             if (this.FromHostId == toHostId)
             {
                 var protoCode = ProtocolCode.__SERVERGMODULE__LOGINSERVICE__CREATE_ACCOUNT_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -143,7 +143,7 @@ namespace Server
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = ProtocolCode.__SERVERGMODULE__LOGINSERVICE__DELETE_ACCOUNT_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -187,7 +187,7 @@ namespace Server
             if (this.FromHostId == toHostId)
             {
                 var protoCode = ProtocolCode.__SERVERGMODULE__LOGINSERVICE__DELETE_ACCOUNT_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -241,7 +241,7 @@ namespace Server
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = ProtocolCode.__SERVERGMODULE__LOGINSERVICE__LOGIN_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -286,7 +286,7 @@ namespace Server
             if (this.FromHostId == toHostId)
             {
                 var protoCode = ProtocolCode.__SERVERGMODULE__LOGINSERVICE__LOGIN_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -324,7 +324,7 @@ namespace Server
            if (this.FromHostId == toHostId)
            {
                 var protoCode = ProtocolCode.__SERVERGMODULE__LOGINSERVICE__RESET_PASSWORD_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
