@@ -24,8 +24,15 @@ namespace Fenix.Common
 			while (true)
 			{
 				if (!this.queue.TryDequeue(out a))
-					return; 
-				a();
+					return;
+				try
+				{
+					a();
+				}
+				catch(Exception ex)
+                {
+					Log.Error(ex);
+                }
 			}
 		}
 
@@ -33,7 +40,14 @@ namespace Fenix.Common
         {
             if (Thread.CurrentThread.ManagedThreadId == this.selfThreadId)
             {
-                callback(state);
+				try
+				{
+					callback(state);
+				}
+				catch(Exception ex)
+                {
+					Log.Error(ex);
+				}
                 return;
             }
 

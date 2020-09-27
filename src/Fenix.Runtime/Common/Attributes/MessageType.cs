@@ -6,9 +6,9 @@ namespace Fenix.Common.Attributes
 {
     public class MessageTypeAttribute : Attribute
     {
-        public uint ProtoCode;
+        public int ProtoCode;
 
-        public MessageTypeAttribute(uint protoCode)
+        public MessageTypeAttribute(int protoCode)
         {
             this.ProtoCode = protoCode;
         } 

@@ -18,9 +18,9 @@ namespace Fenix
 
         protected ConcurrentDictionary<string, Type> mTypeDic = new ConcurrentDictionary<string, Type>();
 
-        protected ConcurrentDictionary<UInt32, Api> RpcTypeDic = new ConcurrentDictionary<UInt32, Api>();
+        protected ConcurrentDictionary<int, Api> RpcTypeDic = new ConcurrentDictionary<int, Api>();
 
-        protected ConcurrentDictionary<uint, Type> mMessageTypeDic = new ConcurrentDictionary<uint, Type>();
+        protected ConcurrentDictionary<int, Type> mMessageTypeDic = new ConcurrentDictionary<int, Type>();
          
         protected ConcurrentDictionary<Type, string> mRef2ATNameDic = new ConcurrentDictionary<Type, string>();
 
@@ -32,13 +32,13 @@ namespace Fenix
             this.mTypeDic[name] = type;
         }
 
-        public void RegisterApi(uint code, Api api)
+        public void RegisterApi(int code, Api api)
         {
             this.RpcTypeDic[code] = api;
         } 
-        public Api GetRpcType(uint protoCode)
-        { 
-            if (RpcTypeDic.TryGetValue(protoCode, out var api))
+        public Api GetRpcType(int protoCode)
+        {  
+            if (RpcTypeDic.TryGetValue(Math.Abs(protoCode), out var api))
                 return api;
 
             return Api.NoneApi;
@@ -80,9 +80,9 @@ namespace Fenix
             this.mATName2RefTypeDic[targetTypeName] = refType;
         }
 
-        public void RegisterMessageType(uint protoCode, Type type)
-        {
-            mMessageTypeDic[protoCode] = type;
+        public void RegisterMessageType(int protoCode, Type type)
+        { 
+            mMessageTypeDic[Math.Abs(protoCode)] = type;
         }
 
         public void RegisterActorType(Actor actor)
@@ -109,13 +109,13 @@ namespace Fenix
             return this.Get(tname);
         }
 
-        public Type GetMessageType(uint protocolId)
+        public Type GetMessageType(int protcolCode)
         {
-            if(!mMessageTypeDic.ContainsKey(protocolId))
-            {
+            //if(!mMessageTypeDic.ContainsKey(protocolId))
+            //{
 
-            }
-            return mMessageTypeDic[protocolId];
+            //}
+            return mMessageTypeDic[Math.Abs(protcolCode)];
         }
 
         public Type GetActorRefType(string typename)

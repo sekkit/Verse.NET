@@ -165,6 +165,8 @@ namespace Fenix.Redis
 
         protected DbEntry conf;
 
+        public string Name => conf.Name;
+
         public RedisDb(DbEntry db)
         {
             conf = db;
@@ -214,7 +216,7 @@ namespace Fenix.Redis
             bool result = false;
             try
             {
-                RedisValue token = Environment.MachineName;
+                RedisValue token = Guid.NewGuid().ToString();// Environment.MachineName;
                 string redisKey = FormatKey(key); 
                 TimeSpan? expireSeconds = (expireSec == null || !expireSec.HasValue) ? DefaultExpiry() : TimeSpan.FromSeconds(expireSec.Value);
                 
@@ -234,6 +236,54 @@ namespace Fenix.Redis
             return result;
         }
 
+        public Tuple<bool, string> Lock(string key)
+        {
+            if (key == null)
+                return new Tuple<bool, string>(false, null);
+            string redisKey = FormatKey(key);
+            RedisKey lockKey = redisKey + "_lock";
+            RedisValue token = Guid.NewGuid().ToString();// Environment.MachineName;
+            try
+            {
+                Log.Warn("LockKey", lockKey);
+                if (client.LockTake(lockKey, token, TimeSpan.FromSeconds(3)))
+                    return new Tuple<bool, string>(true, token);
+                return new Tuple<bool, string>(false, null);
+            }
+            catch(Exception ex)
+            {
+                Log.Error(ex);
+                client.LockRelease(lockKey, token);
+                return new Tuple<bool, string>(false, null);
+            }
+        }
+
+        public bool Unlock(string key, string token)
+        {
+            if (key == null)
+                return false;
+            string redisKey = FormatKey(key);
+            RedisKey lockKey = redisKey + "_lock";
+            try
+            {
+                Log.Warn("LockKey", lockKey);
+                Log.Info("before_unlock", key, token, client.LockQuery(lockKey));
+                var result = client.LockRelease(lockKey, token);
+                Log.Info("after_unlock", key, token, client.LockQuery(lockKey));
+                return result;
+            }
+            catch(Exception ex)
+            {
+                Log.Error(ex);
+                return false;
+            }
+        }
+
+        public LockData<T> GetLockData<T>(string key)
+        {
+            return new LockData<T>(this, key);
+        }
+
         public bool Set(string key, object value, int? expireSec = null)
         {
             if (value == null)
@@ -243,7 +293,7 @@ namespace Fenix.Redis
             {
                 string redisKey = FormatKey(key);
 
-                RedisValue token = Environment.MachineName;
+                RedisValue token = Guid.NewGuid().ToString();// Environment.MachineName;
                 RedisKey lockKey = redisKey + "_lock";
                 int lockCounter = 0;
                 TimeSpan? expireSeconds = (expireSec == null || !expireSec.HasValue) ? DefaultExpiry() : TimeSpan.FromSeconds(expireSec.Value);
@@ -267,7 +317,8 @@ namespace Fenix.Redis
                     }
                     finally
                     {
-                        client.LockRelease(lockKey, token);
+                        var lockResult = client.LockRelease(lockKey, token);
+                        Log.Info("LockResult", lockResult);
                     }
 
                     break;
@@ -286,7 +337,7 @@ namespace Fenix.Redis
             bool result = false;
             try
             {
-                RedisValue token = Environment.MachineName;
+                RedisValue token = Guid.NewGuid().ToString();// Environment.MachineName;
                 string redisKey = FormatKey(key);
                 RedisKey lockKey = redisKey + "_lock";
                 int lockCounter = 0;
@@ -310,7 +361,8 @@ namespace Fenix.Redis
                     }
                     finally
                     {
-                        await client.LockReleaseAsync(lockKey, token);
+                        var lockResult = await client.LockReleaseAsync(lockKey, token);
+                        Log.Info("LockResult", lockResult);
                     }
 
                     break;
@@ -568,6 +620,8 @@ namespace Fenix.Redis
             }
             return new string[] { };
         }
+
+
 
         public void Dispose()
         {

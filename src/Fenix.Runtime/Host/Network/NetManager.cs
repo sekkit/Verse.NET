@@ -572,7 +572,7 @@ namespace Fenix
 #if CLIENT
                 if (curTS - p.lastTickTime >= Global.Config.HeartbeatIntervalMS * 3)
                 {
-                    this.PrintPeerInfo("SEKKIT");
+                    this.PrintPeerInfo("Client Peers");
                     Log.Info(string.Format("Timeout: {0} {1} {2}", p.ConnId, p.RemoteAddress, p.netType));
                     this.Deregister(p);
                 }

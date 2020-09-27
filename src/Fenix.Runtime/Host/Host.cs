@@ -277,7 +277,7 @@ namespace Fenix
                 return;
             } 
 
-            uint protoCode = buffer.ReadUnsignedIntLE();
+            int protoCode = buffer.ReadIntLE();
 
 #if !CLIENT
             if (protoCode == OpCode.REGISTER_REQ)
@@ -307,7 +307,7 @@ namespace Fenix
                 if (finalBytes != null)
                 {
                     var finalBuf = Unpooled.WrappedBuffer(finalBytes);
-                    var _protoCode = finalBuf.ReadUnsignedIntLE();
+                    var _protoCode = finalBuf.ReadIntLE();
 #if !CLIENT
                     if (_protoCode == OpCode.REGISTER_REQ)
                     {
@@ -377,7 +377,7 @@ namespace Fenix
         }
 
 #if !CLIENT
-        void ProcessRegisterProtocol(NetPeer peer, uint protoCode, IByteBuffer buffer)
+        void ProcessRegisterProtocol(NetPeer peer, int protoCode, IByteBuffer buffer)
         {
             if (protoCode == OpCode.REGISTER_REQ)
             {
@@ -395,7 +395,7 @@ namespace Fenix
         }
 #endif
 
-        void ProcessRpcProtocol(NetPeer peer, uint protoCode, IByteBuffer buffer)
+        void ProcessRpcProtocol(NetPeer peer, int protoCode, IByteBuffer buffer)
         {
             var msgId = (ulong)buffer.ReadLongLE(); 
             var fromActorId = (ulong)buffer.ReadLongLE();
@@ -424,7 +424,7 @@ namespace Fenix
                 peer.RemoteAddress.ToIPv4String(),
                 peer.LocalAddress.ToIPv4String()));
 
-            if (protoCode >= OpCode.CALL_ACTOR_METHOD && toActorId != 0)
+            if (Math.Abs(protoCode) >= OpCode.CALL_ACTOR_METHOD && toActorId != 0)
             {
                 this.CallActorMethod(packet);
             }
@@ -460,7 +460,7 @@ namespace Fenix
             RemoveActorById(aId);
         }
 
-        public void RemoveActorById(UInt64 aId)
+        public void RemoveActorById(ulong aId)
         { 
             Global.IdManager.RemoveActorId(aId);
             this.actorDic.TryRemove(aId, out var _);
@@ -468,13 +468,14 @@ namespace Fenix
 
         public override void CallMethod(Packet packet)
         {
-            bool isCallback = rpcDic.ContainsKey(packet.Id);
-            if (!isCallback)
-            {
-                isCallback = Global.IdManager.GetRpcId(packet.Id) != 0; 
-                if(!isCallback) 
-                    isCallback =  rpcTimeoutDic.ContainsKey(packet.Id); 
-            }
+            bool isCallback = packet.ProtoCode < 0;
+            //bool isCallback = rpcDic.ContainsKey(packet.Id);
+            //if (!isCallback)
+            //{
+            //    isCallback = Global.IdManager.GetRpcId(packet.Id) != 0; 
+            //    if(!isCallback) 
+            //        isCallback =  rpcTimeoutDic.ContainsKey(packet.Id); 
+            //}
 
             if (isCallback)
             {

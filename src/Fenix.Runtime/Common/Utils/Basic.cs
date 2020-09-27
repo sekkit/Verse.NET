@@ -70,7 +70,7 @@ namespace Fenix.Common.Utils
             }
         }
 
-        public static uint GenID32FromName(string name)
+        public static int GenID32FromName(string name)
         {
             var src = GenMd5(name);
 
@@ -106,7 +106,10 @@ namespace Fenix.Common.Utils
             h *= m;
             h ^= h >> r;
 
-            return (uint)(((h >> r) & 0xffffffff) ^ (h & 0xffffffff));
+            uint result = (uint)(((h >> r) & 0xffffffff) ^ (h & 0xffffffff));
+            if (result > uint.MaxValue / 2)
+                return (int)(result - (uint.MaxValue / 2));
+            return (int)result;
         }
 
         public static ulong GenID64FromName(string name)

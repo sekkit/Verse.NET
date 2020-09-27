@@ -24,10 +24,10 @@ namespace Fenix.Common.Attributes
 
     public class RpcMethodAttribute : Attribute
     {
-        public UInt32 Code;
+        public int Code;
         public Api Api;
 
-        public RpcMethodAttribute(UInt32 protoCode, Api api)
+        public RpcMethodAttribute(int protoCode, Api api)
         {
             this.Code = protoCode;
             this.Api = api;

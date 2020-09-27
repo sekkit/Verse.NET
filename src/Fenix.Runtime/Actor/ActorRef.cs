@@ -78,7 +78,7 @@ namespace Fenix
             return obj;
         }
 
-        public void CallRemoteMethod(uint protocolCode, IMessage msg, Action<byte[]> cb)
+        public void CallRemoteMethod(int protocolCode, IMessage msg, Action<byte[]> cb)
         {
             //如果protocode是client_api，则用kcp
             //否则都是tcp

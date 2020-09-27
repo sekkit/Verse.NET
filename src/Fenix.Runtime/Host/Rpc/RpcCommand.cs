@@ -31,7 +31,7 @@ namespace Fenix
 
         public Api RpcType => Global.TypeManager.GetRpcType(ProtoCode);
 
-        public uint ProtoCode => packet.ProtoCode;
+        public int ProtoCode => packet.ProtoCode;
 
         protected NetworkType netType => packet.NetType;
 
@@ -83,7 +83,7 @@ namespace Fenix
                 args.Add(cb);
             }
 
-            if (this.ProtoCode <= OpCode.CALL_ACTOR_METHOD)
+            if (Math.Abs(this.ProtoCode) <= OpCode.CALL_ACTOR_METHOD)
             {
                 var peer = Global.NetManager.GetRemotePeerById(packet.FromHostId, this.netType);
                 var context = new RpcContext(this.packet, peer);

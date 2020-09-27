@@ -387,7 +387,7 @@ namespace Fenix
                     continue; 
 
                 bool isHost = type.Name == "Host";
-                var codes = new SortedDictionary<string, uint>();
+                var codes = new SortedDictionary<string, int>();
 
                 foreach (var kv in ParseProtoCode(type, null))
                 {
@@ -455,7 +455,7 @@ namespace Shared
 ";
                         foreach (var kv in codes)
                         {
-                            lines += string.Format("        public const uint {0} = {1};\n", kv.Key, kv.Value);
+                            lines += string.Format("        public const int {0} = {1};\n", kv.Key, kv.Value);
                         }
                         lines += @"    }
 }
@@ -467,9 +467,9 @@ namespace Shared
             }
         }
 
-        static SortedDictionary<string, uint> ParseProtoCode(TypeDefinition type, TypeDefinition parentType)
+        static SortedDictionary<string, int> ParseProtoCode(TypeDefinition type, TypeDefinition parentType)
         {
-            var codes = new SortedDictionary<string, uint>();
+            var codes = new SortedDictionary<string, int>();
 
             bool isHost = parentType == null ? type.Name == "Host" : parentType.Name == "Host";
             string tPrefix = parentType==null?null: string.Format("__{0}__{1}__M", parentType.Namespace.Replace(".", ""), parentType.Name);
@@ -481,7 +481,7 @@ namespace Shared
                 if (attr != null)
                 {
                     string proto_code =  (isHost ? GenUtil.NameToProtoCode(tPrefix, method.Name) : GenUtil.NameToProtoCode(tPrefix, type.Namespace, type.Name, method.Name)) + "_REQ";
-                    uint code = Basic.GenID32FromName(proto_code);
+                    int code = Basic.GenID32FromName(proto_code);
                     codes[proto_code.ToUpper()] = code;
                 }
             }
@@ -493,7 +493,7 @@ namespace Shared
                 if (attr != null)
                 {
                     string proto_code = (isHost ? GenUtil.NameToProtoCode(tPrefix, method.Name) : GenUtil.NameToProtoCode(tPrefix, type.Namespace, type.Name, method.Name)) + "_REQ";
-                    uint code = Basic.GenID32FromName(proto_code);
+                    int code = Basic.GenID32FromName(proto_code);
                     codes[proto_code.ToUpper()] = code;
                 }
             }
@@ -505,7 +505,7 @@ namespace Shared
                 if (attr != null)
                 {
                     string proto_code = (isHost ? GenUtil.NameToProtoCode(tPrefix, method.Name) : GenUtil.NameToProtoCode(tPrefix, type.Namespace, type.Name, method.Name)) + "_NTF";
-                    uint code = Basic.GenID32FromName(proto_code);
+                    int code = Basic.GenID32FromName(proto_code);
                     codes[proto_code.ToUpper()] = code;
                 }
             }
@@ -634,7 +634,7 @@ namespace Shared
                         itype = "IMessageWithCallback";
 
                     string proto_code = (isHost ? GenUtil.NameToProtoCode(parentTypePrefix, method.Name) : GenUtil.NameToProtoCode(parentTypePrefix, type.Namespace, type.Name, method.Name)) + "_" + GetApiMessagePostfix(api).ToUpper();
-                    uint code = Basic.GenID32FromName(proto_code);
+                    int code = Basic.GenID32FromName(proto_code);
 
                     string msg_ns = isHost ? "Fenix.Common.Message" : "Shared.Message";
 
@@ -785,7 +785,7 @@ namespace Shared
                         .AppendLine($"            if (this.FromHostId == toHostId)")
                         .AppendLine($"            {{")
                         .AppendLine($"                var protoCode = {pc_cls}.{proto_code};")
-                        .AppendLine($"                if (protoCode < OpCode.CALL_ACTOR_METHOD)")
+                        .AppendLine($"                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)")
                         .AppendLine($"                {{")
                         .AppendLine($"                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);")
                         .AppendLine($"                    var context = new RpcContext(null, peer);");
@@ -828,7 +828,7 @@ namespace Shared
                         .AppendLine($"           if (this.FromHostId == toHostId)")
                         .AppendLine($"           {{")
                         .AppendLine($"                var protoCode = {pc_cls}.{proto_code};")
-                        .AppendLine($"                if (protoCode < OpCode.CALL_ACTOR_METHOD)")
+                        .AppendLine($"                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)")
                         .AppendLine($"                {{")
                         .AppendLine($"                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);")
                         .AppendLine($"                    var context = new RpcContext(null, peer);");
@@ -911,7 +911,7 @@ namespace Shared
                         .AppendLine($"                     t.TrySetResult(cbMsg);")
                         .AppendLine($"                }}; ")
                         .AppendLine($"                var protoCode = {pc_cls}.{proto_code};")
-                        .AppendLine($"                if (protoCode < OpCode.CALL_ACTOR_METHOD)")
+                        .AppendLine($"                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)")
                         .AppendLine($"                {{")
                         .AppendLine($"                    var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);")
                         .AppendLine($"                    var context = new RpcContext(null, peer);");

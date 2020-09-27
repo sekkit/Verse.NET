@@ -26,9 +26,9 @@ namespace Fenix
 
         public ConcurrentDictionary<ulong, long> rpcTimeoutDic = new ConcurrentDictionary<ulong, long>();
          
-        public ConcurrentDictionary<UInt32, MethodInfo> rpcStubDic = new ConcurrentDictionary<UInt32, MethodInfo>();
+        public ConcurrentDictionary<int, MethodInfo> rpcStubDic = new ConcurrentDictionary<int, MethodInfo>();
          
-        public ConcurrentDictionary<UInt32, MethodInfo> rpcNativeStubDic = new ConcurrentDictionary<UInt32, MethodInfo>();
+        public ConcurrentDictionary<int, MethodInfo> rpcNativeStubDic = new ConcurrentDictionary<int, MethodInfo>();
          
         private ConcurrentDictionary<UInt64, Timer> mTimerDic = new ConcurrentDictionary<ulong, Timer>();
 
@@ -45,7 +45,7 @@ namespace Fenix
                 if (attrs.Count() > 0)
                 {
                     string protoCode = (isHost? NameToProtoCode(method.Name) : NameToProtoCode(ns, tname, method.Name)) + "_" + GetApiMessagePostfix(Api.ServerApi).ToUpper();
-                    uint code = Basic.GenID32FromName(protoCode);
+                    int code = Basic.GenID32FromName(protoCode);
                     Global.TypeManager.RegisterApi(code, Api.ServerApi);
                 }
 
@@ -53,7 +53,7 @@ namespace Fenix
                 if (attrs.Count() > 0)
                 {
                     string protoCode = (isHost ? NameToProtoCode(method.Name) : NameToProtoCode(ns, tname, method.Name)) + "_" + GetApiMessagePostfix(Api.ServerOnly).ToUpper();
-                    uint code = Basic.GenID32FromName(protoCode);
+                    int code = Basic.GenID32FromName(protoCode);
                     Global.TypeManager.RegisterApi(code, Api.ServerOnly); 
                 }
 
@@ -61,7 +61,7 @@ namespace Fenix
                 if (attrs.Count() > 0)
                 {
                     string protoCode = (isHost ? NameToProtoCode(method.Name) : NameToProtoCode(ns, tname, method.Name)) + "_" + GetApiMessagePostfix(Api.ClientApi).ToUpper();
-                    uint code = Basic.GenID32FromName(protoCode);
+                    int code = Basic.GenID32FromName(protoCode);
                     Global.TypeManager.RegisterApi(code, Api.ClientApi); 
                 }
 
@@ -69,7 +69,7 @@ namespace Fenix
                 if (attrs.Count() > 0)
                 {
                     var attr = (RpcMethodAttribute)attrs.First();
-                    uint code = attr.Code;
+                    int code = attr.Code;
                     Api api = attr.Api; 
                     Global.TypeManager.RegisterApi(code, api);
                     if (method.Name.Contains("_NATIVE_"))
@@ -135,11 +135,11 @@ namespace Fenix
 
         public virtual void CallMethod(Packet packet)
         {
-            bool isCallback = rpcDic.ContainsKey(packet.Id);
-            if (!isCallback)
-            {  
-                isCallback = rpcTimeoutDic.ContainsKey(packet.Id);
-            }
+            bool isCallback = packet.ProtoCode < 0;
+            //if(!isCallback)
+            //    isCallback = rpcDic.ContainsKey(packet.Id);
+            //if (!isCallback)  
+            //    isCallback = rpcTimeoutDic.ContainsKey(packet.Id);  
 
             if (isCallback)
             { 
@@ -161,7 +161,7 @@ namespace Fenix
             }
         }
 
-        public virtual void CallMethodWithParams(uint protoCode, object[] args)
+        public virtual void CallMethodWithParams(int protoCode, object[] args)
         {
             try
             {
@@ -176,7 +176,7 @@ namespace Fenix
             }
         }
 
-        public virtual void CallMethodWithMsg(uint protoCode, object[] args)
+        public virtual void CallMethodWithMsg(int protoCode, object[] args)
         {
             try
             {
@@ -191,21 +191,23 @@ namespace Fenix
             }
         }
 
-        public void Rpc(uint protoCode, ulong fromHostId, ulong fromActorId, ulong toHostId, ulong toActorId, 
+        public void Rpc(int protoCode, ulong fromHostId, ulong fromActorId, ulong toHostId, ulong toActorId, 
             IPEndPoint toPeerAddr, NetworkType netType, IMessage msg, Action<byte[]> cb)
-        {  
-            var packet = Packet.Create(Basic.GenID64(), protoCode, fromHostId, toHostId, fromActorId, toActorId, netType, msg.GetType(), msg.Pack());
+        {
+            try
+            {
+                var packet = Packet.Create(Basic.GenID64(), protoCode, fromHostId, toHostId, fromActorId, toActorId, netType, msg.GetType(), msg.Pack());
 
-            /*创建一个等待回调的rpc_command*/
-            var cmd = RpcCommand.Create(
-                packet,
-                (data) => { RemoveRpc(packet.Id); cb?.Invoke(data);  },
-                this); 
+                /*创建一个等待回调的rpc_command*/
+                var cmd = RpcCommand.Create(
+                    packet,
+                    (data) => { RemoveRpc(packet.Id); cb?.Invoke(data); },
+                    this);
 
             //如果是同进程，则本地调用
             if (fromHostId == toHostId)
             {
-                if(protoCode < OpCode.CALL_ACTOR_METHOD)
+                if(Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     if (msg.HasCallback())
                         AddCallbackRpc(cmd);
@@ -225,47 +227,54 @@ namespace Fenix
                 }
             }
 
-            bool isClient = Global.IdManager.IsClientHost(toHostId);
+                bool isClient = Global.IdManager.IsClientHost(toHostId);
 
-            //否则通过网络调用
-            //如果是客户端，则直接用remote netpeer返回包
-            //如果是服务端，则用local netpeer返回包
-            var peer = isClient? Global.NetManager.GetRemotePeerById(toHostId, netType):Global.NetManager.GetLocalPeerById(toHostId, netType);
-            //Log.Info(string.Format("{0} {1} {2} {3} {4}", fromHostId, toHostId, fromActorId, toActorId, peer==null?"NULL":""));
-            if (peer == null)
-            {
-                Log.Warn(string.Format("Rpc:cannot_find_peer_and_create {0} => {1} ({2})", fromHostId, toHostId, netType));
-                peer = Global.NetManager.CreatePeer(toHostId, toPeerAddr, netType);
-            }
-  
-            if (peer == null || !peer.IsActive)
-            {
-                Log.Error(string.Format("Rpc:peer disconnected {0}", toHostId), toPeerAddr, netType);
-                //这里可以尝试把global以及redis状态清空
+                //否则通过网络调用
+                //如果是客户端，则直接用remote netpeer返回包
+                //如果是服务端，则用local netpeer返回包
+                var peer = isClient ? Global.NetManager.GetRemotePeerById(toHostId, netType) : Global.NetManager.GetLocalPeerById(toHostId, netType);
+                //Log.Info(string.Format("{0} {1} {2} {3} {4}", fromHostId, toHostId, fromActorId, toActorId, peer==null?"NULL":""));
                 if (peer == null)
-                    Global.NetManager.RemovePeerId(toHostId);
-                else
-                    Global.NetManager.Deregister(peer);
-                cb?.Invoke(null);
-                return;
-            }
+                {
+                    Log.Warn(string.Format("Rpc:cannot_find_peer_and_create {0} => {1} ({2})", fromHostId, toHostId, netType));
+                    peer = Global.NetManager.CreatePeer(toHostId, toPeerAddr, netType);
+                }
 
-            if (msg.HasCallback())
+                if (peer == null || !peer.IsActive)
+                {
+                    Log.Error(string.Format("Rpc:peer disconnected {0}", toHostId), toPeerAddr, netType);
+                    //这里可以尝试把global以及redis状态清空
+                    if (peer == null)
+                        Global.NetManager.RemovePeerId(toHostId);
+                    else
+                        Global.NetManager.Deregister(peer);
+                    cb?.Invoke(null);
+                    return;
+                }
+
+                if (msg.HasCallback())
+                {
+                    AddCallbackRpc(cmd);
+                }
+
+                Global.NetManager.Send(peer, packet);
+            }
+            catch(Exception ex)
             {
-                AddCallbackRpc(cmd);
+                Log.Error(ex);
             }
-
-            Global.NetManager.Send(peer, packet); 
         }
 
-        public void RpcCallback(ulong protoId, uint protoCode, ulong fromHostId, ulong toHostId, ulong fromActorId, ulong toActorId, NetworkType netType, IMessage cbMsg)
-        {  
-            var packet = Packet.Create(protoId, protoCode, fromHostId, toHostId, fromActorId, toActorId, netType, cbMsg.GetType(), RpcUtil.Serialize(cbMsg));
+        public void RpcCallback(ulong protoId, int protoCode, ulong fromHostId, ulong toHostId, ulong fromActorId, ulong toActorId, NetworkType netType, IMessage cbMsg)
+        {
+            try
+            {
+                var packet = Packet.Create(protoId, -Math.Abs(protoCode), fromHostId, toHostId, fromActorId, toActorId, netType, cbMsg.GetType(), RpcUtil.Serialize(cbMsg));
 
             //如果是同进程，则本地调用
             if (fromHostId == toHostId)
             {
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     Global.Host.CallMethod(packet);
                     return;
@@ -278,34 +287,40 @@ namespace Fenix
                 }
             }
 
-            //如果是客户端，则直接用remote netpeer返回包
-            //如果是服务端，则用local netpeer返回包
-            bool isClient = Global.IdManager.IsClientHost(toHostId);
+                //如果是客户端，则直接用remote netpeer返回包
+                //如果是服务端，则用local netpeer返回包
+                bool isClient = Global.IdManager.IsClientHost(toHostId);
 
-            //否则通过网络调用
-            var peer = isClient ? Global.NetManager.GetRemotePeerById(toHostId, netType) : Global.NetManager.GetLocalPeerById(toHostId, netType);
-            if (peer == null)
-            {
-                Log.Warn(string.Format("RpcCallback:cannot_find_peer_and_create {0} => {1} ({2}", fromHostId, toHostId, netType));
-                peer = Global.NetManager.CreatePeer(toHostId, null, netType);
+                //否则通过网络调用
+                var peer = isClient ? Global.NetManager.GetRemotePeerById(toHostId, netType) : Global.NetManager.GetLocalPeerById(toHostId, netType);
+
+                if (peer == null)
+                {
+                    Log.Warn(string.Format("RpcCallback:cannot_find_peer_and_create {0} => {1} ({2}", fromHostId, toHostId, netType));
+                    peer = Global.NetManager.CreatePeer(toHostId, null, netType);
+                }
+
+                if (peer == null || !peer.IsActive)
+                {
+                    Log.Error(string.Format("RpcCallback:peer disconnected {0}", toHostId));
+                    //这里可以尝试把global以及redis状态清空
+                    if (peer == null)
+                        Global.NetManager.RemovePeerId(toHostId);
+                    else
+                        Global.NetManager.Deregister(peer);
+                    return;
+                }
+
+                //Log.Info(string.Format("{0} {1} {2} {3} {4}", Global.Host.Id, toHostId,
+                //    Global.TypeManager.GetActorType(fromActorId).Name, Global.TypeManager.GetActorType(toActorId).Name,
+                //    peer == null ? "NULL" : ""));
+
+                Global.NetManager.Send(peer, packet);
             }
-
-            if (peer == null || !peer.IsActive)
+            catch(Exception ex)
             {
-                Log.Error(string.Format("RpcCallback:peer disconnected {0}", toHostId));
-                //这里可以尝试把global以及redis状态清空
-                if(peer == null)
-                    Global.NetManager.RemovePeerId(toHostId);
-                else
-                    Global.NetManager.Deregister(peer);
-                return;
+                Log.Error(ex);
             }
-
-            //Log.Info(string.Format("{0} {1} {2} {3} {4}", Global.Host.Id, toHostId,
-            //    Global.TypeManager.GetActorType(fromActorId).Name, Global.TypeManager.GetActorType(toActorId).Name,
-            //    peer == null ? "NULL" : ""));
-
-            Global.NetManager.Send(peer, packet);
         }
 
         public ulong AddTimer(long delay, long interval, Action tickCallback)
