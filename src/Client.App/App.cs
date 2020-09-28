@@ -144,6 +144,7 @@ namespace Client
                         Global.IdManager.RegisterActor(avatar, hostId, false);
 
                         masterapp.RegisterClient(host.Id, host.UniqueName, (code, hostInfo) => {
+                            Global.IdManager.RegisterHostInfo(hostInfo);
                             masterapp.BindClientActor(uid, (code3) =>
                             {
                                 if (code3 != DefaultErrCode.OK)

@@ -210,7 +210,7 @@ namespace Fenix
                 internalThread = null;
             }
             catch(Exception ex)
-            { 
+            {
             }
 
             foreach (var a in this.actorDic.Values)

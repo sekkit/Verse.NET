@@ -241,7 +241,6 @@ namespace Fenix
             }
         } 
 
-        //kcp目前不支持epoll/kqueue/IOCP，所以只在客户端上用用
         public NetPeer RegisterKcp(Ukcp ukcp)
         {  
             var id = ukcp.GetUniqueId();

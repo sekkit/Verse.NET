@@ -9,6 +9,7 @@
     ],
     "HeartbeatIntervalMS": 5000,
     "ClientNetwork": 2,
+    "ServerNetwork": 2,
     "DuplexMode": true
   },
   {
@@ -22,6 +23,7 @@
     ],
     "HeartbeatIntervalMS": 5000,
     "ClientNetwork": 2,
+    "ServerNetwork": 2,
     "DuplexMode": true
   },
   {
@@ -35,6 +37,7 @@
     ],
     "HeartbeatIntervalMS": 5000,
     "ClientNetwork": 2,
+    "ServerNetwork": 2,
     "DuplexMode": true
   },
   {
@@ -48,6 +51,7 @@
     ],
     "HeartbeatIntervalMS": 5000,
     "ClientNetwork": 2,
+    "ServerNetwork": 2,
     "DuplexMode": true
   },
   {
@@ -61,6 +65,7 @@
     ],
     "HeartbeatIntervalMS": 5000,
     "ClientNetwork": 2,
+    "ServerNetwork": 2,
     "DuplexMode": true
   }
 ]
