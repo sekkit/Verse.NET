@@ -3,7 +3,7 @@
 export cwdpath=$(pwd)
 export curpath=${cwdpath}/..
 
-export CLIENT_PATH=${curpath}/src/Fenix.Gen/bin/Debug/netcoreapp3.1/Fenix.Gen.dll
+export CLIENT_PATH=${curpath}/CodeGen/net5.0/Fenix.CodeGen.dll
 
 dotnet ${CLIENT_PATH} -r ${curpath}
 dotnet ${CLIENT_PATH} -c ${curpath}
