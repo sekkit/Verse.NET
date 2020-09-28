@@ -15,7 +15,7 @@ namespace Fenix
 
             var rootFolder = Directory.GetCurrentDirectory();
 
-            string rootPath = Path.Combine(Path.Combine(rootFolder, "../../"));
+            string rootPath = Path.Combine(Path.Combine(rootFolder, "../../../"));
 
             if (args.Length == 2)
                 rootPath = args[1];
@@ -33,7 +33,8 @@ namespace Fenix
                     Path.Combine(rootPath, "src/Client.App"),
                     Path.Combine(rootPath, "src/Server.App"));
             }
-            else if (args.Length != 2 || args.First() == "-c")
+            
+            if (args.Length != 2 || args.First() == "-c")
             {
                 var resolver = new DefaultAssemblyResolver();
                 resolver.AddSearchDirectory(Path.Combine(rootPath, @"bin/Client.App/net5.0/"));
@@ -44,7 +45,8 @@ namespace Fenix
                 //Gen.AutogenActor(asmClientApp, false, sharedClientPath, sharedServerPath, clientPath, serverPath);
                 Gen2.AutogenActor(ad, false, sharedClientPath, sharedServerPath, clientPath, serverPath);
             }
-            else if (args.Length != 2 || args.First() == "-s")
+            
+            if (args.Length != 2 || args.First() == "-s")
             {
                 Assembly asmServerApp = Assembly.LoadFrom(Path.Combine(rootPath, "bin/Server.App/net5.0/Server.App.dll"));
                 Gen.AutogenActor(asmServerApp, true, sharedClientPath, sharedServerPath, clientPath, serverPath);
