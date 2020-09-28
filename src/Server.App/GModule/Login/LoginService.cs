@@ -42,7 +42,7 @@ namespace Server.GModule
         [ServerApi]
         public async Task Login(string username, string password, string extraData, Action<ErrCode, string, ulong, string, string> callback)
         {
-            Log.Info(string.Format("login {0} {1}", username, password));
+            Log.Info(string.Format("login_prepare {0} {1}", username, password));
             var loginData = LoginDb.Get<long>(username);
             if (loginData == -1)
             {
@@ -57,7 +57,7 @@ namespace Server.GModule
                 return;
             }
 
-            LoginDb.Set(username, (long)-1, expireSec:3);
+            LoginDb.SetWithoutLock(username, (long)-1, expireSec:3);
 
             //验证用户db，成功则登陆
             var account = AccountDb.Get<Account>(username);
@@ -127,9 +127,11 @@ namespace Server.GModule
                     Global.IdManager.GetExtAddress(hostAddr)
                 );
 
-                LoginDb.Set(username, TimeUtil.GetTimeStampMS(), expireSec: 3600);
+                LoginDb.SetWithoutLock(username, TimeUtil.GetTimeStampMS(), expireSec: 3600);
                 return;
             }
+
+            Log.Info("login_create_actor", account.uid);
 
             //如果不存在，则申请创建一个
             var svc = GetService<MasterServiceRef>();
@@ -161,7 +163,7 @@ namespace Server.GModule
                     Global.IdManager.GetExtAddress(hostAddr)
                 );
 
-                LoginDb.Set(username, TimeUtil.GetTimeStampMS(), expireSec: 3600);
+                LoginDb.SetWithoutLock(username, TimeUtil.GetTimeStampMS(), expireSec: 3600);
             });
         }
 

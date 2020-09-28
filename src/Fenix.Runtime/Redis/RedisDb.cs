@@ -289,12 +289,12 @@ namespace Fenix.Redis
             if (value == null)
                 return false;
             bool result = false;
+            string redisKey = FormatKey(key);
+            RedisValue token = Guid.NewGuid().ToString();// Environment.MachineName;
+            RedisKey lockKey = redisKey + "_lock";
             try
             {
-                string redisKey = FormatKey(key);
-
-                RedisValue token = Guid.NewGuid().ToString();// Environment.MachineName;
-                RedisKey lockKey = redisKey + "_lock";
+                
                 int lockCounter = 0;
                 TimeSpan? expireSeconds = (expireSec == null || !expireSec.HasValue) ? DefaultExpiry() : TimeSpan.FromSeconds(expireSec.Value);
                 
@@ -322,7 +322,7 @@ namespace Fenix.Redis
                     }
 
                     break;
-                } 
+                }
             }
             catch(Exception ex)
             {

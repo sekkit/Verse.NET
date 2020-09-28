@@ -417,9 +417,6 @@ namespace Fenix
                 IdData.mNAME2ID.TryRemove(cName, out var _);
             }
 
-            
-
-
 #if USE_REDIS_IDMANAGER
 #if !CLIENT
             CacheANAME2CNAME.Delete(aName);
