@@ -144,7 +144,8 @@ namespace Client
                         Global.IdManager.RegisterActor(avatar, hostId, false);
                         if (!isSameHost)
                             loginapp.Disconnect();
-                        masterapp.RegisterClient(host.Id, host.UniqueName, (code, hostInfo) => {
+                        masterapp.RegisterClient(host.Id, host.UniqueName, (code, hostInfo) =>
+                        {
                             Global.IdManager.RegisterHostInfo(hostInfo);
                             masterapp.BindClientActor(uid, (code3) =>
                             {

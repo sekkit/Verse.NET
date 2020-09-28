@@ -187,6 +187,8 @@ namespace Fenix
         public void ChangePeerId(ulong oldHostId, ulong newHostId, string hostName, string address)
         {
             Log.Info(string.Format("ChangePeer: {0}=>{1} {2} {3}", oldHostId, newHostId, hostName, address));
+
+            Global.IdManager.AddAddressID(oldHostId, newHostId);
             if (tcpPeers.ContainsKey(oldHostId))
             {
                 var peer = tcpPeers[oldHostId];

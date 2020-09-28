@@ -343,7 +343,12 @@ namespace Fenix
                     {
                         a.OnClientDisable();
                     }
+
                     Global.IdManager.RemoveClientHost(hId);
+                }
+                else
+                {
+                    Global.IdManager.RemoveClientHost(peer.ConnId);
                 }
             }
 #endif
