@@ -1278,9 +1278,9 @@ namespace Fenix
 
         public void PrintInfo()
         {
-            Log.Info("~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+            Log.Info("**********IDMANAGER*********");
             Log.Info(this.IdData.ToString());
-            Log.Info("~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+            Log.Info("****************************");
         }
 
 #endregion
