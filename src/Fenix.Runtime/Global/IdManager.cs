@@ -1079,12 +1079,12 @@ namespace Fenix
 
         public void SyncWithCache()
         {
-            var hname2addr = new Dictionary<string, string>();
-            var addr2hname = new Dictionary<string, string>();
+#if USE_REDIS_IDMANAGER
+            var hname2addr  = new Dictionary<string, string>();
+            var addr2hname  = new Dictionary<string, string>();
             var aname2hname = new Dictionary<string, string>();
             var hname2aname = new Dictionary<string, List<string>>();
             var aname2cname = new Dictionary<string, string>();
-#if USE_REDIS_IDMANAGER
             foreach (var key in CacheHNAME2ADDR.Keys())
             {
                 var hName = key;
@@ -1139,7 +1139,7 @@ namespace Fenix
             {
                 if(!this.mHNAME2ANAME.ContainsKey(kv.Key))
                     this.mHNAME2ANAME[kv.Key] = new ConcurrentDictionary<string, string>();
-                foreach (var aName in kv.Value)
+                foreach (var aName in kv.Value.Keys)
                     this.mHNAME2ANAME[kv.Key][aName] = kv.Key;
             }
 
@@ -1237,7 +1237,7 @@ namespace Fenix
             {
                 if (!this.mHNAME2ANAME.ContainsKey(kv.Key))
                     this.mHNAME2ANAME[kv.Key] = new ConcurrentDictionary<string, string>();
-                foreach (var aName in kv.Value)
+                foreach (var aName in kv.Value.Keys)
                     this.mHNAME2ANAME[kv.Key][aName] = kv.Key;
             }
 
