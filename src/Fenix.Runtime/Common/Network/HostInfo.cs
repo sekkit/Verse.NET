@@ -30,6 +30,12 @@ namespace Fenix
         [Key(6)]
         public Dictionary<ulong, string> ServiceId2TName { get; set; }
 
+        [Key(7)]
+        public Dictionary<ulong, string> ActorId2Name { get; set; }
+
+        [Key(8)]
+        public Dictionary<ulong, string> ActorId2TName { get; set; }
+
         public override byte[] Pack()
         {
             return MessagePackSerializer.Serialize<HostInfo>(this);

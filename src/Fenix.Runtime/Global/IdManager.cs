@@ -79,7 +79,7 @@ namespace Fenix
                 mADDR2HNAME[kv.Value] = kv.Key;
 
             foreach (var kv in mHNAME2ANAME)
-                foreach(var aName in kv.Value)
+                foreach(var aName in kv.Value.Keys)
                     mANAME2HNAME[aName] = kv.Key;
 
             foreach (var kv in mID2NAME)
@@ -99,11 +99,11 @@ namespace Fenix
             foreach (var kv in from.mHNAME2ADDR)
                 mHNAME2ADDR[kv.Key] = kv.Value;
             foreach (var kv in from.mHNAME2ANAME)
-                foreach (var aName in kv.Value)
+                foreach (var aName in kv.Value.Keys)
                 {
                     if (!mHNAME2ANAME.ContainsKey(kv.Key))
-                        mHNAME2ANAME[kv.Key] = new HashSet<string>();
-                    mHNAME2ANAME[kv.Key].Add(aName);
+                        mHNAME2ANAME[kv.Key] = new ConcurrentDictionary<string, string>();
+                    mHNAME2ANAME[kv.Key][aName] = kv.Key;
                 }
             foreach (var kv in from.mANAME2TNAME)
                 mANAME2TNAME[kv.Key] = kv.Value;
@@ -648,7 +648,7 @@ namespace Fenix
                 IdData.mANAME2HNAME[aName] = hName;
                 if (!IdData.mHNAME2ANAME.ContainsKey(hName))
                     IdData.mHNAME2ANAME[hName] = new ConcurrentDictionary<string, string>();
-                mHNAME2ANAME[hName][aName] = hName;
+                IdData.mHNAME2ANAME[hName][aName] = hName;
 
                 IdData.mANAME2TNAME[aName] = aTypeName;
 
@@ -700,7 +700,7 @@ namespace Fenix
                 return false;
             IdData.mANAME2HNAME.TryRemove(aName, out var hName); 
             if(hName != null)
-                IdData.mHNAME2ANAME[hName].Remove(aName);
+                IdData.mHNAME2ANAME[hName].TryRemove(aName, out var _);
             IdData.mANAME2TNAME.TryRemove(aName, out var _);
 
             RemoveNameId(aName);
@@ -744,7 +744,7 @@ namespace Fenix
              
             if(IdData.mHNAME2ANAME.TryRemove(hName, out var aNames))
             { 
-                foreach (var aName in aNames)
+                foreach (var aName in aNames.Keys)
                 {
                     IdData.mANAME2HNAME.TryRemove(aName, out var _);
                     IdData.mANAME2TNAME.TryRemove(aName, out string tname);
@@ -1003,9 +1003,9 @@ namespace Fenix
             hostInfo.HostAddr = Global.IdManager.GetHostAddr(hostId);
             hostInfo.HostExtAddr = Global.IdManager.GetExtAddress(Global.IdManager.GetHostAddr(hostId));
             hostInfo.ServiceId2Name = svcNameList.ToDictionary(m => GetId(m), m => m);
-            hostInfo.ServiceId2TName = svcNameList.ToDictionary(m => GetActorTypename(GetId(m)), m => m);
+            hostInfo.ServiceId2TName = svcNameList.ToDictionary(m => GetId(m), m => GetActorTypename(GetId(m)));
             hostInfo.ActorId2Name = actorNameList.ToDictionary(m => GetId(m), m => m);
-            hostInfo.ActorId2TName = actorNameList.ToDictionary(m => GetActorTypename(GetId(m)), m => m);
+            hostInfo.ActorId2TName = actorNameList.ToDictionary(m => GetId(m), m => GetActorTypename(GetId(m)));
             Log.Warn("GetHostInfo", Newtonsoft.Json.JsonConvert.SerializeObject(hostInfo));
             return hostInfo;
         }
@@ -1056,8 +1056,8 @@ namespace Fenix
                 IdData.mANAME2HNAME[kv.Value] = hostInfo.HostName;
                 if (!IdData.mHNAME2ANAME.ContainsKey(hostInfo.HostName))
                     IdData.mHNAME2ANAME[hostInfo.HostName] = new ConcurrentDictionary<string, string>();
-                if (!this.mHNAME2ANAME[hostInfo.HostName].ContainsKey(kv.Value))
-                    this.mHNAME2ANAME[hostInfo.HostName][kv.Value] = hostInfo.HostName;
+                if (!IdData.mHNAME2ANAME[hostInfo.HostName].ContainsKey(kv.Value))
+                    IdData.mHNAME2ANAME[hostInfo.HostName][kv.Value] = hostInfo.HostName;
             }
 
             foreach (var kv in hostInfo.ServiceId2TName)
