@@ -23,7 +23,7 @@ namespace Fenix.Common.Message
         {
             get => _callback as Callback;
             set => _callback = value;
-        }
+        } 
 
         [MessagePackObject]
         public class Callback : IMessage

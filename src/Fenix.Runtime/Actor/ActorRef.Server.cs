@@ -43,7 +43,7 @@ namespace Fenix
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = OpCode.ADD_ACTOR_ID_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -89,7 +89,7 @@ namespace Fenix
             if (this.FromHostId == toHostId)
             {
                 var protoCode = OpCode.ADD_ACTOR_ID_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -141,7 +141,7 @@ namespace Fenix
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = OpCode.ADD_CLIENT_ACTOR_ID_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -188,7 +188,7 @@ namespace Fenix
             if (this.FromHostId == toHostId)
             {
                 var protoCode = OpCode.ADD_CLIENT_ACTOR_ID_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -241,7 +241,7 @@ namespace Fenix
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = OpCode.ADD_CLIENT_HOST_ID_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -287,7 +287,7 @@ namespace Fenix
             if (this.FromHostId == toHostId)
             {
                 var protoCode = OpCode.ADD_CLIENT_HOST_ID_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -340,7 +340,7 @@ namespace Fenix
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = OpCode.ADD_HOST_ID_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -386,7 +386,7 @@ namespace Fenix
             if (this.FromHostId == toHostId)
             {
                 var protoCode = OpCode.ADD_HOST_ID_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -438,7 +438,7 @@ namespace Fenix
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = OpCode.BIND_CLIENT_ACTOR_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -481,7 +481,7 @@ namespace Fenix
             if (this.FromHostId == toHostId)
             {
                 var protoCode = OpCode.BIND_CLIENT_ACTOR_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -531,7 +531,7 @@ namespace Fenix
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = OpCode.CREATE_ACTOR_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -575,7 +575,7 @@ namespace Fenix
             if (this.FromHostId == toHostId)
             {
                 var protoCode = OpCode.CREATE_ACTOR_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -626,7 +626,7 @@ namespace Fenix
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = OpCode.GET_ID_ALL_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -669,7 +669,7 @@ namespace Fenix
             if (this.FromHostId == toHostId)
             {
                 var protoCode = OpCode.GET_ID_ALL_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -720,7 +720,7 @@ namespace Fenix
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = OpCode.MIGRATE_ACTOR_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -763,7 +763,7 @@ namespace Fenix
             if (this.FromHostId == toHostId)
             {
                 var protoCode = OpCode.MIGRATE_ACTOR_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -812,7 +812,7 @@ namespace Fenix
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = OpCode.ON_ADD_ACTOR_ID_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -855,7 +855,7 @@ namespace Fenix
             if (this.FromHostId == toHostId)
             {
                 var protoCode = OpCode.ON_ADD_ACTOR_ID_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -904,7 +904,7 @@ namespace Fenix
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = OpCode.ON_ADD_CLIENT_ACTOR_ID_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -950,7 +950,7 @@ namespace Fenix
             if (this.FromHostId == toHostId)
             {
                 var protoCode = OpCode.ON_ADD_CLIENT_ACTOR_ID_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -1002,7 +1002,7 @@ namespace Fenix
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = OpCode.ON_ADD_CLIENT_HOST_ID_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -1047,7 +1047,7 @@ namespace Fenix
             if (this.FromHostId == toHostId)
             {
                 var protoCode = OpCode.ON_ADD_CLIENT_HOST_ID_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -1098,7 +1098,7 @@ namespace Fenix
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = OpCode.ON_ADD_HOST_ID_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -1141,7 +1141,7 @@ namespace Fenix
             if (this.FromHostId == toHostId)
             {
                 var protoCode = OpCode.ON_ADD_HOST_ID_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -1190,7 +1190,7 @@ namespace Fenix
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = OpCode.ON_BEFORE_DISCONNECT_NTF;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -1233,7 +1233,7 @@ namespace Fenix
             if (this.FromHostId == toHostId)
             {
                 var protoCode = OpCode.ON_BEFORE_DISCONNECT_NTF;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -1282,7 +1282,7 @@ namespace Fenix
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = OpCode.ON_REMOVE_ACTOR_ID_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -1325,7 +1325,7 @@ namespace Fenix
             if (this.FromHostId == toHostId)
             {
                 var protoCode = OpCode.ON_REMOVE_ACTOR_ID_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -1374,7 +1374,7 @@ namespace Fenix
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = OpCode.ON_REMOVE_CLIENT_HOST_ID_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -1417,7 +1417,7 @@ namespace Fenix
             if (this.FromHostId == toHostId)
             {
                 var protoCode = OpCode.ON_REMOVE_CLIENT_HOST_ID_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -1466,7 +1466,7 @@ namespace Fenix
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = OpCode.ON_REMOVE_HOST_ID_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -1509,7 +1509,7 @@ namespace Fenix
             if (this.FromHostId == toHostId)
             {
                 var protoCode = OpCode.ON_REMOVE_HOST_ID_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -1545,7 +1545,7 @@ namespace Fenix
            if (this.FromHostId == toHostId)
            {
                 var protoCode = OpCode.ON_SERVER_ACTOR_ENABLE_NTF;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -1590,7 +1590,7 @@ namespace Fenix
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = OpCode.RECONNECT_SERVER_ACTOR_NTF;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -1639,7 +1639,7 @@ namespace Fenix
             if (this.FromHostId == toHostId)
             {
                 var protoCode = OpCode.RECONNECT_SERVER_ACTOR_NTF;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -1695,7 +1695,7 @@ namespace Fenix
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = OpCode.REGISTER_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -1739,7 +1739,7 @@ namespace Fenix
             if (this.FromHostId == toHostId)
             {
                 var protoCode = OpCode.REGISTER_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -1790,7 +1790,7 @@ namespace Fenix
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = OpCode.REGISTER_CLIENT_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -1834,7 +1834,7 @@ namespace Fenix
             if (this.FromHostId == toHostId)
             {
                 var protoCode = OpCode.REGISTER_CLIENT_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -1884,7 +1884,7 @@ namespace Fenix
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = OpCode.REMOVE_ACTOR_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -1927,7 +1927,7 @@ namespace Fenix
             if (this.FromHostId == toHostId)
             {
                 var protoCode = OpCode.REMOVE_ACTOR_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -1976,7 +1976,7 @@ namespace Fenix
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = OpCode.REMOVE_ACTOR_ID_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -2019,7 +2019,7 @@ namespace Fenix
             if (this.FromHostId == toHostId)
             {
                 var protoCode = OpCode.REMOVE_ACTOR_ID_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -2068,7 +2068,7 @@ namespace Fenix
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = OpCode.REMOVE_CLIENT_ACTOR_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -2112,7 +2112,7 @@ namespace Fenix
             if (this.FromHostId == toHostId)
             {
                 var protoCode = OpCode.REMOVE_CLIENT_ACTOR_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -2162,7 +2162,7 @@ namespace Fenix
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = OpCode.REMOVE_CLIENT_HOST_ID_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -2206,7 +2206,7 @@ namespace Fenix
             if (this.FromHostId == toHostId)
             {
                 var protoCode = OpCode.REMOVE_CLIENT_HOST_ID_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -2256,7 +2256,7 @@ namespace Fenix
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = OpCode.REMOVE_HOST_ID_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -2300,7 +2300,7 @@ namespace Fenix
             if (this.FromHostId == toHostId)
             {
                 var protoCode = OpCode.REMOVE_HOST_ID_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -2351,7 +2351,7 @@ namespace Fenix
                      t.TrySetResult(cbMsg);
                 }; 
                 var protoCode = OpCode.SAY_HELLO_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);
@@ -2394,7 +2394,7 @@ namespace Fenix
             if (this.FromHostId == toHostId)
             {
                 var protoCode = OpCode.SAY_HELLO_REQ;
-                if (protoCode < OpCode.CALL_ACTOR_METHOD)
+                if (Math.Abs(protoCode) < OpCode.CALL_ACTOR_METHOD)
                 {
                     var peer = Global.NetManager.GetRemotePeerById(this.FromHostId, this.NetType);
                     var context = new RpcContext(null, peer);

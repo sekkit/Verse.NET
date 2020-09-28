@@ -8,8 +8,8 @@ namespace Shared
 {
     public partial class ProtocolCode
     {
-        public const uint __SERVERGMODULE__MATCHSERVICE__FIND_MATCH_REQ = 812430739;
-        public const uint __SERVERGMODULE__MATCHSERVICE__JOIN_MATCH_REQ = 1164987887;
+        public const int __SERVERGMODULE__MATCHSERVICE__FIND_MATCH_REQ = 812430739;
+        public const int __SERVERGMODULE__MATCHSERVICE__JOIN_MATCH_REQ = 1164987887;
     }
 }
 

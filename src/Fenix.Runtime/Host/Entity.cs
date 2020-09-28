@@ -166,8 +166,8 @@ namespace Fenix
             try
             {
                 Log.Info("CallMethodWithParams:Code", protoCode, this.UniqueName);
-                Log.Info("CallMethodWithParams:Name", rpcNativeStubDic[protoCode].Name);
-                rpcNativeStubDic[protoCode].Invoke(this, args);
+                Log.Info("CallMethodWithParams:Name", rpcNativeStubDic[Math.Abs(protoCode)].Name);
+                rpcNativeStubDic[Math.Abs(protoCode)].Invoke(this, args);
             }
             catch(Exception ex)
             {
@@ -181,8 +181,8 @@ namespace Fenix
             try
             {
                 Log.Info("CallMethodWithMsg:Code", protoCode, this.UniqueName);
-                Log.Info("CallMethodWithMsg:Name", rpcStubDic[protoCode].Name);
-                rpcStubDic[protoCode].Invoke(this, args);
+                Log.Info("CallMethodWithMsg:Name", rpcStubDic[Math.Abs(protoCode)].Name);
+                rpcStubDic[Math.Abs(protoCode)].Invoke(this, args);
             }
             catch (Exception ex)
             {
