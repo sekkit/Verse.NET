@@ -142,7 +142,8 @@ namespace Client
 
                         Global.IdManager.RegisterHost(hostId, hostName, hostAddress, hostAddress, false);
                         Global.IdManager.RegisterActor(avatar, hostId, false);
-
+                        if (!isSameHost)
+                            loginapp.Disconnect();
                         masterapp.RegisterClient(host.Id, host.UniqueName, (code, hostInfo) => {
                             Global.IdManager.RegisterHostInfo(hostInfo);
                             masterapp.BindClientActor(uid, (code3) =>
@@ -166,8 +167,8 @@ namespace Client
 
                                 Global.NetManager.PrintPeerInfo("# Master.App: BindClientActor called");
                                 Log.Info("Avatar已经和服务端绑定");
-                                if (!isSameHost)
-                                    loginapp.Disconnect();
+                                //if (!isSameHost)
+                                //    loginapp.Disconnect();
                                 callback?.Invoke((ErrCode)code3, avatar);
                             });
                         });

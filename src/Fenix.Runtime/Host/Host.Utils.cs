@@ -29,7 +29,7 @@ namespace Fenix
             }
 
             var actorId = Global.IdManager.GetActorId(name);
-            if (this.actorDic.TryGetValue(actorId, out var a))
+            if (actorId != 0 && this.actorDic.TryGetValue(actorId, out var a))
                 return a;
 
             var newActor = Actor.Create(type, name);

@@ -452,7 +452,10 @@ namespace Fenix
             IdData.mANAME2CNAME[actorName] = cName;
             IdData.mCNAME2ANAME[cName] = actorName;
             if (address != null)
+            {
                 IdData.mCNAME2ADDR[cName] = address;
+                IdData.mADDR2CNAME[address] = cName;
+            }
 
 #if USE_REDIS_IDMANAGER
 #if !CLIENT
@@ -512,6 +515,7 @@ namespace Fenix
             var hostName = GetHostName(hostId);
             if (hostName == null)
                 return "";
+
             if (!isClient)
             {
                 if (IdData.mHNAME2ADDR.ContainsKey(hostName))
@@ -583,6 +587,7 @@ namespace Fenix
         {
             if(IdData.mID2NAME.TryGetValue(id, out var result))
                 return result;
+
 #if USE_REDIS_IDMANAGER
 #if !CLIENT
             return CacheID2NAME.Get(id.ToString());
@@ -694,7 +699,7 @@ namespace Fenix
         public bool RemoveActorId(ulong actorId, bool noReg = false)
         {
             if (actorId == 0)
-                return false;
+                return true;
             var aName = GetName(actorId);
             if (aName == null)
                 return false;
@@ -702,6 +707,9 @@ namespace Fenix
             if(hName != null)
                 IdData.mHNAME2ANAME[hName].TryRemove(aName, out var _);
             IdData.mANAME2TNAME.TryRemove(aName, out var _);
+            
+            if(IdData.mANAME2CNAME.TryRemove(aName, out var cName)) 
+                RemoveClientHost(GetId(cName), noReg);
 
             RemoveNameId(aName);
 #if USE_REDIS_IDMANAGER
@@ -736,6 +744,8 @@ namespace Fenix
 
         public bool RemoveHostId(ulong hostId, bool noReg = false)
         {
+            if (hostId == 0)
+                return true;
             var hName = GetName(hostId);
             if (hName == null)
                 return false;
@@ -1050,26 +1060,47 @@ namespace Fenix
             }
 
 #endif
-            foreach (var kv in hostInfo.ServiceId2Name)
-            {
-                AddNameId(kv.Value, kv.Key);
-                IdData.mANAME2HNAME[kv.Value] = hostInfo.HostName;
-                if (!IdData.mHNAME2ANAME.ContainsKey(hostInfo.HostName))
-                    IdData.mHNAME2ANAME[hostInfo.HostName] = new ConcurrentDictionary<string, string>();
-                if (!IdData.mHNAME2ANAME[hostInfo.HostName].ContainsKey(kv.Value))
-                    IdData.mHNAME2ANAME[hostInfo.HostName][kv.Value] = hostInfo.HostName;
-            }
+            if (hostInfo.ServiceId2Name != null)
+                foreach (var kv in hostInfo.ServiceId2Name)
+                {
+                    AddNameId(kv.Value, kv.Key);
+                    IdData.mANAME2HNAME[kv.Value] = hostInfo.HostName;
+                    if (!IdData.mHNAME2ANAME.ContainsKey(hostInfo.HostName))
+                        IdData.mHNAME2ANAME[hostInfo.HostName] = new ConcurrentDictionary<string, string>();
+                    if (!IdData.mHNAME2ANAME[hostInfo.HostName].ContainsKey(kv.Value))
+                        IdData.mHNAME2ANAME[hostInfo.HostName][kv.Value] = hostInfo.HostName;
+                }
 
-            foreach (var kv in hostInfo.ServiceId2TName)
-            {
-                IdData.mANAME2TNAME[GetName(kv.Key)] = kv.Value;
-            }
+            if (hostInfo.ServiceId2TName != null)
+                foreach (var kv in hostInfo.ServiceId2TName)
+                {
+                    IdData.mANAME2TNAME[GetName(kv.Key)] = kv.Value;
+                }
+
+            if(hostInfo.ActorId2Name != null)
+                foreach (var kv in hostInfo.ActorId2Name)
+                {
+                    AddNameId(kv.Value, kv.Key);
+                    IdData.mANAME2HNAME[kv.Value] = hostInfo.HostName;
+                    if (!IdData.mHNAME2ANAME.ContainsKey(hostInfo.HostName))
+                        IdData.mHNAME2ANAME[hostInfo.HostName] = new ConcurrentDictionary<string, string>();
+                    if (!IdData.mHNAME2ANAME[hostInfo.HostName].ContainsKey(kv.Value))
+                        IdData.mHNAME2ANAME[hostInfo.HostName][kv.Value] = hostInfo.HostName;
+                }
+
+            if (hostInfo.ActorId2TName != null)
+                foreach (var kv in hostInfo.ActorId2TName)
+                {
+                    IdData.mANAME2TNAME[GetName(kv.Key)] = kv.Value;
+                }
 
             return true;
         }
 
         public bool RegisterActorInfo(ActorInfo actorInfo)
         {
+            if (actorInfo.ActorName == "" || actorInfo.ActorName == null)
+                return false;
             AddNameId(actorInfo.ActorName, actorInfo.ActorId);
             RegisterHostInfo(actorInfo.HostInfo);
             return this.RegisterActor(actorInfo.ActorId, actorInfo.ActorName, actorInfo.ActorTypeName, actorInfo.HostInfo.HostId, actorInfo.HostInfo.IsClient, noReg: true); 

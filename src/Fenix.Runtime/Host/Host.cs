@@ -194,8 +194,9 @@ namespace Fenix
             if (IsAlive == false)
                 return;
 
-            foreach (var a in this.actorDic.Keys)
-                this.actorDic[a].Update();
+            foreach (var aId in this.actorDic.Keys)
+                if(this.actorDic.TryGetValue(aId, out var a))
+                    a?.Update();
 
             Global.NetManager?.Update();
         }
@@ -613,7 +614,7 @@ namespace Fenix
                 Global.IdManager.RegisterHost(hostId, hostName, __context.Peer.RemoteAddress.ToIPv4String(), __context.Peer.RemoteAddress.ToIPv4String(), false);
             }
 
-            callback(DefaultErrCode.OK, Global.IdManager.GetHostInfo(this.Id));
+            callback(DefaultErrCode.OK, Global.IdManager.GetHostInfo(this.Id, false));
         } 
 
         [ServerApi]
@@ -634,7 +635,7 @@ namespace Fenix
             }
 
             Global.NetManager.RegisterClient(hostId, hostName, __context.Peer);
-            var hostInfo = Global.IdManager.GetHostInfo(this.Id);
+            var hostInfo = Global.IdManager.GetHostInfo(this.Id, true);
             hostInfo.HostAddr = hostInfo.HostExtAddr;
             callback(DefaultErrCode.OK, hostInfo);
         }
@@ -782,7 +783,7 @@ namespace Fenix
             else
                 HostRefDic[hostId] = this.GetHost(hostName, extAddr);
 
-            var hostInfo = Global.IdManager.GetHostInfo(hostId);
+            var hostInfo = Global.IdManager.GetHostInfo(hostId, true);
 
             //notify all hosts
             foreach (var h in HostRefDic.Values)
@@ -801,7 +802,7 @@ namespace Fenix
         [ServerOnly]
         public async Task RemoveHostId(ulong hostId, string hostName, Action<bool> callback, RpcContext __context)
         {
-            var result = Global.IdManager.RemoveHostId(hostId, noReg:true);
+            var result = Global.IdManager.RemoveHostId(hostId, noReg: true);
            
             HostRefDic.Remove(hostId);
 
