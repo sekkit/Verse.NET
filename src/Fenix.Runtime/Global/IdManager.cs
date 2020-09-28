@@ -42,7 +42,7 @@ namespace Fenix
         public ConcurrentDictionary<string, string> mADDR2HNAME = new ConcurrentDictionary<string, string>();
         
         [Key(1)]
-        public ConcurrentDictionary<string, HashSet<string>> mHNAME2ANAME = new ConcurrentDictionary<string, HashSet<string>>();
+        public ConcurrentDictionary<string, ConcurrentDictionary<string, string>> mHNAME2ANAME = new ConcurrentDictionary<string, ConcurrentDictionary<string, string>>();
         [IgnoreMember]
         public ConcurrentDictionary<string, string> mANAME2HNAME = new ConcurrentDictionary<string, string>();
 
@@ -647,9 +647,8 @@ namespace Fenix
 
                 IdData.mANAME2HNAME[aName] = hName;
                 if (!IdData.mHNAME2ANAME.ContainsKey(hName))
-                    IdData.mHNAME2ANAME[hName] = new HashSet<string>();
-                if (!IdData.mHNAME2ANAME[hName].Contains(aName))
-                    IdData.mHNAME2ANAME[hName].Add(aName);
+                    IdData.mHNAME2ANAME[hName] = new ConcurrentDictionary<string, string>();
+                mHNAME2ANAME[hName][aName] = hName;
 
                 IdData.mANAME2TNAME[aName] = aTypeName;
 
@@ -962,40 +961,51 @@ namespace Fenix
         }
 
 #if !CLIENT
-        public HostInfo GetHostInfo(ulong hostId)
+        public HostInfo GetHostInfo(ulong hostId, bool isServiceOnly = true)
         {
             var hostInfo = new HostInfo();
             //该host包含的所有service的id
             //该host所有service的address
             //该host所有service的名称
-            var aName = GetName(hostId); 
+            var aName = GetName(hostId);
             if (aName == null || aName == "")
                 return hostInfo;
 
-            HashSet<string> aList = null;
-            if(IdData.mHNAME2ANAME.ContainsKey(aName))
+            List<string> aList = null;
+            if (IdData.mHNAME2ANAME.ContainsKey(aName))
             {
-                IdData.mHNAME2ANAME.TryGetValue(aName, out aList); 
+                if (IdData.mHNAME2ANAME.TryGetValue(aName, out var a2hDic))
+                {
+                    aList = a2hDic.Keys.ToList();
+                }
                 hostInfo.IsClient = false;
             }
-            else if(IdData.mCNAME2ANAME.ContainsKey(aName))
+            else if (IdData.mCNAME2ANAME.ContainsKey(aName))
             {
                 IdData.mCNAME2ANAME.TryGetValue(aName, out var name);
-                aList = new HashSet<string>();
-                aList.Add(name);
+                aList = new List<string>() { name };
+
                 hostInfo.IsClient = true;
             }
 
             List<string> svcNameList = new List<string>();
+            List<string> actorNameList = new List<string>();
+
             if (aList != null)
-                svcNameList = aList.Where(m => m.EndsWith("Service")).ToList(); 
+            { 
+                svcNameList = aList.Distinct().Where(m => m.EndsWith("Service")).ToList(); 
+                if(!isServiceOnly)
+                    actorNameList = aList.Distinct().Where(m => !m.EndsWith("Service")).ToList();
+            } 
 
             hostInfo.HostId = hostId;
             hostInfo.HostName = Global.IdManager.GetHostName(hostId);
             hostInfo.HostAddr = Global.IdManager.GetHostAddr(hostId);
             hostInfo.HostExtAddr = Global.IdManager.GetExtAddress(Global.IdManager.GetHostAddr(hostId));
             hostInfo.ServiceId2Name = svcNameList.ToDictionary(m => GetId(m), m => m);
-            hostInfo.ServiceId2TName = svcNameList.ToDictionary(m => GetId(m), m => m);
+            hostInfo.ServiceId2TName = svcNameList.ToDictionary(m => GetActorTypename(GetId(m)), m => m);
+            hostInfo.ActorId2Name = actorNameList.ToDictionary(m => GetId(m), m => m);
+            hostInfo.ActorId2TName = actorNameList.ToDictionary(m => GetActorTypename(GetId(m)), m => m);
             Log.Warn("GetHostInfo", Newtonsoft.Json.JsonConvert.SerializeObject(hostInfo));
             return hostInfo;
         }
@@ -1045,9 +1055,9 @@ namespace Fenix
                 AddNameId(kv.Value, kv.Key);
                 IdData.mANAME2HNAME[kv.Value] = hostInfo.HostName;
                 if (!IdData.mHNAME2ANAME.ContainsKey(hostInfo.HostName))
-                    IdData.mHNAME2ANAME[hostInfo.HostName] = new HashSet<string>();
-                if (!IdData.mHNAME2ANAME[hostInfo.HostName].Contains(kv.Value))
-                    IdData.mHNAME2ANAME[hostInfo.HostName].Add(kv.Value);
+                    IdData.mHNAME2ANAME[hostInfo.HostName] = new ConcurrentDictionary<string, string>();
+                if (!this.mHNAME2ANAME[hostInfo.HostName].ContainsKey(kv.Value))
+                    this.mHNAME2ANAME[hostInfo.HostName][kv.Value] = hostInfo.HostName;
             }
 
             foreach (var kv in hostInfo.ServiceId2TName)
@@ -1126,7 +1136,12 @@ namespace Fenix
                     IdData.mANAME2HNAME.TryRemove(k, out var _);
 
             foreach (var kv in hname2aname)
-                IdData.mHNAME2ANAME[kv.Key] = kv.Value;
+            {
+                if(!this.mHNAME2ANAME.ContainsKey(kv.Key))
+                    this.mHNAME2ANAME[kv.Key] = new ConcurrentDictionary<string, string>();
+                foreach (var aName in kv.Value)
+                    this.mHNAME2ANAME[kv.Key][aName] = kv.Key;
+            }
 
             foreach (var key in CacheANAME2TNAME.Keys())
             {
@@ -1218,8 +1233,13 @@ namespace Fenix
                 if (!aname2hname.ContainsKey(k))
                     IdData.mANAME2HNAME.TryRemove(k, out var _); 
 
-            foreach(var kv in hname2aname) 
-                IdData.mHNAME2ANAME[kv.Key] = kv.Value;
+            foreach (var kv in hname2aname)
+            {
+                if (!this.mHNAME2ANAME.ContainsKey(kv.Key))
+                    this.mHNAME2ANAME[kv.Key] = new ConcurrentDictionary<string, string>();
+                foreach (var aName in kv.Value)
+                    this.mHNAME2ANAME[kv.Key][aName] = kv.Key;
+            }
 
             foreach (var key in await CacheANAME2TNAME.KeysAsync())
             {
