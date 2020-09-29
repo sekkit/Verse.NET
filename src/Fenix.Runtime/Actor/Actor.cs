@@ -363,7 +363,6 @@ namespace Fenix
             Log.Info(string.Format("on_client_enable", this.UniqueName, this.clientActor));
 
             this.onClientEnable();
-
             foreach (var m in this.mModuleDic.Values)
                 m.onClientEnable();
 
@@ -377,7 +376,6 @@ namespace Fenix
             Log.Info(string.Format("on_client_disable", this.UniqueName, this.UniqueName));
 
             this.onClientDisable();
-
             foreach (var m in this.mModuleDic.Values)
                 m.onClientDisable();
         }

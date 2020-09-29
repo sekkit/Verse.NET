@@ -66,7 +66,10 @@ namespace Fenix
             }
 
             if (toAddr == null)
+            {
+                Log.Error("no_addr_found", toHostId, toActorId, toAddr, isClient);
                 return null;
+            }
 
             var obj = (ActorRef)Activator.CreateInstance(refType);
             obj.toHostId = toHostId;

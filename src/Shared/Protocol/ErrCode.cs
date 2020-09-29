@@ -20,6 +20,6 @@ namespace Shared.Protocol
         LOGIN_USER_IS_ACTIVE      = -1004,
         LOGIN_TOO_FREQ            = -1005,
 
-        DOWN_CODE                  = -32768
+        DOWN_CODE                 = -32768,
     }
 }

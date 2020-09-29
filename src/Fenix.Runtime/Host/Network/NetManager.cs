@@ -187,7 +187,6 @@ namespace Fenix
         public void ChangePeerId(ulong oldHostId, ulong newHostId, string hostName, string address)
         {
             Log.Info(string.Format("ChangePeer: {0}=>{1} {2} {3}", oldHostId, newHostId, hostName, address));
-
             Global.IdManager.AddAddressID(oldHostId, newHostId);
             if (tcpPeers.ContainsKey(oldHostId))
             {
@@ -238,10 +237,9 @@ namespace Fenix
 #if !CLIENT
                 }
 #endif
-
                 //Global.IdManager.RegisterHost(newHostId, hostName, address); 
             }
-        } 
+        }
 
         public NetPeer RegisterKcp(Ukcp ukcp)
         {  
@@ -499,7 +497,7 @@ namespace Fenix
                         await Task.Delay(1);
                         Log.Info("send_part", i, parts.Count(), part.Length);
                     }
-                } 
+                }
 
                 //var partialBuf = Unpooled.DirectBuffer();
                 //partialBuf.WriteIntLE((int)OpCode.PARTIAL);

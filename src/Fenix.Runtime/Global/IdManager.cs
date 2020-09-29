@@ -91,6 +91,7 @@ namespace Fenix
             foreach (var kv in mID2NAME)
                 mNAME2ID[kv.Value] = kv.Key;
 
+            mADDR2CNAME.Clear();
             foreach (var kv in mCNAME2ADDR)
                 mADDR2CNAME[kv.Value] = kv.Key;
 
@@ -102,15 +103,20 @@ namespace Fenix
         {
             Log.Info("Before0", from.ToString());
             Log.Info("Before1", this.ToString());
+
             foreach (var kv in from.mHNAME2ADDR)
                 mHNAME2ADDR[kv.Key] = kv.Value;
+
             foreach (var kv in from.mHNAME2ANAME)
+            {
                 foreach (var aName in kv.Value.Keys)
                 {
                     if (!mHNAME2ANAME.ContainsKey(kv.Key))
                         mHNAME2ANAME[kv.Key] = new ConcurrentDictionary<string, string>();
                     mHNAME2ANAME[kv.Key][aName] = kv.Key;
                 }
+            }
+
             foreach (var kv in from.mANAME2TNAME)
                 mANAME2TNAME[kv.Key] = kv.Value;
             foreach (var kv in from.mID2NAME)
@@ -122,7 +128,9 @@ namespace Fenix
             foreach (var kv in from.mANAME2CNAME)
                 mANAME2CNAME[kv.Key] = kv.Value;
             foreach (var kv in from.mCNAME2ANAME)
-                mCNAME2ANAME[kv.Key] = kv.Value;
+                if(kv.Key != "")
+                    mCNAME2ANAME[kv.Key] = kv.Value;
+
             Log.Info("After0", this.ToString());
             ReInit();
             Log.Info("After1", this.ToString());
@@ -246,6 +254,8 @@ namespace Fenix
  
         public bool AddAddressID(ulong addrId, ulong id)
         {
+            if (addrId == id)
+                return true;
             IdData.mADDRID2ID[addrId] = id;
             IdData.mID2ADDRID[id] = addrId;
             return true;
@@ -253,8 +263,8 @@ namespace Fenix
 
         public bool RemoveAddressID(ulong addrId, ulong id)
         {
-            IdData.mADDRID2ID[addrId] = id;
-            IdData.mID2ADDRID[id] = addrId;
+            IdData.mADDRID2ID.TryRemove(addrId, out var _id);
+            IdData.mID2ADDRID.TryRemove(id, out var _addrId);
             return true;
         }
 
@@ -265,15 +275,17 @@ namespace Fenix
             else if (Global.Host.Id != host.Id)
                 Debug.Assert(Global.Host.Id == host.Id);
 
-            return RegisterHost(host.Id, host.UniqueName, address, extAddress, isClient);
+            return RegisterHost(host.Id, host.Id, host.UniqueName, address, extAddress, isClient);
         }
 
-        public bool RegisterHost(ulong hostId, string hostName, string address, string extAddress, bool isClient, bool noReg = false)
+        public bool RegisterHost(ulong addrId, ulong hostId, string hostName, string address, string extAddress, bool isClient, bool noReg = false)
         {
             if (!isClient)
             {
                 IdData.mHNAME2ADDR[hostName] = address;
                 IdData.mADDR2HNAME[address] = hostName;
+
+                Global.IdManager.AddAddressID(addrId, hostId);
 
                 AddNameId(hostName, hostId);
 
@@ -386,31 +398,33 @@ namespace Fenix
         }
 #endif
 
-
         public bool RemoveClientHost(ulong clientId, bool noReg=false)
         {
+            ulong id = clientId;
+            ulong addrId = clientId;
             if (IdData.mADDRID2ID.ContainsKey(clientId))
             {
-                IdData.mADDRID2ID.TryRemove(clientId, out var _id);
-                RemoveClientHost(_id, noReg);
+                IdData.mADDRID2ID.TryRemove(clientId, out id);
+                IdData.mID2ADDRID.TryRemove(id, out var _);
+                //RemoveClientHost(id, noReg);
             }
-
+            
             if (IdData.mID2ADDRID.ContainsKey(clientId))
             {
-                IdData.mID2ADDRID.TryRemove(clientId, out var _id);
-                RemoveClientHost(_id, noReg);
+                IdData.mID2ADDRID.TryRemove(clientId, out id);
+                IdData.mADDRID2ID.TryRemove(id, out var _);
+                //RemoveClientHost(id, noReg);
             }
 
-            IdData.mADDRID2ID.TryRemove(clientId, out var _);
-            IdData.mID2ADDRID.TryRemove(clientId, out var _);
+            //IdData.mADDRID2ID.TryRemove(addrId, out var _);
+            //IdData.mID2ADDRID.TryRemove(id, out var _);
 
-            if (IdData.mID2NAME.TryRemove(clientId, out var cName))
+            if (IdData.mID2NAME.TryRemove(id, out var cName))
             {
-                if (IdData.mCNAME2ANAME.TryRemove(cName, out var aName))
-                {
+                if (IdData.mCNAME2ANAME.TryRemove(cName, out var aName)) 
                     IdData.mANAME2CNAME.TryRemove(aName, out var _);
-                    IdData.mANAME2TNAME.TryRemove(aName, out var _);
-                }
+                //IdData.mANAME2TNAME.TryRemove(aName, out var _); 
+
                 if (IdData.mCNAME2ADDR.TryRemove(cName, out var addr))
                     IdData.mADDR2CNAME.TryRemove(addr, out var _);
 
@@ -487,11 +501,11 @@ namespace Fenix
             var cName = GetHostName(clientId);
             IdData.mANAME2CNAME[actorName] = cName;
             IdData.mCNAME2ANAME[cName] = actorName;
-            if (address != null)
-            {
-                IdData.mCNAME2ADDR[cName] = address;
-                IdData.mADDR2CNAME[address] = cName;
-            }
+            //if (address != null)
+            //{
+            //    IdData.mCNAME2ADDR[cName] = address;
+            //    IdData.mADDR2CNAME[address] = cName;
+            //}
 
 #if USE_REDIS_IDMANAGER
 #if !CLIENT
@@ -782,7 +796,24 @@ namespace Fenix
         {
             if (hostId == 0)
                 return true;
-            var hName = GetName(hostId);
+
+            ulong id = hostId;
+            ulong addrId = hostId;
+            if (IdData.mADDRID2ID.ContainsKey(hostId))
+            {
+                IdData.mADDRID2ID.TryRemove(hostId, out id);
+                IdData.mID2ADDRID.TryRemove(id, out var _);
+                //RemoveClientHost(id, noReg);
+            }
+
+            if (IdData.mID2ADDRID.ContainsKey(hostId))
+            {
+                IdData.mID2ADDRID.TryRemove(hostId, out id);
+                IdData.mADDRID2ID.TryRemove(id, out var _);
+                //RemoveClientHost(id, noReg);
+            }
+
+            var hName = GetName(id);
             if (hName == null)
                 return false;
             if (this.IdData.mHNAME2ADDR.TryRemove(hName, out var addr))

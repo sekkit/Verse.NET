@@ -43,8 +43,6 @@ namespace Fenix.Common
         public const int ON_REMOVE_ACTOR_ID_REQ = 0x54;
         public const int GET_ID_ALL_REQ = 0x55;
 
-
-
         public const int CALL_ACTOR_METHOD = 0xff;
     }
 

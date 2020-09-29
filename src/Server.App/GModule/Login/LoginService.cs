@@ -154,7 +154,7 @@ namespace Server.GModule
                 Log.Info(string.Format("login.create_actor@Master.App {0} {1} {2} {3} {4}", code, actorInfo.ActorName, actorInfo.ActorId,
                     Global.IdManager.GetHostName(hostId), hostAddr));
                 
-                ErrCode retCode = (code == DefaultErrCode.OK ? ErrCode.OK : ErrCode.ERROR);
+                var retCode = (code == DefaultErrCode.OK ? ErrCode.OK : ErrCode.ERROR);
                 callback(
                     retCode,
                     actorInfo.ActorName,

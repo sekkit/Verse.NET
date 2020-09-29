@@ -140,7 +140,7 @@ namespace Client
 
                         var avatar = host.CreateActorLocally<Client.Avatar>(uid);
 
-                        Global.IdManager.RegisterHost(hostId, hostName, hostAddress, hostAddress, false);
+                        Global.IdManager.RegisterHost(hostId, hostId, hostName, hostAddress, hostAddress, false);
                         Global.IdManager.RegisterActor(avatar, hostId, false);
                         if (!isSameHost)
                             loginapp.Disconnect();
