@@ -302,7 +302,7 @@ namespace Fenix
             Global.IdManager.RemoveHostId(clientId);
 #endif
             Global.IdManager.RemoveActorId(this.Id);
-
+            
             foreach (var m in this.mModuleDic.Values)
                 m.onDestory();
 

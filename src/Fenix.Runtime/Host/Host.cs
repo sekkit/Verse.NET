@@ -87,8 +87,10 @@ namespace Fenix
                     this.UniqueName = Basic.GenID64().ToString();
                 else
                     this.UniqueName = name;
+
                 this.Id = Basic.GenID64FromName(this.UniqueName);
 
+                this.RegisterGlobalManager(this);
                 Global.NetManager.RegisterHost(this);
             }
 
@@ -682,17 +684,17 @@ namespace Fenix
 
         [ServerApi]
         public async Task RemoveClientActor(ulong actorId, DisconnectReason reason, Action<DefaultErrCode> callback, RpcContext ctx)
-        {
-            var hostId = Global.IdManager.GetHostIdByActorId(actorId);
+        { 
             var clientId = Global.IdManager.GetHostIdByActorId(actorId, true);
 
             if(clientId == 0)
             {
                 callback(DefaultErrCode.OK);
                 return;
-            }    
+            }
 
-            if(hostId != this.Id && hostId != 0)
+            var hostId = Global.IdManager.GetHostIdByActorId(actorId);
+            if (hostId != this.Id && hostId != 0)
             {
                 //call remote host
                 GetHost(hostId)?.RemoveClientActor(actorId, reason, callback);
@@ -710,10 +712,12 @@ namespace Fenix
             var peer = Global.NetManager.GetLocalPeerById(clientId, Global.Config.ClientNetwork); 
             if (peer != null && !Global.NetManager.Deregister(peer))
             {
+                Global.IdManager.RemoveClientHost(clientId);
                 callback(DefaultErrCode.ERROR);
                 return;
             }
 
+            Global.IdManager.RemoveClientHost(clientId);
             callback(DefaultErrCode.OK);
         }
 

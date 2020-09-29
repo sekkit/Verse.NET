@@ -109,11 +109,11 @@ namespace Fenix
 
             foreach (var kv in from.mHNAME2ANAME)
             {
-                foreach (var aName in kv.Value.Keys)
+                foreach (var aName in kv.Value.Keys.ToArray())
                 {
                     if (!mHNAME2ANAME.ContainsKey(kv.Key))
                         mHNAME2ANAME[kv.Key] = new ConcurrentDictionary<string, string>();
-                    mHNAME2ANAME[kv.Key][aName] = kv.Key;
+                    mHNAME2ANAME[kv.Key].TryAdd(aName, kv.Key);
                 }
             }
 
@@ -126,9 +126,10 @@ namespace Fenix
             foreach (var kv in from.mIP2EXTIP)
                 mIP2EXTIP[kv.Key] = kv.Value;
             foreach (var kv in from.mANAME2CNAME)
-                mANAME2CNAME[kv.Key] = kv.Value;
+                if(kv.Key != "" && kv.Value != "" && kv.Key != null && kv.Value != null)
+                    mANAME2CNAME[kv.Key] = kv.Value;
             foreach (var kv in from.mCNAME2ANAME)
-                if(kv.Key != "")
+                if (kv.Key != "" && kv.Value != "" && kv.Key != null && kv.Value != null)
                     mCNAME2ANAME[kv.Key] = kv.Value;
 
             Log.Info("After0", this.ToString());
@@ -464,12 +465,18 @@ namespace Fenix
         { 
             AddNameId(cName, clientId);
 
-            IdData.mCNAME2ADDR[cName] = address;
-            IdData.mADDR2CNAME[address] = cName;
+            if (address != null && address != "")
+            {
+                IdData.mCNAME2ADDR[cName] = address;
+                IdData.mADDR2CNAME[address] = cName;
+            }
 
 #if USE_REDIS_IDMANAGER
 #if !CLIENT
-            return CacheHNAME2ADDR.SetWithoutLock(cName, address);
+            if (address != null && address != "")
+            {
+                return CacheHNAME2ADDR.SetWithoutLock(cName, address);
+            }
 #else
             return true;
 #endif
@@ -698,12 +705,15 @@ namespace Fenix
             {
                 var aName = actorName;
                 var hName = GetName(hostId);
+                if (hName == "")
+                    hName = GetName(hostId);
+
                 AddNameId(aName, actorId);
 
                 IdData.mANAME2HNAME[aName] = hName;
                 if (!IdData.mHNAME2ANAME.ContainsKey(hName))
                     IdData.mHNAME2ANAME[hName] = new ConcurrentDictionary<string, string>();
-                IdData.mHNAME2ANAME[hName][aName] = hName;
+                IdData.mHNAME2ANAME[hName].TryAdd(aName, hName);//[aName] = hName;
 
                 IdData.mANAME2TNAME[aName] = aTypeName;
 
@@ -803,14 +813,12 @@ namespace Fenix
             {
                 IdData.mADDRID2ID.TryRemove(hostId, out id);
                 IdData.mID2ADDRID.TryRemove(id, out var _);
-                //RemoveClientHost(id, noReg);
             }
 
             if (IdData.mID2ADDRID.ContainsKey(hostId))
             {
                 IdData.mID2ADDRID.TryRemove(hostId, out id);
                 IdData.mADDRID2ID.TryRemove(id, out var _);
-                //RemoveClientHost(id, noReg);
             }
 
             var hName = GetName(id);
@@ -824,7 +832,7 @@ namespace Fenix
                 foreach (var aName in aNames.Keys)
                 {
                     IdData.mANAME2HNAME.TryRemove(aName, out var _);
-                    IdData.mANAME2TNAME.TryRemove(aName, out string tname);
+                    IdData.mANAME2TNAME.TryRemove(aName, out var tname);
                     RemoveNameId(aName);
                 }
             }

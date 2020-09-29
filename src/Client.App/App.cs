@@ -25,7 +25,7 @@ namespace Client
             var rnd = new Random((int)Basic.GenID32FromName(TimeUtil.GetTimeStamp().ToString()));
             
             var next = rnd.Next(0, int.MaxValue);
-            app.Login("sekkit" + next.ToString(), "password", (code, avatar) =>
+            app.Login("sekkit" +next.ToString(), "password", (code, avatar) =>
             {
 
             });
