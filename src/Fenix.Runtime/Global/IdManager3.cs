@@ -212,7 +212,7 @@ namespace Fenix
                 CacheHNAME2ADDR.SetWithoutLock(hostName, address); 
 #endif
 
-                mRouteData.mIP2EXTIP[Basic.ToIP(address)] = Basic.ToIP(extAddress);
+                mRouteData.mIP2EXTIP[Basic.ToIP(address)]    = Basic.ToIP(extAddress);
                 mRouteData.mEXTIP2IP[Basic.ToIP(extAddress)] = Basic.ToIP(address);
 
                 if (!Global.Host.IsIdHost() && !noReg
