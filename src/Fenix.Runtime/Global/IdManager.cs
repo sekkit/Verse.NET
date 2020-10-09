@@ -418,9 +418,6 @@ namespace Fenix
                 //RemoveClientHost(id, noReg);
             }
 
-            //IdData.mADDRID2ID.TryRemove(addrId, out var _);
-            //IdData.mID2ADDRID.TryRemove(id, out var _);
-
             if (IdData.mID2NAME.TryRemove(id, out var cName))
             {
                 if (IdData.mCNAME2ANAME.TryRemove(cName, out var aName)) 
