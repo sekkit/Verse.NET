@@ -176,6 +176,7 @@ namespace Fenix
 #if !CLIENT
 
 #if USE_REDIS_IDMANAGER
+
         protected RedisDb CacheHNAME2ADDR => Global.DbManager.GetDb(CacheConfig.HNAME2ADDR);
         protected RedisDb CacheCNAME2ADDR => Global.DbManager.GetDb(CacheConfig.CNAME2ADDR);
         protected RedisDb CacheANAME2HNAME => Global.DbManager.GetDb(CacheConfig.ANAME2HNAME);
@@ -412,8 +413,8 @@ namespace Fenix
             
             if (IdData.mID2ADDRID.ContainsKey(clientId))
             {
-                IdData.mID2ADDRID.TryRemove(clientId, out id);
-                IdData.mADDRID2ID.TryRemove(id, out var _);
+                IdData.mID2ADDRID.TryRemove(clientId, out addrId);
+                IdData.mADDRID2ID.TryRemove(addrId, out var _);
                 //RemoveClientHost(id, noReg);
             }
 
