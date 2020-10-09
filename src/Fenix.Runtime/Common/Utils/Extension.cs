@@ -1,6 +1,7 @@
 ﻿using DotNetty.Buffers;
 using DotNetty.Common.Utilities;
 using DotNetty.KCP;
+using DotNetty.Transport.Channels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -84,8 +85,14 @@ namespace Fenix.Common.Utils
         {
             return Basic.GenID64FromName(ukcp.user().Channel.Id.AsLongText() +
                 ukcp.user().Channel.LocalAddress.ToIPv4String() +
-                ukcp.user().RemoteAddress.ToIPv4String() + ukcp.getConv().ToString());
+                ukcp.user().RemoteAddress.ToIPv4String());
         }
 
+        public static ulong GetUniqueId(this IChannel ch)
+        {
+            return Basic.GenID64FromName(ch.Id.AsLongText() +
+                ch.LocalAddress.ToIPv4String() +
+                ch.RemoteAddress.ToIPv4String());
+        }
     }
 }

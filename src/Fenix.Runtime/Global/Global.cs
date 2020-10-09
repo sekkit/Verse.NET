@@ -22,6 +22,7 @@ namespace Fenix
         //ActorRef cache :TODO
         public static ActorRef IdHostRef => Host.GetHost("Id.App", Basic.ToIP(Global.Config.IdHostAddr), Basic.ToPort(Global.Config.IdHostAddr));
 #endif
+
         private static RuntimeConfig _cfg;
 
 #if !CLIENT

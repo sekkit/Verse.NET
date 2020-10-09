@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
 using MessagePack;
+using System.Linq;
 //using MessagePack;
 
 namespace Fenix
@@ -27,7 +28,7 @@ namespace Fenix
     {
         public string Tag { get; set; }
 
-        public IPEndPoint LocalAddress { get; set; }
+        public IPEndPoint InternalAddress { get; set; }
 
         public IPEndPoint ExternalAddress { get; set; }
         
@@ -66,7 +67,7 @@ namespace Fenix
                 if (port == 0)
                     _port = Basic.GetAvailablePort(IPAddress.Parse(_ip));
 
-                this.LocalAddress = new IPEndPoint(IPAddress.Parse(_ip), _port);
+                this.InternalAddress = new IPEndPoint(IPAddress.Parse(_ip), _port);
                 this.ExternalAddress = new IPEndPoint(IPAddress.Parse(_extIp), port);
 
                 //string addr = LocalAddress.ToIPv4String();
@@ -96,7 +97,7 @@ namespace Fenix
 
             if (!this.IsClientMode)
             {
-                Log.Info(string.Format("{0}(ID:{1}) is running at {2} as ServerMode", this.UniqueName, this.Id, LocalAddress.ToString()));
+                Log.Info(string.Format("{0}(ID:{1}) is running at {2} as ServerMode", this.UniqueName, this.Id, InternalAddress.ToString()));
             }
             else
             {
@@ -187,6 +188,21 @@ namespace Fenix
         public bool IsIdHost()
         {
             return UniqueName == "Id.App";
+        }
+
+        public HostRouteData ToRouteData()
+        {
+            var routeData = new HostRouteData();
+            routeData.HostId = this.Id;
+            routeData.HostIntAddr = InternalAddress.ToIPv4String();
+            routeData.HostExtAddr = ExternalAddress.ToIPv4String();
+            routeData.HostName = this.UniqueName;
+            routeData.IsClient = this.IsClientMode;
+            foreach(var aId in this.actorDic.Keys.ToArray())
+            {
+                routeData.ActorIds.Add(aId);
+            }
+            return routeData;
         }
 
         public sealed override void Update()
@@ -442,7 +458,7 @@ namespace Fenix
 
         protected void RegisterGlobalManager(Host host)
         {
-            Global.IdManager.RegisterHost(host, this.LocalAddress.ToIPv4String(), this.ExternalAddress.ToIPv4String(), this.IsClientMode);
+            Global.IdManager.RegisterHost(host, this.InternalAddress.ToIPv4String(), this.ExternalAddress.ToIPv4String(), this.IsClientMode);
         }
 
         //protected void RegisterGlobalManagerAsync(Actor a)
@@ -745,7 +761,7 @@ namespace Fenix
         [ClientApi]
         public void OnBeforeDisconnect(DisconnectReason reason, Action callback, RpcContext ctx)
         {
-            Log.Info("OnBeforeDisconnect", reason, this.LocalAddress, this.ExternalAddress);  
+            Log.Info("OnBeforeDisconnect", reason, this.InternalAddress, this.ExternalAddress);  
 
             foreach (var kv in actorDic)
                 kv.Value.Destroy();
@@ -786,7 +802,7 @@ namespace Fenix
             var result = Global.IdManager.RegisterHost(ctx.Peer.ConnId, hostId, hostName, intAddr, extAddr, false, noReg : true);
              
             //add hostref
-            if (Global.IdManager.IsSameLocalhost(intAddr, this.LocalAddress.ToIPv4String()))
+            if (Global.IdManager.IsSameLocalhost(intAddr, this.InternalAddress.ToIPv4String()))
                 HostRefDic[hostId] = this.GetHost(hostName, intAddr);
             else
                 HostRefDic[hostId] = this.GetHost(hostName, extAddr);

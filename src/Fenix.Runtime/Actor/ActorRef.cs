@@ -42,7 +42,7 @@ namespace Fenix
         //        netType = value;
         //    }
         //}
-
+        
         public static ActorRef Create(ulong toHostId, ulong toActorId, Type refType, Actor fromActor, Host fromHost, bool isClient, IPEndPoint toPeerEP=null)
         {
             //要检测一下fromActor.HostId和fromHost.Id是不是相等

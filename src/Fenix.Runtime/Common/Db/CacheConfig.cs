@@ -1,4 +1,4 @@
-﻿#if USE_REDIS_IDMANAGER
+﻿//#if USE_REDIS_IDMANAGER
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,7 +15,7 @@ namespace Server.Config
         public const string ANAME2TNAME = "ANAME2TNAME";
         public const string ANAME2CNAME = "ANAME2CNAME";
         public const string ID2NAME     = "ID2NAME";
-        public const string ADDR2EXTADDR = "ADDR2EXTADDR"; 
+        public const string ADDR2EXTADDR = "ADDR2EXTADDR";
 
         public new static void Init()
         {
@@ -29,4 +29,4 @@ namespace Server.Config
         }
     }
 }
-#endif
+//#endif

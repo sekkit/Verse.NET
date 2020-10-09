@@ -46,10 +46,10 @@ namespace Fenix
         {
             if (!host.IsClientMode)
             {
-                var kcpServer = CreateKcpServer(host.ExternalAddress, host.LocalAddress);
+                var kcpServer = CreateKcpServer(host.ExternalAddress, host.InternalAddress);
                 kcpServerDic[host.Id] = kcpServer;
 
-                var tcpServer = this.CreateTcpServer(host.ExternalAddress, host.LocalAddress);
+                var tcpServer = this.CreateTcpServer(host.ExternalAddress, host.InternalAddress);
                 tcpServerDic[host.Id] = tcpServer;
             }
         }
@@ -136,44 +136,45 @@ namespace Fenix
             return tcpServer;
         }
 
-        void OnTcpConnect(IChannel channel)
+        void OnTcpConnect(IChannel ch)
         {
             //新连接
-            var peer = Global.NetManager.RegisterChannel(channel);
+            var peer = Global.NetManager.RegisterChannel(ch);
             //ulong hostId = Global.IdManager.GetHostId(channel.RemoteAddress.ToIPv4String());
-            Log.Info("TcpConnect: " + channel.RemoteAddress.ToIPv4String());
+            Log.Info("TcpConnect: " + ch.RemoteAddress.ToIPv4String());
 
             OnConnect?.Invoke(peer);
         }
 
-        void OnTcpServerReceive(IChannel channel, IByteBuffer buffer)
+        void OnTcpServerReceive(IChannel ch, IByteBuffer buffer)
         {
-            var peer = Global.NetManager.GetPeer(channel);
+            var peer = Global.NetManager.GetPeer(ch);
             OnReceive(peer, buffer);
         }
 
-        void OnTcpServerClose(IChannel channel)
+        void OnTcpServerClose(IChannel ch)
         {
             //Global.NetManager.DeregisterChannel(channel);
-            var peer = Global.NetManager.GetPeer(channel);
+            var peer = Global.NetManager.GetPeer(ch);
             OnClose?.Invoke(peer);
             Deregister(peer);
         }
 
-        void OnTcpServerException(IChannel channel, Exception ex)
+        void OnTcpServerException(IChannel ch, Exception ex)
         {
             //Global.NetManager.DeregisterChannel(channel);
-            var peer = Global.NetManager.GetPeer(channel);
+            var peer = Global.NetManager.GetPeer(ch);
             OnException?.Invoke(peer, ex);
         }
 
         #endregion
 
-        public NetPeer RegisterChannel(IChannel channel)
-        { 
-            var cid = channel.Id.AsLongText();
-            var id = Basic.GenID64FromName(cid);
-            var peer = NetPeer.Create(id, channel);
+        public NetPeer RegisterChannel(IChannel ch)
+        {
+            //var cid = channel.Id.AsLongText();
+            //var id = Basic.GenID64FromName(cid);
+            var id = ch.GetUniqueId();
+            var peer = NetPeer.Create(id, ch);
             channelPeers[id] = peer;
             //RemotePeers.channelPeers[id] = peer;
             return peer;
@@ -187,7 +188,7 @@ namespace Fenix
         public void ChangePeerId(ulong oldHostId, ulong newHostId, string hostName, string address)
         {
             Log.Info(string.Format("ChangePeer: {0}=>{1} {2} {3}", oldHostId, newHostId, hostName, address));
-            Global.IdManager.AddAddressID(oldHostId, newHostId);
+            //Global.IdManager.AddAddressID(oldHostId, newHostId);
             if (tcpPeers.ContainsKey(oldHostId))
             {
                 var peer = tcpPeers[oldHostId];
@@ -320,8 +321,7 @@ namespace Fenix
 
         public NetPeer GetPeer(IChannel ch)
         {
-            var cid = ch.Id.AsLongText();
-            var id = Basic.GenID64FromName(cid);
+            var id = ch.GetUniqueId();
             return channelPeers[id];
         }
 
