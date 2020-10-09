@@ -195,9 +195,9 @@ namespace Fenix
         {
             if (!hostData.IsClient)
             {
-                string hostName = hostData.HostName;
-                ulong hostId = hostData.HostId;
-                string address = hostData.HostIntAddr;
+                string hostName   = hostData.HostName;
+                ulong hostId      = hostData.HostId;
+                string address    = hostData.HostIntAddr;
                 string extAddress = hostData.HostExtAddr;
 
                 mRouteData.mHNAME2ADDR[hostName] = address;
