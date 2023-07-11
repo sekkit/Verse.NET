@@ -1,0 +1,12 @@
+C:\dev\lacg\server\WebSocketSharp\bin\Debug\net7.0\WebSocketSharp.deps.json
+C:\dev\lacg\server\WebSocketSharp\bin\Debug\net7.0\WebSocketSharp.dll
+C:\dev\lacg\server\WebSocketSharp\bin\Debug\net7.0\WebSocketSharp.pdb
+C:\dev\lacg\server\WebSocketSharp\obj\Debug\net7.0\WebSocketSharp.csproj.AssemblyReference.cache
+C:\dev\lacg\server\WebSocketSharp\obj\Debug\net7.0\WebSocketSharp.GeneratedMSBuildEditorConfig.editorconfig
+C:\dev\lacg\server\WebSocketSharp\obj\Debug\net7.0\WebSocketSharp.AssemblyInfoInputs.cache
+C:\dev\lacg\server\WebSocketSharp\obj\Debug\net7.0\WebSocketSharp.AssemblyInfo.cs
+C:\dev\lacg\server\WebSocketSharp\obj\Debug\net7.0\WebSocketSharp.csproj.CoreCompileInputs.cache
+C:\dev\lacg\server\WebSocketSharp\obj\Debug\net7.0\WebSocketSharp.dll
+C:\dev\lacg\server\WebSocketSharp\obj\Debug\net7.0\refint\WebSocketSharp.dll
+C:\dev\lacg\server\WebSocketSharp\obj\Debug\net7.0\WebSocketSharp.pdb
+C:\dev\lacg\server\WebSocketSharp\obj\Debug\net7.0\ref\WebSocketSharp.dll

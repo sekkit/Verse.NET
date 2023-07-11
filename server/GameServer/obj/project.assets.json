@@ -1,0 +1,751 @@
+{
+  "version": 3,
+  "targets": {
+    "net7.0": {
+      "MemoryPack/1.9.16": {
+        "type": "package",
+        "dependencies": {
+          "MemoryPack.Core": "1.9.16",
+          "MemoryPack.Generator": "1.9.16"
+        }
+      },
+      "MemoryPack.Core/1.9.16": {
+        "type": "package",
+        "compile": {
+          "lib/net7.0/MemoryPack.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net7.0/MemoryPack.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "MemoryPack.Generator/1.9.16": {
+        "type": "package"
+      },
+      "MemoryPack.UnityShims/1.9.16": {
+        "type": "package",
+        "dependencies": {
+          "MemoryPack.Core": "1.9.16"
+        },
+        "compile": {
+          "lib/net7.0/MemoryPack.UnityShims.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net7.0/MemoryPack.UnityShims.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.Bcl.AsyncInterfaces/1.1.0": {
+        "type": "package",
+        "compile": {
+          "ref/netstandard2.1/Microsoft.Bcl.AsyncInterfaces.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.1/Microsoft.Bcl.AsyncInterfaces.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.Extensions.DependencyInjection.Abstractions/2.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.Extensions.Logging/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "2.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "2.0.0",
+          "Microsoft.Extensions.Options": "2.0.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Extensions.Logging.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.Logging.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.Extensions.Logging.Abstractions/2.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Extensions.Logging.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.Logging.Abstractions.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.Extensions.Options/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "2.0.0",
+          "Microsoft.Extensions.Primitives": "2.0.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Extensions.Options.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.Options.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.Extensions.Primitives/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "System.Runtime.CompilerServices.Unsafe": "4.4.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Extensions.Primitives.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.Primitives.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "MongoDB.Bson/2.19.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Runtime.CompilerServices.Unsafe": "5.0.0"
+        },
+        "compile": {
+          "lib/netstandard2.1/MongoDB.Bson.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.1/MongoDB.Bson.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "NLog/5.2.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/NLog.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/NLog.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "NuGet.CommandLine/6.5.0": {
+        "type": "package"
+      },
+      "Pipelines.Sockets.Unofficial/2.2.2": {
+        "type": "package",
+        "dependencies": {
+          "System.IO.Pipelines": "5.0.1"
+        },
+        "compile": {
+          "lib/net5.0/Pipelines.Sockets.Unofficial.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net5.0/Pipelines.Sockets.Unofficial.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "RedLock.net/2.3.2": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Bcl.AsyncInterfaces": "1.1.0",
+          "Microsoft.Extensions.Logging": "2.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "2.0.0",
+          "StackExchange.Redis": "2.0.513"
+        },
+        "compile": {
+          "lib/netstandard2.0/RedLockNet.Abstractions.dll": {},
+          "lib/netstandard2.0/RedLockNet.SERedis.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/RedLockNet.Abstractions.dll": {},
+          "lib/netstandard2.0/RedLockNet.SERedis.dll": {}
+        }
+      },
+      "SharpZipLib/1.4.2": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/ICSharpCode.SharpZipLib.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/ICSharpCode.SharpZipLib.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
+      "StackExchange.Redis/2.6.111": {
+        "type": "package",
+        "dependencies": {
+          "Pipelines.Sockets.Unofficial": "2.2.2"
+        },
+        "compile": {
+          "lib/net5.0/StackExchange.Redis.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net5.0/StackExchange.Redis.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "System.IO.Pipelines/5.0.1": {
+        "type": "package",
+        "compile": {
+          "ref/netcoreapp2.0/System.IO.Pipelines.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netcoreapp3.0/System.IO.Pipelines.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "System.Runtime.CompilerServices.Unsafe/5.0.0": {
+        "type": "package",
+        "compile": {
+          "ref/netstandard2.1/System.Runtime.CompilerServices.Unsafe.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netcoreapp2.0/System.Runtime.CompilerServices.Unsafe.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Shared/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v7.0",
+        "dependencies": {
+          "MemoryPack": "1.9.16",
+          "MemoryPack.UnityShims": "1.9.16",
+          "NLog": "5.2.0"
+        },
+        "compile": {
+          "bin/placeholder/Shared.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Shared.dll": {}
+        }
+      },
+      "WebSocketSharp/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v7.0",
+        "compile": {
+          "bin/placeholder/WebSocketSharp.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/WebSocketSharp.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "MemoryPack/1.9.16": {
+      "sha512": "nXh56/hVblv3bzoxbsdfQYf1yjt1gS4Cz4C/mL74HFtIT/vcKbBzWU4/FNgZMHnhyDxcCJvlNDM7FNvKdu15DA==",
+      "type": "package",
+      "path": "memorypack/1.9.16",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "memorypack.1.9.16.nupkg.sha512",
+        "memorypack.nuspec"
+      ]
+    },
+    "MemoryPack.Core/1.9.16": {
+      "sha512": "+xJadRRrGxUbO0KGCid8UtzowuGDE023RZNTJ3Opg6stWeK3ISdW8obtfkAIC7ucbZkshtz7eWQu3N8fDTyoRA==",
+      "type": "package",
+      "path": "memorypack.core/1.9.16",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "lib/net7.0/MemoryPack.Core.dll",
+        "lib/net7.0/MemoryPack.Core.xml",
+        "lib/netstandard2.1/MemoryPack.Core.dll",
+        "lib/netstandard2.1/MemoryPack.Core.xml",
+        "memorypack.core.1.9.16.nupkg.sha512",
+        "memorypack.core.nuspec"
+      ]
+    },
+    "MemoryPack.Generator/1.9.16": {
+      "sha512": "EvN5QmPoSLekOqnAdw+6fV7YAlIr06k+zmMDzd76Oig6qE80pqJcbyk/IOCEuCalkQkOSEaBjO/Y72thXCrehw==",
+      "type": "package",
+      "path": "memorypack.generator/1.9.16",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "analyzers/dotnet/cs/MemoryPack.Generator.dll",
+        "memorypack.generator.1.9.16.nupkg.sha512",
+        "memorypack.generator.nuspec"
+      ]
+    },
+    "MemoryPack.UnityShims/1.9.16": {
+      "sha512": "amExK2FaDxAVrJTp/6vio8JjhH0Tio9hqiyiUHOA2HpJc7Y6N+uwE0oDHol9khlkGn63f3/SWZgJF7oQ6UWyCQ==",
+      "type": "package",
+      "path": "memorypack.unityshims/1.9.16",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "lib/net7.0/MemoryPack.UnityShims.dll",
+        "lib/net7.0/MemoryPack.UnityShims.xml",
+        "lib/netstandard2.1/MemoryPack.UnityShims.dll",
+        "lib/netstandard2.1/MemoryPack.UnityShims.xml",
+        "memorypack.unityshims.1.9.16.nupkg.sha512",
+        "memorypack.unityshims.nuspec"
+      ]
+    },
+    "Microsoft.Bcl.AsyncInterfaces/1.1.0": {
+      "sha512": "1Am6l4Vpn3/K32daEqZI+FFr96OlZkgwK2LcT3pZ2zWubR5zTPW3/FkO1Rat9kb7oQOa4rxgl9LJHc5tspCWfg==",
+      "type": "package",
+      "path": "microsoft.bcl.asyncinterfaces/1.1.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/net461/Microsoft.Bcl.AsyncInterfaces.dll",
+        "lib/net461/Microsoft.Bcl.AsyncInterfaces.xml",
+        "lib/netstandard2.0/Microsoft.Bcl.AsyncInterfaces.dll",
+        "lib/netstandard2.0/Microsoft.Bcl.AsyncInterfaces.xml",
+        "lib/netstandard2.1/Microsoft.Bcl.AsyncInterfaces.dll",
+        "lib/netstandard2.1/Microsoft.Bcl.AsyncInterfaces.xml",
+        "microsoft.bcl.asyncinterfaces.1.1.0.nupkg.sha512",
+        "microsoft.bcl.asyncinterfaces.nuspec",
+        "ref/net461/Microsoft.Bcl.AsyncInterfaces.dll",
+        "ref/netstandard2.0/Microsoft.Bcl.AsyncInterfaces.dll",
+        "ref/netstandard2.1/Microsoft.Bcl.AsyncInterfaces.dll",
+        "useSharedDesignerContext.txt",
+        "version.txt"
+      ]
+    },
+    "Microsoft.Extensions.DependencyInjection.Abstractions/2.0.0": {
+      "sha512": "eUdJ0Q/GfVyUJc0Jal5L1QZLceL78pvEM9wEKcHeI24KorqMDoVX+gWsMGLulQMfOwsUaPtkpQM2pFERTzSfSg==",
+      "type": "package",
+      "path": "microsoft.extensions.dependencyinjection.abstractions/2.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/netstandard2.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll",
+        "lib/netstandard2.0/Microsoft.Extensions.DependencyInjection.Abstractions.xml",
+        "microsoft.extensions.dependencyinjection.abstractions.2.0.0.nupkg.sha512",
+        "microsoft.extensions.dependencyinjection.abstractions.nuspec"
+      ]
+    },
+    "Microsoft.Extensions.Logging/2.0.0": {
+      "sha512": "VP10syWV/vxYYMKgZ2eDESmUsz3gPxvBn5J6tkVN8lI4M+dF43RN8fWsEPbcAneDmZrHl3Pv23z05nmyGkJlpg==",
+      "type": "package",
+      "path": "microsoft.extensions.logging/2.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/netstandard2.0/Microsoft.Extensions.Logging.dll",
+        "lib/netstandard2.0/Microsoft.Extensions.Logging.xml",
+        "microsoft.extensions.logging.2.0.0.nupkg.sha512",
+        "microsoft.extensions.logging.nuspec"
+      ]
+    },
+    "Microsoft.Extensions.Logging.Abstractions/2.0.0": {
+      "sha512": "6ZCllUYGFukkymSTx3Yr0G/ajRxoNJp7/FqSxSB4fGISST54ifBhgu4Nc0ItGi3i6DqwuNd8SUyObmiC++AO2Q==",
+      "type": "package",
+      "path": "microsoft.extensions.logging.abstractions/2.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/netstandard2.0/Microsoft.Extensions.Logging.Abstractions.dll",
+        "lib/netstandard2.0/Microsoft.Extensions.Logging.Abstractions.xml",
+        "microsoft.extensions.logging.abstractions.2.0.0.nupkg.sha512",
+        "microsoft.extensions.logging.abstractions.nuspec"
+      ]
+    },
+    "Microsoft.Extensions.Options/2.0.0": {
+      "sha512": "sAKBgjl2gWsECBLLR9K54T7/uZaP2n9GhMYHay/oOLfvpvX0+iNAlQ2NJgVE352C9Fs5CDV3VbNTK8T2aNKQFA==",
+      "type": "package",
+      "path": "microsoft.extensions.options/2.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/netstandard2.0/Microsoft.Extensions.Options.dll",
+        "lib/netstandard2.0/Microsoft.Extensions.Options.xml",
+        "microsoft.extensions.options.2.0.0.nupkg.sha512",
+        "microsoft.extensions.options.nuspec"
+      ]
+    },
+    "Microsoft.Extensions.Primitives/2.0.0": {
+      "sha512": "ukg53qNlqTrK38WA30b5qhw0GD7y3jdI9PHHASjdKyTcBHTevFM2o23tyk3pWCgAV27Bbkm+CPQ2zUe1ZOuYSA==",
+      "type": "package",
+      "path": "microsoft.extensions.primitives/2.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/netstandard2.0/Microsoft.Extensions.Primitives.dll",
+        "lib/netstandard2.0/Microsoft.Extensions.Primitives.xml",
+        "microsoft.extensions.primitives.2.0.0.nupkg.sha512",
+        "microsoft.extensions.primitives.nuspec"
+      ]
+    },
+    "MongoDB.Bson/2.19.1": {
+      "sha512": "4FSR3eAbJEYMmvQ1pNFImUpFGtGHT+kEw/Yw/KZjxC9iFMj1XcZC08wMbezgRga2F9tNNFG2vDqh9zt01GinMA==",
+      "type": "package",
+      "path": "mongodb.bson/2.19.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "License.txt",
+        "lib/net472/MongoDB.Bson.dll",
+        "lib/net472/MongoDB.Bson.xml",
+        "lib/netstandard2.0/MongoDB.Bson.dll",
+        "lib/netstandard2.0/MongoDB.Bson.xml",
+        "lib/netstandard2.1/MongoDB.Bson.dll",
+        "lib/netstandard2.1/MongoDB.Bson.xml",
+        "mongodb.bson.2.19.1.nupkg.sha512",
+        "mongodb.bson.nuspec",
+        "packageIcon.png"
+      ]
+    },
+    "NLog/5.2.0": {
+      "sha512": "uYBgseY0m/9lQUbZYGsQsTBFOWrfs3iaekzzYMH6vFmpoOAvV8/bp1XxG/suZkwB5h8nAiTJAp7VENWRDKtKPA==",
+      "type": "package",
+      "path": "nlog/5.2.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "N.png",
+        "lib/net35/NLog.dll",
+        "lib/net35/NLog.xml",
+        "lib/net45/NLog.dll",
+        "lib/net45/NLog.xml",
+        "lib/net46/NLog.dll",
+        "lib/net46/NLog.xml",
+        "lib/netstandard1.3/NLog.dll",
+        "lib/netstandard1.3/NLog.xml",
+        "lib/netstandard1.5/NLog.dll",
+        "lib/netstandard1.5/NLog.xml",
+        "lib/netstandard2.0/NLog.dll",
+        "lib/netstandard2.0/NLog.xml",
+        "nlog.5.2.0.nupkg.sha512",
+        "nlog.nuspec"
+      ]
+    },
+    "NuGet.CommandLine/6.5.0": {
+      "sha512": "RGwYvcxHg3iM+Liy9GqpzShDGXAPfkOrKAUpezCu8zVAmcK3qhtcMhdQxayE/VYsJQGelwq+iwA+t8fzdbJZ2g==",
+      "type": "package",
+      "path": "nuget.commandline/6.5.0",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "icon.png",
+        "nuget.commandline.6.5.0.nupkg.sha512",
+        "nuget.commandline.nuspec",
+        "tools/NuGet.exe",
+        "tools/NuGet.pdb"
+      ]
+    },
+    "Pipelines.Sockets.Unofficial/2.2.2": {
+      "sha512": "Bhk0FWxH1paI+18zr1g5cTL+ebeuDcBCR+rRFO+fKEhretgjs7MF2Mc1P64FGLecWp4zKCUOPzngBNrqVyY7Zg==",
+      "type": "package",
+      "path": "pipelines.sockets.unofficial/2.2.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net461/Pipelines.Sockets.Unofficial.dll",
+        "lib/net461/Pipelines.Sockets.Unofficial.xml",
+        "lib/net472/Pipelines.Sockets.Unofficial.dll",
+        "lib/net472/Pipelines.Sockets.Unofficial.xml",
+        "lib/net5.0/Pipelines.Sockets.Unofficial.dll",
+        "lib/net5.0/Pipelines.Sockets.Unofficial.xml",
+        "lib/netcoreapp3.1/Pipelines.Sockets.Unofficial.dll",
+        "lib/netcoreapp3.1/Pipelines.Sockets.Unofficial.xml",
+        "lib/netstandard2.0/Pipelines.Sockets.Unofficial.dll",
+        "lib/netstandard2.0/Pipelines.Sockets.Unofficial.xml",
+        "lib/netstandard2.1/Pipelines.Sockets.Unofficial.dll",
+        "lib/netstandard2.1/Pipelines.Sockets.Unofficial.xml",
+        "pipelines.sockets.unofficial.2.2.2.nupkg.sha512",
+        "pipelines.sockets.unofficial.nuspec"
+      ]
+    },
+    "RedLock.net/2.3.2": {
+      "sha512": "jlrALAArm4dCE292U3EtRoMnVKJ9M6sunbZn/oG5OuzlGtTpusXBfvDrnGWbgGDlWV027f5E9H5CiVnPxiq8+g==",
+      "type": "package",
+      "path": "redlock.net/2.3.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net461/RedLockNet.Abstractions.dll",
+        "lib/net461/RedLockNet.SERedis.dll",
+        "lib/net472/RedLockNet.Abstractions.dll",
+        "lib/net472/RedLockNet.SERedis.dll",
+        "lib/netstandard2.0/RedLockNet.Abstractions.dll",
+        "lib/netstandard2.0/RedLockNet.SERedis.dll",
+        "redlock-icon.png",
+        "redlock.net.2.3.2.nupkg.sha512",
+        "redlock.net.nuspec"
+      ]
+    },
+    "SharpZipLib/1.4.2": {
+      "sha512": "yjj+3zgz8zgXpiiC3ZdF/iyTBbz2fFvMxZFEBPUcwZjIvXOf37Ylm+K58hqMfIBt5JgU/Z2uoUS67JmTLe973A==",
+      "type": "package",
+      "path": "sharpziplib/1.4.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "images/sharpziplib-nuget-256x256.png",
+        "lib/net6.0/ICSharpCode.SharpZipLib.dll",
+        "lib/net6.0/ICSharpCode.SharpZipLib.pdb",
+        "lib/net6.0/ICSharpCode.SharpZipLib.xml",
+        "lib/netstandard2.0/ICSharpCode.SharpZipLib.dll",
+        "lib/netstandard2.0/ICSharpCode.SharpZipLib.pdb",
+        "lib/netstandard2.0/ICSharpCode.SharpZipLib.xml",
+        "lib/netstandard2.1/ICSharpCode.SharpZipLib.dll",
+        "lib/netstandard2.1/ICSharpCode.SharpZipLib.pdb",
+        "lib/netstandard2.1/ICSharpCode.SharpZipLib.xml",
+        "sharpziplib.1.4.2.nupkg.sha512",
+        "sharpziplib.nuspec"
+      ]
+    },
+    "StackExchange.Redis/2.6.111": {
+      "sha512": "49NlwihVG9I1YaPqYBx2e2yPqC4ecXMog8zVXMC3rjj2kufGkC3ofqvhOPBKP0c9ZQdJ3hhzduM7ckOQTE+gxg==",
+      "type": "package",
+      "path": "stackexchange.redis/2.6.111",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net461/StackExchange.Redis.dll",
+        "lib/net461/StackExchange.Redis.xml",
+        "lib/net472/StackExchange.Redis.dll",
+        "lib/net472/StackExchange.Redis.xml",
+        "lib/net5.0/StackExchange.Redis.dll",
+        "lib/net5.0/StackExchange.Redis.xml",
+        "lib/netcoreapp3.1/StackExchange.Redis.dll",
+        "lib/netcoreapp3.1/StackExchange.Redis.xml",
+        "lib/netstandard2.0/StackExchange.Redis.dll",
+        "lib/netstandard2.0/StackExchange.Redis.xml",
+        "stackexchange.redis.2.6.111.nupkg.sha512",
+        "stackexchange.redis.nuspec"
+      ]
+    },
+    "System.IO.Pipelines/5.0.1": {
+      "sha512": "qEePWsaq9LoEEIqhbGe6D5J8c9IqQOUuTzzV6wn1POlfdLkJliZY3OlB0j0f17uMWlqZYjH7txj+2YbyrIA8Yg==",
+      "type": "package",
+      "path": "system.io.pipelines/5.0.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/net461/System.IO.Pipelines.dll",
+        "lib/net461/System.IO.Pipelines.xml",
+        "lib/netcoreapp3.0/System.IO.Pipelines.dll",
+        "lib/netcoreapp3.0/System.IO.Pipelines.xml",
+        "lib/netstandard1.3/System.IO.Pipelines.dll",
+        "lib/netstandard1.3/System.IO.Pipelines.xml",
+        "lib/netstandard2.0/System.IO.Pipelines.dll",
+        "lib/netstandard2.0/System.IO.Pipelines.xml",
+        "ref/netcoreapp2.0/System.IO.Pipelines.dll",
+        "ref/netcoreapp2.0/System.IO.Pipelines.xml",
+        "system.io.pipelines.5.0.1.nupkg.sha512",
+        "system.io.pipelines.nuspec",
+        "useSharedDesignerContext.txt",
+        "version.txt"
+      ]
+    },
+    "System.Runtime.CompilerServices.Unsafe/5.0.0": {
+      "sha512": "ZD9TMpsmYJLrxbbmdvhwt9YEgG5WntEnZ/d1eH8JBX9LBp+Ju8BSBhUGbZMNVHHomWo2KVImJhTDl2hIgw/6MA==",
+      "type": "package",
+      "path": "system.runtime.compilerservices.unsafe/5.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/net45/System.Runtime.CompilerServices.Unsafe.dll",
+        "lib/net45/System.Runtime.CompilerServices.Unsafe.xml",
+        "lib/netcoreapp2.0/System.Runtime.CompilerServices.Unsafe.dll",
+        "lib/netcoreapp2.0/System.Runtime.CompilerServices.Unsafe.xml",
+        "lib/netstandard1.0/System.Runtime.CompilerServices.Unsafe.dll",
+        "lib/netstandard1.0/System.Runtime.CompilerServices.Unsafe.xml",
+        "lib/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll",
+        "lib/netstandard2.0/System.Runtime.CompilerServices.Unsafe.xml",
+        "ref/net461/System.Runtime.CompilerServices.Unsafe.dll",
+        "ref/net461/System.Runtime.CompilerServices.Unsafe.xml",
+        "ref/netstandard1.0/System.Runtime.CompilerServices.Unsafe.dll",
+        "ref/netstandard1.0/System.Runtime.CompilerServices.Unsafe.xml",
+        "ref/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll",
+        "ref/netstandard2.0/System.Runtime.CompilerServices.Unsafe.xml",
+        "ref/netstandard2.1/System.Runtime.CompilerServices.Unsafe.dll",
+        "ref/netstandard2.1/System.Runtime.CompilerServices.Unsafe.xml",
+        "system.runtime.compilerservices.unsafe.5.0.0.nupkg.sha512",
+        "system.runtime.compilerservices.unsafe.nuspec",
+        "useSharedDesignerContext.txt",
+        "version.txt"
+      ]
+    },
+    "Shared/1.0.0": {
+      "type": "project",
+      "path": "../Shared/Shared.csproj",
+      "msbuildProject": "../Shared/Shared.csproj"
+    },
+    "WebSocketSharp/1.0.0": {
+      "type": "project",
+      "path": "../WebSocketSharp/WebSocketSharp.csproj",
+      "msbuildProject": "../WebSocketSharp/WebSocketSharp.csproj"
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net7.0": [
+      "MongoDB.Bson >= 2.19.1",
+      "NLog >= 5.2.0",
+      "NuGet.CommandLine >= 6.5.0",
+      "RedLock.net >= 2.3.2",
+      "Shared >= 1.0.0",
+      "SharpZipLib >= 1.4.2",
+      "StackExchange.Redis >= 2.6.111",
+      "WebSocketSharp >= 1.0.0"
+    ]
+  },
+  "packageFolders": {
+    "C:\\Users\\sekkitshi\\.nuget\\packages\\": {},
+    "C:\\Users\\sekkitshi\\AppData\\Roaming\\Godot\\mono\\GodotNuGetFallbackFolder": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "E:\\Code\\Verse.NET\\server\\GameServer\\GameServer.csproj",
+      "projectName": "GameServer",
+      "projectPath": "E:\\Code\\Verse.NET\\server\\GameServer\\GameServer.csproj",
+      "packagesPath": "C:\\Users\\sekkitshi\\.nuget\\packages\\",
+      "outputPath": "E:\\Code\\Verse.NET\\server\\GameServer\\obj\\",
+      "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Users\\sekkitshi\\AppData\\Roaming\\Godot\\mono\\GodotNuGetFallbackFolder",
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
+      "configFilePaths": [
+        "C:\\Users\\sekkitshi\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\sekkitshi\\AppData\\Roaming\\NuGet\\config\\Godot.Offline.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+      ],
+      "originalTargetFrameworks": [
+        "net7.0"
+      ],
+      "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "projectReferences": {
+            "E:\\Code\\Verse.NET\\server\\Shared\\Shared.csproj": {
+              "projectPath": "E:\\Code\\Verse.NET\\server\\Shared\\Shared.csproj"
+            },
+            "E:\\Code\\Verse.NET\\server\\WebSocketSharp\\WebSocketSharp.csproj": {
+              "projectPath": "E:\\Code\\Verse.NET\\server\\WebSocketSharp\\WebSocketSharp.csproj"
+            }
+          }
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      }
+    },
+    "frameworks": {
+      "net7.0": {
+        "targetAlias": "net7.0",
+        "dependencies": {
+          "MongoDB.Bson": {
+            "target": "Package",
+            "version": "[2.19.1, )"
+          },
+          "NLog": {
+            "target": "Package",
+            "version": "[5.2.0, )"
+          },
+          "NuGet.CommandLine": {
+            "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+            "suppressParent": "All",
+            "target": "Package",
+            "version": "[6.5.0, )"
+          },
+          "RedLock.net": {
+            "target": "Package",
+            "version": "[2.3.2, )"
+          },
+          "SharpZipLib": {
+            "target": "Package",
+            "version": "[1.4.2, )"
+          },
+          "StackExchange.Redis": {
+            "target": "Package",
+            "version": "[2.6.111, )"
+          }
+        },
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.304\\RuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}

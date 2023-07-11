@@ -1,0 +1,111 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v7.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v7.0": {
+      "Shared/1.0.0": {
+        "dependencies": {
+          "MemoryPack": "1.9.16",
+          "MemoryPack.UnityShims": "1.9.16",
+          "NLog": "5.2.0",
+          "CommandLine": "2.8.0.0"
+        },
+        "runtime": {
+          "Shared.dll": {}
+        }
+      },
+      "MemoryPack/1.9.16": {
+        "dependencies": {
+          "MemoryPack.Core": "1.9.16",
+          "MemoryPack.Generator": "1.9.16"
+        }
+      },
+      "MemoryPack.Core/1.9.16": {
+        "runtime": {
+          "lib/net7.0/MemoryPack.Core.dll": {
+            "assemblyVersion": "1.9.16.0",
+            "fileVersion": "1.9.16.0"
+          }
+        }
+      },
+      "MemoryPack.Generator/1.9.16": {},
+      "MemoryPack.UnityShims/1.9.16": {
+        "dependencies": {
+          "MemoryPack.Core": "1.9.16"
+        },
+        "runtime": {
+          "lib/net7.0/MemoryPack.UnityShims.dll": {
+            "assemblyVersion": "1.9.16.0",
+            "fileVersion": "1.9.16.0"
+          }
+        }
+      },
+      "NLog/5.2.0": {
+        "runtime": {
+          "lib/netstandard2.0/NLog.dll": {
+            "assemblyVersion": "5.0.0.0",
+            "fileVersion": "5.2.0.1813"
+          }
+        }
+      },
+      "CommandLine/2.8.0.0": {
+        "runtime": {
+          "CommandLine.dll": {
+            "assemblyVersion": "2.8.0.0",
+            "fileVersion": "2.8.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Shared/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "MemoryPack/1.9.16": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-nXh56/hVblv3bzoxbsdfQYf1yjt1gS4Cz4C/mL74HFtIT/vcKbBzWU4/FNgZMHnhyDxcCJvlNDM7FNvKdu15DA==",
+      "path": "memorypack/1.9.16",
+      "hashPath": "memorypack.1.9.16.nupkg.sha512"
+    },
+    "MemoryPack.Core/1.9.16": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-+xJadRRrGxUbO0KGCid8UtzowuGDE023RZNTJ3Opg6stWeK3ISdW8obtfkAIC7ucbZkshtz7eWQu3N8fDTyoRA==",
+      "path": "memorypack.core/1.9.16",
+      "hashPath": "memorypack.core.1.9.16.nupkg.sha512"
+    },
+    "MemoryPack.Generator/1.9.16": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-EvN5QmPoSLekOqnAdw+6fV7YAlIr06k+zmMDzd76Oig6qE80pqJcbyk/IOCEuCalkQkOSEaBjO/Y72thXCrehw==",
+      "path": "memorypack.generator/1.9.16",
+      "hashPath": "memorypack.generator.1.9.16.nupkg.sha512"
+    },
+    "MemoryPack.UnityShims/1.9.16": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-amExK2FaDxAVrJTp/6vio8JjhH0Tio9hqiyiUHOA2HpJc7Y6N+uwE0oDHol9khlkGn63f3/SWZgJF7oQ6UWyCQ==",
+      "path": "memorypack.unityshims/1.9.16",
+      "hashPath": "memorypack.unityshims.1.9.16.nupkg.sha512"
+    },
+    "NLog/5.2.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-uYBgseY0m/9lQUbZYGsQsTBFOWrfs3iaekzzYMH6vFmpoOAvV8/bp1XxG/suZkwB5h8nAiTJAp7VENWRDKtKPA==",
+      "path": "nlog/5.2.0",
+      "hashPath": "nlog.5.2.0.nupkg.sha512"
+    },
+    "CommandLine/2.8.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

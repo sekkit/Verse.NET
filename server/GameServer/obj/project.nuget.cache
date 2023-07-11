@@ -1,0 +1,28 @@
+{
+  "version": 2,
+  "dgSpecHash": "sOC30791Fp2y4U4mTmczOkh84CKkhpip3UDIyLFMB+5+JTssSM62V94OO+6yyMPReppjOAmONRflHJOZPfxK5Q==",
+  "success": true,
+  "projectFilePath": "E:\\Code\\Verse.NET\\server\\GameServer\\GameServer.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\sekkitshi\\.nuget\\packages\\memorypack\\1.9.16\\memorypack.1.9.16.nupkg.sha512",
+    "C:\\Users\\sekkitshi\\.nuget\\packages\\memorypack.core\\1.9.16\\memorypack.core.1.9.16.nupkg.sha512",
+    "C:\\Users\\sekkitshi\\.nuget\\packages\\memorypack.generator\\1.9.16\\memorypack.generator.1.9.16.nupkg.sha512",
+    "C:\\Users\\sekkitshi\\.nuget\\packages\\memorypack.unityshims\\1.9.16\\memorypack.unityshims.1.9.16.nupkg.sha512",
+    "C:\\Users\\sekkitshi\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\1.1.0\\microsoft.bcl.asyncinterfaces.1.1.0.nupkg.sha512",
+    "C:\\Users\\sekkitshi\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\2.0.0\\microsoft.extensions.dependencyinjection.abstractions.2.0.0.nupkg.sha512",
+    "C:\\Users\\sekkitshi\\.nuget\\packages\\microsoft.extensions.logging\\2.0.0\\microsoft.extensions.logging.2.0.0.nupkg.sha512",
+    "C:\\Users\\sekkitshi\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\2.0.0\\microsoft.extensions.logging.abstractions.2.0.0.nupkg.sha512",
+    "C:\\Users\\sekkitshi\\.nuget\\packages\\microsoft.extensions.options\\2.0.0\\microsoft.extensions.options.2.0.0.nupkg.sha512",
+    "C:\\Users\\sekkitshi\\.nuget\\packages\\microsoft.extensions.primitives\\2.0.0\\microsoft.extensions.primitives.2.0.0.nupkg.sha512",
+    "C:\\Users\\sekkitshi\\.nuget\\packages\\mongodb.bson\\2.19.1\\mongodb.bson.2.19.1.nupkg.sha512",
+    "C:\\Users\\sekkitshi\\.nuget\\packages\\nlog\\5.2.0\\nlog.5.2.0.nupkg.sha512",
+    "C:\\Users\\sekkitshi\\.nuget\\packages\\nuget.commandline\\6.5.0\\nuget.commandline.6.5.0.nupkg.sha512",
+    "C:\\Users\\sekkitshi\\.nuget\\packages\\pipelines.sockets.unofficial\\2.2.2\\pipelines.sockets.unofficial.2.2.2.nupkg.sha512",
+    "C:\\Users\\sekkitshi\\.nuget\\packages\\redlock.net\\2.3.2\\redlock.net.2.3.2.nupkg.sha512",
+    "C:\\Users\\sekkitshi\\.nuget\\packages\\sharpziplib\\1.4.2\\sharpziplib.1.4.2.nupkg.sha512",
+    "C:\\Users\\sekkitshi\\.nuget\\packages\\stackexchange.redis\\2.6.111\\stackexchange.redis.2.6.111.nupkg.sha512",
+    "C:\\Users\\sekkitshi\\.nuget\\packages\\system.io.pipelines\\5.0.1\\system.io.pipelines.5.0.1.nupkg.sha512",
+    "C:\\Users\\sekkitshi\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\5.0.0\\system.runtime.compilerservices.unsafe.5.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

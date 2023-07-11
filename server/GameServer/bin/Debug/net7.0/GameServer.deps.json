@@ -1,0 +1,368 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v7.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v7.0": {
+      "GameServer/1.0.0": {
+        "dependencies": {
+          "MongoDB.Bson": "2.19.1",
+          "NLog": "5.2.0",
+          "NuGet.CommandLine": "6.5.0",
+          "RedLock.net": "2.3.2",
+          "Shared": "1.0.0",
+          "SharpZipLib": "1.4.2",
+          "StackExchange.Redis": "2.6.111",
+          "WebSocketSharp": "1.0.0",
+          "CommandLine": "2.8.0.0"
+        },
+        "runtime": {
+          "GameServer.dll": {}
+        }
+      },
+      "MemoryPack/1.9.16": {
+        "dependencies": {
+          "MemoryPack.Core": "1.9.16",
+          "MemoryPack.Generator": "1.9.16"
+        }
+      },
+      "MemoryPack.Core/1.9.16": {
+        "runtime": {
+          "lib/net7.0/MemoryPack.Core.dll": {
+            "assemblyVersion": "1.9.16.0",
+            "fileVersion": "1.9.16.0"
+          }
+        }
+      },
+      "MemoryPack.Generator/1.9.16": {},
+      "MemoryPack.UnityShims/1.9.16": {
+        "dependencies": {
+          "MemoryPack.Core": "1.9.16"
+        },
+        "runtime": {
+          "lib/net7.0/MemoryPack.UnityShims.dll": {
+            "assemblyVersion": "1.9.16.0",
+            "fileVersion": "1.9.16.0"
+          }
+        }
+      },
+      "Microsoft.Bcl.AsyncInterfaces/1.1.0": {
+        "runtime": {
+          "lib/netstandard2.1/Microsoft.Bcl.AsyncInterfaces.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "4.700.19.56404"
+          }
+        }
+      },
+      "Microsoft.Extensions.DependencyInjection.Abstractions/2.0.0": {
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.0.0.17205"
+          }
+        }
+      },
+      "Microsoft.Extensions.Logging/2.0.0": {
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "2.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "2.0.0",
+          "Microsoft.Extensions.Options": "2.0.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.Logging.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.0.0.17205"
+          }
+        }
+      },
+      "Microsoft.Extensions.Logging.Abstractions/2.0.0": {
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.Logging.Abstractions.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.0.0.17205"
+          }
+        }
+      },
+      "Microsoft.Extensions.Options/2.0.0": {
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "2.0.0",
+          "Microsoft.Extensions.Primitives": "2.0.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.Options.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.0.0.17205"
+          }
+        }
+      },
+      "Microsoft.Extensions.Primitives/2.0.0": {
+        "dependencies": {
+          "System.Runtime.CompilerServices.Unsafe": "5.0.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.Primitives.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.0.0.17205"
+          }
+        }
+      },
+      "MongoDB.Bson/2.19.1": {
+        "dependencies": {
+          "System.Runtime.CompilerServices.Unsafe": "5.0.0"
+        },
+        "runtime": {
+          "lib/netstandard2.1/MongoDB.Bson.dll": {
+            "assemblyVersion": "2.19.1.0",
+            "fileVersion": "2.19.1.0"
+          }
+        }
+      },
+      "NLog/5.2.0": {
+        "runtime": {
+          "lib/netstandard2.0/NLog.dll": {
+            "assemblyVersion": "5.0.0.0",
+            "fileVersion": "5.2.0.1813"
+          }
+        }
+      },
+      "NuGet.CommandLine/6.5.0": {},
+      "Pipelines.Sockets.Unofficial/2.2.2": {
+        "dependencies": {
+          "System.IO.Pipelines": "5.0.1"
+        },
+        "runtime": {
+          "lib/net5.0/Pipelines.Sockets.Unofficial.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "2.2.2.34088"
+          }
+        }
+      },
+      "RedLock.net/2.3.2": {
+        "dependencies": {
+          "Microsoft.Bcl.AsyncInterfaces": "1.1.0",
+          "Microsoft.Extensions.Logging": "2.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "2.0.0",
+          "StackExchange.Redis": "2.6.111"
+        },
+        "runtime": {
+          "lib/netstandard2.0/RedLockNet.Abstractions.dll": {
+            "assemblyVersion": "2.3.2.0",
+            "fileVersion": "2.3.2.0"
+          },
+          "lib/netstandard2.0/RedLockNet.SERedis.dll": {
+            "assemblyVersion": "2.3.2.0",
+            "fileVersion": "2.3.2.0"
+          }
+        }
+      },
+      "SharpZipLib/1.4.2": {
+        "runtime": {
+          "lib/net6.0/ICSharpCode.SharpZipLib.dll": {
+            "assemblyVersion": "1.4.2.13",
+            "fileVersion": "1.4.2.13"
+          }
+        }
+      },
+      "StackExchange.Redis/2.6.111": {
+        "dependencies": {
+          "Pipelines.Sockets.Unofficial": "2.2.2"
+        },
+        "runtime": {
+          "lib/net5.0/StackExchange.Redis.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.6.111.64013"
+          }
+        }
+      },
+      "System.IO.Pipelines/5.0.1": {
+        "runtime": {
+          "lib/netcoreapp3.0/System.IO.Pipelines.dll": {
+            "assemblyVersion": "5.0.0.1",
+            "fileVersion": "5.0.120.57516"
+          }
+        }
+      },
+      "System.Runtime.CompilerServices.Unsafe/5.0.0": {},
+      "Shared/1.0.0": {
+        "dependencies": {
+          "MemoryPack": "1.9.16",
+          "MemoryPack.UnityShims": "1.9.16",
+          "NLog": "5.2.0"
+        },
+        "runtime": {
+          "Shared.dll": {}
+        }
+      },
+      "WebSocketSharp/1.0.0": {
+        "runtime": {
+          "WebSocketSharp.dll": {}
+        }
+      },
+      "CommandLine/2.8.0.0": {
+        "runtime": {
+          "CommandLine.dll": {
+            "assemblyVersion": "2.8.0.0",
+            "fileVersion": "2.8.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "GameServer/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "MemoryPack/1.9.16": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-nXh56/hVblv3bzoxbsdfQYf1yjt1gS4Cz4C/mL74HFtIT/vcKbBzWU4/FNgZMHnhyDxcCJvlNDM7FNvKdu15DA==",
+      "path": "memorypack/1.9.16",
+      "hashPath": "memorypack.1.9.16.nupkg.sha512"
+    },
+    "MemoryPack.Core/1.9.16": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-+xJadRRrGxUbO0KGCid8UtzowuGDE023RZNTJ3Opg6stWeK3ISdW8obtfkAIC7ucbZkshtz7eWQu3N8fDTyoRA==",
+      "path": "memorypack.core/1.9.16",
+      "hashPath": "memorypack.core.1.9.16.nupkg.sha512"
+    },
+    "MemoryPack.Generator/1.9.16": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-EvN5QmPoSLekOqnAdw+6fV7YAlIr06k+zmMDzd76Oig6qE80pqJcbyk/IOCEuCalkQkOSEaBjO/Y72thXCrehw==",
+      "path": "memorypack.generator/1.9.16",
+      "hashPath": "memorypack.generator.1.9.16.nupkg.sha512"
+    },
+    "MemoryPack.UnityShims/1.9.16": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-amExK2FaDxAVrJTp/6vio8JjhH0Tio9hqiyiUHOA2HpJc7Y6N+uwE0oDHol9khlkGn63f3/SWZgJF7oQ6UWyCQ==",
+      "path": "memorypack.unityshims/1.9.16",
+      "hashPath": "memorypack.unityshims.1.9.16.nupkg.sha512"
+    },
+    "Microsoft.Bcl.AsyncInterfaces/1.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-1Am6l4Vpn3/K32daEqZI+FFr96OlZkgwK2LcT3pZ2zWubR5zTPW3/FkO1Rat9kb7oQOa4rxgl9LJHc5tspCWfg==",
+      "path": "microsoft.bcl.asyncinterfaces/1.1.0",
+      "hashPath": "microsoft.bcl.asyncinterfaces.1.1.0.nupkg.sha512"
+    },
+    "Microsoft.Extensions.DependencyInjection.Abstractions/2.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-eUdJ0Q/GfVyUJc0Jal5L1QZLceL78pvEM9wEKcHeI24KorqMDoVX+gWsMGLulQMfOwsUaPtkpQM2pFERTzSfSg==",
+      "path": "microsoft.extensions.dependencyinjection.abstractions/2.0.0",
+      "hashPath": "microsoft.extensions.dependencyinjection.abstractions.2.0.0.nupkg.sha512"
+    },
+    "Microsoft.Extensions.Logging/2.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-VP10syWV/vxYYMKgZ2eDESmUsz3gPxvBn5J6tkVN8lI4M+dF43RN8fWsEPbcAneDmZrHl3Pv23z05nmyGkJlpg==",
+      "path": "microsoft.extensions.logging/2.0.0",
+      "hashPath": "microsoft.extensions.logging.2.0.0.nupkg.sha512"
+    },
+    "Microsoft.Extensions.Logging.Abstractions/2.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-6ZCllUYGFukkymSTx3Yr0G/ajRxoNJp7/FqSxSB4fGISST54ifBhgu4Nc0ItGi3i6DqwuNd8SUyObmiC++AO2Q==",
+      "path": "microsoft.extensions.logging.abstractions/2.0.0",
+      "hashPath": "microsoft.extensions.logging.abstractions.2.0.0.nupkg.sha512"
+    },
+    "Microsoft.Extensions.Options/2.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-sAKBgjl2gWsECBLLR9K54T7/uZaP2n9GhMYHay/oOLfvpvX0+iNAlQ2NJgVE352C9Fs5CDV3VbNTK8T2aNKQFA==",
+      "path": "microsoft.extensions.options/2.0.0",
+      "hashPath": "microsoft.extensions.options.2.0.0.nupkg.sha512"
+    },
+    "Microsoft.Extensions.Primitives/2.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ukg53qNlqTrK38WA30b5qhw0GD7y3jdI9PHHASjdKyTcBHTevFM2o23tyk3pWCgAV27Bbkm+CPQ2zUe1ZOuYSA==",
+      "path": "microsoft.extensions.primitives/2.0.0",
+      "hashPath": "microsoft.extensions.primitives.2.0.0.nupkg.sha512"
+    },
+    "MongoDB.Bson/2.19.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-4FSR3eAbJEYMmvQ1pNFImUpFGtGHT+kEw/Yw/KZjxC9iFMj1XcZC08wMbezgRga2F9tNNFG2vDqh9zt01GinMA==",
+      "path": "mongodb.bson/2.19.1",
+      "hashPath": "mongodb.bson.2.19.1.nupkg.sha512"
+    },
+    "NLog/5.2.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-uYBgseY0m/9lQUbZYGsQsTBFOWrfs3iaekzzYMH6vFmpoOAvV8/bp1XxG/suZkwB5h8nAiTJAp7VENWRDKtKPA==",
+      "path": "nlog/5.2.0",
+      "hashPath": "nlog.5.2.0.nupkg.sha512"
+    },
+    "NuGet.CommandLine/6.5.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-RGwYvcxHg3iM+Liy9GqpzShDGXAPfkOrKAUpezCu8zVAmcK3qhtcMhdQxayE/VYsJQGelwq+iwA+t8fzdbJZ2g==",
+      "path": "nuget.commandline/6.5.0",
+      "hashPath": "nuget.commandline.6.5.0.nupkg.sha512"
+    },
+    "Pipelines.Sockets.Unofficial/2.2.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Bhk0FWxH1paI+18zr1g5cTL+ebeuDcBCR+rRFO+fKEhretgjs7MF2Mc1P64FGLecWp4zKCUOPzngBNrqVyY7Zg==",
+      "path": "pipelines.sockets.unofficial/2.2.2",
+      "hashPath": "pipelines.sockets.unofficial.2.2.2.nupkg.sha512"
+    },
+    "RedLock.net/2.3.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-jlrALAArm4dCE292U3EtRoMnVKJ9M6sunbZn/oG5OuzlGtTpusXBfvDrnGWbgGDlWV027f5E9H5CiVnPxiq8+g==",
+      "path": "redlock.net/2.3.2",
+      "hashPath": "redlock.net.2.3.2.nupkg.sha512"
+    },
+    "SharpZipLib/1.4.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-yjj+3zgz8zgXpiiC3ZdF/iyTBbz2fFvMxZFEBPUcwZjIvXOf37Ylm+K58hqMfIBt5JgU/Z2uoUS67JmTLe973A==",
+      "path": "sharpziplib/1.4.2",
+      "hashPath": "sharpziplib.1.4.2.nupkg.sha512"
+    },
+    "StackExchange.Redis/2.6.111": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-49NlwihVG9I1YaPqYBx2e2yPqC4ecXMog8zVXMC3rjj2kufGkC3ofqvhOPBKP0c9ZQdJ3hhzduM7ckOQTE+gxg==",
+      "path": "stackexchange.redis/2.6.111",
+      "hashPath": "stackexchange.redis.2.6.111.nupkg.sha512"
+    },
+    "System.IO.Pipelines/5.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-qEePWsaq9LoEEIqhbGe6D5J8c9IqQOUuTzzV6wn1POlfdLkJliZY3OlB0j0f17uMWlqZYjH7txj+2YbyrIA8Yg==",
+      "path": "system.io.pipelines/5.0.1",
+      "hashPath": "system.io.pipelines.5.0.1.nupkg.sha512"
+    },
+    "System.Runtime.CompilerServices.Unsafe/5.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ZD9TMpsmYJLrxbbmdvhwt9YEgG5WntEnZ/d1eH8JBX9LBp+Ju8BSBhUGbZMNVHHomWo2KVImJhTDl2hIgw/6MA==",
+      "path": "system.runtime.compilerservices.unsafe/5.0.0",
+      "hashPath": "system.runtime.compilerservices.unsafe.5.0.0.nupkg.sha512"
+    },
+    "Shared/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "WebSocketSharp/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "CommandLine/2.8.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

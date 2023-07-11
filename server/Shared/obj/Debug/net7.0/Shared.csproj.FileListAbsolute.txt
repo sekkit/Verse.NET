@@ -1,0 +1,14 @@
+C:\dev\lacg\server\Shared\bin\Debug\net7.0\Shared.deps.json
+C:\dev\lacg\server\Shared\bin\Debug\net7.0\Shared.dll
+C:\dev\lacg\server\Shared\bin\Debug\net7.0\Shared.pdb
+C:\dev\lacg\server\Shared\bin\Debug\net7.0\CommandLine.dll
+C:\dev\lacg\server\Shared\obj\Debug\net7.0\Shared.csproj.AssemblyReference.cache
+C:\dev\lacg\server\Shared\obj\Debug\net7.0\Shared.GeneratedMSBuildEditorConfig.editorconfig
+C:\dev\lacg\server\Shared\obj\Debug\net7.0\Shared.AssemblyInfoInputs.cache
+C:\dev\lacg\server\Shared\obj\Debug\net7.0\Shared.AssemblyInfo.cs
+C:\dev\lacg\server\Shared\obj\Debug\net7.0\Shared.csproj.CoreCompileInputs.cache
+C:\dev\lacg\server\Shared\obj\Debug\net7.0\Shared.csproj.CopyComplete
+C:\dev\lacg\server\Shared\obj\Debug\net7.0\Shared.dll
+C:\dev\lacg\server\Shared\obj\Debug\net7.0\refint\Shared.dll
+C:\dev\lacg\server\Shared\obj\Debug\net7.0\Shared.pdb
+C:\dev\lacg\server\Shared\obj\Debug\net7.0\ref\Shared.dll

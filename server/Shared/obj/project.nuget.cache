@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "dgSpecHash": "n/APAbSBFVI681fcgDpk0/EgD29XmWcPWxX8T3Kft0/9NM17p7DlN8zt4w0WbxxvfTDfKf86BLXXkQjZggoCGg==",
+  "success": true,
+  "projectFilePath": "E:\\Code\\Verse.NET\\server\\Shared\\Shared.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\sekkitshi\\.nuget\\packages\\memorypack\\1.9.16\\memorypack.1.9.16.nupkg.sha512",
+    "C:\\Users\\sekkitshi\\.nuget\\packages\\memorypack.core\\1.9.16\\memorypack.core.1.9.16.nupkg.sha512",
+    "C:\\Users\\sekkitshi\\.nuget\\packages\\memorypack.generator\\1.9.16\\memorypack.generator.1.9.16.nupkg.sha512",
+    "C:\\Users\\sekkitshi\\.nuget\\packages\\memorypack.unityshims\\1.9.16\\memorypack.unityshims.1.9.16.nupkg.sha512",
+    "C:\\Users\\sekkitshi\\.nuget\\packages\\nlog\\5.2.0\\nlog.5.2.0.nupkg.sha512"
+  ],
+  "logs": []
+}
