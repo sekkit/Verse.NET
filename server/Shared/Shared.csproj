@@ -22,6 +22,9 @@
       <Reference Include="CommandLine">
         <HintPath>..\Libs\CommandLine.dll</HintPath>
       </Reference>
+      <Reference Include="Zio">
+        <HintPath>..\Libs\Zio.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
     <ItemGroup>

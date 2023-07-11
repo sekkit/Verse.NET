@@ -262,7 +262,7 @@ namespace Module.Shared {
 }
 
 // Moved to separate namespace to not cause problems if a project uses TargetFramework netstandard2.1
-namespace com.csutil.netstandard2_1polyfill {
+namespace Module.Extensions.netstandard2_1polyfill {
 
     public static class IEnumerableExtensions {
 
