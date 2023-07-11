@@ -19,8 +19,8 @@ public class Init : MonoBehaviour
         UnitySystemConsoleRedirector.Redirect();
 
         Global.AddSingleton<MainThreadSynchronizationContext>();
-        //Global.AddSingleton<Module.Shared.Logger>().ILog = new NLogger("CLIENT", 0, "");
-  
+        Global.AddSingleton<Module.Shared.Logger>().ILog = new NLogger("CLIENT", 0, "");
+        
     }
      
     private void FixedUpdate()
