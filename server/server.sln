@@ -1,0 +1,62 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33530.505
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebSocketSharp", "WebSocketSharp\WebSocketSharp.csproj", "{298D0F7B-2777-4152-B32B-496A77198743}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameServer", "GameServer\GameServer.csproj", "{8D35AD0A-E83C-4C80-88F3-51FC68BACB73}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{F52A34C7-3A13-43E7-8E1F-86153D4F7479}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug_Ubuntu|Any CPU = Debug_Ubuntu|Any CPU
+		Debug|Any CPU = Debug|Any CPU
+		Release_Ubuntu|Any CPU = Release_Ubuntu|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{298D0F7B-2777-4152-B32B-496A77198743}.Debug_Ubuntu|Any CPU.ActiveCfg = Debug|Any CPU
+		{298D0F7B-2777-4152-B32B-496A77198743}.Debug_Ubuntu|Any CPU.Build.0 = Debug|Any CPU
+		{298D0F7B-2777-4152-B32B-496A77198743}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{298D0F7B-2777-4152-B32B-496A77198743}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{298D0F7B-2777-4152-B32B-496A77198743}.Release_Ubuntu|Any CPU.ActiveCfg = Release|Any CPU
+		{298D0F7B-2777-4152-B32B-496A77198743}.Release_Ubuntu|Any CPU.Build.0 = Release|Any CPU
+		{298D0F7B-2777-4152-B32B-496A77198743}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{298D0F7B-2777-4152-B32B-496A77198743}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D35AD0A-E83C-4C80-88F3-51FC68BACB73}.Debug_Ubuntu|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D35AD0A-E83C-4C80-88F3-51FC68BACB73}.Debug_Ubuntu|Any CPU.Build.0 = Debug|Any CPU
+		{8D35AD0A-E83C-4C80-88F3-51FC68BACB73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D35AD0A-E83C-4C80-88F3-51FC68BACB73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D35AD0A-E83C-4C80-88F3-51FC68BACB73}.Release_Ubuntu|Any CPU.ActiveCfg = Release|Any CPU
+		{8D35AD0A-E83C-4C80-88F3-51FC68BACB73}.Release_Ubuntu|Any CPU.Build.0 = Release|Any CPU
+		{8D35AD0A-E83C-4C80-88F3-51FC68BACB73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D35AD0A-E83C-4C80-88F3-51FC68BACB73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F52A34C7-3A13-43E7-8E1F-86153D4F7479}.Debug_Ubuntu|Any CPU.ActiveCfg = Debug|Any CPU
+		{F52A34C7-3A13-43E7-8E1F-86153D4F7479}.Debug_Ubuntu|Any CPU.Build.0 = Debug|Any CPU
+		{F52A34C7-3A13-43E7-8E1F-86153D4F7479}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F52A34C7-3A13-43E7-8E1F-86153D4F7479}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F52A34C7-3A13-43E7-8E1F-86153D4F7479}.Release_Ubuntu|Any CPU.ActiveCfg = Debug|Any CPU
+		{F52A34C7-3A13-43E7-8E1F-86153D4F7479}.Release_Ubuntu|Any CPU.Build.0 = Debug|Any CPU
+		{F52A34C7-3A13-43E7-8E1F-86153D4F7479}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F52A34C7-3A13-43E7-8E1F-86153D4F7479}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A7A5611F-73C2-41F3-897D-ED6787CAEF63}
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = websocket-sharp\websocket-sharp.csproj
+		Policies = $0
+		$0.TextStylePolicy = $1
+		$1.inheritsSet = null
+		$1.scope = text/x-csharp
+		$0.CSharpFormattingPolicy = $2
+		$2.inheritsSet = Mono
+		$2.inheritsScope = text/x-csharp
+		$2.scope = text/x-csharp
+	EndGlobalSection
+EndGlobal

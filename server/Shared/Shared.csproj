@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>disable</Nullable>
+        <RootNamespace />
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Folder Include="DataModel\" />
+      <Folder Include="Module\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MemoryPack" Version="1.9.16" />
+      <PackageReference Include="MemoryPack.UnityShims" Version="1.9.16" />
+      <PackageReference Include="NLog" Version="5.2.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="CommandLine">
+        <HintPath>..\Libs\CommandLine.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="..\..\client\Assets\Scripts\DataModel\Shared\**\*.cs">
+            <Link>DataModel\Shared\%(RecursiveDir)%(FileName)%(Extension)</Link>
+        </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="..\..\client\Assets\Scripts\Module\Shared\**\*.cs">
+            <Link>Module\Shared\%(RecursiveDir)%(FileName)%(Extension)</Link> 
+        </Compile>
+    </ItemGroup>
+    
+</Project>

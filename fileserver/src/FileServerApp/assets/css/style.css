@@ -1,0 +1,153 @@
+* {
+    box-sizing: border-box;
+    font-family: "Lato", sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    display: flow-root;
+    min-height: 100vh;
+    background-color: #fcfcfc;
+}
+
+ul, ol {
+    margin: 0;
+    padding: 0;
+    display: flow-root;
+}
+
+li {
+    list-style-type: none;
+    display: flow-root;
+}
+
+.item-dir, .item-file, 
+.item-dir span, .item-file span,
+.item-dir a, .item-file a {
+    font-weight: normal;
+    text-decoration: none;
+}
+
+.item-dir, .item-file {
+    padding: 4px 10px;
+    border-radius: 4px;
+    transition-duration: 0.3s;
+    cursor: pointer;
+    user-select: none;
+}
+
+.item-dir img, .item-file img {
+    float: left; 
+    margin-right: 1em;
+}
+
+.item-name-text {
+    display: inline-block;
+    min-width: 80%;
+    font-size: 100%;
+    font-weight: normal;
+    color: #111111;
+}
+
+.item-size-text, .item-lastmod-text {
+    display: inline-block;
+    min-width: 30%;
+    font-size: 75%;
+    text-decoration: none;
+    font-weight: normal;
+    color: #bebebe;
+}
+
+.fs-titlebar {
+    display: block;
+}
+
+.button-back {
+    display: inline-block;
+    float: left;
+    height: 2em;
+    margin: 0;
+    margin-right: 0.5em;
+    cursor: pointer;
+}
+
+.fs-path {
+    display: block;
+    height: 2em;
+    padding: 0.5em;
+    margin: 0;
+    margin-left: 0.5em;
+    font-size: 100%;
+    line-height: 100%;
+    overflow: hidden;
+}
+
+.button-back, .fs-path {
+    background-color: #dedede;
+    border-radius: 4px;
+}
+
+@media screen and (min-width: 4.50in) {
+    body>main {
+        width: max(4.40in, 60%);
+        margin: 2em auto 0;
+        padding: 1.5em;
+        border: 1px solid #eeeeee;
+        border-radius: 8px;
+        box-shadow: 0 0 10px 1px rgb(100 100 100 / 10%);
+        background-color: #fefefe;
+        overflow: hidden;
+    }
+
+    .fs-titlebar {
+        margin-bottom: 1em;
+    }
+    
+    .fs-list {
+        height: 70vh;
+        overflow-y: auto;
+    } 
+
+    .item-name-text {
+        margin-top: 3px;
+        margin-bottom: 1px;
+    }
+
+    .item-dir:hover, .item-file:hover {
+        background-color: #eef3fe;
+    }
+}
+
+@media screen and (max-width: 4.49in) {
+    body {
+        background-color: #fefefe;
+    }
+
+    body>main {
+        width: 100%;
+        padding: 0em 0.5em 0.5em;
+    }
+
+    .item-dir, .item-file {
+        padding: 4px 4px;
+        border-radius: 0;
+        border-top: 1px solid #dedede;
+    }
+
+    .item-dir img, .item-file img {
+        width: 1em;
+        margin-right: 4px;
+        margin-top: 0.25em;
+        margin-bottom: 0.75em;
+    }
+
+    .fs-titlebar {
+        position: sticky;
+        top: 0;
+        padding: 0.5em 0em 0.25em;
+        margin-bottom: 0.5em;
+        box-shadow: 0 6px 5px #fefefe;
+        background-color: #fefefe;
+    }
+}

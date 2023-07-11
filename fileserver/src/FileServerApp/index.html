@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>File server</title>
+    <script src="https://unpkg.com/vue@2"></script>
+    <link rel="stylesheet" href="/assets?path=/css/style.css">
+    <link rel="icon" href="/assets?path=/img/favicon.svg">
+</head>
+<body>
+    <main id="main">
+        <div class="fs-titlebar">  
+            <img src="/assets?path=/img/icon-back.svg" class="button-back" @click="goToParent()" />
+            <span class="fs-path">{{base}}</span>
+        </div>
+        <ul class="fs-list">
+            <li v-for="dir in dirs" class="item-dir" @click="goToDir(dir.Name)">
+                <img src="/assets?path=/img/icon-dir.svg"/>
+                <span class="item-name-text">{{dir.Name}}</span>
+                <br/>
+                <span class="item-size-text">Subdirectory</span>
+                <span class="item-lastmod-text">Last mod.: {{dir.LastModified}}</span>
+            </li>
+            <li v-for="file in files" class="item-file">
+                <a :href="(dirUrlPrefix + base + file.Name)" target="blank">
+                    <img src="/assets?path=/img/icon-file2.svg"/>
+                    <span class="item-name-text">{{file.Name}}</span>
+                    <br/>
+                    <span class="item-size-text">{{toConvenient(file.Size)}}</span>
+                    <span class="item-lastmod-text">Last mod.: {{file.LastModified}}</span>
+                </a>
+            </li>
+        </ul>
+    </main>
+    <script>
+        // Base directory. Value is to be set by preprocessor
+        var DIR_BASE = "@@@dirBase";
+        // Site name
+        var SITE_NAME = "File server";
+    </script>
+    <script src="/assets?path=/js/index.js"></script>
+</body>
+</html>

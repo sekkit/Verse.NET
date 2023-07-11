@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <EnableDefaultContentItems>false</EnableDefaultContentItems>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="./*.cs" />
+    <Content Include="wwwroot/**/*.*" CopyToOutputDirectory="Always" />
+    <Content Include="assets/**/*.*" CopyToOutputDirectory="Always" />
+    <Content Include="index.html" CopyToOutputDirectory="Always" />
+  </ItemGroup>
+</Project>
