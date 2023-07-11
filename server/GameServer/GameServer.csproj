@@ -11,7 +11,7 @@
   <ItemGroup>
     <PackageReference Include="MongoDB.Bson" Version="2.19.1" />
     <PackageReference Include="NLog" Version="5.2.0" />
-    <PackageReference Include="NuGet.CommandLine" Version="6.5.0">
+    <PackageReference Include="NuGet.CommandLine" Version="6.5.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
