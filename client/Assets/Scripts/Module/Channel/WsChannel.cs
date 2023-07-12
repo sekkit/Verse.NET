@@ -86,7 +86,8 @@ namespace Module.Channel
                         object param = MemoryPackSerializer.Deserialize(rspType, data) as Msg;
                         if (_rpcCallbackDic.TryGetValue((param as Msg).RpcId, out var del))
                         {
-                            object result = del.DynamicInvoke(param);
+                            // object result = del.DynamicInvoke(param);
+                            del.DynamicInvoke(param);
 
                             // if (del.Method.ReturnType.IsSubclassOf(typeof(Task)))
                             // {
@@ -106,12 +107,12 @@ namespace Module.Channel
                             //     result = del.DynamicInvoke(param);
                             // }
 
-                            SendMsg(result as Msg);
+                            //SendMsg(result as Msg);
                         } 
                         else
                         {
                             Log.Error(string.Format("Invalid code {0}", code));
-                            SendMsg(VoidMsg.Instance);
+                            //SendMsg(VoidMsg.Instance);
                         } 
                     }
                 }
