@@ -1,11 +1,8 @@
-﻿using System; 
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Module.Shared; 
-using UnityEngine;
-using UnityEngine.UI; 
+﻿ 
+using Module.Channel;
 using Module.Shared;
+using Newtonsoft.Json;
+using UnityEngine; 
 
 public class Init : MonoBehaviour
 {
@@ -20,7 +17,12 @@ public class Init : MonoBehaviour
 
         Global.AddSingleton<MainThreadSynchronizationContext>();
         Global.AddSingleton<Module.Shared.Logger>().ILog = new NLogger("CLIENT", 0, "");
+        Global.AddSingleton<TypeProvider>();
+        Global.AddSingleton<WsChannel>();
         
+        Global.Start();
+        
+        Log.Info(JsonConvert.SerializeObject(EnvironmentV2.Instance.systemInfo, Formatting.Indented));
     }
      
     private void FixedUpdate()
@@ -30,11 +32,12 @@ public class Init : MonoBehaviour
 
     private void Update()
     {
-        
+        Global.Update();
     }
 
     private void LateUpdate()
     {
-        
-    } 
+        Global.LateUpdate();
+        Global.FrameFinishedUpdate();
+    }  
 }

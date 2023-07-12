@@ -4,8 +4,7 @@ using System.Diagnostics;
 using System.Reflection;
 using DataModel.Shared.Message;
 using MemoryPack;
-using Module.Shared; 
-using Service.Message;
+using Module.Shared;  
 
 namespace Module.User;
 
@@ -15,12 +14,9 @@ public class RpcModule : EntityModule
     {
         if (self.GetRpcMethods().TryGetValue(code, out var del))
         {
-            var reqType = TypeService.Instance.GetReqType(code);
-            var rspType = TypeService.Instance.GetRspType(code);
-            object param = MemoryPackSerializer.Deserialize(reqType, data) as IMessage;
-            //IMessage result = await func(param) as IMessage;
-            //IMessage result =  func.DynamicInvoke(param);
-            //Func<IMessage, Task<IMessage>> f = x => func.DynamicInvoke(x);
+            var reqType = TypeProvider.Instance.GetReqType(code);
+            var rspType = TypeProvider.Instance.GetRspType(code);
+            object param = MemoryPackSerializer.Deserialize(reqType, data) as Msg;
             
             object result = null;
             if (del.Method.ReturnType.IsSubclassOf(typeof(Task)))
@@ -40,12 +36,12 @@ public class RpcModule : EntityModule
             {
                 result = del.DynamicInvoke(param);
             }
-            channel.SendMsg(result as IMessage);
+            channel.SendMsg(result as Msg);
         }
         else
         {
             Module.Shared.Log.Error(string.Format("Invalid code {0}", code));
-            channel.SendMsg(VoidMessage.Instance);
+            channel.SendMsg(VoidMsg.Instance);
         } 
     }
     

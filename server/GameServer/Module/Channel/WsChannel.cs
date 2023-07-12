@@ -48,7 +48,7 @@ public class WsChannel : WebSocketBehavior, IChannel
     {
         if (e.IsBinary)
         {
-            if (e.RawData.Length <= 4)
+            if (e.RawData.Length < 4)
             {
                 return;
             }
@@ -71,12 +71,12 @@ public class WsChannel : WebSocketBehavior, IChannel
         }
     }
     
-    public void SendMsg(IMessage msg)
+    public void SendMsg(Msg msg)
     {
         Send(msg.Pack());
     }
 
-    public void BroadcastMsg(string[] uids, IMessage msg)
+    public void BroadcastMsg(string[] uids, Msg msg)
     {
         var sids = IdService.Instance.GetSidByUids(uids);
         foreach (var sid in sids)
@@ -85,7 +85,7 @@ public class WsChannel : WebSocketBehavior, IChannel
         }
     }
 
-    public void BroadcastAll(IMessage msg)
+    public void BroadcastAll(Msg msg)
     {
         Sessions.Broadcast(msg.Pack());
     }

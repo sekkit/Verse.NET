@@ -1,12 +1,14 @@
 ﻿using MemoryPack;
+using Module.Shared;
 
 namespace DataModel.Shared.Message
 {
     [MemoryPackable]
-    public partial class VoidMessage : IMessage
+    [Protocol(ProtoCode.VOID)]
+    public partial class VoidMsg : Msg
     {
-        public static VoidMessage Instance { get; set; } = new();
+        public static VoidMsg Instance { get; set; } = new();
 
-        public byte[] Pack() => MemoryPackSerializer.Serialize(this);
+        public override byte[] Pack() => MemoryPackSerializer.Serialize(this);
     }
 }

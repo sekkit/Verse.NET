@@ -7,8 +7,7 @@ using MongoDB.Bson;
 using Newtonsoft.Json;
 using Service.Entity;
 using Service.Id;
-using Service.Login;
-using Service.Message;
+using Service.Login; 
 
 public sealed class Init
 {
