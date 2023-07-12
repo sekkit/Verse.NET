@@ -1,7 +1,6 @@
 using System;
 using System.IO;
-using System.Linq;
-using UnityEngine.Assertions;
+using System.Linq; 
 
 namespace Module.Shared {
 
@@ -12,7 +11,7 @@ namespace Module.Shared {
             if (sanitize) { subDirName = Sanitize.SanitizeToDirName(subDirName); } 
             var c = new DirectoryInfo(self.FullPath() + subDirName);
             if (assertThatChildMustExist) {
-                Assert.IsTrue(c.IsNotNullAndExists(), "childFolder '" + subDirName + "' doesnt exist! Path=" + c.FullPath());
+                //Assert.IsTrue(c.IsNotNullAndExists(), "childFolder '" + subDirName + "' doesnt exist! Path=" + c.FullPath());
             }
             return c;
         }
@@ -20,10 +19,10 @@ namespace Module.Shared {
         public static FileInfo GetChild(this DirectoryInfo self, string fileName, bool assertThatChildMustExist = false, bool sanitize = true) {
             fileName.ThrowErrorIfNullOrEmpty("fileName");
             if (sanitize) { fileName = Sanitize.SanitizeToFileName(fileName); }
-            Assert.AreEqual(fileName, Sanitize.SanitizeToFileName(fileName));
+            //Assert.AreEqual(fileName, Sanitize.SanitizeToFileName(fileName));
             var c = new FileInfo(self.FullPath() + fileName);
             if (assertThatChildMustExist) {
-                Assert.IsTrue(c.IsNotNullAndExists(), "childFile '" + fileName + "' doesnt exist! Path=" + c.FullPath());
+                //Assert.IsTrue(c.IsNotNullAndExists(), "childFile '" + fileName + "' doesnt exist! Path=" + c.FullPath());
             }
             return c;
         }
@@ -97,7 +96,7 @@ namespace Module.Shared {
             if (self != null && self.ExistsV2()) {
                 var res = deleteAction();
                 self.Refresh();
-                Assert.IsFalse(!res || self.ExistsV2(), "Still exists: " + self.FullName);
+                //Assert.IsFalse(!res || self.ExistsV2(), "Still exists: " + self.FullName);
                 return res;
             }
             return false;
@@ -128,7 +127,7 @@ namespace Module.Shared {
             var originalPath = source.FullPath();
             if (EnvironmentV2.isWebGL) {
                 // In WebGL .MoveTo does not work correctly so copy+delete is tried instead:
-                var tempDir = EnvironmentV2.instance.GetOrAddTempFolder("TmpCopies").GetChildDir(tempCopyId);
+                var tempDir = EnvironmentV2.Instance.GetOrAddTempFolder("TmpCopies").GetChildDir(tempCopyId);
                 source.CopyTo(new DirectoryInfo(tempDir.FullName));
             }
             source.MoveTo(target.FullPath());
@@ -137,7 +136,7 @@ namespace Module.Shared {
                 if (!target.ExistsV2()) {
                     EmulateMoveViaCopyDelete(originalPath, tempCopyId, target);
                 } else {
-                    Log.e("WebGL TempCopy solution was not needed!");
+                    Log.Error("WebGL TempCopy solution was not needed!");
                 }
             }
             return target.ExistsV2();
@@ -146,7 +145,7 @@ namespace Module.Shared {
         /// <summary> Needed in WebGL because .MoveTo does not correctly move the files to
         /// the new target directory but instead only removes the original dir </summary>
         private static void EmulateMoveViaCopyDelete(string source, string tempDirPath, DirectoryInfo target) {
-            var tempFolderPath = EnvironmentV2.instance.GetOrAddTempFolder("TmpCopies").GetChildDir(tempDirPath).FullName;
+            var tempFolderPath = EnvironmentV2.Instance.GetOrAddTempFolder("TmpCopies").GetChildDir(tempDirPath).FullName;
             var tempDir = new DirectoryInfo(tempFolderPath);
             if (tempDir.IsEmtpy()) {
                 target.CreateV2();
@@ -154,14 +153,14 @@ namespace Module.Shared {
             } else if (tempDir.CopyTo(target)) {
                 CleanupAfterEmulatedMove(source, tempDir);
             } else {
-                Log.e("Could not move tempDir=" + tempDir + " into target=" + target);
+                Log.Error("Could not move tempDir=" + tempDir + " into target=" + target);
             }
         }
 
         private static void CleanupAfterEmulatedMove(string source, DirectoryInfo tempDir) {
             tempDir.DeleteV2();
             var originalDir = new DirectoryInfo(source);
-            try { if (originalDir.ExistsV2()) { originalDir.DeleteV2(); } } catch (Exception e) { Log.e("Cleanup err of original dir: " + originalDir, e); }
+            try { if (originalDir.ExistsV2()) { originalDir.DeleteV2(); } } catch (Exception e) { Log.Error("Cleanup err of original dir: " + originalDir + e); }
         }
 
         private static void AssertNotIdentical(DirectoryInfo source, DirectoryInfo target) {
@@ -187,7 +186,7 @@ namespace Module.Shared {
             target.CreateV2();
             foreach (var file in source.EnumerateFiles()) {
                 var createdFile = file.CopyTo(target.GetChild(file.Name).FullPath(), replaceExisting);
-                AssertV3.IsTrue(createdFile.ExistsV2(), () => "!createdFile.Exists: " + createdFile);
+                //AssertV3.IsTrue(createdFile.ExistsV2(), () => "!createdFile.Exists: " + createdFile);
             }
             return target.ExistsV2();
         }

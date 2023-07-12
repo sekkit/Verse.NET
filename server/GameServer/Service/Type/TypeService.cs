@@ -22,22 +22,27 @@ public class TypeService : Singleton<TypeService>, ILifecycle
     
     public void Start()
     {
-        var types = Assembly.GetAssembly(GetType()).GetTypes();
-        foreach (var type in types)
+        var assemblies=AppDomain.CurrentDomain.GetAssemblies();
+        foreach (var asm in assemblies)
         {
-            var attr = type.GetCustomAttribute<ProtocolAttribute>();
-            if (attr != null)
+            var types = asm.GetTypes();
+            foreach (var type in types)
             {
-                if (type.Name.EndsWith("Req"))
+                var attr = type.GetCustomAttribute<ProtocolAttribute>();
+                if (attr != null)
                 {
-                    _reqMap.Add(attr.Code, type);
-                }
-                else if(type.Name.EndsWith("Rsp"))
-                {
-                    _rspMap.Add(attr.Code, type);
+                    if (type.Name.EndsWith("Req"))
+                    {
+                        _reqMap.Add(attr.Code, type);
+                    }
+                    else if(type.Name.EndsWith("Rsp"))
+                    {
+                        _rspMap.Add(attr.Code, type);
+                    }
                 }
             }
         }
+        
     }
 
     public void Update()

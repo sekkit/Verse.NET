@@ -10,5 +10,7 @@ namespace DataModel.Shared.Message
         public int RetCode { get; set; }
         
         public string Uid { get; set; }
+        
+        public byte[] Pack() => MemoryPackSerializer.Serialize(this);
     }
 }

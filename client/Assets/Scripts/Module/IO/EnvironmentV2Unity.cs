@@ -2,13 +2,13 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
+using Module.Extensions;
 using Module.Shared;
-using UnityEngine;
-using Zio;
+using UnityEngine; 
 
 namespace Module.IO
 {
-    class EnvironmentV2Unity : EnvironmentV2 {
+    public class EnvironmentV2Unity : EnvironmentV2 {
 
         public EnvironmentV2Unity() : base(new UnitySystemInfo()) { }
 
@@ -20,22 +20,22 @@ namespace Module.IO
             return new DirectoryInfo(Application.temporaryCachePath);
         }
 
-        public override DirectoryEntry GetOrAddAppDataFolder(string appDataSubfolderName) {
-            return GetPersistentDataPath().GetChildDir(appDataSubfolderName).CreateV2().ToRootDirectoryEntry();
+        public override DirectoryInfo GetOrAddAppDataFolder(string appDataSubfolderName) {
+            return GetPersistentDataPath().GetChildDir(appDataSubfolderName).CreateV2();
         }
 
-        public override DirectoryEntry GetCurrentDirectory() {
+        public override DirectoryInfo GetCurrentDirectory() {
             if (isWindows || isMacOs || isLinux || isUnityEditor) {
                 var appDataPath = new DirectoryInfo(Application.dataPath);
                 if (isUnityEditor) {
                     // Return "/TestApplicationData" to protect the rest of the Unity project folders:
-                    return appDataPath.Parent.GetChildDir("TestApplicationData").CreateV2().ToRootDirectoryEntry();
+                    return appDataPath.Parent.GetChildDir("TestApplicationData").CreateV2();
                 }
                 // On Windows, Linux and MacOS it makes sense to return the install folder:
-                return appDataPath.ToRootDirectoryEntry();
+                return appDataPath;
             }
             // On all other platforms there is no install folder so return the normal GetPersistentDataPath:
-            return GetPersistentDataPath().ToRootDirectoryEntry();
+            return GetPersistentDataPath();
         }
 
         private static DirectoryInfo GetPersistentDataPath() { return new DirectoryInfo(Application.persistentDataPath); }
@@ -103,6 +103,38 @@ namespace Module.IO
 #endif
             }
         }
+
+    }
+    [Serializable]
+    public class UnitySystemInfo : ISystemInfo {
+        // e.g. Arm, X32, Arm64, X64
+        public string oSArchitecture { get; set; } = "" + RuntimeInformation.OSArchitecture;
+        // On Win 10 => "Microsoft Windows 10.0.16299"
+        // On macOS High Sierra 10.13.4 => "Darwin 17.5.0 Darwin Kernel Version 17.5.0 ..."
+        public string oSDescription { get; set; } = RuntimeInformation.OSDescription;
+        public string osPlatform { get; set; } = "" + Application.platform;
+        // On Win 10 => "6.2.9200.0"
+        // On macOS High Sierra 10.13.4 => "17.5.0.0"
+        public string oSVersion { get; set; } = "" + Environment.OSVersion.Version;
+        // e.g. Arm, X32, Arm64, X64
+        public string processArchitecture { get; set; } = "" + RuntimeInformation.ProcessArchitecture;
+        // "Windows 7 (6.1.7601) 64bit" on 64 bit Windows 7
+        // "Mac OS X 10.10.4" on Mac OS X Yosemite
+        // "iPhone OS 8.4" on iOS 8.4
+        // "Android OS API-22" on Android 5.1
+        public string OperatingSystem { get; set; } = "" + SystemInfo.operatingSystem;
+        // e.g. "iPhone6,1" or "PC"
+        public string DeviceModel { get; set; } = "" + SystemInfo.deviceModel;
+        // e.g. "Intel(R) Core(TM)2 Quad CPU Q6600 @ 2.40GHz"
+        public string ProcessorType { get; set; } = "" + SystemInfo.processorType;
+        public string appId { get; set; } = "" + Application.identifier;
+        public string appName { get; set; } = "" + Application.productName;
+        public string appVersion { get; set; } = "" + Application.version;
+        public string UnityVersion { get; set; } = "" + Application.unityVersion;
+        public string culture => "" + EnvironmentV2.Instance.CurrentCulture;
+        public string language { get; set; } = "" + Application.systemLanguage;
+        public long latestLaunchDate { get; set; } = DateTime.UtcNow.ToUnixTimestampUtc();
+        public int utcOffset { get; set; } = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).Hours; 
 
     }
 }

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
+using System.Linq; 
 using Module.Shared;
 using UnityEngine;
-using UnityEngine.Assertions;
+using UnityEngine.Assertions; 
 
 namespace Module.Extensions {
 
@@ -53,7 +52,7 @@ namespace Module.Extensions {
         private static bool IsComponentNull(object existingComp) {
             var isNull = existingComp == null;
             // Check if the component is really accessible: 
-            if (!isNull && existingComp is Component c) {
+            if (!isNull && existingComp is UnityEngine.Component c) {
                 try {
                     isNull = c.gameObject == null; // This access will cause an exception if the component is null
                 } catch (Exception) {
@@ -64,13 +63,13 @@ namespace Module.Extensions {
         }
 
         /// <summary> Unity returns a comp that pretents to be null so return actual null </summary>
-        public static T GetComponentV2<T>(this Component self) {
+        public static T GetComponentV2<T>(this UnityEngine.Component self) {
             var existingComp = self.GetComponent<T>();
             return IsComponentNull(existingComp) ? default : existingComp;
         }
 
         /// <summary> Used for lazy-initialization of a Mono, combine with go.GetOrAddChild </summary>
-        public static T GetOrAddComponent<T>(this GameObject self) where T : Component {
+        public static T GetOrAddComponent<T>(this GameObject self) where T : UnityEngine.Component {
             var existingComp = self.GetComponentV2<T>();
             return existingComp == null ? self.AddComponent<T>() : existingComp;
         }
@@ -80,7 +79,7 @@ namespace Module.Extensions {
             return existingComp != null;
         }
         
-        public static bool HasComponent<T>(this Component self, out T existingComp) {
+        public static bool HasComponent<T>(this UnityEngine.Component self, out T existingComp) {
             existingComp = self.GetComponentV2<T>();
             return existingComp != null;
         }
@@ -120,7 +119,7 @@ namespace Module.Extensions {
                     UnityEngine.Object.DestroyImmediate(self);
                 }
             } catch {
-                Log.Error("Cant destroy object: " + self, self);
+                Log.Error("Cant destroy object: " + self);
                 return false;
             }
             Assert.IsTrue(destroyNextFrame || self.IsDestroyed(), "gameObject was not destroyed");
@@ -145,22 +144,7 @@ namespace Module.Extensions {
             var parent = self.GetParent();
             return (parent != null ? parent.FullQualifiedName() + separator : "") + self.name;
         }
-
-        public static void AddOnDestroyListener(this GameObject self, Action onDestroyCallback) {
-            self.GetOrAddComponent<OnDestroyListener>().onDestroy.AddListener(() => { onDestroyCallback(); });
-        }
-
-        /// <summary> When the <see cref="GameObject"/> is destroyed call Dispose on a target <see cref="IDisposable"/> </summary>
-        public static T SetUpDisposeOnDestroy<T>(this GameObject self, T objectToDispose) where T : IDisposable {
-            self.AddComponent<DisposerMono>().disposable = objectToDispose;
-            return objectToDispose;
-        }
-
-        /// <summary> When the target <see cref="GameObject"/> is destroyed call Dispose on a <see cref="IDisposable"/> </summary>
-        public static T SetUpDisposeOnDestroy<T>(this T self, GameObject goToConnectTo) where T : IDisposable {
-            return goToConnectTo.SetUpDisposeOnDestroy(self);
-        }
-
+         
         public static bool IsGrandChildOf(this GameObject self, GameObject potentialGrandParent) {
             if (self == null) { return false; } // Reached root of GO tree
             if (self == potentialGrandParent) { return true; }

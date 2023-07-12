@@ -12,16 +12,18 @@ public class LoginModule : EntityModule
     public async Task<LoginRsp> rpcLogin(LoginReq req)
     {
         var result = await LoginService.Instance.Login(req.Username, req.Password);
-        var rsp = new LoginRsp();
-        rsp.Uid = result.Item2;
-        rsp.RetCode = (int)result.Item1;
+        var rsp = new LoginRsp
+        {
+            Uid = result.Item2,
+            RetCode = (int)result.Item1
+        };
         if (result.Item1 == LoginCode.Ok)
         {
             self.SetUid(result.Item2);
             self.AddModule<ItemModule>();
             //TODO:
             //...
-            EntityService.Instance.RegisterEntity(self);
+            EntityService.Instance.RegisterEntity(self); 
         }
         return rsp;
     }

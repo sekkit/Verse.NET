@@ -4,6 +4,6 @@ namespace DataModel.Shared.Message
 {
     public interface IMessage
     {
-        byte[] Pack() => MemoryPackSerializer.Serialize(this);
+        byte[] Pack();// => MemoryPackSerializer.Serialize(this);
     }
 }

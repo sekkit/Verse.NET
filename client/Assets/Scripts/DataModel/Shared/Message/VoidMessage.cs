@@ -6,5 +6,7 @@ namespace DataModel.Shared.Message
     public partial class VoidMessage : IMessage
     {
         public static VoidMessage Instance { get; set; } = new();
+
+        public byte[] Pack() => MemoryPackSerializer.Serialize(this);
     }
 }

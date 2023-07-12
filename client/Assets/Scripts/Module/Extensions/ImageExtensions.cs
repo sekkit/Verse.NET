@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 using Module.Shared;
 using StbImageSharp;
 using UnityEngine;
-using UnityEngine.Assertions;
-using Zio;
+using UnityEngine.Assertions; 
 
 namespace Module.Extensions {
 
@@ -38,17 +37,17 @@ namespace Module.Extensions {
             return Sprite.Create(self, new Rect(0, 0, self.width, self.height), new Vector2(0.5f, 0.5f));
         }
 
-        public static async Task<Texture2D> LoadTexture2D(this FileEntry self) {
-            return await ToTexture2D(self.ReadAllBytes());
+        public static async Task<Texture2D> LoadTexture2D(this FileInfo self) { 
+            return await ToTexture2D(File.ReadAllBytes(self.FullPath()));
         }
 
-        public static void SaveToJpgFile(this Texture2D self, FileEntry targetFile, int quality = 90) {
-            if (!targetFile.Parent.Exists) { targetFile.Parent.CreateV2(); }
+        public static void SaveToJpgFile(this Texture2D self, FileInfo targetFile, int quality = 90) {
+            if (!targetFile.ParentDir().Exists) { targetFile.ParentDir().CreateV2(); }
             targetFile.SaveStream(new MemoryStream(self.EncodeToJPG(quality)));
         }
 
-        public static void SaveToPngFile(this Texture2D self, FileEntry targetFile) {
-            if (!targetFile.Parent.Exists) { targetFile.Parent.CreateV2(); }
+        public static void SaveToPngFile(this Texture2D self, FileInfo targetFile) {
+            if (!targetFile.ParentDir().Exists) { targetFile.ParentDir().CreateV2(); }
             targetFile.SaveStream(new MemoryStream(self.EncodeToPNG()));
         }
 

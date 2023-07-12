@@ -97,15 +97,18 @@ namespace Module.Extensions {
                     l.DynamicInvokeV2(args);
                 }
             }
-            catch (Exception e) { Log.e(e); }
+            catch (Exception e) { Log.Error(e); }
         }
 
         /// <summary> This will ensure that the subscribe callback happens on the main thread </summary>
         public static void SubscribeOnMainThread(this IEventBus self, object subscriber, string eventName, Action callback) {
             self.Subscribe(subscriber, eventName, () => {
-                MainThread.Invoke(() => {
+                MainThreadSynchronizationContext.Instance.Post(() => {
                     callback.InvokeIfNotNull();
                 });
+                // MainThread.Invoke(() => {
+                //     callback.InvokeIfNotNull();
+                // });
             });
         }
 

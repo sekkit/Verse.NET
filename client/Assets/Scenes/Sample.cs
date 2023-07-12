@@ -8,6 +8,8 @@ public class Sample : MonoBehaviour
 {
     public Text TxtStatus;
 
+    public InputField InputUrl;
+    
     public InputField InputUsername;
 
     public InputField InputPassword;
@@ -17,8 +19,7 @@ public class Sample : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        BtnLogin.onClick.AddListener(OnLogin);
-        
+        BtnLogin.onClick.AddListener(OnLogin); 
     }
 
     // Update is called once per frame

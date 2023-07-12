@@ -1,13 +1,21 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Concurrent;
+using System.Reflection;
+using System.Threading.Tasks;
 using DataModel.Shared.Message;
 using MemoryPack; 
 
 namespace Module.Shared
 {
     public partial class Entity : ILifecycle, IDisposable
-    {
+    {    
+        public Entity()
+        {
+        }
+
+        private ConcurrentDictionary<ProtoCode, Delegate> _rpcMethods { get; set; } = new();
+         
         public string Uid { get; private set; }
         
         public void SetUid(string uid)
@@ -23,15 +31,41 @@ namespace Module.Shared
 
         public void AddModule<T>() where T: EntityModule
         {
-            var inst = Activator.CreateInstance<T>();
             if (!_modules.ContainsKey(typeof(T)))
             {
+                var inst = Activator.CreateInstance<T>();
                 _modules.TryAdd(typeof(T), inst);
                 inst.Attach(this);
+                
+                var methods = inst.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+                foreach (var method in methods)
+                {
+                    var attr = method.GetCustomAttribute<RpcMethodAttribute>();
+                    if (attr == null) continue;
+                    Log.Info($"{method.Name}");
+                    var methodParams = method.GetParameters();
+                    if (methodParams.Length == 1)
+                    {
+                        Type returnType = method.ReturnType;
+                        string methodName = method.Name;
+                        Type inputParam = methodParams[0].ParameterType;
+
+                        Type genericFuncType = typeof(Func<,>).MakeGenericType(inputParam, returnType); 
+                        var del = Delegate.CreateDelegate(genericFuncType, inst, method);
+                        _rpcMethods.TryAdd(attr.Code, del);
+                    }
+                    else
+                    {
+                        throw new Exception($"illegal rpc method {method.Name}");
+                    }
+                }
             }
         }
 
-        public void Attach(IChannel ch) => _channel = ch;
+        public void Attach(IChannel ch)
+        {
+            _channel = ch; 
+        } 
 
         public bool IsAttached => _channel != null;
 
@@ -94,5 +128,7 @@ namespace Module.Shared
                 m.Destroy();
             }
         }
+
+        public ConcurrentDictionary<ProtoCode, Delegate> GetRpcMethods() => _rpcMethods;
     }
 }

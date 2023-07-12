@@ -2,12 +2,9 @@
 using System;
 using System.Globalization;
 using System.IO;
-using System.Runtime.InteropServices;
-using Module.Shared;
-using UnityEngine;
-using Zio;
+using System.Runtime.InteropServices; 
 
-namespace Module.IO
+namespace Module.Shared
 {
     public class EnvironmentV2 : Singleton<EnvironmentV2> {
  
@@ -17,7 +14,7 @@ namespace Module.IO
         protected EnvironmentV2(ISystemInfo systemInfo) { this.systemInfo = systemInfo; }
 
         public static bool isWebGL {
-            get {
+        get {
 #if UNITY_WEBGL
                 return true;
 #else
@@ -27,7 +24,7 @@ namespace Module.IO
         }
 
         public static bool isAndroid {
-            get {
+        get {
 #if UNITY_ANDROID
                 return true;
 #else
@@ -37,7 +34,7 @@ namespace Module.IO
         }
 
         public static bool isEditor {
-            get {
+        get {
 #if UNITY_EDITOR
                 return true;
 #else
@@ -47,7 +44,7 @@ namespace Module.IO
         }
 
         public static bool isDebugMode {
-            get {
+        get {
 #if DEBUG
                 return true;
 #else
@@ -67,54 +64,36 @@ namespace Module.IO
         }
 
         /// <summary> The folder of the binary (or dll that is executed) </summary>
-        public virtual DirectoryEntry GetCurrentDirectory() {
-            return new DirectoryInfo(Directory.GetCurrentDirectory()).ToRootDirectoryEntry();
+        public virtual DirectoryInfo GetCurrentDirectory() {
+            return new DirectoryInfo(Directory.GetCurrentDirectory());
         }
 
         /// <summary> On Windows e.g. C:\Users\User123\AppData\Roaming\MyFolderName123 </summary>
-        public virtual DirectoryEntry GetOrAddAppDataFolder(string appDataSubfolderName) {
+        public virtual DirectoryInfo GetOrAddAppDataFolder(string appDataSubfolderName) {
             appDataSubfolderName = Sanitize.SanitizeToDirName(appDataSubfolderName);
             appDataSubfolderName.ThrowErrorIfNullOrEmpty(appDataSubfolderName);
             var appDataRoot = GetSpecialDirInfo(Environment.SpecialFolder.ApplicationData);
-            return appDataRoot.GetChildDir(appDataSubfolderName).CreateV2().ToRootDirectoryEntry();
+            return appDataRoot.GetChildDir(appDataSubfolderName).CreateV2();
         }
 
         /// <summary> On Windows e.g. C:\Users\User123\AppData\Local\Temp\ </summary>
-        public DirectoryEntry GetRootTempFolder() { return GetRootTempDirInfo().ToRootDirectoryEntry(); }
+        public DirectoryInfo GetRootTempFolder() { return GetRootTempDirInfo(); }
 
         protected virtual DirectoryInfo GetRootTempDirInfo() { return new DirectoryInfo(Path.GetTempPath()); }
 
-        public DirectoryEntry GetOrAddTempFolder(string tempSubfolderName) {
+        public DirectoryInfo GetOrAddTempFolder(string tempSubfolderName) {
             return GetRootTempFolder().GetChildDir(tempSubfolderName).CreateV2();
         }
 
-        public DirectoryEntry GetSpecialFolder(Environment.SpecialFolder specialFolder) {
-            return GetSpecialDirInfo(specialFolder).ToRootDirectoryEntry();
+        public DirectoryInfo GetSpecialFolder(Environment.SpecialFolder specialFolder) {
+            return GetSpecialDirInfo(specialFolder);
         }
 
         protected virtual DirectoryInfo GetSpecialDirInfo(Environment.SpecialFolder specialFolder) {
             return new DirectoryInfo(Environment.GetFolderPath(specialFolder));
-        }
-
-        public virtual DirectoryEntry GetNewInMemorySystem() {
-            return new DirectoryEntry(new Zio.FileSystems.MemoryFileSystem(), UPath.Root);
-        }
-
-        public interface ISystemInfo {
-            string oSArchitecture { get; }
-            string oSDescription { get; }
-            string osPlatform { get; }
-            string oSVersion { get; }
-            string processArchitecture { get; }
-            string appId { get; }
-            string appName { get; }
-            string appVersion { get; }
-            string culture { get; }
-            string language { get; } 
-            long latestLaunchDate { get; }
-            int utcOffset { get; }
-        }
-
+        } 
+        
+        [Serializable]
         public class SystemInfo : ISystemInfo {
             // e.g. Arm, X32, Arm64, X64
             public string oSArchitecture { get; set; } = "" + RuntimeInformation.OSArchitecture;
@@ -129,7 +108,7 @@ namespace Module.IO
             public string oSVersion { get; set; } = "" + Environment.OSVersion.Version;
             // e.g. Arm, X32, Arm64, X64
             public string processArchitecture { get; set; } = "" + RuntimeInformation.ProcessArchitecture;
-            public string appId { get; set; } = "" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
+            public string appId { get; set; } = "" + System.Reflection.Assembly.GetCallingAssembly().GetName().Name;
             public string appName { get; set; } = "" + AppDomain.CurrentDomain.FriendlyName;
             public string appVersion { get; set; } = "" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             public string culture { get; set; } = "" + CultureInfo.CurrentCulture;

@@ -73,11 +73,7 @@ public class WsChannel : WebSocketBehavior, IChannel
     
     public void SendMsg(IMessage msg)
     {
-        SendAsync(msg.Pack(), (ok) =>
-        {
-            if(!ok)
-                Shared.Log.Info(string.Format("send to peer fail"));
-        });
+        Send(msg.Pack());
     }
 
     public void BroadcastMsg(string[] uids, IMessage msg)
@@ -85,18 +81,12 @@ public class WsChannel : WebSocketBehavior, IChannel
         var sids = IdService.Instance.GetSidByUids(uids);
         foreach (var sid in sids)
         { 
-            Sessions[sid].WebSocket.SendAsync(msg.Pack(), (ok) =>
-            {
-                if(!ok)
-                    Shared.Log.Info(string.Format("broadcast to peer fail"));
-            });
+            Sessions[sid].WebSocket.Send(msg.Pack());
         }
     }
 
     public void BroadcastAll(IMessage msg)
     {
-        Sessions.BroadcastAsync(msg.Pack(), () =>
-        { 
-        });
+        Sessions.Broadcast(msg.Pack());
     }
 } 

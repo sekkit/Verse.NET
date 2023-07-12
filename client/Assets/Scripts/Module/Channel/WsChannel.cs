@@ -13,7 +13,7 @@ namespace Module.Channel
         
         private IWebSocket _socket;
 
-        public string ServerUrl { get; set; } = "ws://127.0.0.1/lacg";
+        public string ServerUrl { get; set; } = "ws://127.0.0.1:4649/lacg";
 
         public void Connect()
         {
@@ -61,7 +61,7 @@ namespace Module.Channel
         {
             if (e.IsBinary)
             {
-                Log.Info($"Receive Bytes ({e.RawData.Length}): {e.Data}");
+                Log.Info($"Receive Bytes ({e.RawData.Length}): {e.RawData}");
             }
             else if (e.IsText)
             {
