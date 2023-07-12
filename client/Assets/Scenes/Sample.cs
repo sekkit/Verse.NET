@@ -32,8 +32,8 @@ public class Sample : MonoBehaviour
     {
         var username = InputUsername.text.Trim();
         var password = InputPassword.text.Trim();
-        
-        
+
+        var url = InputUrl.text.Trim();
         
         WsChannel.Instance.Connect();
     }
