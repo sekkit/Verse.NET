@@ -8,6 +8,7 @@ using DataModel.Shared.Message;
 using DataModel.Shared.Model;
 using JetBrains.Annotations;
 using MemoryPack;
+using Module.Channel;
 using Module.Shared;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -48,6 +49,18 @@ public class ClientStub : MonoBehaviour
                 throw new Exception($"illegal ntf method {method.Name}");
             }
         }
+    }
+
+    private void OnDestroy()
+    {
+        // WsChannel.Instance.Close();
+        // this.User = null;
+    }
+
+    private void OnApplicationQuit()
+    {
+        WsChannel.Instance.Close();
+        this.User = null;
     }
 
     public async void Call(ProtoCode code, Msg param)
