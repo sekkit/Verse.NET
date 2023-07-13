@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Concurrent;
-using Module.Shared; 
+using DataModel.Shared.Message;
+using Module.Shared;
+using Module.User;
+using WebSocketSharp.Server;
 
 namespace Service.Entity;
 
@@ -96,5 +99,13 @@ public class EntityService : Singleton<EntityService>, ILifecycle
     {
         _entities.TryRemove(entity.Uid, out var _);
         UnregisterChannel(entity.Uid);
+    }
+
+    public async Task NotifyAll(ProtoCode code, Msg msg)
+    { 
+        if (_entities.Count > 0)
+        {
+            await _entities.FirstOrDefault().Value?.GetChannel()?.NotifyAll(code, msg);
+        }
     }
 }

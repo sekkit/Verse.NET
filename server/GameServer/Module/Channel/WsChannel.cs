@@ -176,8 +176,6 @@ public class WsChannel : WebSocketBehavior, IChannel
         {
             var tcs = new TaskCompletionSource<Msg>();
             MainThreadSynchronizationContext.Instance.Post(() => { tcs.SetCanceled(); });
-        }
-        
-        
-    }
+        } 
+    } 
 } 
