@@ -2,7 +2,7 @@
 using Module.User;
 using Module.User.Login;
 
-namespace Helper;
+namespace Module.Helper;
 
 public static class EntityHelper
 {

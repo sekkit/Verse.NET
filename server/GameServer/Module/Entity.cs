@@ -1,13 +1,19 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using DataModel.Shared.Message;
 using DataModel.Shared.Model;
-using MemoryPack; 
+using MemoryPack;
+using Module.Helper;
+using Module.Shared; 
+using DataModel.Shared;
+using Log = Module.Shared.Log;
+using Timer = Module.Shared.Timer;
 
-namespace Module.Shared
+namespace Module
 {
     public partial class Entity : ILifecycle, IDisposable
     {    
@@ -16,10 +22,11 @@ namespace Module.Shared
         }
 
         private ConcurrentDictionary<ProtoCode, Delegate> _rpcMethods { get; set; } = new();
-        
+        private volatile List<Module.Shared.Timer> _timers = new();
+
         public string Uid { get; private set; }
 
-        public User User;
+        public DataModel.Shared.Model.User User;
         
         public void SetUid(string uid)
         {
@@ -45,7 +52,7 @@ namespace Module.Shared
                 {
                     var attr = method.GetCustomAttribute<ServerApiAttribute>();
                     if (attr == null) continue;
-                    Log.Info($"{method.Name}");
+                    Module.Shared.Log.Info($"{method.Name}");
                     var methodParams = method.GetParameters();
                     if (methodParams.Length == 1)
                     {
@@ -84,6 +91,13 @@ namespace Module.Shared
             return m as T;
         }
 
+        public Module.Shared.Timer AddTimer(long delay, long interval, bool repeated, Action cb)
+        {
+            var timer = Timer.Create(delay, interval, repeated, cb); 
+            _timers.Add(timer);
+            return timer;
+        }
+        
         public void Start()
         { 
             foreach (var module in _modules.Values)
@@ -106,6 +120,14 @@ namespace Module.Shared
             {
                 module.LateUpdate();
             }
+ 
+            foreach (var timer in _timers.ToArray())
+            {
+                if (timer.CheckDoneOrTimeout(TimeHelper.GetTimeStampMS()))
+                {
+                    _timers.Remove(timer);
+                }
+            } 
         }
 
         public void FrameFinishedUpdate()

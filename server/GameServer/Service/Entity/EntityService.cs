@@ -9,7 +9,7 @@ namespace Service.Entity;
 
 public class EntityService : Singleton<EntityService>, ILifecycle
 {
-    private ConcurrentDictionary<string, Module.Shared.Entity> _entities = new(); 
+    private ConcurrentDictionary<string, Module.Entity> _entities = new(); 
     private DoubleMap<string, string> _uid2sid = new();
     
     public void RegisterChannel(string uid, string sid)
@@ -89,13 +89,13 @@ public class EntityService : Singleton<EntityService>, ILifecycle
         }
     }
 
-    public void RegisterEntity(Module.Shared.Entity entity)
+    public void RegisterEntity(Module.Entity entity)
     {
         _entities.TryAdd(entity.Uid, entity);
         RegisterChannel(entity.Uid, entity.GetChannel().GetChannelId());
     }
 
-    public void UnregisterEntity(Module.Shared.Entity entity)
+    public void UnregisterEntity(Module.Entity entity)
     {
         _entities.TryRemove(entity.Uid, out var _);
         UnregisterChannel(entity.Uid);

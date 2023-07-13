@@ -54,6 +54,11 @@ public class LoginModule : EntityModule
     
     public override void Start()
     {
+        self.AddTimer(3000, 5000, true, () =>
+        {
+            Shared.Log.Info("Hello");
+            self.Get<RpcModule>().Notify(ProtoCode.ON_TEST, new TestNtf(){ TestMsg = "sekkit"});
+        });
     }
 
     public override void Update()

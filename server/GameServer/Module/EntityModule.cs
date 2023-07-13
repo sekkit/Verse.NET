@@ -1,4 +1,6 @@
-﻿namespace Module.Shared
+﻿using Module.Shared;
+
+namespace Module
 {
     public abstract class EntityModule : ILifecycle
     {
