@@ -13,6 +13,8 @@ public class TestModule : EntityModule
     public async Task rpcTestNtf(TestNtfReq req)
     {
         await self.Get<RpcModule>().Notify(ProtoCode.ON_TEST, new TestNtf() { TestMsg = "helloworld" });
+
+        await self.Get<UserModule>().SyncField("nickname");
     }
     
     public override void Start()

@@ -5,6 +5,7 @@ using Module.Log;
 using Module.Shared;
 using MongoDB.Bson;
 using Newtonsoft.Json;
+using Service.Db;
 using Service.Entity;
 using Service.Id;
 using Service.Login; 
@@ -30,7 +31,7 @@ public sealed class Init
         Global.AddSingleton<EnvironmentV2>();
         Global.AddSingleton<ProtocolProvider>(); 
         Global.AddSingleton<MainThreadSynchronizationContext>();
-        
+        Global.AddSingleton<DbService>();
         Global.AddSingleton<IdService>();
         Global.AddSingleton<EntityService>();
         Global.AddSingleton<LoginService>();

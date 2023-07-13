@@ -1,5 +1,8 @@
 ﻿using DataModel.Shared.Message;
 using Module.Shared;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Bson;
+using Service.Db;
 using Service.Entity;
 using Service.Login;
 
@@ -12,21 +15,36 @@ public class LoginModule : EntityModule
     public async Task<LoginRsp> rpcLogin(LoginReq req)
     {
         var result = await LoginService.Instance.Login(req.Username, req.Password);
-        var rsp = new LoginRsp
-        {
-            Uid = result.Item2,
-            RetCode = (int)result.Item1
-        };
         if (result.Item1 == LoginCode.Ok)
         {
+            var user = DbService.Instance.LoadUserFromDb(result.Item2);
+            self.User = user;
+            
             self.SetUid(result.Item2);
+            self.AddModule<UserModule>();
             self.AddModule<ItemModule>();
             self.AddModule<TestModule>();
             //TODO:
             //...
             EntityService.Instance.RegisterEntity(self);
         }
-        return rsp;
+        
+        using (MemoryStream ms = new MemoryStream())
+        {
+            using (BsonDataWriter datawriter = new BsonDataWriter(ms))
+            {
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.Serialize(datawriter, self.User);
+            } 
+            return new LoginRsp
+            {
+                Uid = result.Item2,
+                RetCode = (int)result.Item1,
+                UserBytes = ms.ToArray(),
+            };
+        }
+        
+        
     } 
     
     public override void Start()
