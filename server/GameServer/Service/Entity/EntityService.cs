@@ -108,4 +108,9 @@ public class EntityService : Singleton<EntityService>, ILifecycle
             await _entities.FirstOrDefault().Value?.GetChannel()?.NotifyAll(code, msg);
         }
     }
+
+    public bool HasEntity(string uid)
+    {
+        return _entities.ContainsKey(uid);
+    }
 }

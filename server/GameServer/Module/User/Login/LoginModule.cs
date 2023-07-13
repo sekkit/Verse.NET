@@ -27,24 +27,29 @@ public class LoginModule : EntityModule
             //TODO:
             //...
             EntityService.Instance.RegisterEntity(self);
+            
+            using (var ms = new MemoryStream())
+            {
+                using (var datawriter = new BsonDataWriter(ms))
+                {
+                    JsonSerializer serializer = new JsonSerializer();
+                    serializer.Serialize(datawriter, self.User);
+                } 
+                return new LoginRsp
+                {
+                    Uid = result.Item2,
+                    RetCode = (int)result.Item1,
+                    UserBytes = ms.ToArray(),
+                };
+            }
         }
         
-        using (MemoryStream ms = new MemoryStream())
+        return new LoginRsp
         {
-            using (BsonDataWriter datawriter = new BsonDataWriter(ms))
-            {
-                JsonSerializer serializer = new JsonSerializer();
-                serializer.Serialize(datawriter, self.User);
-            } 
-            return new LoginRsp
-            {
-                Uid = result.Item2,
-                RetCode = (int)result.Item1,
-                UserBytes = ms.ToArray(),
-            };
-        }
-        
-        
+            Uid = result.Item2,
+            RetCode = (int)result.Item1,
+            UserBytes = null,
+        };
     } 
     
     public override void Start()
