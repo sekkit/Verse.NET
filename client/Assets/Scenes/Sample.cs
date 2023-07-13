@@ -32,7 +32,8 @@ public class Sample : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        TxtStatus.text = "Status: "+(ClientStub.Instance.User == null?"Offline":"Online");
+        TxtStatus.color = (ClientStub.Instance.User == null?Color.red:Color.green);
     }
 
     void OnLogin()
