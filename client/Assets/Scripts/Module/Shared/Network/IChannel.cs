@@ -18,7 +18,7 @@ namespace Module.Shared
     public interface IChannel
     {
         string GetChannelId();
-        
+
         Task Reply(ProtoCode code, Msg msg);
 
         Task Notify(ProtoCode code, string[] uids, Msg msg);
