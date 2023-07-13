@@ -27,12 +27,6 @@ public class WsChannel : WebSocketBehavior, IChannel
     protected override void OnOpen()
     {
         base.OnOpen();
-        
-        // if (entity == null)
-        // {
-        //     entity = EntityHelper.createEntityWithLogin();
-        //     entity.Attach(this);
-        // }
     }
 
     protected override void OnClose(CloseEventArgs e)
