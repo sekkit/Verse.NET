@@ -15,13 +15,16 @@ public class Init : MonoBehaviour
         
         UnitySystemConsoleRedirector.Redirect();
 
+        Global.AddSingleton<EnvironmentV2>();
         Global.AddSingleton<MainThreadSynchronizationContext>();
         Global.AddSingleton<Module.Shared.Logger>().ILog = new NLogger("CLIENT", 0, "");
-        Global.AddSingleton<TypeProvider>();
+        Global.AddSingleton<ProtocolProvider>();
         Global.AddSingleton<WsChannel>();
         
         Global.Start();
         
+        new GameObject("ClientStub").AddComponent<ClientStub>();
+
         Log.Info(JsonConvert.SerializeObject(EnvironmentV2.Instance.systemInfo, Formatting.Indented));
     }
      

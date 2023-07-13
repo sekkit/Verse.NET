@@ -22,7 +22,7 @@ namespace Module.Shared
         {
             Uid = uid;
             
-            this.Start();
+            Start();
         }
         
         private ConcurrentDictionary<Type, EntityModule> _modules { get; set; } = new();
@@ -40,14 +40,13 @@ namespace Module.Shared
                 var methods = inst.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
                 foreach (var method in methods)
                 {
-                    var attr = method.GetCustomAttribute<RpcMethodAttribute>();
+                    var attr = method.GetCustomAttribute<ServerApiAttribute>();
                     if (attr == null) continue;
                     Log.Info($"{method.Name}");
                     var methodParams = method.GetParameters();
                     if (methodParams.Length == 1)
                     {
-                        Type returnType = method.ReturnType;
-                        string methodName = method.Name;
+                        Type returnType = method.ReturnType; 
                         Type inputParam = methodParams[0].ParameterType;
 
                         Type genericFuncType = typeof(Func<,>).MakeGenericType(inputParam, returnType); 
@@ -130,5 +129,7 @@ namespace Module.Shared
         }
 
         public ConcurrentDictionary<ProtoCode, Delegate> GetRpcMethods() => _rpcMethods;
+
+        public IChannel GetChannel() => _channel;
     }
 }

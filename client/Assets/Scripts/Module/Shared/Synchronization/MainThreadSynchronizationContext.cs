@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace Module.Shared
 {
-public class MainThreadSynchronizationContext: Singleton<MainThreadSynchronizationContext>
+public class MainThreadSynchronizationContext: Singleton<MainThreadSynchronizationContext>, ILifecycle
 {
     private readonly ThreadSynchronizationContext threadSynchronizationContext = new ThreadSynchronizationContext();
 
@@ -11,12 +11,32 @@ public class MainThreadSynchronizationContext: Singleton<MainThreadSynchronizati
     {
         SynchronizationContext.SetSynchronizationContext(this.threadSynchronizationContext);
     }
-    
+
+    public void Start()
+    {
+       
+    }
+
     public void Update()
     {
         this.threadSynchronizationContext.Update();
     }
-    
+
+    public void LateUpdate()
+    {
+        
+    }
+
+    public void FrameFinishedUpdate()
+    {
+        
+    }
+
+    public void Destroy()
+    {
+        
+    }
+
     public void Post(SendOrPostCallback callback, object state)
     {
         this.Post(() => callback(state));

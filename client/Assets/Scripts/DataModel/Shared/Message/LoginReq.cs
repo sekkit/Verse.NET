@@ -10,7 +10,7 @@ namespace DataModel.Shared.Message
         public string Username { get; set; }
         
         public string Password { get; set; }
- 
-        public override byte[] Pack() => MemoryPackSerializer.Serialize(this);
+  
+        public override byte[] Pack() => MemoryPackSerializer.Serialize(this); 
     }
 }

@@ -4,35 +4,25 @@ using Module.Shared;
 
 namespace Module.Shared
 {
-    public class TypeProvider : Singleton<TypeProvider>, ILifecycle
+    public class ProtocolProvider : Singleton<ProtocolProvider>, ILifecycle
     {
         protected DoubleMap<ProtoCode, Type> _reqMap = new();
         protected DoubleMap<ProtoCode, Type> _rspMap = new();
-
-        public Type GetReqType(ProtoCode code)
-        {
-            return _reqMap.GetValueByKey(code);
-        }
-
-        public Type GetRspType(ProtoCode code)
-        {
-            return _rspMap.GetValueByKey(code);
-        }
+        protected DoubleMap<ProtoCode, Type> _ntfMap = new();
         
-        public ProtoCode GetCodeByReqType(Type type)
-        {
-            return _reqMap.GetKeyByValue(type);
-        }
+        public Type GetReqType(ProtoCode code) => _reqMap.ContainsKey(code)?_reqMap.GetValueByKey(code):null; 
 
-        public ProtoCode GetCodeByRspType(Type type)
-        {
-            return _rspMap.GetKeyByValue(type);
-        }
+        public Type GetRspType(ProtoCode code) => _rspMap.ContainsKey(code)?_rspMap.GetValueByKey(code):null;
+
+        public Type GetNtfType(ProtoCode code) => _ntfMap.ContainsKey(code)?_ntfMap.GetValueByKey(code):null;
         
-        public ProtoCode GetCodeByType(Type type)
-        {
-            return type.GetCustomAttribute<ProtocolAttribute>().Code;
-        }
+        public ProtoCode GetCodeByReqType(Type type) => _reqMap.GetKeyByValue(type);
+
+        public ProtoCode GetCodeByRspType(Type type) => _rspMap.GetKeyByValue(type);
+
+        public ProtoCode GetCodeByNtfType(Type type) => _ntfMap.GetKeyByValue(type);
+        
+        public ProtoCode GetCodeByType(Type type) => type.GetCustomAttribute<ProtocolAttribute>().Code;
 
         public void Start()
         {
@@ -52,6 +42,10 @@ namespace Module.Shared
                         else if (type.Name.EndsWith("Rsp"))
                         {
                             _rspMap.Add(attr.Code, type);
+                        }
+                        else if (type.Name.EndsWith("Ntf"))
+                        {
+                            _ntfMap.Add(attr.Code, type);
                         }
                     }
                 }

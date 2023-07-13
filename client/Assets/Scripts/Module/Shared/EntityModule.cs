@@ -2,8 +2,6 @@
 {
     public abstract class EntityModule : ILifecycle
     {
-        private bool _started = false; 
-        
         protected Entity self { get; set; }
 
         public void Attach(Entity parent) => self = parent;

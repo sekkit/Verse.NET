@@ -3,23 +3,31 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using DataModel.Shared.Message;
-using MemoryPack;
+using MemoryPack; 
 using Module.Shared;
-using UnityEngine;
+using UnityEngine.Assertions;
 using UnityWebSocket;
+using WebSocketSharp;
+using CloseEventArgs = UnityWebSocket.CloseEventArgs;
 using ErrorEventArgs = UnityWebSocket.ErrorEventArgs;
+using MessageEventArgs = UnityWebSocket.MessageEventArgs;
+using WebSocket = UnityWebSocket.WebSocket;
+using WebSocketState = UnityWebSocket.WebSocketState;
 
 namespace Module.Channel
 {
-    public class WsChannel: Singleton<WsChannel>, IChannel
+    public class WsChannel: Singleton<WsChannel>, IChannel, ILifecycle
     {
         // public static WsChannel Instance = new();
         //
         //track request sent from client to server
         private ConcurrentDictionary<ulong, DateTime> _req2DtDic = new();
-        private ConcurrentDictionary<ulong, Delegate> _rpcCallbackDic = new();
-
+        private ConcurrentDictionary<ulong, Action<Msg>> _rpcCallbackDic = new();
+        private ConcurrentDictionary<ulong, TaskCompletionSource<Msg>> _rpcCbAsyncDic = new();
+         
         private IWebSocket _socket;
 
         public string ServerUrl { get; set; } = "ws://127.0.0.1:4649/lacg";
@@ -46,74 +54,84 @@ namespace Module.Channel
             }
         }
         
-        private void Socket_OnOpen(object sender, OpenEventArgs e)
+        private async void Socket_OnOpen(object sender, OpenEventArgs e)
         {
             Log.Info($"Connected: {ServerUrl}");
             var req = new LoginReq()
-            { 
-                RpcId = MathHelper.GenLongID(),
+            {
                 Username = "",
                 Password = ""
             };  
             
-            SendMsg(req);  
+            // Remote<LoginRsp>(ProtoCode.LOGIN, req, (rsp) =>
+            // {
+            //     Log.Info(rsp.Uid);
+            // });
+
+            var result = await InvokeWithCb<LoginRsp>(ProtoCode.LOGIN, req);  
+            Log.Info(result.Uid);
         }
          
         private void Socket_OnMessage(object sender, MessageEventArgs e)
         {
             if (e.IsBinary)
             {
-                Log.Info($"Receive Bytes ({e.RawData.Length}): {e.RawData}");
-                if (e.RawData.Length <= 4)
+                Log.Info($"Receive Bytes ({e.RawData.Length})");
+                if (e.RawData.Length < 4)
                 {
                     return;
                 }
             
-                var byteParts = ByteHelper.SplitBytes(e.RawData, 4);
-                using (var ms = new MemoryStream(byteParts.FirstOrDefault()))
+                //var byteParts = ByteHelper.SplitBytes(e.RawData, 4);
+                using (var ms = new MemoryStream(e.RawData))//byteParts.FirstOrDefault()))
                 {
                     using (var reader = new EndianBinaryReader(EndianBitConverter.Little, ms))
                     {
                         uint protoCodeNum = reader.ReadUInt32();
                         ProtoCode code = Enum.Parse<ProtoCode>(protoCodeNum.ToString());
+                        var data = Ext.SubArray(e.RawData, 4, e.RawData.Length-4);
 
-                        //entity.Get<RpcModule>().Call(protoCode, byteParts.LastOrDefault(), this);
-                        var data = byteParts.LastOrDefault();
-                        // if (_rpcCallbackDic.TryGetValue(code, out var del))
-                        // {
-                        //var reqType = TypeProvider.Instance.GetReqType(code);
-                        var rspType = TypeProvider.Instance.GetRspType(code);
-                        object param = MemoryPackSerializer.Deserialize(rspType, data) as Msg;
-                        if (_rpcCallbackDic.TryGetValue((param as Msg).RpcId, out var del))
+                        Type msgType = null;
+                        msgType = ProtocolProvider.Instance.GetNtfType(code);
+                        if (msgType != null) //is ntf
+                        { 
+                            object param = MemoryPackSerializer.Deserialize(msgType, data) as Msg;
+                            ulong rpcId = (param as Msg).RpcId;
+                            Assert.IsTrue(rpcId == 0);
+                            
+                            MainThreadSynchronizationContext.Instance.Post(() =>
+                            {
+                                ClientStub.Instance.Call(code, param as Msg);
+                            });
+                        }
+                        else //is req|rsp
                         {
-                            // object result = del.DynamicInvoke(param);
-                            del.DynamicInvoke(param);
-
-                            // if (del.Method.ReturnType.IsSubclassOf(typeof(Task)))
-                            // {
-                            //     dynamic task = del.DynamicInvoke(param);
-                            //     try
-                            //     {
-                            //         result = await task;
-                            //     }
-                            //     catch (Exception ex)
-                            //     {
-                            //         Shared.Log.Error(ex);
-                            //         // Shared.Log.Error(Environment.StackTrace); 
-                            //     }
-                            // }
-                            // else
-                            // {
-                            //     result = del.DynamicInvoke(param);
-                            // }
-
-                            //SendMsg(result as Msg);
-                        } 
-                        else
-                        {
-                            Log.Error(string.Format("Invalid code {0}", code));
-                            //SendMsg(VoidMsg.Instance);
-                        } 
+                            msgType = ProtocolProvider.Instance.GetRspType(code);
+                            if (msgType != null)
+                            {
+                                object param = MemoryPackSerializer.Deserialize(msgType, data) as Msg; 
+                                ulong rpcId = (param as Msg).RpcId;
+                                _req2DtDic.TryRemove(rpcId, out var _);
+                                if (_rpcCallbackDic.TryRemove(rpcId, out var del))
+                                { 
+                                    MainThreadSynchronizationContext.Instance.Post(() =>
+                                    {
+                                        del?.DynamicInvoke(param);
+                                    }); 
+                                } 
+                                else if (_rpcCbAsyncDic.TryRemove(rpcId, out var tcs))
+                                {
+                                    MainThreadSynchronizationContext.Instance.Post(() =>
+                                    {
+                                        tcs?.SetResult(param as Msg);
+                                    });
+                                }
+                                else
+                                {
+                                    Log.Error(string.Format("Invalid code {0}", code));
+                                }
+                            }
+                        }  
                     }
                 }
             }
@@ -133,8 +151,38 @@ namespace Module.Channel
             Log.Error($"Error: {e.Message}");
         }
         
-        //client side, can only send req to server
-        public void SendMsg(Msg msg)
+        //client side, can only send req to server 
+
+        public async Task<TRsp> InvokeWithCb<TRsp>(ProtoCode code, Msg msg) where TRsp: Msg
+        {
+            var type = msg.GetType();
+            bool isRequest = type.Name.EndsWith("Req");  
+            var tcs = new TaskCompletionSource<Msg>();
+            if (isRequest)
+            {
+                using (var ms = new MemoryStream())
+                {
+                    using (var bw = new EndianBinaryWriter(EndianBitConverter.Little, ms))
+                    {
+                        //var code = type.GetCustomAttribute<ProtocolAttribute>().Code; 
+                        msg.RpcId = MathHelper.GenLongID();
+                        bw.Write((uint)code);
+                        bw.Write(msg.Pack());
+                        _socket?.SendAsync(ms.ToArray());
+                        _req2DtDic[msg.RpcId] = DateTime.UtcNow;
+                        _rpcCbAsyncDic[msg.RpcId] = tcs;
+                    }
+                }
+            }
+            else
+            {
+                MainThreadSynchronizationContext.Instance.Post(() => { tcs.SetCanceled(); });
+            }
+
+            return (await tcs.Task) as TRsp;
+        }
+
+        public void InvokeWithCb<TRsp>(ProtoCode code, Msg msg, Action<TRsp> callback) where TRsp : Msg
         {
             var type = msg.GetType();
             bool isRequest = type.Name.EndsWith("Req");  
@@ -144,14 +192,73 @@ namespace Module.Channel
                 {
                     using (var bw = new EndianBinaryWriter(EndianBitConverter.Little, ms))
                     {
-                        var code = type.GetCustomAttribute<ProtocolAttribute>().Code; 
+                        //var code = type.GetCustomAttribute<ProtocolAttribute>().Code; 
+                        msg.RpcId = MathHelper.GenLongID();
                         bw.Write((uint)code);
                         bw.Write(msg.Pack());
                         _socket?.SendAsync(ms.ToArray());
                         _req2DtDic[msg.RpcId] = DateTime.UtcNow;
+                        _rpcCallbackDic[msg.RpcId] = (param)=>callback.Invoke(param as TRsp);
                     }
                 }
             }
+        }
+        
+        public void Invoke(ProtoCode code, Msg msg)
+        {
+            var type = msg.GetType();
+            bool isRequest = type.Name.EndsWith("Req");  
+            if (isRequest)
+            {
+                using (var ms = new MemoryStream())
+                {
+                    using (var bw = new EndianBinaryWriter(EndianBitConverter.Little, ms))
+                    {
+                        //var code = type.GetCustomAttribute<ProtocolAttribute>().Code; 
+                        bw.Write((uint)code);
+                        bw.Write(msg.Pack());
+                        _socket?.SendAsync(ms.ToArray());
+                        //_req2DtDic[msg.RpcId] = DateTime.UtcNow;
+                        //_rpcCallbackDic[msg.RpcId] = (param)=>callback.Invoke();
+                    }
+                }
+            }
+        }
+
+        public void Start()
+        {
+            
+        }
+
+        public void Update()
+        {
+            
+        }
+
+        public void LateUpdate()
+        {
+            foreach (var kv in _req2DtDic)
+            {
+                if ((DateTime.UtcNow - kv.Value).TotalSeconds > 30)
+                {
+                    _rpcCallbackDic.TryRemove(kv.Key, out var del);
+                    del?.Invoke(null);
+                    _rpcCbAsyncDic.TryRemove(kv.Key, out var tcs);
+                    tcs?.SetException(new TimeoutException());
+                    
+                    _req2DtDic.TryRemove(kv.Key, out var _);
+                }
+            }
+        }
+
+        public void FrameFinishedUpdate()
+        {
+            
+        }
+
+        public void Destroy()
+        {
+            
         }
     }
 }

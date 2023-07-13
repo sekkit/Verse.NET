@@ -2,10 +2,10 @@
 
 namespace Module.Shared
 {
-    public class RpcMethodAttribute : Attribute
+    public class ClientApiAttribute : Attribute
     {
         public ProtoCode Code;
-        public RpcMethodAttribute(ProtoCode code)
+        public ClientApiAttribute(ProtoCode code)
         {
             Code = code;
         }
