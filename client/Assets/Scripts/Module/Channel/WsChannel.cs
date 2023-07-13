@@ -6,8 +6,11 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using DataModel.Shared.Message;
+using DataModel.Shared.Model;
 using MemoryPack; 
 using Module.Shared;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Bson;
 using UnityEngine.Assertions;
 using UnityWebSocket;
 using WebSocketSharp;
@@ -70,6 +73,15 @@ namespace Module.Channel
 
             var result = await InvokeWithCb<LoginRsp>(ProtoCode.LOGIN, req);  
             Log.Info(result.Uid);
+            if (result.Uid != null)
+            { 
+                using (MemoryStream ms = new MemoryStream(result.UserBytes))
+                using (BsonDataReader reader = new BsonDataReader(ms))
+                {
+                    JsonSerializer serializer = new JsonSerializer();
+                    ClientStub.Instance.SetUser(serializer.Deserialize<User>(reader));
+                } 
+            }
         }
          
         private void Socket_OnMessage(object sender, MessageEventArgs e)

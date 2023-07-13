@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Reflection;
 using System.Threading.Tasks;
 using DataModel.Shared.Message;
+using DataModel.Shared.Model;
 using MemoryPack; 
 
 namespace Module.Shared
@@ -15,8 +16,10 @@ namespace Module.Shared
         }
 
         private ConcurrentDictionary<ProtoCode, Delegate> _rpcMethods { get; set; } = new();
-         
+        
         public string Uid { get; private set; }
+
+        public User User;
         
         public void SetUid(string uid)
         {

@@ -5,14 +5,19 @@ using System.Collections.Concurrent;
 using System.Reflection;
 using System.Threading.Tasks;
 using DataModel.Shared.Message;
+using DataModel.Shared.Model;
+using JetBrains.Annotations;
 using MemoryPack;
 using Module.Shared;
+using Newtonsoft.Json;
 using UnityEngine;
 
 public class ClientStub : MonoBehaviour
 {
     public static ClientStub Instance;
 
+    public User User;
+    
     private ConcurrentDictionary<ProtoCode, Delegate> _ntfMethods { get; set; } = new();
     
     private void Start()
@@ -85,5 +90,18 @@ public class ClientStub : MonoBehaviour
     public async Task OnTestNtf(TestNtf ntf)
     {
         Log.Info(ntf.TestMsg);
+        //EventBus.Instance.Publish("on_data_changed");
+    }
+
+    [ClientApi(ProtoCode.ON_SYNC_FIELD)]
+    public async Task OnSyncField(SyncFieldNtf ntf)
+    {
+        this.User.MergeFrom(ntf.Key, ntf.Value);
+    }
+
+    public void SetUser(User initUser)
+    {
+        this.User = initUser;
+        //JsonConvert.DeserializeObject<User>(initUser.Pack(), ref this.User);
     }
 } 

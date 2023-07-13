@@ -8,5 +8,6 @@ namespace Module.Shared
         TEST_NTF=0x3,
         
         ON_TEST = 0x10001,
+        ON_SYNC_FIELD=0x10002,
     }
 }
