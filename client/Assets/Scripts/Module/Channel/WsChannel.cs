@@ -37,7 +37,13 @@ namespace Module.Channel
 
         public void Connect()
         {
-            Close();
+            //Close();
+
+            if (_socket != null && _socket.ReadyState == WebSocketState.Open)
+            {
+                Log.Warning("already logged in");
+                return;
+            }
             
             _socket = new WebSocket(ServerUrl);
             _socket.OnOpen += Socket_OnOpen;
@@ -55,6 +61,8 @@ namespace Module.Channel
                 _socket.CloseAsync();
                 _socket = null;
             }
+            
+            Destroy();
         }
         
         private async void Socket_OnOpen(object sender, OpenEventArgs e)
@@ -66,21 +74,25 @@ namespace Module.Channel
                 Password = ""
             };  
             
-            // Remote<LoginRsp>(ProtoCode.LOGIN, req, (rsp) =>
+            // InvokeWithCb<LoginRsp>(ProtoCode.LOGIN, req, (rsp) =>
             // {
             //     Log.Info(rsp.Uid);
             // });
 
             var result = await InvokeWithCb<LoginRsp>(ProtoCode.LOGIN, req);  
             Log.Info(result.Uid);
-            if (result.Uid != null)
+            if (result.RetCode == (int)LoginCode.Ok)
             { 
                 using (MemoryStream ms = new MemoryStream(result.UserBytes))
                 using (BsonDataReader reader = new BsonDataReader(ms))
                 {
                     JsonSerializer serializer = new JsonSerializer();
                     ClientStub.Instance.SetUser(serializer.Deserialize<User>(reader));
-                } 
+                }
+            }
+            else
+            {
+                Log.Error("login failed");
             }
         }
          
@@ -270,7 +282,7 @@ namespace Module.Channel
 
         public void Destroy()
         {
-            
+            ClientStub.Instance.SetUser(null);
         }
     }
 }
