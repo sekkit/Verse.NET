@@ -17,7 +17,7 @@ public class Init : MonoBehaviour
 
         Global.AddSingleton<EnvironmentV2>();
         Global.AddSingleton<MainThreadSynchronizationContext>();
-        Global.AddSingleton<Module.Shared.Logger>().ILog = new NLogger("CLIENT", 0, "");
+        Global.AddSingleton<Module.Shared.Logger>().ILog = new NLogger("client", 0, "");
         Global.AddSingleton<ProtocolProvider>();
         Global.AddSingleton<WsChannel>();
         
