@@ -26,11 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DataModel\" />
-    <Folder Include="Module\Id\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="CommandLine">
       <HintPath>..\Libs\CommandLine.dll</HintPath>
     </Reference>

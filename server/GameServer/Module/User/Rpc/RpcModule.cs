@@ -14,8 +14,8 @@ public class RpcModule : EntityModule
     {
         if (self.GetRpcMethods().TryGetValue(code, out var del))
         {
-            var reqType = TypeProvider.Instance.GetReqType(code);
-            var rspType = TypeProvider.Instance.GetRspType(code);
+            var reqType = ProtocolProvider.Instance.GetReqType(code);
+            //var rspType = ProtocolProvider.Instance.GetRspType(code);
             object param = MemoryPackSerializer.Deserialize(reqType, data) as Msg;
             
             object result = null;
@@ -36,13 +36,28 @@ public class RpcModule : EntityModule
             {
                 result = del.DynamicInvoke(param);
             }
-            channel.SendMsg(result as Msg);
+
+            if (result != null && (param as Msg).RpcId != 0) //has no callback
+            {
+                (result as Msg).RpcId = (param as Msg).RpcId;
+                channel.Reply(code, result as Msg);
+            } 
         }
         else
         {
             Module.Shared.Log.Error(string.Format("Invalid code {0}", code));
-            channel.SendMsg(VoidMsg.Instance);
-        } 
+            //channel.Reply(ProtoCode.VOID, new VoidMsg());
+        }
+    }
+
+    public async Task Notify(ProtoCode code, Msg msg)
+    {
+        self.GetChannel()?.Notify(code, new string[]{ self.Uid }, msg);
+    }
+    
+    public async Task NotifyAll(ProtoCode code, Msg msg)
+    {
+        self.GetChannel()?.NotifyAll(code, msg);
     }
     
     public override void Start()

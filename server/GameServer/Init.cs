@@ -28,8 +28,9 @@ public sealed class Init
         Log.Debug("Hello");
 
         Global.AddSingleton<EnvironmentV2>();
-        Global.AddSingleton<TypeService>();
+        Global.AddSingleton<ProtocolProvider>(); 
         Global.AddSingleton<MainThreadSynchronizationContext>();
+        
         Global.AddSingleton<IdService>();
         Global.AddSingleton<EntityService>();
         Global.AddSingleton<LoginService>();

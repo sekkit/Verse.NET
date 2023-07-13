@@ -8,7 +8,7 @@ namespace Module.User.Login;
 
 public class LoginModule : EntityModule
 {
-    [RpcMethod(ProtoCode.LOGIN)]
+    [ServerApi(ProtoCode.LOGIN)]
     public async Task<LoginRsp> rpcLogin(LoginReq req)
     {
         var result = await LoginService.Instance.Login(req.Username, req.Password);
@@ -21,16 +21,16 @@ public class LoginModule : EntityModule
         {
             self.SetUid(result.Item2);
             self.AddModule<ItemModule>();
+            self.AddModule<TestModule>();
             //TODO:
             //...
-            EntityService.Instance.RegisterEntity(self); 
+            EntityService.Instance.RegisterEntity(self);
         }
         return rsp;
-    }
+    } 
     
     public override void Start()
     {
-        
     }
 
     public override void Update()
