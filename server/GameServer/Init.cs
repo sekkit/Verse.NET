@@ -8,7 +8,8 @@ using Newtonsoft.Json;
 using Service.Db;
 using Service.Entity;
 using Service.Id;
-using Service.Login; 
+using Service.Login;
+using Service.Timer;
 
 public sealed class Init
 {
@@ -34,7 +35,8 @@ public sealed class Init
         Global.AddSingleton<DbService>();
         Global.AddSingleton<IdService>();
         Global.AddSingleton<EntityService>();
-        Global.AddSingleton<LoginService>();
+        Global.AddSingleton<LoginService>(); 
+        Global.AddSingleton<TimerService>();
         
         Global.Start();
 

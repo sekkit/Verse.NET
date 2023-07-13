@@ -42,6 +42,11 @@ public class TimerService : Singleton<TimerService>, ILifecycle
 
     public void Destroy()
     {
-        
+        foreach (var timer in _timers)
+        {
+            timer.Dispose();
+        }
+            
+        _timers.Clear();
     }
 }

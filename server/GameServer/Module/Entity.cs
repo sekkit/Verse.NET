@@ -146,11 +146,18 @@ namespace Module
         public void Dispose()
         {
             _channel = null;
+
+            foreach (var timer in _timers)
+            {
+                timer.Dispose();
+            }
             
+            _timers.Clear();
+
             foreach(var m in _modules.Values)
             {
                 m.Destroy();
-            }
+            } 
         }
 
         public ConcurrentDictionary<ProtoCode, Delegate> GetRpcMethods() => _rpcMethods;
