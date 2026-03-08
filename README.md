@@ -5,3 +5,6 @@ Work in progress Game Server that:
 1. Implement Websocket as underline network layer for Unity and .NET
 2. Full Remote Procedure Call support
 3. Designed for Chess or Room games, also good as Lobby server(to work with Unity DS, Netcode recommended)
+
+
+using ai to refactor framework
